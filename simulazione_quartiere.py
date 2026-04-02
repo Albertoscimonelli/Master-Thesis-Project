@@ -163,13 +163,16 @@ def genera_profili_lpg(config_residenziali, anno, risoluzione_min):
     variabilità realistica.
     """
     try:
-        from pylpg import lpgdata, lpgexecute
+        from pyloadprofilegenerator import lpgdata, lpgexecute
     except ImportError:
-        print("=" * 60)
-        print("ERRORE: pyLPG non installato!")
-        print("Esegui: pip install pyloadprofilegenerator")
-        print("=" * 60)
-        return None
+        try:
+            from pylpg import lpgdata, lpgexecute
+        except ImportError:
+            print("=" * 60)
+            print("ERRORE: pyLPG non installato!")
+            print("Esegui: pip install pyloadprofilegenerator")
+            print("=" * 60)
+            return None
 
     tutti_profili = []
     risoluzione_str = f"00:{risoluzione_min:02d}:00"
@@ -339,24 +342,26 @@ def genera_profili_ramp(config_pmi, data_inizio, data_fine):
 
         # Aggiungi ogni elettrodomestico
         for app_config in pmi["appliances"]:
-            app_kwargs = {
-                "name": app_config["name"],
-                "number": app_config["number"],
-                "power": app_config["power"],
-                "func_time": app_config["func_time"],
-                "num_windows": app_config["num_windows"],
-                "random_var_w": app_config.get("random_var_w", 0.1),
-                "time_fraction_random_variability": app_config.get(
+            # Crea l'appliance con i parametri base
+            appliance = user.add_appliance(
+                name=app_config["name"],
+                number=app_config["number"],
+                power=app_config["power"],
+                func_time=app_config["func_time"],
+                time_fraction_random_variability=app_config.get(
                     "time_fraction_random_variability", 0.1
                 ),
-            }
+                num_windows=app_config["num_windows"],
+            )
 
-            # Aggiungi le finestre direttamente
+            # Aggiungi le finestre separatamente
             windows = app_config["windows"]
+            win_kwargs = {}
             for w_idx, window in enumerate(windows):
-                app_kwargs[f"window_{w_idx + 1}"] = window
+                win_kwargs[f"window_{w_idx + 1}"] = window
+            win_kwargs["random_var_w"] = app_config.get("random_var_w", 0.1)
 
-            user.add_appliance(**app_kwargs)
+            appliance.windows(**win_kwargs)
 
         # Esegui la simulazione
         use_case = UseCase(

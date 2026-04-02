@@ -22,7 +22,7 @@ def create_user() -> User:
         time_fraction_random_variability=0.15,
         wd_we_type=2,  # tutti i giorni
     )
-    cnc.windows([360, 1200], [0, 0], 0.1)
+    cnc.windows(window_1=[360, 1200], random_var_w=0.1)
 
     # Compressore aria: 1 da 3000W con ciclo di duty
     compressore = user.add_appliance(
@@ -35,7 +35,7 @@ def create_user() -> User:
         fixed_cycle=1,
         wd_we_type=2,
     )
-    compressore.windows([360, 1200], [0, 0], 0.1)
+    compressore.windows(window_1=[360, 1200], random_var_w=0.1)
     compressore.specific_cycle_1(p_11=3000, t_11=30, p_12=200, t_12=15, r_c1=0.1)
 
     # Illuminazione industriale: 40 punti luce da 60W, attivi 14 ore
@@ -48,7 +48,7 @@ def create_user() -> User:
         time_fraction_random_variability=0.05,
         wd_we_type=2,
     )
-    illuminazione.windows([360, 1200], [0, 0], 0.1)
+    illuminazione.windows(window_1=[360, 1200], random_var_w=0.1)
 
     # Ufficio annesso (PC): 3 postazioni da 200W, solo feriali 8:00-18:00
     ufficio = user.add_appliance(
@@ -60,6 +60,6 @@ def create_user() -> User:
         time_fraction_random_variability=0.15,
         wd_we_type=0,  # solo feriali
     )
-    ufficio.windows([480, 1080], [0, 0], 0.1)
+    ufficio.windows(window_1=[480, 1080], random_var_w=0.1)
 
     return user

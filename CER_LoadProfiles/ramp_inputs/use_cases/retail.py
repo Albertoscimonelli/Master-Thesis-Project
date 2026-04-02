@@ -22,7 +22,7 @@ def create_user() -> User:
         time_fraction_random_variability=0.05,
         wd_we_type=2,  # tutti i giorni
     )
-    illuminazione.windows([540, 1170], [0, 0], 0.1)
+    illuminazione.windows(window_1=[540, 1170], random_var_w=0.1)
 
     # Cassa + POS: 2 da 100W, attivi durante apertura
     cassa = user.add_appliance(
@@ -34,7 +34,7 @@ def create_user() -> User:
         time_fraction_random_variability=0.1,
         wd_we_type=2,
     )
-    cassa.windows([540, 1170], [0, 0], 0.05)
+    cassa.windows(window_1=[540, 1170], random_var_w=0.05)
 
     # Frigorifero espositore: 2 da 350W, sempre acceso con ciclo di duty
     frigo = user.add_appliance(
@@ -46,7 +46,7 @@ def create_user() -> User:
         fixed_cycle=1,
         wd_we_type=2,
     )
-    frigo.windows([0, 1440], [0, 0])
+    frigo.windows(window_1=[0, 1440])
     frigo.specific_cycle_1(p_11=350, t_11=25, p_12=10, t_12=15, r_c1=0.05)
 
     # Climatizzazione: 1 unita da 2000W, attiva durante apertura
@@ -59,6 +59,6 @@ def create_user() -> User:
         time_fraction_random_variability=0.2,
         wd_we_type=2,
     )
-    clima.windows([540, 1170], [0, 0], 0.15)
+    clima.windows(window_1=[540, 1170], random_var_w=0.15)
 
     return user

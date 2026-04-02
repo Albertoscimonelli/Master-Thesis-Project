@@ -219,6 +219,8 @@ def run_lpg(config: dict) -> pd.DataFrame:
 
     all_profiles: dict[str, pd.Series] = {}
     global_idx = 0
+    # Genera sempre a 1 minuto (come RAMP), il postprocessing ricampionera'
+    generation_resolution = 1
 
     for hh_group in households:
         label = hh_group["label"]
@@ -242,7 +244,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
                         household_ref_name=household_ref,
                         house_type=house_type,
                         seed=seed,
-                        resolution_minutes=resolution_minutes,
+                        resolution_minutes=generation_resolution,
                         energy_intensity=energy_intensity,
                     )
 
@@ -280,9 +282,9 @@ def run_lpg(config: dict) -> pd.DataFrame:
             else:
                 logger.info("  %s (profilo sintetico, label=%s)...", col_name, label)
 
-            # Fallback sintetico
+            # Fallback sintetico (a 1 min, come RAMP)
             profile = _generate_synthetic_profile(
-                label, i, year, resolution_minutes
+                label, i, year, generation_resolution
             )
             all_profiles[col_name] = profile
             logger.info("  %s: profilo sintetico generato", col_name)

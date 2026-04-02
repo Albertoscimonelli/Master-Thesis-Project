@@ -1,17 +1,15 @@
 """
 ================================================================================
-SIMULAZIONE QUARTIERE IBRIDO: pyLPG + RAMP
+DEPRECATO - Usare CER_LoadProfiles/generate_load_profiles.py
 ================================================================================
-Questo script genera profili di carico elettrico per un quartiere misto
-composto da utenze residenziali (via LPG) e PMI (via RAMP).
+Questo script e' stato sostituito dal pacchetto modulare CER_LoadProfiles/.
+Viene mantenuto solo come riferimento storico.
 
-PREREQUISITI (eseguire una volta):
-    pip install pyloadprofilegenerator rampdemand pandas matplotlib numpy
+Per generare i profili di carico, usare:
+    cd CER_LoadProfiles
+    python generate_load_profiles.py
 
-NOTE:
-- pyLPG scarica automaticamente i binari LPG (~500MB) al primo avvio
-- Richiede .NET 6 runtime (su Linux: sudo apt install dotnet-runtime-6.0)
-- Su Windows funziona out-of-the-box
+SIMULAZIONE QUARTIERE IBRIDO: pyLPG + RAMP (versione legacy)
 ================================================================================
 """
 

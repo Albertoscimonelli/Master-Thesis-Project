@@ -1,0 +1,493 @@
+================================================================================
+ STRUTTURA COMPLETA DEL PROGETTO CER - LOAD PROFILES GENERATOR
+================================================================================
+ Autore: Alberto Scimonelli
+ Tesi di Laurea Magistrale - 2026
+ Simulazione profili di carico per Comunita Energetica Rinnovabile (CER)
+================================================================================
+
+
+================================================================================
+ 1. STRUTTURA DELLE CARTELLE
+================================================================================
+
+Project/
+|
+|-- README.md                           Descrizione generale del progetto
+|-- requirements.txt                    Dipendenze Python (pip install -r ...)
+|-- LICENSE                             Licenza MIT
+|-- .gitignore                          File ignorati da Git
+|
+|-- simulazione_quartiere.py            [DEPRECATO] Script standalone originale
+|                                       Sostituito dal pacchetto CER_LoadProfiles/
+|
+|-- STRUTTURA_PROGETTO.txt              Questo file
+|
++-- CER_LoadProfiles/                   PACCHETTO PRINCIPALE
+    |
+    |-- README.md                       Documentazione dettagliata del pacchetto
+    |-- requirements.txt                Dipendenze specifiche del pacchetto
+    |
+    |-- generate_load_profiles.py       ENTRY POINT - script orchestratore
+    |-- ramp_runner.py                  Modulo generazione profili aziende (RAMP)
+    |-- lpg_runner.py                   Modulo generazione profili famiglie (pyLPG)
+    |-- postprocessing.py               Modulo ricampionamento e export CSV
+    |
+    +-- config/
+    |   +-- simulation_config.yaml      File di configurazione YAML
+    |
+    +-- ramp_inputs/
+    |   |-- __init__.py
+    |   +-- use_cases/
+    |       |-- __init__.py
+    |       |-- office.py               Use case: ufficio medio
+    |       |-- small_industry.py       Use case: piccola industria
+    |       +-- retail.py               Use case: negozio al dettaglio
+    |
+    +-- lpg_inputs/
+    |   |-- __init__.py
+    |   +-- household_definitions.py    Catalogo famiglie pyLPG di riferimento
+    |
+    +-- outputs/
+        +-- csv/
+            |-- profili_aziende.csv     Profili individuali 6 aziende (kW, 15 min)
+            |-- profili_famiglie.csv    Profili individuali 5 famiglie (kW, 15 min)
+            |-- profili_tutti.csv       Tutti gli 11 profili combinati
+            +-- profilo_CER_aggregato.csv  Profilo totale CER (kW, 15 min)
+
+
+================================================================================
+ 2. PIPELINE DI ESECUZIONE
+================================================================================
+
+Il programma si esegue con:
+
+    cd CER_LoadProfiles
+    python generate_load_profiles.py
+
+Il flusso e il seguente:
+
+    +----------------------------+
+    |  simulation_config.yaml    |  <-- Configurazione
+    +----------------------------+
+                |
+                v
+    +----------------------------+
+    |  generate_load_profiles.py |  <-- Orchestratore
+    +----------------------------+
+          |              |
+          v              v
+    +------------+  +------------+
+    | ramp_runner|  | lpg_runner |
+    | (aziende)  |  | (famiglie) |
+    +------------+  +------------+
+    | Output:    |  | Output:    |
+    | DataFrame  |  | DataFrame  |
+    | 1 min, W   |  | 1 min, W   |
+    +------------+  +------------+
+          |              |
+          v              v
+    +----------------------------+
+    |    postprocessing.py       |
+    | - Resample 1 min -> 15 min|
+    | - Conversione W -> kW     |
+    | - Export CSV               |
+    +----------------------------+
+                |
+                v
+    +----------------------------+
+    |   outputs/csv/             |
+    |   4 file CSV               |
+    +----------------------------+
+
+
+================================================================================
+ 3. DESCRIZIONE DETTAGLIATA DI OGNI FILE
+================================================================================
+
+
+--------------------------------------------------------------------------------
+ 3.1  generate_load_profiles.py  (ENTRY POINT)
+--------------------------------------------------------------------------------
+
+SCOPO: Orchestrare l'intera pipeline di generazione profili.
+
+COME FUNZIONA (passo per passo):
+  1. Setup logging (formato con timestamp e livello)
+  2. Parsing argomenti CLI (--config per file YAML personalizzato)
+  3. Carica configurazione da YAML (load_config)
+  4. FASE 1: Chiama run_ramp() per generare profili aziende
+     - Se RAMP non e installato, salta con warning
+  5. FASE 2: Chiama run_lpg() per generare profili famiglie
+     - Se pyLPG non e disponibile, usa profili sintetici
+  6. Verifica che almeno un set di profili sia stato generato
+  7. FASE 3: Ricampiona entrambi i DataFrame a 15 minuti
+     - Rimuove timezone per uniformita
+     - Rimuove duplicati nell'indice
+  8. FASE 4: Export CSV
+     - profili_aziende.csv (individuali RAMP)
+     - profili_famiglie.csv (individuali LPG)
+     - profili_tutti.csv (join dei due)
+     - profilo_CER_aggregato.csv (somma totale)
+  9. Stampa riepilogo finale con statistiche
+
+FUNZIONI:
+  - setup_logging()     -> Configura logging su stdout
+  - load_config(path)   -> Legge YAML e ritorna dict
+  - main()              -> Entry point con tutta la logica
+
+DIPENDENZE IMPORTATE:
+  - yaml (pyyaml)       -> Lettura configurazione
+  - ramp_runner.run_ramp
+  - lpg_runner.run_lpg
+  - postprocessing.resample_to_resolution
+  - postprocessing.aggregate_profiles
+  - postprocessing.export_to_csv
+
+
+--------------------------------------------------------------------------------
+ 3.2  ramp_runner.py  (PROFILI AZIENDE)
+--------------------------------------------------------------------------------
+
+SCOPO: Generare profili di carico per utenze commerciali/industriali usando
+       la libreria RAMP (rampdemand). Ogni utenza ha un profilo stocastico
+       unico grazie alla variabilita integrata in RAMP.
+
+COME FUNZIONA:
+  1. All'import, applica 2 patch di compatibilita:
+     - _patch_ramp_numpy2(): corregge int(np.diff()) per NumPy >= 2.0
+     - _patch_ramp_pandas3(): corregge alias "T" -> "min" per Pandas >= 3.0
+  2. Per ogni use_case nel YAML (office, small_industry, retail):
+     a. Importa dinamicamente il modulo da ramp_inputs/use_cases/
+     b. Per ogni istanza (es. 3x office):
+        - Calcola seed deterministico: hash("office_0") % 2^31
+        - Chiama module.create_user() per creare l'utente RAMP
+        - Crea un UseCase con date_start/date_end
+        - Genera profilo 1D flat in Watt, risoluzione 1 minuto
+  3. Assembla tutti i profili in un DataFrame con DatetimeIndex
+
+FUNZIONI:
+  - _patch_ramp_numpy2()            -> Monkey-patch Appliance.windows()
+  - _patch_ramp_pandas3()           -> Monkey-patch UseCase.initialize()
+  - _import_use_case(name, path)    -> Import dinamico modulo use_case
+  - run_ramp(config, base_path)     -> Genera tutti i profili RAMP
+                                       Ritorna: DataFrame (index=timestamp 1min,
+                                       colonne=nome_utente, valori=Watt)
+
+OUTPUT DataFrame:
+  - Index: DatetimeIndex a 1 minuto con timezone Europe/Rome
+  - Colonne: office_1, office_2, office_3, small_industry_1, small_industry_2, retail_1
+  - Valori: Potenza in Watt
+  - Righe: ~527.040 (366 giorni x 1440 minuti)
+
+
+--------------------------------------------------------------------------------
+ 3.3  lpg_runner.py  (PROFILI FAMIGLIE)
+--------------------------------------------------------------------------------
+
+SCOPO: Generare profili di carico per famiglie residenziali usando pyLPG
+       (wrapper Python di LoadProfileGenerator). Se pyLPG non e disponibile,
+       genera profili sintetici di fallback basati su pattern italiani.
+
+COME FUNZIONA:
+  1. All'import, tenta di importare pylpg. Se fallisce, setta _PYLPG_AVAILABLE=False
+  2. Per ogni gruppo di famiglie nel YAML:
+     a. Per ogni istanza (es. 2x pensionati):
+        - Se pyLPG disponibile:
+          * Chiama _run_single_lpg_household() con parametri dal YAML
+          * Estrae colonna "Electricity" dal risultato
+          * Converte kWh -> Watt (x 60000)
+        - Se pyLPG NON disponibile (o errore):
+          * Chiama _generate_synthetic_profile()
+          * Genera profilo con pattern realistico per tipo famiglia
+  3. Assembla tutti i profili in un DataFrame
+
+PROFILI SINTETICI - come funzionano:
+  I profili sintetici simulano 3 tipi di famiglia:
+  - Pensionati: profilo piatto, picco pranzo (11-14), base 200W, max ~1400W
+  - Coppie lavoratori: picchi mattina (6-8) e sera (18-22), casa vuota di giorno
+  - Famiglie con figli: consumi piu alti, picco serale (17-22) fino a ~2250W
+  Ogni profilo ha:
+  - Distinzione feriale/weekend (per coppie lavoratori)
+  - Variabilita stocastica (numpy random)
+  - Minimo 50W di standby
+  - Risoluzione 1 minuto (come RAMP)
+
+FUNZIONI:
+  - _get_household_ref(name)          -> Ottiene JsonReference da lpgdata
+  - _run_single_lpg_household(...)    -> Esegue pyLPG per 1 famiglia
+  - _generate_synthetic_profile(...)  -> Genera profilo sintetico fallback
+  - run_lpg(config)                   -> Genera tutti i profili residenziali
+                                         Ritorna: DataFrame (1min, Watt)
+
+OUTPUT DataFrame:
+  - Index: DatetimeIndex a 1 minuto (senza timezone)
+  - Colonne: household_1, household_2, household_3, household_4, household_5
+  - Valori: Potenza in Watt
+  - Righe: 525.600 (365 giorni x 1440 minuti)
+
+
+--------------------------------------------------------------------------------
+ 3.4  postprocessing.py  (RICAMPIONAMENTO E EXPORT)
+--------------------------------------------------------------------------------
+
+SCOPO: Prendere i DataFrame generati da RAMP e LPG (1 minuto, Watt),
+       ricampionarli alla risoluzione target e esportarli come CSV.
+
+FUNZIONI:
+
+  resample_to_resolution(df, resolution_minutes)
+    - Input: DataFrame 1-min in Watt
+    - Metodo: media (appropriato per valori di potenza)
+    - Rimuove duplicati nell'indice e NaN ai bordi
+    - Output: DataFrame ricampionato (es. 15-min)
+    - Es: 527.040 righe -> 35.136 righe
+
+  aggregate_profiles(dfs)
+    - Input: lista di DataFrame (aziende + famiglie)
+    - Join sui timestamp comuni (inner join)
+    - Somma tutte le colonne
+    - Converte W -> kW (/ 1000)
+    - Output: DataFrame con colonna "total_CER_kW"
+
+  export_to_csv(df, filepath, convert_w_to_kw=True)
+    - Crea la cartella di destinazione se non esiste
+    - Se convert_w_to_kw=True, divide valori numerici per 1000
+    - Formatta timestamp come ISO8601 (YYYY-MM-DDTHH:MM:SS)
+    - Salva con separatore virgola, float_format="%.3f"
+    - Compatibile con MATLAB readtable()
+
+
+--------------------------------------------------------------------------------
+ 3.5  config/simulation_config.yaml  (CONFIGURAZIONE)
+--------------------------------------------------------------------------------
+
+SCOPO: Unico file che controlla tutti i parametri della simulazione.
+
+SEZIONI:
+
+  simulation:
+    year: 2024                        Anno di simulazione
+    timezone: "Europe/Rome"           Fuso orario per RAMP
+    temporal_resolution_minutes: 15   Risoluzione target dei CSV finali
+
+  ramp:
+    num_days: 365                     Giorni da simulare
+    date_start: "2024-01-01"          Data inizio
+    date_end: "2024-12-31"            Data fine
+    use_cases:                        Lista di use case da generare
+      - name: "office"                Nome file in ramp_inputs/use_cases/
+        num_users: 3                  Quante istanze generare
+
+  lpg:
+    households:                       Lista gruppi familiari
+      - label: "pensionati"           Etichetta (usata per profili sintetici)
+        template: "CHR54 ..."         Nome template LPG (informativo)
+        household_ref: "CHR54_..."    Attributo in lpgdata.Households
+        count: 2                      Quante famiglie generare
+    house_type: "HT06_..."           Tipo di abitazione LPG
+    energy_intensity: "Random"        Intensita energetica
+
+  output:
+    folder: "outputs/csv"             Cartella destinazione
+    aggregate_total: true             Genera CSV aggregato CER
+    individual_profiles: true         Genera CSV individuali
+
+
+--------------------------------------------------------------------------------
+ 3.6  ramp_inputs/use_cases/office.py  (USE CASE UFFICIO)
+--------------------------------------------------------------------------------
+
+SCOPO: Definire gli elettrodomestici di un ufficio medio italiano.
+
+FUNZIONE: create_user() -> User
+
+ELETTRODOMESTICI CONFIGURATI:
+  +-------------------------+------+-------+----------+----------------+
+  | Nome                    | Num  | Watt  | Ore/g    | Finestra       |
+  +-------------------------+------+-------+----------+----------------+
+  | Illuminazione           |  20  |   40  | 9h       | 08:00 - 18:00  |
+  | Postazione PC + monitor |   8  |  200  | 8h       | 08:30 - 17:30  |
+  | Climatizzazione         |   2  | 2500  | 8h       | 08:00 - 18:00  |
+  | Stampante/Fotocopiatrice|   2  |  300  | 1h (2win)| 09:00-13:00 +  |
+  |                         |      |       |          | 14:00-17:00    |
+  | Macchinetta caffe       |   1  | 1200  | 30min    | 08:00 - 18:00  |
+  +-------------------------+------+-------+----------+----------------+
+
+NOTE: Solo giorni feriali (wd_we_type=0).
+      Potenza di picco teorica: ~8.5 kW per ufficio.
+
+
+--------------------------------------------------------------------------------
+ 3.7  ramp_inputs/use_cases/small_industry.py  (USE CASE PICCOLA INDUSTRIA)
+--------------------------------------------------------------------------------
+
+SCOPO: Definire gli elettrodomestici di una piccola industria.
+
+FUNZIONE: create_user() -> User
+
+ELETTRODOMESTICI CONFIGURATI:
+  +-------------------------+------+-------+----------+----------------+
+  | Nome                    | Num  | Watt  | Ore/g    | Finestra       |
+  +-------------------------+------+-------+----------+----------------+
+  | Macchinario CNC         |   3  | 5000  | 12h      | 06:00 - 20:00  |
+  | Compressore aria (ciclo)|   1  | 3000  | 10h      | 06:00 - 20:00  |
+  | Illuminazione industr.  |  40  |   60  | 14h      | 06:00 - 20:00  |
+  | Ufficio annesso (PC)    |   3  |  200  | 8h       | 08:00 - 18:00  |
+  +-------------------------+------+-------+----------+----------------+
+
+NOTE: CNC, compressore, illuminazione: tutti i giorni (wd_we_type=2).
+      Ufficio annesso: solo feriali (wd_we_type=0).
+      Compressore con ciclo duty: 30min ON (3000W) / 15min OFF (200W).
+      Potenza di picco teorica: ~21 kW per stabilimento.
+
+
+--------------------------------------------------------------------------------
+ 3.8  ramp_inputs/use_cases/retail.py  (USE CASE NEGOZIO)
+--------------------------------------------------------------------------------
+
+SCOPO: Definire gli elettrodomestici di un negozio al dettaglio.
+
+FUNZIONE: create_user() -> User
+
+ELETTRODOMESTICI CONFIGURATI:
+  +-------------------------+------+-------+----------+----------------+
+  | Nome                    | Num  | Watt  | Ore/g    | Finestra       |
+  +-------------------------+------+-------+----------+----------------+
+  | Illuminazione vetrina   |  30  |   50  | 10.5h    | 09:00 - 19:30  |
+  | Cassa + POS             |   2  |  100  | 10.5h    | 09:00 - 19:30  |
+  | Frigo espositore (ciclo)|   2  |  350  | 24h      | 00:00 - 24:00  |
+  | Climatizzazione         |   1  | 2000  | 10h      | 09:00 - 19:30  |
+  +-------------------------+------+-------+----------+----------------+
+
+NOTE: Tutti i giorni (wd_we_type=2), inclusi weekend.
+      Frigo con ciclo duty: 25min ON (350W) / 15min OFF (10W).
+      Potenza di picco teorica: ~4.4 kW per negozio.
+
+
+--------------------------------------------------------------------------------
+ 3.9  lpg_inputs/household_definitions.py  (CATALOGO FAMIGLIE)
+--------------------------------------------------------------------------------
+
+SCOPO: File di riferimento con le definizioni delle famiglie usate.
+       Non viene importato dal codice (la config e nel YAML), ma serve
+       come catalogo consultabile dei template pyLPG disponibili.
+
+CONTENUTO:
+  Lista HOUSEHOLD_DEFINITIONS con 3 tipi:
+  - pensionati       -> CHR54 Retired Couple, no work        (2 famiglie)
+  - coppia_lavoratori -> CHR02 Couple, 30-64 age, with work  (2 famiglie)
+  - famiglia_1figlio  -> CHR03 Family, 1 child, both at work (1 famiglia)
+
+
+--------------------------------------------------------------------------------
+ 3.10  simulazione_quartiere.py  [DEPRECATO]
+--------------------------------------------------------------------------------
+
+SCOPO: Script standalone originale che combinava LPG + RAMP in un unico file.
+       ORA SOSTITUITO dal pacchetto modulare CER_LoadProfiles/.
+
+DIFFERENZE RISPETTO ALLA VERSIONE ATTUALE:
+  - Configurazione hardcoded (non YAML)
+  - Quartiere piu grande (30 residenziali + 8 PMI)
+  - Include visualizzazione con matplotlib (grafici)
+  - Usa API RAMP diversa (from ramp import User, UseCase)
+  - Non ha il sistema di logging strutturato
+  - Non gestisce le incompatibilita NumPy/Pandas
+
+MANTENUTO SOLO COME RIFERIMENTO STORICO.
+
+
+================================================================================
+ 4. FORMATO DEI CSV DI OUTPUT
+================================================================================
+
+Tutti i CSV hanno lo stesso formato, compatibile con MATLAB readtable():
+
+  - Separatore: virgola (,)
+  - Prima colonna: timestamp in formato ISO8601 (YYYY-MM-DDTHH:MM:SS)
+  - Valori: potenza in kW con 3 cifre decimali
+  - Risoluzione temporale: 15 minuti
+  - Periodo: 1 anno intero (2024)
+  - Numero righe: ~35.000
+
+DETTAGLIO FILE:
+
+  profili_aziende.csv (35.132 righe, 6 colonne dati)
+    Colonne: timestamp, office_1, office_2, office_3,
+             small_industry_1, small_industry_2, retail_1
+
+  profili_famiglie.csv (35.040 righe, 5 colonne dati)
+    Colonne: timestamp, household_1, household_2, household_3,
+             household_4, household_5
+
+  profili_tutti.csv (35.036 righe, 11 colonne dati)
+    Colonne: timestamp + tutte le 6 aziende + tutte le 5 famiglie
+    Nota: le righe sono l'intersezione dei timestamp comuni (inner join)
+
+  profilo_CER_aggregato.csv (35.036 righe, 1 colonna dati)
+    Colonne: timestamp, total_CER_kW
+    Nota: somma di tutti gli 11 profili ad ogni timestamp
+
+NOTA sulla differenza di righe:
+  RAMP simula 366 giorni (include 31 dic -> 1 gen), LPG simula 365.
+  Dopo il resample a 15 min:
+  - RAMP: 35.136 campioni
+  - LPG:  35.040 campioni
+  Il join inner produce 35.036 campioni (timestamp comuni).
+
+
+================================================================================
+ 5. COMPATIBILITA E PATCH
+================================================================================
+
+Il progetto usa versioni recenti delle librerie:
+  - NumPy 2.4.x
+  - Pandas 3.0.x
+  - rampdemand 0.5.0
+
+RAMP 0.5.0 non e ancora aggiornato per queste versioni.
+Il file ramp_runner.py contiene 2 patch automatiche:
+
+  1. Patch NumPy 2.x:
+     RAMP usa int(np.diff(array)) che in NumPy 2.x genera TypeError
+     perche np.diff ritorna un array e int() non lo accetta piu.
+     La patch riscrive il metodo Appliance.windows() usando [0] per
+     estrarre lo scalare prima della conversione.
+
+  2. Patch Pandas 3.x:
+     RAMP usa pd.Timedelta(1, "T") e pd.date_range(freq="T") dove "T"
+     era l'alias per minuti. Pandas 3.x lo ha rimosso (ora si usa "min").
+     La patch intercetta le chiamate e sostituisce "T" con "min".
+
+Queste patch sono temporanee e potranno essere rimosse quando RAMP
+rilascera una versione compatibile con NumPy 2.x e Pandas 3.x.
+
+
+================================================================================
+ 6. COME MODIFICARE LA SIMULAZIONE
+================================================================================
+
+CAMBIARE ANNO O RISOLUZIONE:
+  -> Modifica simulation_config.yaml: year e temporal_resolution_minutes
+
+AGGIUNGERE UN UFFICIO IN PIU:
+  -> In simulation_config.yaml, cambia num_users da 3 a 4 sotto "office"
+
+AGGIUNGERE UN NUOVO TIPO DI AZIENDA (es. ristorante):
+  1. Crea ramp_inputs/use_cases/restaurant.py
+  2. Definisci create_user() con gli elettrodomestici del ristorante
+  3. In simulation_config.yaml aggiungi:
+     - name: "restaurant"
+       num_users: 2
+
+AGGIUNGERE FAMIGLIE:
+  -> Cambia "count" nel YAML per il tipo desiderato
+  -> Oppure aggiungi un nuovo gruppo con un template pyLPG diverso
+
+CAMBIARE LA COMPOSIZIONE DEL QUARTIERE:
+  -> Modifica SOLO il file simulation_config.yaml
+  -> Non serve toccare il codice Python
+
+
+================================================================================

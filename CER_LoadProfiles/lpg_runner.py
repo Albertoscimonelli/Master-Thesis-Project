@@ -8,6 +8,7 @@ disponibili, genera profili sintetici di fallback.
 
 import logging
 import time
+import calendar
 from pathlib import Path
 from typing import Optional
 
@@ -122,7 +123,8 @@ def _generate_synthetic_profile(
     Returns:
         Series con DatetimeIndex e valori di potenza in Watt.
     """
-    n_steps = int(365 * 24 * 60 / resolution_minutes)
+    days_in_year = 366 if calendar.isleap(year) else 365
+    n_steps = int(days_in_year * 24 * 60 / resolution_minutes)
     timestamps = pd.date_range(
         start=f"{year}-01-01",
         periods=n_steps,
@@ -247,6 +249,42 @@ def run_lpg(config: dict) -> pd.DataFrame:
                         resolution_minutes=generation_resolution,
                         energy_intensity=energy_intensity,
                     )
+
+                    if result_df is not None and not result_df.empty:
+                        # Valida robustamente il risultato pyLPG: in alcuni casi
+                        # puo' restituire dati stale di un anno precedente.
+                        result_df = result_df.copy()
+                        if not isinstance(result_df.index, pd.DatetimeIndex):
+                            parsed_idx = pd.to_datetime(result_df.index, errors="coerce")
+                            if parsed_idx.isna().all():
+                                logger.warning(
+                                    "  %s: indice temporale non interpretabile, uso fallback sintetico",
+                                    col_name,
+                                )
+                                result_df = None
+                            else:
+                                result_df.index = parsed_idx
+
+                        if result_df is not None:
+                            # Filtra l'anno richiesto e invalida il run se non c'e' alcun dato valido.
+                            year_mask = result_df.index.year == year
+                            if not year_mask.any():
+                                logger.warning(
+                                    "  %s: pyLPG ha restituito dati fuori anno (%s), uso fallback sintetico",
+                                    col_name,
+                                    sorted(set(result_df.index.year.tolist())),
+                                )
+                                result_df = None
+                            else:
+                                if not year_mask.all():
+                                    logger.warning(
+                                        "  %s: trovati campioni fuori anno, filtro solo anno %d",
+                                        col_name,
+                                        year,
+                                    )
+                                result_df = result_df.loc[year_mask]
+                                result_df = result_df[~result_df.index.duplicated(keep="first")]
+                                result_df = result_df.sort_index()
 
                     if result_df is not None and not result_df.empty:
                         # Estrai solo la colonna Electricity

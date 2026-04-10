@@ -1,15 +1,15 @@
 simulation:
-  year: 2024
+  year: 2025
   timezone: "Europe/Rome"
   temporal_resolution_minutes: 15   # Risoluzione target per i CSV finali
 
 ramp:
   num_days: 365
-  date_start: "2024-01-01"
-  date_end: "2024-12-31"
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
   use_cases:
     - name: "office"
-      num_users: 3
+      num_users: 1
     - name: "small_industry"
       num_users: 2
     - name: "retail"
@@ -20,11 +20,11 @@ lpg:
     - label: "pensionati"
       template: "CHR54 Retired Couple, no work"
       household_ref: "CHR54_Retired_Couple_no_work"
-      count: 2
+      count: 1
     - label: "coppia_lavoratori"
       template: "CHR02 Couple, 30 - 64 age, with work"
       household_ref: "CHR02_Couple_30_64_age_with_work"
-      count: 2
+      count: 1
     - label: "famiglia_1figlio"
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"

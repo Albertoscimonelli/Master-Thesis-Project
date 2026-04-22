@@ -1,0 +1,670 @@
+% =========================================================================
+%  optimizer_PV.m
+%
+%  Ottimizzazione di un impianto fotovoltaico su copertura industriale.
+%
+%  Logica generale:
+%    1. Definizione dei parametri di input (geometria, moduli, inverter,
+%       dati meteo, consumi, parametri economici)
+%    2. Loop di ottimizzazione su tre variabili decisionali:
+%         - N_inv  : numero di inverter  (dimensiona la potenza AC)
+%         - tilt   : inclinazione dei moduli [°]
+%         - D_rtr  : distanza inter-fila [m]
+%       Per ogni combinazione si calcola:
+%         a) Layout fisico dell'impianto (numero moduli, stringing)
+%         b) Verifica di fattibilità elettrica (tensioni/correnti MPPT)
+%         c) Simulazione oraria annuale (posizione solare, ombreggiamento,
+%            produzione DC/AC, bilancio energetico con i consumi)
+%         d) Analisi economica (CAPEX, OPEX, ricavi, flussi di cassa,
+%            IRR e NPV su tutta la vita utile)
+%    3. Identificazione della configurazione ottimale (max IRR o max NPV)
+%       e grafici 3D dello spazio delle soluzioni
+%    4. Ri-simulazione della configurazione ottimale e plot operativo
+%       su un sottoinsieme di ore significative
+%
+%  KPI selezionabile:  KPI=0 → IRR   |   KPI=1 → NPV
+%  Modalità consumo:   REC=0 → solo autoconsumo edificio
+%                      REC=1 → solo cessione a Comunità Energetica (CER)
+%                      REC=2 → autoconsumo + CER
+%                      REC=3 → solo rete (benchmark)
+% =========================================================================
+
+clear all
+clc
+close all
+
+%% =========================================================================
+%  1) PERCORSI FILE
+% =========================================================================
+% File TMY (Typical Meteorological Year) scaricato da PVGIS.
+% Formato: time(UTC);T2m;RH;G(h);Gb(n);Gd(h);IR(h);WS10m;WD10m;SP
+loadFile = "C:\Users\scimo\OneDrive\Desktop\PoliMi\Tesi\tmy_45.464_9.190_2005_2023.csv";
+
+%% =========================================================================
+%  2) PARAMETRI DI INPUT
+% =========================================================================
+
+% --- Geometria copertura -----------------------------------------------
+L_r     = 250;   % Lunghezza copertura [m]
+W_r     = 50;    % Larghezza copertura [m]
+d_edge  = 1.4;   % Margine perimetrale libero [m]
+rho_g   = 0.3;   % Albedo del suolo [-] (usato per irradianza riflessa)
+
+% --- Localizzazione sito -----------------------------------------------
+lat  = 45.462;   % Latitudine [°N]  (Milano)
+long = 9.19;     % Longitudine [°E]
+STZ  = 1;        % Standard Time Zone rispetto a UTC [h]
+
+% --- Modulo fotovoltaico -----------------------------------------------
+L_m          = 1.69;     % Lunghezza modulo [m]
+W_m          = 1.046;    % Larghezza modulo [m]
+P_stc_mod    = 400;      % Potenza nominale STC [Wp]
+V_oc         = 75.6;     % Tensione a circuito aperto a STC [V]
+V_mpp        = 65.8;     % Tensione al MPP a STC [V]
+I_sc         = 6.58;     % Corrente di corto circuito a STC [A]
+I_mpp        = 6.08;     % Corrente al MPP a STC [A]
+power_coeff  = -0.0029;  % Coefficiente di temperatura sulla potenza [1/°C]
+current_coeff =  2.9e-3; % Coefficiente di temperatura sulla corrente [A/°C]
+voltage_coeff = -176.8e-3; % Coefficiente di temperatura sulla tensione [V/°C]
+NOCT         = 45;       % Nominal Operating Cell Temperature [°C]
+
+% --- Inverter ----------------------------------------------------------
+P_ac_inv     = 250;   % Potenza nominale AC per inverter [kWac]
+V_max_inv    = 1500;  % Tensione massima in ingresso all'inverter [V]
+V_max_mppt   = 1300;  % Tensione massima finestra MPPT [V]
+V_min_mppt   = 860;   % Tensione minima finestra MPPT [V]
+N_mppt       = 12;    % Numero di ingressi MPPT per inverter
+I_max_mppt   = 30;    % Corrente massima per ingresso MPPT [A]
+I_sc_max_mppt= 50;    % Corrente di cortocircuito massima per ingresso MPPT [A]
+eta_inv      = 0.988; % Rendimento inverter [-]
+
+% --- Dati meteorologici (PVGIS TMY) ------------------------------------
+WD    = readtable(loadFile, 'Delimiter', ';');
+DNI   = table2array(WD(1:8760, 5));  % Gb(n): irradianza diretta normale [W/m²]
+DIFF  = table2array(WD(1:8760, 6));  % Gd(h): irradianza diffusa orizzontale [W/m²]
+T_amb = table2array(WD(1:8760, 2));  % T2m:   temperatura ambiente [°C]
+
+% --- Perdite di sistema ------------------------------------------------
+DC_losses = 0.1;   % Perdite lato DC (cablaggio, mismatch, sporco) [-]
+AC_losses = 0.05;  % Perdite lato AC (trasformatore, cablaggio) [-]
+
+% --- Profili di consumo orari (vettore da mezzanotte, 24 valori) -------
+% build_cons_data: consumo dell'edificio [kW]
+% REC_cons_data:   quota cedibile alla Comunità Energetica [kW]
+build_cons_data = [100 100 100 100 100 110 120 140 240 240 240 260 ...
+                   260 260 240 240 240 240 200 180 140 140 140 110] * 1.5;
+REC_cons_data   = [160 160 160 160 160 300 350 400 300 300 280 250 ...
+                   250 280 300 300 300 400 450 500 500 450 400 400] * 1.5;
+
+% --- Parametri economici -----------------------------------------------
+c_mod       = 180;      % Costo moduli [€/kWp]
+c_inv       = 50;       % Costo inverter [€/kWac]
+c_BOP       = 270;      % Balance of Plant (strutture, cablaggio DC) [€/kWp]
+c_eng_inst  = 0.4;      % Costi di ingegneria e installazione [% del TEC]
+c_interconn = 50;       % Costo di allacciamento rete [€/kWac]
+c_fixed     = 50000;    % Costi fissi di progetto [€]
+c_om        = 10000;    % Costi O&M variabili [€/MWp/anno]
+c_om_fixed  = 5000;     % Costi O&M fissi [€/anno]
+infl        = 0.02;     % Tasso di inflazione annuo [-]
+p_en_purch  = 220;      % Prezzo energia acquistata dalla rete [€/MWh]
+p_en_sell   = 100;      % Prezzo energia venduta in rete [€/MWh]
+p_en_REC    = 110 * 0.3;% Incentivo CER (tariffa incentivante) [€/MWh]
+lifetime    = 30;       % Vita utile impianto [anni]
+
+% --- Variabili di ottimizzazione (spazio di ricerca) -------------------
+N_inv_vet = 1:4;       % Numero inverter (limite: 4 × 250 kWac = 1000 kWac)
+D_rtr_vet = 0:0.5:7;  % Distanza inter-fila [m]
+tilt_vet  = 0:5:40;   % Inclinazione moduli [°]
+
+% --- Selettori di scenario ---------------------------------------------
+REC = 2;  % 0=autoconsumo | 1=solo CER | 2=autoconsumo+CER | 3=solo rete
+KPI = 0;  % 0=ottimizza IRR | 1=ottimizza NPV
+
+%% =========================================================================
+%  3) INIZIALIZZAZIONE ARRAY
+%  Tutti gli array temporali (8760 ore) e 3D (N_inv × tilt × D_rtr) vengono
+%  pre-allocati a zero per evitare crescita dinamica nel loop.
+% =========================================================================
+
+hours_vet = 1:8760;
+N = length(hours_vet);
+
+% Variabili orarie (scalari per ogni ora dell'anno)
+delta    = zeros(1, N);   % Declinazione solare [°]
+E_n      = zeros(1, N);   % Equazione del tempo [min]
+t_s      = zeros(1, N);   % Ora solare vera [h]
+omega    = zeros(1, N);   % Angolo orario [°]
+theta_z  = zeros(1, N);   % Angolo zenitale solare [°]
+gamma_s  = zeros(1, N);   % Azimut solare [°]
+theta    = zeros(1, N);   % Angolo di incidenza sul piano del modulo [°]
+G_tot    = zeros(1, N);   % Irradianza totale sul piano inclinato (senza ombra) [W/m²]
+alpha_s  = zeros(1, N);   % Altezza solare [°]
+s        = zeros(1, N);   % Ombra proiettata dal modulo anteriore sul posteriore [m]
+A_active = zeros(1, N);   % Area attiva (non ombreggiata) del campo [m²]
+G_av     = zeros(1, N);   % Irradianza media effettiva sul campo (con ombra) [W/m²]
+T_c      = zeros(1, N);   % Temperatura di cella [°C]
+P_dc     = zeros(1, N);   % Potenza DC lorda [kW]
+P_dc_net = zeros(1, N);   % Potenza DC netta (dopo perdite DC) [kW]
+P_ac     = zeros(1, N);   % Potenza AC prima delle perdite AC [kW]
+P_ac_net = zeros(1, N);   % Potenza AC netta immessa (dopo perdite AC e clipping) [kW]
+P_purch  = zeros(1, N);   % Potenza acquistata dalla rete [kW]
+P_togrid = zeros(1, N);   % Potenza ceduta alla rete [kW]
+P_toREC  = zeros(1, N);   % Potenza ceduta alla CER [kW]
+P_cons   = zeros(1, N);   % Consumo dell'edificio [kW]
+P_REC    = zeros(1, N);   % Domanda CER nell'ora [kW]
+
+% Dimensioni dello spazio di ottimizzazione
+sz = [length(N_inv_vet), length(tilt_vet), length(D_rtr_vet)];
+
+% Risultati fisici per ogni configurazione
+tilt           = zeros(sz);
+D_rtr          = zeros(sz);
+N_rows         = zeros(sz);   % Numero di file di moduli
+N_mod_rows     = zeros(sz);   % Numero di moduli per fila
+N_mod          = zeros(sz);   % Numero totale di moduli
+P_dc_nom       = zeros(sz);   % Potenza DC nominale [kWp]
+P_ac_nom       = zeros(sz);   % Potenza AC nominale [kWac]
+N_mod_string   = zeros(sz);   % Moduli per stringa (limite tensione)
+unfeasible_conf= zeros(sz);   % Flag: 1 se la config viola i limiti inverter
+eta_shad       = zeros(sz);   % Efficienza di ombreggiamento annuale [-]
+h_eq           = zeros(sz);   % Ore equivalenti AC [kWh/kWp]
+h_eq_dc        = zeros(sz);   % Ore equivalenti DC [kWh/kWp]
+DCAC           = zeros(sz);   % Rapporto DC/AC [-]
+
+% Risultati energetici annuali [MWh]
+E_purch  = zeros(sz);
+E_toREC  = zeros(sz);
+E_togrid = zeros(sz);
+E_saved  = zeros(sz);
+
+% Risultati economici
+CAPEX0 = zeros(sz);   % Investimento iniziale [€]
+IRR    = zeros(sz);   % Internal Rate of Return [-]
+NPV    = zeros(sz);   % Net Present Value [€]
+
+% Flussi di cassa (vettori per un singolo anno di calcolo)
+CAPEX = zeros(1, lifetime + 1);
+OPEX  = zeros(1, lifetime + 1);
+REV   = zeros(1, lifetime + 1);
+CF    = zeros(1, lifetime + 1);
+
+% Selezione profilo di consumo in base alla modalità REC
+if REC == 0
+    build_cons = build_cons_data;
+    REC_cons   = zeros(1, 24);
+elseif REC == 1
+    build_cons = zeros(1, 24);
+    REC_cons   = REC_cons_data;
+elseif REC == 2
+    build_cons = build_cons_data;
+    REC_cons   = REC_cons_data;
+else  % REC == 3: solo rete, nessun consumo locale
+    build_cons = zeros(1, 24);
+    REC_cons   = zeros(1, 24);
+end
+
+%% =========================================================================
+%  4) LOOP DI OTTIMIZZAZIONE
+%  Iterazione su tutte le combinazioni (N_inv, tilt, D_rtr).
+%  Per ogni configurazione:
+%    4a) Layout impianto
+%    4b) Verifica stringing (compatibilità moduli-inverter)
+%    4c) Simulazione oraria (posizione sole → irradianza → produzione → bilancio)
+%    4d) Analisi economica e calcolo KPI
+% =========================================================================
+
+for i = 1:length(N_inv_vet)
+    for j = 1:length(tilt_vet)
+        for k = 1:length(D_rtr_vet)
+
+            tilt(i,j,k)  = tilt_vet(j);
+            D_rtr(i,j,k) = D_rtr_vet(k);
+
+            % -----------------------------------------------------------------
+            % 4a) Layout fisico dell'impianto
+            %     Quante file e quanti moduli per fila entrano sul tetto,
+            %     tenendo conto dell'ingombro dei moduli inclinati e della
+            %     distanza inter-fila necessaria a ridurre le ombre.
+            % -----------------------------------------------------------------
+            N_rows(i,j,k)     = floor((L_r - 2*d_edge) / (W_m*cosd(tilt(i,j,k)) + D_rtr(i,j,k)));
+            N_mod_rows(i,j,k) = floor((W_r - 2*d_edge) / L_m);
+            N_mod(i,j,k)      = N_rows(i,j,k) * N_mod_rows(i,j,k);
+            P_dc_nom(i,j,k)   = N_mod(i,j,k) * P_stc_mod / 1000;   % [kWp]
+            P_ac_nom(i,j,k)   = N_inv_vet(i)  * P_ac_inv;           % [kWac]
+
+            % -----------------------------------------------------------------
+            % 4b) Verifica compatibilità moduli-inverter (stringing)
+            %     Si calcola il numero massimo di moduli per stringa e il
+            %     numero massimo di stringhe per ingresso MPPT rispettando:
+            %       - Tensione massima inverter (condizione Voc a T minima)
+            %       - Finestra MPPT (condizione Vmpp a T minima)
+            %       - Corrente massima per ingresso MPPT (T massima)
+            % -----------------------------------------------------------------
+            T_cell_max = max(T_amb) + (NOCT - 25) / 800 * 1000;
+            T_cell_min = min(T_amb);
+
+            V_oc_Tmin  = V_oc  + voltage_coeff * (T_cell_min - 25);  % Voc a T minima
+            V_mpp_Tmin = V_mpp + voltage_coeff * (T_cell_min - 25);  % Vmpp a T minima
+            I_mpp_Tmax = I_mpp + current_coeff  * (T_cell_max - 25); % Impp a T massima
+            I_sc_Tmax  = I_sc  + current_coeff  * (T_cell_max - 25); % Isc  a T massima
+
+            N_mod_string_oc        = floor(V_max_inv  / V_oc_Tmin);   % limite da Voc
+            N_mod_string_mpp       = floor(V_max_mppt / V_mpp_Tmin);  % limite da MPPT
+            N_mod_string(i,j,k)    = min(N_mod_string_oc, N_mod_string_mpp);
+
+            % Stringhe massime per ingresso MPPT
+            N_strings_mpp_max = ceil(N_mod(i,j,k) / N_mod_string(i,j,k) / N_inv_vet(i) / N_mppt);
+            I_mpp_max_mpp     = N_strings_mpp_max * I_mpp_Tmax;
+            I_mpp_max_sc      = N_strings_mpp_max * I_sc_Tmax;
+
+            % Configurazione non fattibile se supera i limiti di corrente MPPT
+            if I_mpp_max_mpp >= I_max_mppt || I_mpp_max_sc >= I_sc_max_mppt
+                unfeasible_conf(i,j,k) = 1;
+            end
+
+            % -----------------------------------------------------------------
+            % 4c) Simulazione oraria annuale (8760 ore)
+            %
+            %  Per ogni ora h:
+            %   i)   Posizione solare: declinazione, angolo orario, zenitale,
+            %        azimut, altezza solare
+            %   ii)  Irradianza sul piano inclinato (modello isotropico):
+            %        G_tot = componente diretta + diffusa + riflessa
+            %   iii) Ombreggiamento inter-fila:
+            %        calcolo della lunghezza d'ombra proiettata e dell'area
+            %        attiva (non ombreggiata) del campo
+            %   iv)  Produzione DC: modello lineare con correzione termica
+            %   v)   Produzione AC: clipping all'inverter + perdite AC
+            %   vi)  Bilancio energetico orario edificio / CER / rete
+            % -----------------------------------------------------------------
+            for h = 1:length(hours_vet)
+
+                n = ceil(h / 24);   % Giorno dell'anno corrispondente all'ora h
+
+                % -- Posizione solare --
+                delta(h)   = 23.45 * sind(360/365 * (n + 284));
+                E_n(h)     = 229.18 * (0.000075 ...
+                             + 0.001868*cosd(360*(n-1)/365) ...
+                             - 0.032770*sind(360*(n-1)/365) ...
+                             - 0.014615*cosd(2*360*(n-1)/365) ...
+                             - 0.040800*sind(2*360*(n-1)/365));
+                t_s(h)     = (h - (n-1)*24) + (long - STZ*15)/15 + E_n(h)/60;
+                omega(h)   = 15 * (t_s(h) - 12);
+                theta_z(h) = acosd(sind(delta(h))*sind(lat) + cosd(delta(h))*cosd(lat)*cosd(omega(h)));
+                gamma_s(h) = acosd((cosd(theta_z(h))*sind(lat) - sind(delta(h))) ...
+                             / (cosd(90 - theta_z(h))*cosd(lat)) * sign(lat));
+                theta(h)   = acosd(cosd(theta_z(h))*cosd(tilt(i,j,k)) ...
+                             + sind(theta_z(h))*sind(tilt(i,j,k))*cosd(gamma_s(h)));
+
+                % -- Irradianza sul piano inclinato (componente diretta + diffusa + riflessa) --
+                G_tot(h) = DNI(h) * cosd(theta(h)) ...
+                         + DIFF(h) * (1 + cosd(tilt(i,j,k))) / 2 ...
+                         + (DNI(h)*cosd(theta_z(h)) + DIFF(h)) * rho_g * (1 - cosd(tilt(i,j,k))) / 2;
+
+                alpha_s(h) = 90 - theta_z(h);   % Altezza solare [°]
+
+                % -- Ombreggiamento inter-fila --
+                % x: proiezione orizzontale dell'ombra oltre la fila successiva
+                x = W_m*sind(tilt(i,j,k))/tand(alpha_s(h)) + W_m*cosd(tilt(i,j,k)) ...
+                    - (D_rtr(i,j,k) + W_m*cosd(tilt(i,j,k)));
+
+                if alpha_s(h) <= 0
+                    % Sole sotto l'orizzonte: modulo completamente ombreggiato
+                    s(h)        = W_m;
+                    A_active(h) = 0;
+                else
+                    s(h) = min([W_m, max([0, (x*sind(alpha_s(h))) / sind(180 - alpha_s(h) - tilt(i,j,k))])]);
+                    % Area attiva = parte non ombreggiata su tutte le file
+                    A_active(h) = ((W_m - s(h)) * (N_rows(i,j,k) - 1) + W_m) * N_mod_rows(i,j,k) * L_m;
+                end
+
+                % Irradianza media effettiva sull'intero campo (pesata sull'area attiva)
+                G_av(h) = G_tot(h) / (N_mod(i,j,k) * L_m * W_m) * A_active(h);
+
+                % -- Temperatura di cella e produzione DC --
+                % Ipotesi: la temperatura di cella dipende da G_tot (non da G_av)
+                T_c(h)     = T_amb(h) + (NOCT - 20) / 800 * G_tot(h);
+                P_dc(h)    = G_av(h)/1000 * P_stc_mod * (1 + power_coeff*(T_c(h) - 25)) * N_mod(i,j,k) / 1000;
+                P_dc_net(h)= P_dc(h) * (1 - DC_losses);
+
+                % -- Conversione AC e clipping all'inverter --
+                P_ac(h)    = min([P_dc_net(h) * eta_inv, P_ac_nom(i,j,k)]);
+                P_ac_net(h)= P_ac(h) * (1 - AC_losses);
+
+                % -- Bilancio energetico orario --
+                % Priorità: 1° autoconsumo edificio, 2° cessione CER, 3° rete
+                h_index   = int32(h - (n-1)*24);
+                P_cons(h) = build_cons(h_index);
+                P_REC(h)  = REC_cons(h_index);
+
+                if P_ac_net(h) < P_cons(h)
+                    % Produzione insufficiente: acquisto dalla rete
+                    P_purch(h)  = P_cons(h) - P_ac_net(h);
+                    P_toREC(h)  = 0;
+                    P_togrid(h) = 0;
+                else
+                    surplus = P_ac_net(h) - P_cons(h);
+                    if surplus < P_REC(h)
+                        % Surplus copre parzialmente la domanda CER
+                        P_purch(h)  = 0;
+                        P_toREC(h)  = surplus;
+                        P_togrid(h) = 0;
+                    else
+                        % Surplus eccede la domanda CER: resto va in rete
+                        P_purch(h)  = 0;
+                        P_toREC(h)  = P_REC(h);
+                        P_togrid(h) = surplus - P_REC(h);
+                    end
+                end
+
+            end % fine loop ore
+
+            % -- Indicatori energetici annuali --
+            eta_shad(i,j,k) = sum(G_av) / sum(G_tot);          % Efficienza ombreggiamento
+            E_dc            = sum(P_dc)     / 1000;             % Energia DC lorda [MWh]
+            E_ac_net        = sum(P_ac_net) / 1000;             % Energia AC netta [MWh]
+            clipping_losses = sum(P_dc_net)/1000 * eta_inv * (1 - AC_losses) - E_ac_net;
+            E_purch(i,j,k)  = sum(P_purch)  / 1000;            % Energia acquistata [MWh]
+            E_toREC(i,j,k)  = sum(P_toREC)  / 1000;            % Energia ceduta CER [MWh]
+            E_togrid(i,j,k) = sum(P_togrid) / 1000;            % Energia ceduta rete [MWh]
+            E_saved(i,j,k)  = sum(P_cons)   / 1000 - E_purch(i,j,k); % Energia autoconsumata [MWh]
+            h_eq(i,j,k)     = E_ac_net / P_dc_nom(i,j,k) * 1000;    % Ore equivalenti AC [h]
+            h_eq_dc(i,j,k)  = E_dc     / P_dc_nom(i,j,k) * 1000;    % Ore equivalenti DC [h]
+
+            % -----------------------------------------------------------------
+            % 4d) Analisi economica: CAPEX, OPEX, Ricavi, Flussi di Cassa
+            %
+            %  Anno 0: solo investimento (CAPEX)
+            %  Anni 1…lifetime: OPEX crescente con inflazione, ricavi costanti
+            %  Ricavi = vendita in rete + incentivo CER + risparmio autoconsumo
+            % -----------------------------------------------------------------
+            CAPEX0(i,j,k) = ((c_mod + c_BOP) * P_dc_nom(i,j,k) + c_inv * P_ac_nom(i,j,k)) ...
+                            * (1 + c_eng_inst) ...
+                            + c_interconn * min([P_dc_nom(i,j,k), P_ac_nom(i,j,k)]) ...
+                            + c_fixed;
+
+            for y = 1:lifetime + 1
+                if y == 1
+                    CAPEX(y) = CAPEX0(i,j,k);
+                    OPEX(y)  = 0;
+                    REV(y)   = 0;
+                else
+                    CAPEX(y) = 0;
+                    OPEX(y)  = (c_om * P_dc_nom(i,j,k)/1000 + c_om_fixed) * (1 + infl)^(y-1);
+                    REV(y)   = E_togrid(i,j,k) * p_en_sell ...
+                             + E_toREC(i,j,k)  * (p_en_sell + p_en_REC) ...
+                             + E_saved(i,j,k)  * p_en_purch;
+                end
+                CF(y) = REV(y) - CAPEX(y) - OPEX(y);
+            end
+
+            % -- KPI finanziari --
+            if unfeasible_conf(i,j,k) == 1
+                IRR(i,j,k)  = NaN;
+                DCAC(i,j,k) = NaN;
+                NPV(i,j,k)  = NaN;
+                h_eq(i,j,k) = NaN;
+            else
+                IRR(i,j,k)  = irr(CF);
+                DCAC(i,j,k) = P_dc_nom(i,j,k) / P_ac_nom(i,j,k);
+                NPV(i,j,k)  = sum(CF);   % NPV semplificato (senza tasso di sconto)
+                h_eq(i,j,k) = E_ac_net / P_dc_nom(i,j,k) * 1000;
+            end
+            h_eq_dc(i,j,k) = E_dc / P_dc_nom(i,j,k) * 1000;
+
+        end
+    end
+end
+
+%% =========================================================================
+%  5) RISULTATI OTTIMIZZAZIONE E GRAFICI 3D DELLO SPAZIO DELLE SOLUZIONI
+%  Superficie 3D (tilt × D_rtr) del KPI selezionato per tutti i valori di N_inv.
+% =========================================================================
+
+[TILT, D_RTR] = meshgrid(tilt_vet, D_rtr_vet);
+
+if KPI == 0
+
+    % --- Ottimizzazione IRR -----------------------------------------------
+    [max_IRR, idx]   = max(IRR(:));
+    [ind1, ind2, ind3] = ind2sub(size(IRR), idx);
+    N_inv_optimal    = N_inv_vet(ind1);
+    tilt_optimal     = tilt_vet(ind2);
+    D_rtr_optimal    = D_rtr_vet(ind3);
+
+    fprintf('\n=== Configurazione ottimale (IRR) ===\n');
+    fprintf('  Tilt ottimale:   %.2f °\n',    tilt_optimal);
+    fprintf('  D_rtr ottimale:  %.2f m\n',    D_rtr_optimal);
+    fprintf('  Potenza DC:      %.2f kWdc\n', P_dc_nom(ind1,ind2,ind3));
+    fprintf('  Potenza AC:      %.2f kWac\n', P_ac_nom(ind1,ind2,ind3));
+    fprintf('  DC/AC ratio:     %.2f\n',      DCAC(ind1,ind2,ind3));
+    fprintf('  Ore equivalenti: %.2f kWh/kWp\n', h_eq(ind1,ind2,ind3));
+    fprintf('  CAPEX:           %.2f k€\n',   CAPEX0(ind1,ind2,ind3)/1e3);
+    fprintf('  IRR:             %.2f %%\n',   max_IRR * 100);
+    fprintf('  NPV:             %.2f M€\n',   NPV(ind1,ind2,ind3)/1e6);
+
+    % Superficie IRR per ogni numero di inverter
+    IRR_1 = permute(IRR(1,:,:), [2 3 1]);
+    IRR_2 = permute(IRR(2,:,:), [2 3 1]);
+    IRR_3 = permute(IRR(3,:,:), [2 3 1]);
+    IRR_4 = permute(IRR(4,:,:), [2 3 1]);
+
+    figure(1); hold on;
+    surf(TILT, D_RTR, IRR_1', 'DisplayName', '1 inv');
+    surf(TILT, D_RTR, IRR_2', 'DisplayName', '2 inv');
+    surf(TILT, D_RTR, IRR_3', 'DisplayName', '3 inv');
+    surf(TILT, D_RTR, IRR_4', 'DisplayName', '4 inv');
+    xlabel('Tilt (°)'); ylabel('D_{rtr} (m)'); zlabel('IRR');
+    title('Spazio soluzioni – IRR'); colorbar; view(45, 30);
+
+else
+
+    % --- Ottimizzazione NPV -----------------------------------------------
+    [max_NPV, idx]   = max(NPV(:));
+    [ind1, ind2, ind3] = ind2sub(size(NPV), idx);
+    N_inv_optimal    = N_inv_vet(ind1);
+    tilt_optimal     = tilt_vet(ind2);
+    D_rtr_optimal    = D_rtr_vet(ind3);
+
+    fprintf('\n=== Configurazione ottimale (NPV) ===\n');
+    fprintf('  Tilt ottimale:   %.2f °\n',    tilt_optimal);
+    fprintf('  D_rtr ottimale:  %.2f m\n',    D_rtr_optimal);
+    fprintf('  Potenza DC:      %.2f kWdc\n', P_dc_nom(ind1,ind2,ind3));
+    fprintf('  Potenza AC:      %.2f kWac\n', P_ac_nom(ind1,ind2,ind3));
+    fprintf('  DC/AC ratio:     %.2f\n',      DCAC(ind1,ind2,ind3));
+    fprintf('  Ore equivalenti: %.2f kWh/kWp\n', h_eq(ind1,ind2,ind3));
+    fprintf('  CAPEX:           %.2f k€\n',   CAPEX0(ind1,ind2,ind3)/1e3);
+    fprintf('  IRR:             %.2f %%\n',   IRR(ind1,ind2,ind3)*100);
+    fprintf('  NPV:             %.2f M€\n',   max_NPV/1e6);
+
+    NPV_1 = permute(NPV(1,:,:), [2 3 1]) * 1e-6;
+    NPV_2 = permute(NPV(2,:,:), [2 3 1]) * 1e-6;
+    NPV_3 = permute(NPV(3,:,:), [2 3 1]) * 1e-6;
+    NPV_4 = permute(NPV(4,:,:), [2 3 1]) * 1e-6;
+
+    figure(1); hold on;
+    surf(TILT, D_RTR, NPV_1', 'DisplayName', '1 inv');
+    surf(TILT, D_RTR, NPV_2', 'DisplayName', '2 inv');
+    surf(TILT, D_RTR, NPV_3', 'DisplayName', '3 inv');
+    surf(TILT, D_RTR, NPV_4', 'DisplayName', '4 inv');
+    xlabel('Tilt (°)'); ylabel('D_{rtr} (m)'); zlabel('NPV (M€)');
+    title('Spazio soluzioni – NPV'); colorbar; view(45, 30);
+
+end
+
+%% =========================================================================
+%  6) GRAFICI 3D AUSILIARI (per N_inv fisso = N_inv_plot)
+%  Visualizzazione di DC/AC ratio, ore equivalenti e CAPEX al variare di
+%  tilt e distanza inter-fila, per un numero di inverter scelto.
+% =========================================================================
+
+N_inv_plot  = 2;   % Indice del numero di inverter da visualizzare
+DCAC_plot   = permute(DCAC(N_inv_plot,:,:),   [2 3 1]);
+h_eq_plot   = permute(h_eq(N_inv_plot,:,:),   [2 3 1]);
+CAPEX0_plot = permute(CAPEX0(N_inv_plot,:,:), [2 3 1]);
+h_eq_dc_plot= permute(h_eq_dc(N_inv_plot,:,:),[2 3 1]);
+
+figure(2); hold on;
+surf(TILT, D_RTR, DCAC_plot');
+xlabel('Tilt (°)'); ylabel('D_{rtr} (m)'); zlabel('DC/AC ratio');
+title('DC/AC ratio'); colorbar; view(45, 30);
+
+figure(3); hold on;
+surf(TILT, D_RTR, h_eq_plot');
+xlabel('Tilt (°)'); ylabel('D_{rtr} (m)'); zlabel('Ore equivalenti [h]');
+title('Ore equivalenti AC'); colorbar; view(45, 30);
+
+figure(4); hold on;
+surf(TILT, D_RTR, CAPEX0_plot');
+xlabel('Tilt (°)'); ylabel('D_{rtr} (m)'); zlabel('CAPEX [€]');
+title('CAPEX'); colorbar; view(45, 30);
+
+%% =========================================================================
+%  7) SIMULAZIONE OPERATIVA DELLA CONFIGURAZIONE OTTIMALE
+%  Si ri-esegue la simulazione con i soli parametri ottimali per ottenere
+%  i profili orari dettagliati da plottare.
+% =========================================================================
+
+D_rtr_vet = D_rtr_optimal;
+tilt_vet  = tilt_optimal;
+N_inv_vet = N_inv_optimal;
+
+for i = 1:length(N_inv_vet)
+    for j = 1:length(tilt_vet)
+        for k = 1:length(D_rtr_vet)
+
+            tilt(i,j,k)  = tilt_vet(j);
+            D_rtr(i,j,k) = D_rtr_vet(k);
+
+            N_rows(i,j,k)     = floor((L_r - 2*d_edge) / (W_m*cosd(tilt(i,j,k)) + D_rtr(i,j,k)));
+            N_mod_rows(i,j,k) = floor((W_r - 2*d_edge) / L_m);
+            N_mod(i,j,k)      = N_rows(i,j,k) * N_mod_rows(i,j,k);
+            P_dc_nom(i,j,k)   = N_mod(i,j,k) * P_stc_mod / 1000;
+            P_ac_nom(i,j,k)   = N_inv_vet(i)  * P_ac_inv;
+
+            T_cell_max = max(T_amb) + (NOCT - 25) / 800 * 1000;
+            T_cell_min = min(T_amb);
+            V_oc_Tmin  = V_oc  + voltage_coeff * (T_cell_min - 25);
+            V_mpp_Tmin = V_mpp + voltage_coeff * (T_cell_min - 25);
+            I_mpp_Tmax = I_mpp + current_coeff  * (T_cell_max - 25);
+            I_sc_Tmax  = I_sc  + current_coeff  * (T_cell_max - 25);
+            N_mod_string_oc     = floor(V_max_inv  / V_oc_Tmin);
+            N_mod_string_mpp    = floor(V_max_mppt / V_mpp_Tmin);
+            N_mod_string(i,j,k) = min(N_mod_string_oc, N_mod_string_mpp);
+            N_strings_mpp_max   = ceil(N_mod(i,j,k) / N_mod_string(i,j,k) / N_inv_vet(i) / N_mppt);
+            I_mpp_max_mpp = N_strings_mpp_max * I_mpp_Tmax;
+            I_mpp_max_sc  = N_strings_mpp_max * I_sc_Tmax;
+            if I_mpp_max_mpp >= I_max_mppt || I_mpp_max_sc >= I_sc_max_mppt
+                unfeasible_conf(i,j,k) = 1;
+            end
+
+            for h = 1:length(hours_vet)
+                n          = ceil(h / 24);
+                delta(h)   = 23.45 * sind(360/365 * (n + 284));
+                E_n(h)     = 229.18 * (0.000075 ...
+                             + 0.001868*cosd(360*(n-1)/365) ...
+                             - 0.032770*sind(360*(n-1)/365) ...
+                             - 0.014615*cosd(2*360*(n-1)/365) ...
+                             - 0.040800*sind(2*360*(n-1)/365));
+                t_s(h)     = (h - (n-1)*24) + (long - STZ*15)/15 + E_n(h)/60;
+                omega(h)   = 15 * (t_s(h) - 12);
+                theta_z(h) = acosd(sind(delta(h))*sind(lat) + cosd(delta(h))*cosd(lat)*cosd(omega(h)));
+                gamma_s(h) = acosd((cosd(theta_z(h))*sind(lat) - sind(delta(h))) ...
+                             / (cosd(90 - theta_z(h))*cosd(lat)) * sign(lat));
+                theta(h)   = acosd(cosd(theta_z(h))*cosd(tilt(i,j,k)) ...
+                             + sind(theta_z(h))*sind(tilt(i,j,k))*cosd(gamma_s(h)));
+                G_tot(h)   = DNI(h)*cosd(theta(h)) ...
+                           + DIFF(h)*(1 + cosd(tilt(i,j,k)))/2 ...
+                           + (DNI(h)*cosd(theta_z(h)) + DIFF(h))*rho_g*(1 - cosd(tilt(i,j,k)))/2;
+                alpha_s(h) = 90 - theta_z(h);
+                x = W_m*sind(tilt(i,j,k))/tand(alpha_s(h)) + W_m*cosd(tilt(i,j,k)) ...
+                    - (D_rtr(i,j,k) + W_m*cosd(tilt(i,j,k)));
+                if alpha_s(h) <= 0
+                    s(h)        = W_m;
+                    A_active(h) = 0;
+                else
+                    s(h) = min([W_m, max([0, (x*sind(alpha_s(h)))/sind(180 - alpha_s(h) - tilt(i,j,k))])]);
+                    A_active(h) = ((W_m - s(h))*(N_rows(i,j,k) - 1) + W_m) * N_mod_rows(i,j,k) * L_m;
+                end
+                G_av(h)     = G_tot(h) / (N_mod(i,j,k)*L_m*W_m) * A_active(h);
+                T_c(h)      = T_amb(h) + (NOCT - 20)/800 * G_tot(h);
+                P_dc(h)     = G_av(h)/1000 * P_stc_mod * (1 + power_coeff*(T_c(h) - 25)) * N_mod(i,j,k)/1000;
+                P_dc_net(h) = P_dc(h) * (1 - DC_losses);
+                P_ac(h)     = min([P_dc_net(h)*eta_inv, P_ac_nom(i,j,k)]);
+                P_ac_net(h) = P_ac(h) * (1 - AC_losses);
+                h_index     = int32(h - (n-1)*24);
+                P_cons(h)   = build_cons(h_index);
+                P_REC(h)    = REC_cons(h_index);
+                if P_ac_net(h) < P_cons(h)
+                    P_purch(h)  = P_cons(h) - P_ac_net(h);
+                    P_toREC(h)  = 0;
+                    P_togrid(h) = 0;
+                else
+                    surplus = P_ac_net(h) - P_cons(h);
+                    if surplus < P_REC(h)
+                        P_purch(h)  = 0;
+                        P_toREC(h)  = surplus;
+                        P_togrid(h) = 0;
+                    else
+                        P_purch(h)  = 0;
+                        P_toREC(h)  = P_REC(h);
+                        P_togrid(h) = surplus - P_REC(h);
+                    end
+                end
+            end
+
+            eta_shad(i,j,k) = sum(G_av) / sum(G_tot);
+            E_dc            = sum(P_dc)     / 1000;
+            E_ac_net        = sum(P_ac_net) / 1000;
+            clipping_losses = sum(P_dc_net)/1000 * eta_inv * (1 - AC_losses) - E_ac_net;
+            E_purch(i,j,k)  = sum(P_purch)  / 1000;
+            E_toREC(i,j,k)  = sum(P_toREC)  / 1000;
+            E_togrid(i,j,k) = sum(P_togrid) / 1000;
+            E_saved(i,j,k)  = sum(P_cons)   / 1000 - E_purch(i,j,k);
+
+            CAPEX0(i,j,k) = ((c_mod + c_BOP)*P_dc_nom(i,j,k) + c_inv*P_ac_nom(i,j,k)) ...
+                            * (1 + c_eng_inst) + c_interconn*P_ac_nom(i,j,k) + c_fixed;
+            for y = 1:lifetime + 1
+                if y == 1
+                    CAPEX(y) = CAPEX0(i,j,k); OPEX(y) = 0; REV(y) = 0;
+                else
+                    CAPEX(y) = 0;
+                    OPEX(y)  = (c_om*P_dc_nom(i,j,k)/1000 + c_om_fixed) * (1 + infl)^(y-1);
+                    REV(y)   = E_togrid(i,j,k)*p_en_sell ...
+                             + E_toREC(i,j,k)*(p_en_sell + p_en_REC) ...
+                             + E_saved(i,j,k)*p_en_purch;
+                end
+                CF(y) = REV(y) - CAPEX(y) - OPEX(y);
+            end
+
+            if unfeasible_conf(i,j,k) == 1
+                IRR(i,j,k) = NaN; DCAC(i,j,k) = NaN;
+                NPV(i,j,k) = NaN; h_eq(i,j,k) = NaN;
+            else
+                IRR(i,j,k)  = irr(CF);
+                DCAC(i,j,k) = P_dc_nom(i,j,k) / P_ac_nom(i,j,k);
+                NPV(i,j,k)  = sum(CF);
+                h_eq(i,j,k) = E_ac_net / P_dc_nom(i,j,k) * 1000;
+            end
+
+        end
+    end
+end
+
+% Plot operativo su un sottoinsieme di ore (es. ore 4000-4100, ~metà giugno)
+h_iniz = 4000;
+h_fin  = 4100;
+t_plot = hours_vet(h_iniz:h_fin) - h_iniz;
+
+figure(11); hold on;
+plot(t_plot, P_ac_net(h_iniz:h_fin),                    'LineWidth', 1.5);
+plot(t_plot, P_cons(h_iniz:h_fin),                       'LineWidth', 1.5);
+plot(t_plot, P_REC(h_iniz:h_fin) + P_cons(h_iniz:h_fin),'LineWidth', 1.5);
+plot(t_plot, P_toREC(h_iniz:h_fin),                      'LineWidth', 1.5);
+plot(t_plot, P_togrid(h_iniz:h_fin),                     'LineWidth', 1.5);
+legend('P_{ac,net}', 'P_{cons}', 'P_{cons} + P_{REC}', 'P_{to REC}', 'P_{to grid}', ...
+       'Location', 'best');
+xlabel('Tempo [h]');
+ylabel('Potenza [kW]');
+title(sprintf('Profilo operativo – configurazione ottimale (ore %d–%d)', h_iniz, h_fin));
+grid on;

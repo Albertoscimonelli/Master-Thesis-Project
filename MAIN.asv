@@ -232,62 +232,9 @@ else
     warning('Timestamp non disponibile: impossibile creare il grafico giornaliero.');
 end
 
-
-%% ========================================================================
-%  4) PROFILI DI TUTTI I PARTECIPANTI IN 4 GIORNI TIPO
-%  ========================================================================
-
-% Carica il CSV a 15 min con tutti i profili
-rawPath = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_tutti.csv";
-Traw = readtable(rawPath);
-tRaw15 = datetime(Traw.timestamp, 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss');
-
-% Separa colonne commerciali e residenziali per prefisso nome
-numColsRaw = varfun(@isnumeric, Traw, 'OutputFormat', 'uniform');
-allUserCols = Traw.Properties.VariableNames(numColsRaw);
-
-isHousehold = startsWith(allUserCols, 'household');
-colsRes  = allUserCols( isHousehold);   % residenziali
-colsCom  = allUserCols(~isHousehold);   % commerciali
-
-% 4 giorni tipo: inverno, primavera, estate, autunno
-stagioni = ["Inverno (15 gen)", "Primavera (15 apr)", "Estate (15 lug)", "Autunno (15 ott)"];
-giorni   = datetime([2025 1 15; 2025 4 15; 2025 7 15; 2025 10 15]);
-
-% --- helper: plot un gruppo di colonne in un layout 2x2 ---
-function plotGruppo(Traw, tRaw15, cols, giorni, stagioni, figName, figTitle)
-    nC = numel(cols);
-    cmap = lines(nC);
-    figure('Name', figName, 'Color', 'w', 'Position', [120 120 1300 820]);
-    tiledlayout(2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-    for d = 1:4
-        nexttile;
-        hold on; grid on; box on;
-        maskDay = dateshift(tRaw15, 'start', 'day') == giorni(d);
-        tDay    = tRaw15(maskDay);
-        hAxis   = hours(tDay - dateshift(tDay(1), 'start', 'day'));
-        for u = 1:nC
-            yVec = Traw{maskDay, cols{u}};
-            plot(hAxis, yVec, 'Color', cmap(u,:), 'LineWidth', 1.4, ...
-                 'DisplayName', strrep(cols{u}, '_', '\_'));
-        end
-        xlim([0 24]); xticks(0:4:24);
-        xlabel('Ora del giorno [h]');
-        ylabel('Potenza [kW]');
-        title(stagioni(d));
-        if d == 1
-            legend('Location', 'northeast', 'FontSize', 8);
-        end
-    end
-    sgtitle(figTitle, 'FontSize', 13, 'FontWeight', 'bold');
-end
-
-% --- Figura 1: profili commerciali ---
-plotGruppo(Traw, tRaw15, colsCom, giorni, stagioni, ...
-    'Profili commerciali – 4 giorni tipo', ...
-    'Profili di consumo COMMERCIALI – 4 giorni tipo');
-
-% --- Figura 2: profili residenziali ---
-plotGruppo(Traw, tRaw15, colsRes, giorni, stagioni, ...
-    'Profili residenziali – 4 giorni tipo', ...
-    'Profili di consumo RESIDENZIALI – 4 giorni tipo');
+figure;
+plot(h,loadUser);
+xlabel('Data');
+ylabel('Consumo (kW)');
+title('Profilo di consumo orario - Utente: %s', colNames{7});
+grid on;

@@ -19,7 +19,11 @@ from pathlib import Path
 import yaml
 
 from lpg_runner import run_lpg
-from postprocessing import aggregate_profiles, export_to_csv, resample_to_resolution
+from postprocessing import (
+    aggregate_profiles,
+    export_to_csv,
+    resample_to_hourly_energy,
+)
 from ramp_runner import run_ramp
 
 logger = logging.getLogger(__name__)
@@ -129,15 +133,17 @@ def main() -> None:
         logger.error("Nessun profilo generato. Interruzione.")
         sys.exit(1)
 
-    # 4. Ricampiona alla risoluzione target
+    # 4. Aggregazione oraria in energia (kWh per ora, 8760 righe/anno).
+    #    I runner restituiscono potenze in W a 1 min; qui si integra su
+    #    ogni ora producendo l'energia oraria in kWh.
     logger.info("-" * 40)
-    logger.info("FASE 3: Ricampionamento a %d min", resolution)
+    logger.info("FASE 3: Aggregazione oraria in energia (kWh)")
     logger.info("-" * 40)
 
     dfs_to_aggregate: list = []
 
     if has_ramp:
-        df_ramp = resample_to_resolution(df_ramp, resolution)
+        df_ramp = resample_to_hourly_energy(df_ramp)
         # Rimuovi timezone per uniformita' con profili LPG
         if df_ramp.index.tz is not None:
             df_ramp.index = df_ramp.index.tz_localize(None)
@@ -146,7 +152,7 @@ def main() -> None:
         dfs_to_aggregate.append(df_ramp)
 
     if has_lpg:
-        df_lpg = resample_to_resolution(df_lpg, resolution)
+        df_lpg = resample_to_hourly_energy(df_lpg)
         if df_lpg.index.tz is not None:
             df_lpg.index = df_lpg.index.tz_localize(None)
         df_lpg = df_lpg[~df_lpg.index.duplicated(keep="first")]
@@ -160,31 +166,30 @@ def main() -> None:
     files_generated: list[str] = []
 
     if output_config.get("individual_profiles", True):
-        # CSV con tutti i profili individuali (aziende)
+        # I DataFrame sono gia' in kWh/ora -> non convertire W->kW, ma
+        # aggiungere il suffisso _kWh alle colonne per chiarezza.
         if has_ramp:
             ramp_path = str(output_folder / "profili_aziende.csv")
-            export_to_csv(df_ramp, ramp_path, convert_w_to_kw=True)
+            export_to_csv(df_ramp, ramp_path, convert_w_to_kw=False, add_kwh_suffix=True)
             files_generated.append(ramp_path)
 
-        # CSV con tutti i profili individuali (famiglie)
         if has_lpg:
             lpg_path = str(output_folder / "profili_famiglie.csv")
-            export_to_csv(df_lpg, lpg_path, convert_w_to_kw=True)
+            export_to_csv(df_lpg, lpg_path, convert_w_to_kw=False, add_kwh_suffix=True)
             files_generated.append(lpg_path)
 
-        # CSV combinato con tutti i profili
         if has_ramp and has_lpg:
             # Join sui timestamp comuni (gestisce eventuali disallineamenti)
             df_all = df_ramp.join(df_lpg, how="inner")
             all_path = str(output_folder / "profili_tutti.csv")
-            export_to_csv(df_all, all_path, convert_w_to_kw=True)
+            export_to_csv(df_all, all_path, convert_w_to_kw=False, add_kwh_suffix=True)
             files_generated.append(all_path)
 
-    # 6. Export CSV aggregato CER
+    # 6. Export CSV aggregato CER (gia' in kWh/ora: colonna 'total_CER_kWh')
     if output_config.get("aggregate_total", True):
         df_aggregated = aggregate_profiles(dfs_to_aggregate)
         agg_path = str(output_folder / "profilo_CER_aggregato.csv")
-        export_to_csv(df_aggregated, agg_path, convert_w_to_kw=False)
+        export_to_csv(df_aggregated, agg_path, convert_w_to_kw=False, add_kwh_suffix=False)
         files_generated.append(agg_path)
 
     # 7. Riepilogo finale
@@ -199,7 +204,7 @@ def main() -> None:
     logger.info("  Profili famiglie (LPG):   %d", n_lpg)
     logger.info("  Totale utenti CER:        %d", n_ramp + n_lpg)
     logger.info("  Anno:                     %d", sim_config["year"])
-    logger.info("  Risoluzione:              %d min", resolution)
+    logger.info("  Risoluzione output:       1 h (energia in kWh per ora)")
     logger.info("  File generati:            %d", len(files_generated))
     for f in files_generated:
         logger.info("    -> %s", f)

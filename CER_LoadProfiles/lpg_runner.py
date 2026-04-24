@@ -28,6 +28,38 @@ except ImportError:
     pass
 
 
+def _clean_lpg_results() -> None:
+    """Rimuove la cartella results di pyLPG, forzando la rimozione ReadOnly.
+
+    pyLPG (il runtime .NET) crea le sottocartelle di results con attributo
+    ReadOnly su Windows. Il suo stesso processo poi fallisce al tentativo di
+    cancellarle al run successivo. Questa funzione forza la rimozione
+    dell'attributo e cancella l'intera cartella results.
+    """
+    if not _PYLPG_AVAILABLE:
+        return
+
+    import shutil
+    import stat
+    import os
+
+    lpg_pkg_dir = Path(lpg_execution.__file__).parent
+    results_dir = lpg_pkg_dir / "C1" / "results"
+
+    if not results_dir.exists():
+        return
+
+    def _force_remove_readonly(func, path, _exc_info):
+        """Callback onerror: rimuove ReadOnly e riprova."""
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+
+    try:
+        shutil.rmtree(results_dir, onerror=_force_remove_readonly)
+    except Exception as e:
+        logger.debug("Pulizia results pyLPG fallita: %s", e)
+
+
 def _get_household_ref(ref_name: str) -> object:
     """Ottieni il JsonReference dalla classe lpgdata.Households.
 
@@ -78,15 +110,7 @@ def _run_single_lpg_household(
     resolution_str = "00:01:00"
     intensity = getattr(EnergyIntensityType, energy_intensity)
 
-    # Pulisci la directory Charts che OneDrive potrebbe aver bloccato
-    import shutil
-    lpg_dir = Path(lpg_execution.__file__).parent / "C1" / "results" / "Charts"
-    if lpg_dir.exists():
-        try:
-            shutil.rmtree(lpg_dir, ignore_errors=True)
-            time.sleep(1)
-        except Exception:
-            pass
+    _clean_lpg_results()
 
     result = lpg_execution.execute_lpg_single_household(
         year=year,
@@ -99,6 +123,11 @@ def _run_single_lpg_household(
         energy_intensity=intensity,
         resolution=resolution_str,
     )
+
+    # Pulisci subito dopo il run per evitare che il prossimo trovi cartelle
+    # ReadOnly bloccate dal processo .NET appena terminato.
+    time.sleep(2)
+    _clean_lpg_results()
 
     return result
 

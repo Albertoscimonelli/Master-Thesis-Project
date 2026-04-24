@@ -130,7 +130,7 @@ end
 %  3) GRAFICO COSTO ORARIO GIORNALIERO (UTENTE CASUALE)
 %  ========================================================================
 if hasTimestamp && ~isempty(tHourOut)
-    rng('shuffle');
+    rng('shuffle'); %scelta casuale utente
 
     idxUser = randi(numel(colNames));
     userName = colNames{idxUser};

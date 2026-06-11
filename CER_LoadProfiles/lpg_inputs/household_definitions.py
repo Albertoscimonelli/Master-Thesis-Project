@@ -22,13 +22,13 @@ HOUSEHOLD_DEFINITIONS: list[dict] = [
         "label": "pensionati",
         "template": "CHR54 Retired Couple, no work",
         "household_ref": "CHR54_Retired_Couple_no_work",
-        "count": 2,
+        "count": 1,
     },
     {
         "label": "coppia_lavoratori",
         "template": "CHR02 Couple, 30 - 64 age, with work",
         "household_ref": "CHR02_Couple_30_64_age_with_work",
-        "count": 2,
+        "count": 1,
     },
     {
         "label": "famiglia_1figlio",

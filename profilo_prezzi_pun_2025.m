@@ -286,7 +286,7 @@ function S = creaSommario(modalita, P)
                 righe(end+1,:) = {mese, "Sabato",            "23:00-24:00", "F3", P.F3(m)};
                 righe(end+1,:) = {mese, "Domenica/Festivi",  "00:00-24:00", "F3", P.F3(m)};
         end
-   end
+    end
 
     S = cell2table(righe, ...
         'VariableNames', {'Mese','GiornoTipo','Intervallo','Fascia','Prezzo'});
@@ -296,3 +296,10 @@ function S = creaSommario(modalita, P)
     S.Intervallo = string(S.Intervallo);
     S.Fascia = string(S.Fascia);
 end
+
+figure;
+plot(TT.t, TT.Prezzo); 
+xlabel('Data');
+ylabel('Prezzo PUN (€/kWh)');
+title(sprintf('Profilo prezzi PUN 2025 - Modalità: %s', modalita));
+grid on;

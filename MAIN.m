@@ -2,278 +2,304 @@ clear; clc;
 close all;
 
 %% ========================================================================
-%  PATH FILES
+%  MAIN.m  -  Analisi energetica ed economica della CER
+%
+%  Pipeline:
+%    0) Configurazione (percorsi, costanti, flag)
+%    1) Caricamento dati      (profili di carico + generazione PV)
+%    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
+%    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
+%    4) Costo energia da rete (PUN 2025, per utente e per modalita)
+%    5) Visualizzazione       (istogrammi, profili, confronti)
+%
+%  Il codice e' organizzato in sezioni indipendenti ed e' predisposto per
+%  estensioni future (cicli su piu' scenari, test di modelli multipli, ecc.).
 %  ========================================================================
-loadFile  = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_tutti.csv";
-pvPattern = "*.CSV";  % Pattern per trovare tutti i CSV PVsyst
 
+
+%% ========================================================================
+%  0) CONFIGURAZIONE
+%  ========================================================================
+
+% --- Percorsi file -------------------------------------------------------
+loadFile = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_tutti.csv";
+
+
+pvFile   = "C:\Users\scimo\desktop\Project\PV_Generation\Salvaplast_Project_VD7_HourlyRes_1.CSV";
+
+% --- Costanti temporali --------------------------------------------------
+ANNO    = 2025;
+N_HOURS = 8760;          % ore in un anno standard (24 x 365)
+N_DAYS  = 365;
+
+% Griglia oraria canonica dell'anno (asse di riferimento per tutti i dati)
+tGrid = (datetime(ANNO,1,1,0,0,0) : hours(1) : datetime(ANNO,12,31,23,0,0)).';
+
+% --- Parametri economici -------------------------------------------------
+P_SELL = 0.11;           % Prezzo energia venduta in rete        [€/kWh]
+P_CER  = 0.18;           % Incentivo CER su energia condivisa    [€/kWh]
+
+% --- Modalita tariffarie PUN ---------------------------------------------
 Modalita = ["MONORARIA", "BIORARIA", "ORARIO_VARIABILE"];
 
-%% ========================================================================
-%  1) CARICAMENTO CONSUMI ORARI
-%  ========================================================================
-Tload = readtable(loadFile);
+% --- Flag di visualizzazione ---------------------------------------------
+SHOW_PROFILE_PLOTS = true;   % grafici profili di consumo (4 giorni tipo)
 
-% Trova automaticamente la prima colonna numerica
-numCols = varfun(@isnumeric, Tload, "OutputFormat", "uniform");
-idxLoad = find(numCols);
-assert(~isempty(idxLoad), "Nessuna colonna numerica nel CSV consumi.");
-
-% Crea un vettore per ogni colonna numerica con il nome dell'intestazione
-colNames = Tload.Properties.VariableNames(idxLoad);
-profiles = struct();
-for k = 1:numel(idxLoad)
-    profiles.(colNames{k}) = double(Tload{:, idxLoad(k)});
-end
-
-% --- DEBUG: consumo annuo per utente ---
-fprintf('Colonne caricate (%d):\n', numel(colNames));
-fprintf('%-20s  %10s\n', 'Utente', 'kWh/anno');
-fprintf('%s\n', repmat('-', 1, 33));
-for k = 1:numel(colNames)
-    fprintf('%-20s  %10.2f kWh\n', colNames{k}, sum(profiles.(colNames{k})));
-end
-fprintf('%s\n', repmat('-', 1, 33));
-% --- FINE DEBUG ---
-
-% ========================================================================
-% CONVERSIONE PROFILI DA 15 MINUTI A 1 ORA
-% ========================================================================
-
-% Se presente la colonna timestamp, usa il passo temporale reale per decidere
-% se ricampionare a 1h; i valori in input sono in kW.
-hasTimestamp = any(strcmpi(Tload.Properties.VariableNames, 'timestamp'));
-
-profiles_hourly = struct();
-tHourOut = [];
-if hasTimestamp
-    tRaw = datetime(Tload.timestamp, 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss');
-    dtMin = minutes(median(diff(tRaw)));
-
-    if abs(dtMin - 15) < 1e-6
-        % Ricampionamento quartorario -> orario.
-        % Per profili in kW, la media oraria equivale anche all'energia
-        % oraria in kWh (kW medi su 1h).
-        fprintf('Risoluzione input: %.0f min -> conversione a 60 min...\n', dtMin);
-        tHour = dateshift(tRaw(1), 'start', 'hour'):hours(1):dateshift(tRaw(end), 'start', 'hour');
-        tHourOut = tHour(:);
-
-        for k = 1:numel(idxLoad)
-            x = profiles.(colNames{k});
-            TTk = timetable(tRaw, x, 'VariableNames', {'val'});
-            TTh = retime(TTk, tHour', 'mean');
-            profiles_hourly.(colNames{k}) = TTh.val;
-        end
-    else
-        fprintf('Risoluzione input: %.0f min (nessuna conversione applicata).\n', dtMin);
-        profiles_hourly = profiles;
-        tHourOut = tRaw(:);
-    end
-else
-    warning('Colonna timestamp non trovata: uso i profili cosi'' come sono.');
-    profiles_hourly = profiles;
-end
-
-% Debug robustezza: conta NaN nei profili orari
-for k = 1:numel(colNames)
-    nNaN = sum(isnan(profiles_hourly.(colNames{k})));
-    if nNaN > 0
-        fprintf('ATTENZIONE: profilo %s contiene %d NaN.\n', colNames{k}, nNaN);
-    end
-end
+% Nomi dei mesi (per tabelle e grafici)
+meseNomi = ["Gennaio";"Febbraio";"Marzo";"Aprile";"Maggio";"Giugno"; ...
+            "Luglio";"Agosto";"Settembre";"Ottobre";"Novembre";"Dicembre"];
 
 
 %% ========================================================================
-%  2) CALCOLO PROFILO PREZZI PUN 2025
+%  1) CARICAMENTO DATI
 %  ========================================================================
 
-for i = 1:numel(colNames)
-    fprintf('Profilo %d: %s\n', i, colNames{i});
+% --- 1a) Profili di carico orari -----------------------------------------
+% Ogni colonna numerica e' un utente della comunita' (kWh/ora). I dati
+% vengono riallineati sulla griglia oraria canonica: cosi' eventuali ore
+% mancanti (es. cambio ora legale) sono interpolate e tutti i vettori hanno
+% esattamente N_HOURS campioni.
+Tload = readtable(loadFile, 'VariableNamingRule', 'preserve');
 
-for k = 1:numel(Modalita)
-    modalita = Modalita(k);
-    fprintf('\n=== Elaborazione modalità: %s ===\n', modalita);
-    
-    [TT, S, P] = profilo_prezzi_pun_2025(modalita);
-    
-    % % --- DEBUG: prezzi medi mensili per fascia ---
-    % fprintf('Prezzi medi mensili per fascia:\n');
-    % disp(S);
-    % % --- FINE DEBUG ---
-
-    % Allinea i vettori e scarta campioni invalidi per evitare NaN finale.
-    priceVec = TT.Prezzo;
-    loadVec = profiles_hourly.(colNames{i});
-
-    nMin = min(numel(priceVec), numel(loadVec));
-    if numel(priceVec) ~= numel(loadVec)
-        fprintf('ATTENZIONE: lunghezze diverse (prezzo=%d, carico=%d). Uso i primi %d campioni.\n', ...
-            numel(priceVec), numel(loadVec), nMin);
-    end
-
-    priceVec = priceVec(1:nMin);
-    loadVec = loadVec(1:nMin);
-
-    validMask = isfinite(priceVec) & isfinite(loadVec);
-    nScartati = sum(~validMask);
-    if nScartati > 0
-        fprintf('ATTENZIONE: scartati %d campioni non validi nel costo annuo.\n', nScartati);
-    end
-
-    Total_CostY1 = sum(priceVec(validMask) .* loadVec(validMask)); % Costo totale per il primo utente
-    fprintf('Costo totale annuo per %s: €%.2f\n', colNames{i}, Total_CostY1);
+% Timestamp (gia' datetime, oppure testo ISO da convertire)
+ts = Tload.timestamp;
+if ~isdatetime(ts)
+    ts = datetime(string(ts), 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss');
 end
 
+% Colonne utente (tutte le colonne numeriche)
+isNum     = varfun(@isnumeric, Tload, 'OutputFormat', 'uniform');
+userNames = string(Tload.Properties.VariableNames(isNum));
+loadRaw   = Tload{:, isNum};                       % [nRighe x nUtenti]
+
+% Riallineamento sulla griglia canonica -> [N_HOURS x nUtenti]
+TTload    = retime(timetable(ts, loadRaw, 'VariableNames', {'load'}), tGrid, 'linear');
+loadUsers = TTload.load;                            % [N_HOURS x nUtenti]
+loadTotal = sum(loadUsers, 2);                      % richiesta totale comunita' [kWh/h]
+nUsers    = numel(userNames);
+
+% --- 1b) Generazione fotovoltaica oraria ---------------------------------
+genPV = load_pv_generation(pvFile, N_HOURS);        % [N_HOURS x 1] [kWh/h]
+
+% --- Riepilogo consumi annui per utente ----------------------------------
+fprintf('=== Consumi annui per utente ===\n');
+for u = 1:nUsers
+    fprintf('  %-22s %9.1f kWh\n', userNames(u), sum(loadUsers(:,u)));
 end
+fprintf('  %-22s %9.1f kWh\n', "TOTALE COMUNITA", sum(loadTotal));
+fprintf('  %-22s %9.1f kWh\n', "GENERAZIONE PV",  sum(genPV));
+
 
 %% ========================================================================
-%  3) GRAFICO COSTO ORARIO GIORNALIERO (UTENTE CASUALE)
+%  2) ELABORAZIONE ENERGETICA (CER)
+%
+%  Per ogni ora:
+%    energia condivisa = min(produzione_PV, richiesta_totale)
+%    energia venduta   = max(0, produzione_PV - richiesta_totale)
 %  ========================================================================
-if hasTimestamp && ~isempty(tHourOut)
-    rng('shuffle'); %scelta casuale utente
 
-    idxUser = randi(numel(colNames));
-    userName = colNames{idxUser};
-    loadUser = profiles_hourly.(userName);
+shared = min(genPV, loadTotal);          % energia condivisa (autoconsumo CER) [kWh/h]
+sold   = max(0, genPV - loadTotal);      % surplus immesso in rete             [kWh/h]
 
-    % Allinea timeline profilo utente
-    nL = min(numel(tHourOut), numel(loadUser));
-    tUser = tHourOut(1:nL);
-    loadUser = loadUser(1:nL);
+% Riorganizzazione in matrici 24 x 365 (riga = ora 0..23, colonna = giorno)
+shared_24x365 = reshape(shared,    24, N_DAYS);
+sold_24x365   = reshape(sold,      24, N_DAYS);
+demand_24x365 = reshape(loadTotal, 24, N_DAYS);
+gen_24x365    = reshape(genPV,     24, N_DAYS);
 
-    % Giorni completi disponibili
-    allDays = unique(dateshift(tUser, 'start', 'day'));
-    validDays = datetime.empty(0,1);
-    for d = 1:numel(allDays)
-        nDay = sum(dateshift(tUser, 'start', 'day') == allDays(d));
-        if nDay >= 24
-            validDays(end+1,1) = allDays(d); %#ok<SAGROW>
-        end
+% Aggregati mensili (kWh)
+monthOfHour    = month(tGrid);
+shared_monthly = accumarray(monthOfHour, shared, [12 1]);
+sold_monthly   = accumarray(monthOfHour, sold,   [12 1]);
+
+% Totali annuali (kWh)
+shared_annual = sum(shared_monthly);
+sold_annual   = sum(sold_monthly);
+
+fprintf('\n=== Bilancio CER annuale ===\n');
+fprintf('  Energia condivisa: %9.1f kWh\n', shared_annual);
+fprintf('  Energia venduta:   %9.1f kWh\n', sold_annual);
+
+
+%% ========================================================================
+%  3) ANALISI ECONOMICA
+%  ========================================================================
+
+rev_shared_monthly = shared_monthly * P_CER;     % ricavo da energia condivisa [€]
+rev_sold_monthly   = sold_monthly   * P_SELL;    % ricavo da energia venduta   [€]
+rev_tot_monthly    = rev_shared_monthly + rev_sold_monthly;
+rev_tot_annual     = sum(rev_tot_monthly);
+
+% --- Tabella riepilogativa (12 mesi + riga totale annuo) -----------------
+Mese            = [meseNomi;                "TOTALE ANNO"];
+E_condivisa_kWh = [shared_monthly;          shared_annual];
+E_venduta_kWh   = [sold_monthly;            sold_annual];
+Ric_condivisa_E = [rev_shared_monthly;      sum(rev_shared_monthly)];
+Ric_venduta_E   = [rev_sold_monthly;        sum(rev_sold_monthly)];
+Ric_totale_E    = [rev_tot_monthly;         rev_tot_annual];
+
+Treport = table(Mese, E_condivisa_kWh, E_venduta_kWh, ...
+                Ric_condivisa_E, Ric_venduta_E, Ric_totale_E);
+
+fprintf('\n=== Riepilogo economico mensile/annuale ===\n');
+disp(Treport);
+fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
+
+
+%% ========================================================================
+%  4) COSTO ENERGIA DA RETE (PUN 2025)
+%  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
+%  tariffaria. I profili prezzo del 2025 condividono la griglia canonica.
+%  ========================================================================
+
+% Profilo prezzi orario per ciascuna modalita'
+priceByMod = cell(1, numel(Modalita));
+for m = 1:numel(Modalita)
+    TTprice       = profilo_prezzi_pun_2025(Modalita(m));
+    priceByMod{m} = TTprice.Prezzo;          % [N_HOURS x 1]
+end
+
+% Costo annuo = somma( prezzo_orario .* consumo_orario )
+costMat = zeros(nUsers, numel(Modalita));
+for u = 1:nUsers
+    for m = 1:numel(Modalita)
+        costMat(u, m) = sum(priceByMod{m} .* loadUsers(:, u));
     end
-    assert(~isempty(validDays), 'Nessun giorno completo disponibile per il grafico.');
+end
 
-    daySel = validDays(randi(numel(validDays)));
-    h = 0:23;
-    costHour = nan(numel(Modalita), 24);
-    costDay = nan(numel(Modalita), 1);
-    priceHour = nan(numel(Modalita), 24);
+Tcost = array2table(costMat, ...
+        'VariableNames', cellstr(Modalita), ...
+        'RowNames', cellstr(userNames));
+Tcost{'COMUNITA', :} = sum(costMat, 1);      % riga con il totale comunita'
 
-    for k = 1:numel(Modalita)
-        modalita = Modalita(k);
-        [TT, ~, ~] = profilo_prezzi_pun_2025(modalita);
+fprintf('\n=== Costo annuo energia da rete (PUN 2025) [€] ===\n');
+disp(Tcost);
 
-        tPrice = TT.Properties.RowTimes;
-        pPrice = TT.Prezzo;
 
-        [tCommon, iU, iP] = intersect(tUser, tPrice);
-        if isempty(tCommon)
-            warning('Nessun timestamp comune per modalita %s.', modalita);
-            continue;
-        end
+%% ========================================================================
+%  5) VISUALIZZAZIONE
+%  ========================================================================
 
-        cHourly = loadUser(iU) .* pPrice(iP); % Costo orario = PUN(h) * Consumo(h)
+% --- 5a) Energia condivisa mensile + totale annuo ------------------------
+figure('Name', 'Energia condivisa CER', 'Color', 'w');
+bar(1:12, shared_monthly, 'FaceColor', [0.20 0.60 0.30]);
+grid on; box on;
+xticks(1:12); xticklabels(meseNomi); xtickangle(45);
+ylabel('Energia condivisa [kWh]');
+title(sprintf('Energia condivisa mensile  |  Totale annuo = %.0f kWh', shared_annual));
 
-        maskDay = dateshift(tCommon, 'start', 'day') == daySel;
-        tDay = tCommon(maskDay);
-        cDay = cHourly(maskDay);
-        pDay = pPrice(iP(maskDay));
+% --- 5b) Ricavi mensili (condivisa vs venduta) ---------------------------
+figure('Name', 'Ricavi CER', 'Color', 'w');
+bar(1:12, [rev_shared_monthly, rev_sold_monthly], 'stacked');
+grid on; box on;
+xticks(1:12); xticklabels(meseNomi); xtickangle(45);
+ylabel('Ricavo [€]');
+legend('Energia condivisa', 'Energia venduta', 'Location', 'northwest');
+title(sprintf('Ricavi mensili  |  Totale annuo = €%.0f', rev_tot_annual));
 
-        % Garantisce ordine per ora e primi 24 campioni
-        [~, ord] = sort(tDay);
-        cDay = cDay(ord);
-        pDay = pDay(ord);
-        if numel(cDay) >= 24
-            costHour(k,:) = cDay(1:24).';
-            costDay(k) = sum(costHour(k,:), 'omitnan');
-            priceHour(k,:) = pDay(1:24).';
-        end
+% --- 5c) Produzione PV vs richiesta comunita' (media giornaliera) --------
+genDayMean    = mean(gen_24x365,    1);
+demDayMean    = mean(demand_24x365, 1);
+sharedDayMean = mean(shared_24x365, 1);
+
+figure('Name', 'PV vs Richiesta comunita', 'Color', 'w');
+hold on; grid on; box on;
+area(1:N_DAYS, genDayMean, 'FaceAlpha', 0.30, 'FaceColor', [1.0 0.8 0.0], ...
+     'EdgeColor', [0.9 0.6 0.0], 'DisplayName', 'Produzione PV');
+area(1:N_DAYS, sharedDayMean, 'FaceAlpha', 0.45, 'FaceColor', [0.2 0.6 0.3], ...
+     'EdgeColor', 'none', 'DisplayName', 'Energia condivisa');
+plot(1:N_DAYS, demDayMean, 'Color', [0.1 0.3 0.7], 'LineWidth', 1.6, ...
+     'DisplayName', 'Richiesta comunita');
+xlabel('Giorno dell''anno'); ylabel('Potenza media giornaliera [kW]');
+xlim([1 N_DAYS]);
+legend('Location', 'northwest');
+title('Produzione PV, richiesta comunita ed energia condivisa');
+
+% --- 5d) Profili di consumo - 4 giorni tipo (opzionale) ------------------
+if SHOW_PROFILE_PLOTS
+    stagioni = ["Inverno (15 gen)", "Primavera (15 apr)", ...
+                "Estate (15 lug)",  "Autunno (15 ott)"];
+    giorni   = datetime([ANNO 1 15; ANNO 4 15; ANNO 7 15; ANNO 10 15]);
+
+    isRes   = startsWith(userNames, 'household');
+    idxRes  = find(isRes);
+    idxCom  = find(~isRes);
+
+    if ~isempty(idxCom)
+        plotProfiliStagionali(tGrid, loadUsers, idxCom, userNames, giorni, ...
+            stagioni, 'Profili commerciali', 'Profili di consumo COMMERCIALI - 4 giorni tipo');
     end
-
-    figure('Name','Costo giornaliero per modalita','Color','w');
-    tiledlayout(3,1,'TileSpacing','compact','Padding','compact');
-
-    nexttile;
-    plot(h, costHour(1,:), '-o', 'LineWidth', 1.2, 'DisplayName', 'MONORARIA'); hold on;
-    plot(h, costHour(2,:), '-s', 'LineWidth', 1.2, 'DisplayName', 'BIORARIA');
-    plot(h, costHour(3,:), '-^', 'LineWidth', 1.2, 'DisplayName', 'ORARIO VARIABILE');
-    grid on;
-    xlim([0 23]);
-    xticks(0:23);
-    xlabel('Ora del giorno');
-    ylabel('Costo orario [€]');
-    title(sprintf('Utente: %s | Giorno: %s', userName, datestr(daySel,'dd-mmm-yyyy')));
-    legend('Location','best');
-
-    nexttile;
-    bar(categorical(Modalita), costDay);
-    grid on;
-    ylabel('Costo giornaliero totale [€]');
-    title('Totale giornaliero = somma costi orari');
-
-    nexttile;
-    plot(h, priceHour(1,:), '-o', 'LineWidth', 1.2, 'DisplayName', 'MONORARIA'); hold on;
-    plot(h, priceHour(2,:), '-s', 'LineWidth', 1.2, 'DisplayName', 'BIORARIA');
-    plot(h, priceHour(3,:), '-^', 'LineWidth', 1.2, 'DisplayName', 'ORARIO VARIABILE');
-    grid on;
-    xlim([0 23]);
-    xticks(0:23);
-    xlabel('Ora del giorno');
-    ylabel('Prezzo [€/kWh]');
-    title('Prezzi orari nel giorno selezionato');
-    legend('Location','best');
-
-    fprintf('\n=== CONTROLLO GIORNALIERO (utente casuale) ===\n');
-    fprintf('Utente: %s\n', userName);
-    fprintf('Giorno: %s\n', datestr(daySel,'dd-mmm-yyyy'));
-    for k = 1:numel(Modalita)
-        fprintf('%s -> Totale giorno = %.3f € (somma di 24 costi orari)\n', Modalita(k), costDay(k));
+    if ~isempty(idxRes)
+        plotProfiliStagionali(tGrid, loadUsers, idxRes, userNames, giorni, ...
+            stagioni, 'Profili residenziali', 'Profili di consumo RESIDENZIALI - 4 giorni tipo');
     end
-else
-    warning('Timestamp non disponibile: impossibile creare il grafico giornaliero.');
 end
 
 
 %% ========================================================================
-%  4) PROFILI DI TUTTI I PARTECIPANTI IN 4 GIORNI TIPO
+%  FUNZIONI LOCALI
 %  ========================================================================
 
-% Carica il CSV a 15 min con tutti i profili
-rawPath = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_tutti.csv";
-Traw = readtable(rawPath);
-tRaw15 = datetime(Traw.timestamp, 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss');
+function gen = load_pv_generation(pvFile, nHoursTarget)
+%LOAD_PV_GENERATION  Legge un export orario PVsyst (E_Grid) e restituisce
+%   la generazione fotovoltaica oraria come vettore colonna [kWh/h].
+%
+%   - Salta le righe di intestazione/metadati PVsyst.
+%   - Riconosce sia "dd/mm/yy HH:MM" sia "dd/mm/yyyy HH:MM:SS".
+%   - Azzera i piccoli valori negativi (autoconsumo notturno inverter).
+%   - Allinea la lunghezza a nHoursTarget (padding con 0 o troncamento).
 
-% Separa colonne commerciali e residenziali per prefisso nome
-numColsRaw = varfun(@isnumeric, Traw, 'OutputFormat', 'uniform');
-allUserCols = Traw.Properties.VariableNames(numColsRaw);
+    lines = readlines(pvFile);
+    lines = strtrim(lines);
+    lines(lines == "") = [];
 
-isHousehold = startsWith(allUserCols, 'household');
-colsRes  = allUserCols( isHousehold);   % residenziali
-colsCom  = allUserCols(~isHousehold);   % commerciali
+    % Mantiene solo le righe-dato "data;valore"
+    isData    = ~cellfun('isempty', ...
+                regexp(lines, '^\d{1,2}/\d{1,2}/\d{2,4}\s+\d{1,2}:\d{2}', 'once'));
+    dataLines = lines(isData);
 
-% 4 giorni tipo: inverno, primavera, estate, autunno
-stagioni = ["Inverno (15 gen)", "Primavera (15 apr)", "Estate (15 lug)", "Autunno (15 ott)"];
-giorni   = datetime([2025 1 15; 2025 4 15; 2025 7 15; 2025 10 15]);
+    if isempty(dataLines)
+        error('load_pv_generation:noData', ...
+              'Nessuna riga di dati orari trovata in:\n  %s', pvFile);
+    end
 
-% --- helper: plot un gruppo di colonne in un layout 2x2 ---
-function plotGruppo(Traw, tRaw15, cols, giorni, stagioni, figName, figTitle)
-    nC = numel(cols);
+    parts = split(dataLines, ';');        % [N x 2] string array
+    gen   = str2double(parts(:, 2));      % [kW medio orario ~ kWh/h]
+    gen   = max(gen, 0);                  % azzera valori negativi
+
+    % Allinea alla lunghezza attesa
+    nH = numel(gen);
+    if nH < nHoursTarget
+        warning('load_pv_generation:short', ...
+                'File PV con sole %d ore (attese %d): padding con 0.\n  %s', ...
+                nH, nHoursTarget, pvFile);
+        gen(end+1:nHoursTarget, 1) = 0;
+    elseif nH > nHoursTarget
+        gen = gen(1:nHoursTarget);
+    end
+end
+
+
+function plotProfiliStagionali(t, dataMat, colIdx, names, giorni, stagioni, figName, figTitle)
+%PLOTPROFILISTAGIONALI  Traccia i profili orari di un gruppo di utenti in 4
+%   giorni tipo (uno per stagione), in un layout 2x2.
+
+    nC   = numel(colIdx);
     cmap = lines(nC);
     figure('Name', figName, 'Color', 'w', 'Position', [120 120 1300 820]);
     tiledlayout(2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+
     for d = 1:4
-        nexttile;
-        hold on; grid on; box on;
-        maskDay = dateshift(tRaw15, 'start', 'day') == giorni(d);
-        tDay    = tRaw15(maskDay);
+        nexttile; hold on; grid on; box on;
+        maskDay = dateshift(t, 'start', 'day') == giorni(d);
+        tDay    = t(maskDay);
         hAxis   = hours(tDay - dateshift(tDay(1), 'start', 'day'));
         for u = 1:nC
-            yVec = Traw{maskDay, cols{u}};
-            plot(hAxis, yVec, 'Color', cmap(u,:), 'LineWidth', 1.4, ...
-                 'DisplayName', strrep(cols{u}, '_', '\_'));
+            plot(hAxis, dataMat(maskDay, colIdx(u)), 'Color', cmap(u,:), ...
+                 'LineWidth', 1.4, 'DisplayName', strrep(names(colIdx(u)), '_', '\_'));
         end
         xlim([0 24]); xticks(0:4:24);
-        xlabel('Ora del giorno [h]');
-        ylabel('Potenza [kW]');
+        xlabel('Ora del giorno [h]'); ylabel('Potenza [kW]');
         title(stagioni(d));
         if d == 1
             legend('Location', 'northeast', 'FontSize', 8);
@@ -281,13 +307,3 @@ function plotGruppo(Traw, tRaw15, cols, giorni, stagioni, figName, figTitle)
     end
     sgtitle(figTitle, 'FontSize', 13, 'FontWeight', 'bold');
 end
-
-% --- Figura 1: profili commerciali ---
-plotGruppo(Traw, tRaw15, colsCom, giorni, stagioni, ...
-    'Profili commerciali – 4 giorni tipo', ...
-    'Profili di consumo COMMERCIALI – 4 giorni tipo');
-
-% --- Figura 2: profili residenziali ---
-plotGruppo(Traw, tRaw15, colsRes, giorni, stagioni, ...
-    'Profili residenziali – 4 giorni tipo', ...
-    'Profili di consumo RESIDENZIALI – 4 giorni tipo');

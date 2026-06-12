@@ -296,10 +296,3 @@ function S = creaSommario(modalita, P)
     S.Intervallo = string(S.Intervallo);
     S.Fascia = string(S.Fascia);
 end
-
-figure;
-plot(TT.t, TT.Prezzo); 
-xlabel('Data');
-ylabel('Prezzo PUN (€/kWh)');
-title(sprintf('Profilo prezzi PUN 2025 - Modalità: %s', modalita));
-grid on;

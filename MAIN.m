@@ -147,6 +147,100 @@ fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
 
 
 %% ========================================================================
+%  3b) DISTRIBUZIONE DEI BENEFICI - SHAPLEY VALUE
+%
+%  Primo modello di ripartizione dei ricavi della CER. L'incentivo
+%  sull'energia condivisa viene diviso tra i giocatori (impianto PV +
+%  consumatori) secondo lo Shapley value del gioco cooperativo
+%  (Moncecchi et al., Appl. Sci. 2020). Con pochi consumatori lo Shapley
+%  e' calcolato in forma esatta su ogni singolo utente, senza
+%  l'approssimazione per gruppi del paper.
+%
+%    Giocatori : PV (produttore) + consumatori
+%    Valore    : v(S) = sum_t min(genPV, load_S) * P_CER   (0 senza PV)
+%  ========================================================================
+
+Sh = shapley_cer(genPV, loadUsers, userNames, P_CER);
+
+fprintf('\n=== Distribuzione Shapley dell''incentivo CER condivisa ===\n');
+disp(Sh.table);
+fprintf('  Valore grande coalizione : EUR %9.2f\n', Sh.vGrand);
+fprintf('  Quota produttore (PV)    : EUR %9.2f  (%.1f%%)\n', ...
+        Sh.prodShare, 100*Sh.prodShare/Sh.vGrand);
+fprintf('  Quota consumatori        : EUR %9.2f  (%.1f%%)\n', ...
+        Sh.consShare, 100*Sh.consShare/Sh.vGrand);
+
+% Verifica efficienza di Pareto: la somma delle quote deve eguagliare il
+% valore della grande coalizione (assioma 1 dello Shapley value).
+assert(abs(sum(Sh.phi) - Sh.vGrand) < 1e-6, ...
+       'Shapley: somma delle quote diversa dal valore della grande coalizione');
+
+% Coerenza con l'analisi economica: il valore distribuito coincide con il
+% ricavo annuo da energia condivisa calcolato nella sezione 3.
+assert(abs(Sh.vGrand - sum(rev_shared_monthly)) < 1e-6, ...
+       'Shapley: valore distribuito incoerente con il ricavo da condivisa');
+
+% --- Grafico distribuzione ----------------------------------------------
+figure('Name', 'Distribuzione Shapley', 'Color', 'w');
+barColors      = repmat([0.20 0.60 0.30], numel(Sh.phi), 1);  % consumatori
+barColors(1,:) = [0.85 0.33 0.10];                            % produttore PV
+hBar = bar(Sh.phi, 'FaceColor', 'flat');
+hBar.CData = barColors;
+grid on; box on;
+xticks(1:numel(Sh.players));
+xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
+ylabel('Quota Shapley [€/anno]');
+title(sprintf('Ripartizione incentivo CER condivisa  |  Totale = €%.0f', Sh.vGrand));
+
+
+%% ========================================================================
+%  3c) DISTRIBUZIONE DEI BENEFICI - NUCLEOLO
+%
+%  Secondo modello di ripartizione, sulla STESSA funzione caratteristica
+%  v(S) usata dallo Shapley (quindi direttamente confrontabile). Il Nucleolo
+%  (Fioriti et al., Appl. Energy 2021, eq. 7) distribuisce il valore
+%  massimizzando in modo lessicografico il surplus della coalizione piu'
+%  scontenta, risolvendo una sequenza di problemi lineari. A differenza
+%  dello Shapley, se il Core e' non-vuoto il Nucleolo vi appartiene ed e'
+%  quindi STABILE (nessuna sotto-coalizione conviene).
+%  ========================================================================
+
+Nu = nucleolus_cer(genPV, loadUsers, userNames, P_CER);
+
+fprintf('\n=== Distribuzione Nucleolo dell''incentivo CER condivisa ===\n');
+disp(Nu.table);
+fprintf('  Quota produttore (PV) : EUR %9.2f  (%.1f%%)\n', ...
+        Nu.prodShare, 100*Nu.prodShare/Nu.vGrand);
+fprintf('  Quota consumatori     : EUR %9.2f  (%.1f%%)\n', ...
+        Nu.consShare, 100*Nu.consShare/Nu.vGrand);
+coreMsg = "fuori dal Core";
+if Nu.inCore, coreMsg = "nel Core (stabile)"; end
+fprintf('  Surplus min (theta)   : EUR %9.2f  ->  %s\n', Nu.thetaMin, coreMsg);
+
+% Verifica efficienza: tutto il valore della grande coalizione e' distribuito.
+assert(abs(sum(Nu.phi) - Nu.vGrand) < 1e-6, ...
+       'Nucleolo: somma delle quote diversa dal valore della grande coalizione');
+
+% --- Confronto Shapley vs Nucleolo --------------------------------------
+Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, Nu.phi - Sh.phi, ...
+             'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', 'Diff_EUR'});
+fprintf('\n=== Confronto Shapley vs Nucleolo [€/anno] ===\n');
+disp(Tcmp);
+
+figure('Name', 'Shapley vs Nucleolo', 'Color', 'w');
+hB = bar([Sh.phi, Nu.phi], 'grouped');
+hB(1).FaceColor = [0.20 0.60 0.30];
+hB(2).FaceColor = [0.10 0.35 0.75];
+grid on; box on;
+xticks(1:numel(Sh.players));
+xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
+ylabel('Quota [€/anno]');
+legend('Shapley', 'Nucleolo', 'Location', 'northeast');
+title(sprintf('Ripartizione incentivo CER  |  Totale = €%.0f  |  \\theta_{min}=%.0f €', ...
+              Nu.vGrand, Nu.thetaMin));
+
+
+%% ========================================================================
 %  4) COSTO ENERGIA DA RETE (PUN 2025)
 %  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
 %  tariffaria. I profili prezzo del 2025 condividono la griglia canonica.

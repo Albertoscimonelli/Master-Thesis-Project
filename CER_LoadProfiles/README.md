@@ -48,11 +48,11 @@ python generate_load_profiles.py --config path/to/my_config.yaml
 
 ```
 GENERAZIONE COMPLETATA
-  Profili aziende (RAMP):   6
-  Profili famiglie (LPG):   5
-  Totale utenti CER:        11
-  Anno:                     2024
-  Risoluzione:              15 min
+  Profili aziende (RAMP):   3
+  Profili famiglie (LPG):   3
+  Totale utenti CER:        6
+  Anno:                     2025
+  Risoluzione output:       1 h (energia in kWh per ora)
   File generati:            4
   Tempo di esecuzione:      36.4 s
 ```
@@ -63,30 +63,29 @@ Il file `config/simulation_config.yaml` controlla tutti i parametri:
 
 ```yaml
 simulation:
-  year: 2024
+  year: 2025
   timezone: "Europe/Rome"
-  temporal_resolution_minutes: 15   # Risoluzione CSV finali
+  # Risoluzione di output fissa a 1 ora (non configurabile)
 
 ramp:
-  num_days: 365
-  date_start: "2024-01-01"
-  date_end: "2024-12-31"
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
   use_cases:
-    - name: "office"            # 3 uffici
-      num_users: 3
-    - name: "small_industry"    # 2 piccole industrie
-      num_users: 2
-    - name: "retail"            # 1 negozio
+    - name: "office"
+      num_users: 1
+    - name: "small_industry"
+      num_users: 1
+    - name: "retail"
       num_users: 1
 
 lpg:
   households:
     - label: "pensionati"
       household_ref: "CHR54_Retired_Couple_no_work"
-      count: 2
+      count: 1
     - label: "coppia_lavoratori"
       household_ref: "CHR02_Couple_30_64_age_with_work"
-      count: 2
+      count: 1
     - label: "famiglia_1figlio"
       household_ref: "CHR03_Family_1_child_both_at_work"
       count: 1
@@ -114,25 +113,25 @@ output:
 I file CSV generati sono compatibili con MATLAB (`readtable()`):
 
 ```
-timestamp,office_1,office_2,household_1,household_2
-2024-01-01T00:00:00,0.312,0.289,0.150,0.180
-2024-01-01T00:15:00,0.298,0.301,0.145,0.175
+timestamp,office_1_kWh,small_industry_1_kWh,retail_1_kWh
+2025-01-01T00:00:00,0.000,0.000,0.484
+2025-01-01T01:00:00,0.000,0.000,0.438
 ```
 
 - Separatore: `,`
 - Prima colonna: timestamp ISO8601
-- Valori in **kW**
-- Risoluzione: 15 minuti (configurabile)
-- Righe: ~35.000 (1 anno intero)
+- Valori in **kWh** consumati in quell'ora (colonne con suffisso `_kWh`)
+- Risoluzione: 1 ora (fissa, non configurabile)
+- Righe: ~8760 (1 anno intero)
 
 ### File generati
 
 | File | Contenuto |
 |------|-----------|
-| `profili_aziende.csv` | Profili individuali aziende/PMI (6 colonne: 3 office + 2 small_industry + 1 retail) |
-| `profili_famiglie.csv` | Profili individuali famiglie (5 colonne: household_1..5) |
-| `profili_tutti.csv` | Tutti gli 11 profili combinati in un unico file |
-| `profilo_CER_aggregato.csv` | Somma totale CER in kW (1 colonna: total_CER_kW) |
+| `profili_aziende.csv` | Profili individuali aziende/PMI (1 colonna per use case configurato: office, small_industry, retail) |
+| `profili_famiglie.csv` | Profili individuali famiglie (1 colonna per nucleo familiare configurato) |
+| `profili_tutti.csv` | Tutti i profili aziende + famiglie combinati (join sui timestamp comuni) |
+| `profilo_CER_aggregato.csv` | Somma totale CER in kWh/h (1 colonna: `total_CER_kWh`) |
 
 ## Struttura del Progetto
 
@@ -166,7 +165,7 @@ CER_LoadProfiles/
          +------------+------------+
                       |
               postprocessing.py
-              (resample 15-min, export kW)
+              (aggregazione oraria in energia kWh, export CSV)
                       |
               outputs/csv/*.csv
 ```
@@ -175,6 +174,6 @@ CER_LoadProfiles/
 
 - **Patch di compatibilita**: `ramp_runner.py` include patch per RAMP 0.5.0 con NumPy >= 2.0 e Pandas >= 3.0
 - **Fallback sintetico**: se pyLPG non e installato, `lpg_runner.py` genera profili basati su pattern tipici italiani (pensionati, lavoratori, famiglie con figli)
-- **Riproducibilita**: i seed random sono calcolati deterministicamente da `hash(nome_utente_indice) % 2^31`
+- **Seed random**: calcolati da `hash(nome_utente_indice) % 2^31`; nota che `hash()` su stringhe in Python e' salato per processo (`PYTHONHASHSEED`), quindi il seed NON e' identico tra esecuzioni diverse (i profili non sono bit-per-bit riproducibili al momento)
 - **Profili stocastici**: RAMP genera profili diversi ad ogni esecuzione grazie alla variabilita integrata nel modello
-- **Unita interne**: tutti i profili sono generati in Watt a 1 minuto, poi convertiti in kW a 15 minuti nel postprocessing
+- **Unita interne**: tutti i profili sono generati in Watt a 1 minuto, poi aggregati in energia (kWh) su base oraria nel postprocessing

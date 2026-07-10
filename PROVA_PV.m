@@ -244,7 +244,7 @@ for i=1:length(N_inv_vet)
                 NPV(i,j,k)=NaN;
                 h_eq(i,j,k)=NaN;
             else
-                IRR(i,j,k)=irr(CF);
+                IRR(i,j,k)=irr_bisection(CF);
                 DCAC(i,j,k)=P_dc_nom(i,j,k)/P_ac_nom(i,j,k);
                 NPV(i,j,k)=sum(CF); % simplified as doesn't accoung for discount rate
                 h_eq(i,j,k)=E_ac_net/P_dc_nom(i,j,k)*1000;
@@ -476,7 +476,7 @@ for i=1:length(N_inv_vet)
                 h_eq(i,j,k)=NaN;
 
             else
-                IRR(i,j,k)=irr(CF);
+                IRR(i,j,k)=irr_bisection(CF);
                 DCAC(i,j,k)=P_dc_nom(i,j,k)/P_ac_nom(i,j,k);
                 NPV(i,j,k)=sum(CF); % simplified as doesn't accoung for discount rate
                 h_eq(i,j,k)=E_ac_net/P_dc_nom(i,j,k)*1000;

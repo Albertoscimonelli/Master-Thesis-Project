@@ -17,6 +17,10 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
+# Generazione sempre a 1 minuto (come RAMP); l'aggregazione oraria avviene
+# in postprocessing.resample_to_hourly_energy(). Non e' configurabile.
+_GENERATION_RESOLUTION_MINUTES = 1
+
 # Flag per disponibilita' pyLPG
 _PYLPG_AVAILABLE = False
 try:
@@ -88,7 +92,6 @@ def _run_single_lpg_household(
     household_ref_name: str,
     house_type: str,
     seed: int,
-    resolution_minutes: int,
     energy_intensity: str,
 ) -> Optional[pd.DataFrame]:
     """Esegue pyLPG per un singolo nucleo familiare.
@@ -98,7 +101,6 @@ def _run_single_lpg_household(
         household_ref_name: Nome attributo in lpgdata.Households.
         house_type: Nome attributo in lpgdata.HouseTypes.
         seed: Seed random per riproducibilita'.
-        resolution_minutes: Risoluzione temporale in minuti.
         energy_intensity: Tipo di intensita' energetica.
 
     Returns:
@@ -136,28 +138,27 @@ def _generate_synthetic_profile(
     label: str,
     idx: int,
     year: int,
-    resolution_minutes: int,
 ) -> pd.Series:
     """Genera un profilo sintetico di fallback per un nucleo familiare.
 
     Produce un profilo realistico basato su pattern tipici italiani
-    quando pyLPG non e' disponibile.
+    quando pyLPG non e' disponibile. Generato sempre a 1 minuto, come i
+    profili pyLPG e RAMP.
 
     Args:
         label: Etichetta del tipo di famiglia.
         idx: Indice dell'unita' (per variare il seed).
         year: Anno di simulazione.
-        resolution_minutes: Risoluzione temporale in minuti.
 
     Returns:
         Series con DatetimeIndex e valori di potenza in Watt.
     """
     days_in_year = 366 if calendar.isleap(year) else 365
-    n_steps = int(days_in_year * 24 * 60 / resolution_minutes)
+    n_steps = int(days_in_year * 24 * 60 / _GENERATION_RESOLUTION_MINUTES)
     timestamps = pd.date_range(
         start=f"{year}-01-01",
         periods=n_steps,
-        freq=f"{resolution_minutes}min",
+        freq=f"{_GENERATION_RESOLUTION_MINUTES}min",
     )
 
     seed = (idx * 100 + hash(label) % 1000) % (2**31)
@@ -243,15 +244,12 @@ def run_lpg(config: dict) -> pd.DataFrame:
     lpg_config = config["lpg"]
     sim_config = config["simulation"]
     year = sim_config["year"]
-    resolution_minutes = sim_config["temporal_resolution_minutes"]
     households = lpg_config["households"]
     house_type = lpg_config["house_type"]
     energy_intensity = lpg_config.get("energy_intensity", "Random")
 
     all_profiles: dict[str, pd.Series] = {}
     global_idx = 0
-    # Genera sempre a 1 minuto (come RAMP), il postprocessing ricampionera'
-    generation_resolution = 1
 
     for hh_group in households:
         label = hh_group["label"]
@@ -275,7 +273,6 @@ def run_lpg(config: dict) -> pd.DataFrame:
                         household_ref_name=household_ref,
                         house_type=house_type,
                         seed=seed,
-                        resolution_minutes=generation_resolution,
                         energy_intensity=energy_intensity,
                     )
 
@@ -350,9 +347,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
                 logger.info("  %s (profilo sintetico, label=%s)...", col_name, label)
 
             # Fallback sintetico (a 1 min, come RAMP)
-            profile = _generate_synthetic_profile(
-                label, i, year, generation_resolution
-            )
+            profile = _generate_synthetic_profile(label, i, year)
             all_profiles[col_name] = profile
             logger.info("  %s: profilo sintetico generato", col_name)
 

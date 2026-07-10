@@ -16,47 +16,6 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def resample_to_resolution(
-    df: pd.DataFrame, resolution_minutes: int
-) -> pd.DataFrame:
-    """Ricampiona un DataFrame alla risoluzione temporale target.
-
-    Usa la media per il ricampionamento (appropriato per valori di potenza).
-
-    Args:
-        df: DataFrame con DatetimeIndex e colonne di potenza (in Watt).
-        resolution_minutes: Risoluzione target in minuti.
-
-    Returns:
-        DataFrame ricampionato alla nuova risoluzione (in Watt).
-    """
-    if df.empty:
-        return df
-
-    current_freq = pd.infer_freq(df.index)
-    target_freq = f"{resolution_minutes}min"
-
-    if current_freq == target_freq:
-        logger.info("Risoluzione gia' a %d min, nessun ricampionamento.", resolution_minutes)
-        return df
-
-    logger.info("Ricampionamento a %d min (media)...", resolution_minutes)
-    # Rimuovi eventuali duplicati nell'indice prima del resample
-    if df.index.duplicated().any():
-        df = df[~df.index.duplicated(keep="first")]
-    df_resampled = df.resample(target_freq).mean()
-    # Rimuovi eventuali NaN al bordo
-    df_resampled = df_resampled.dropna(how="all")
-
-    logger.info(
-        "Ricampionamento completato: %d -> %d campioni",
-        len(df),
-        len(df_resampled),
-    )
-
-    return df_resampled
-
-
 def resample_to_hourly_energy(df: pd.DataFrame) -> pd.DataFrame:
     """Aggrega un DataFrame di potenze (W) in energia oraria (kWh).
 

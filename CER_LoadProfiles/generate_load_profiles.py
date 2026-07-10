@@ -90,13 +90,11 @@ def main() -> None:
     config = load_config(base_path / args.config)
     sim_config = config["simulation"]
     output_config = config["output"]
-    resolution = sim_config["temporal_resolution_minutes"]
     output_folder = base_path / output_config["folder"]
 
     logger.info(
-        "Anno: %d | Risoluzione: %d min | Output: %s",
+        "Anno: %d | Risoluzione: 1h (energia in kWh) | Output: %s",
         sim_config["year"],
-        resolution,
         output_folder,
     )
 

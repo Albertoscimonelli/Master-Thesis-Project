@@ -107,6 +107,18 @@ function S = nucleolus_cer(genPV, loadUsers, userNames, P_CER)
         if rank(M, 1e-9) >= n, break; end   % x univocamente determinata
     end
 
+    % Se il rango dei vincoli congelati non ha raggiunto n, il sistema di
+    % equazioni non determina x in modo univoco: l'allocazione restituita
+    % soddisfa il criterio lessicografico fin qui raggiunto (e' quindi un
+    % punto valido del nucleolo), ma potrebbe non esserne l'unico punto.
+    if rank(M, 1e-9) < n
+        warning('nucleolus_cer:notUnique', ...
+            ['Nucleolo non univocamente determinato dopo %d iterazioni ' ...
+             '(rango vincoli %d/%d giocatori): il risultato e'' un punto ' ...
+             'valido del nucleolo ma potrebbe non essere l''unico.'], ...
+            it, rank(M, 1e-9), n);
+    end
+
     % --- Output -------------------------------------------------------------
     S.players   = players;
     S.phi       = x;

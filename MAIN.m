@@ -78,8 +78,59 @@ loadUsers = TTload.load;                            % [N_HOURS x nUtenti]
 loadTotal = sum(loadUsers, 2);                      % richiesta totale comunita' [kWh/h]
 nUsers    = numel(userNames);
 
-% --- 1b) Generazione fotovoltaica oraria ---------------------------------
-genPV = load_pv_generation(pvFile, N_HOURS);        % [N_HOURS x 1] [kWh/h]
+% --- 1b) Generazione fotovoltaica oraria e proprietari degli impianti ----
+% Ogni impianto PV e' fisicamente "dietro al contatore" di UN giocatore
+% della comunita' (il proprietario): la sua produzione copre PRIMA
+% l'autoconsumo del proprietario, e SOLO l'eccedenza e' disponibile per la
+% condivisione con il resto della comunita' -- stessa priorita' usata in
+% optimizer_PV.m (1: autoconsumo edificio, 2: CER, 3: rete).
+%
+% Oggi c'e' un solo impianto, assegnato a small_industry_1 (l'edificio
+% host). La tabella pvPlants e' pensata per estendersi a piu' impianti con
+% proprietari diversi aggiungendo elementi ai due cell array, senza
+% toccare il resto del codice. Esempio futuro (5 impianti, 4 residenziali
+% + 1 industriale):
+%
+%   pvPlants = struct( ...
+%       'file',  {pvFile_h1, pvFile_h2, pvFile_h3, pvFile_h4, pvFile_ind}, ...
+%       'owner', {"household_1_kWh", "household_2_kWh", "household_3_kWh", ...
+%                 "household_4_kWh", "small_industry_1_kWh"});
+%
+pvPlants = struct( ...
+    'file',  {pvFile}, ...
+    'owner', {"small_industry_1_kWh"});
+
+genPV_raw    = zeros(N_HOURS, 1);   % produzione totale di TUTTI gli impianti [kWh/h]
+genPVSurplus = zeros(N_HOURS, 1);   % eccedenza disponibile per la CER        [kWh/h]
+loadForShare = loadUsers;           % carichi usati per la condivisione CER: il
+                                     % carico del proprietario di un impianto e'
+                                     % sostituito dal suo carico RESIDUO (non
+                                     % coperto dall'autoconsumo), per non contare
+                                     % due volte l'energia gia' autoconsumata
+
+for p = 1:numel(pvPlants)
+    genPV_p   = load_pv_generation(pvPlants(p).file, N_HOURS);
+    genPV_raw = genPV_raw + genPV_p;
+
+    ownerIdx = find(userNames == pvPlants(p).owner, 1);
+    if isempty(ownerIdx)
+        error('MAIN:pvOwnerNotFound', ...
+              'Proprietario PV "%s" non trovato tra gli utenti (%s).', ...
+              pvPlants(p).owner, strjoin(userNames, ', '));
+    end
+
+    % Si legge il carico eventualmente gia' ridotto da un impianto
+    % precedente con lo stesso proprietario, cosi' piu' impianti sullo
+    % stesso giocatore si sommano correttamente in autoconsumo.
+    ownerLoad_p    = loadForShare(:, ownerIdx);
+    surplus_p      = max(0, genPV_p - ownerLoad_p);
+    residualLoad_p = max(0, ownerLoad_p - genPV_p);
+
+    genPVSurplus              = genPVSurplus + surplus_p;
+    loadForShare(:, ownerIdx) = residualLoad_p;
+end
+
+loadTotalForShare = sum(loadForShare, 2);
 
 % --- Riepilogo consumi annui per utente ----------------------------------
 fprintf('=== Consumi annui per utente ===\n');
@@ -87,7 +138,9 @@ for u = 1:nUsers
     fprintf('  %-22s %9.1f kWh\n', userNames(u), sum(loadUsers(:,u)));
 end
 fprintf('  %-22s %9.1f kWh\n', "TOTALE COMUNITA", sum(loadTotal));
-fprintf('  %-22s %9.1f kWh\n', "GENERAZIONE PV",  sum(genPV));
+fprintf('  %-22s %9.1f kWh\n', "GENERAZIONE PV (tot)", sum(genPV_raw));
+fprintf('  %-22s %9.1f kWh\n', "di cui autoconsumata", sum(genPV_raw) - sum(genPVSurplus));
+fprintf('  %-22s %9.1f kWh\n', "di cui eccedenza CER", sum(genPVSurplus));
 
 
 %% ========================================================================
@@ -98,14 +151,17 @@ fprintf('  %-22s %9.1f kWh\n', "GENERAZIONE PV",  sum(genPV));
 %    energia venduta   = max(0, produzione_PV - richiesta_totale)
 %  ========================================================================
 
-shared = min(genPV, loadTotal);          % energia condivisa (autoconsumo CER) [kWh/h]
-sold   = max(0, genPV - loadTotal);      % surplus immesso in rete             [kWh/h]
+shared = min(genPVSurplus, loadTotalForShare);      % energia condivisa CER   [kWh/h]
+sold   = max(0, genPVSurplus - loadTotalForShare);  % surplus immesso in rete [kWh/h]
 
 % Riorganizzazione in matrici 24 x 365 (riga = ora 0..23, colonna = giorno)
+% Nota: demand_24x365/gen_24x365 usano i valori "grezzi" (intera comunita' e
+% intera produzione) solo per la visualizzazione d'insieme in §5c; shared/sold
+% riflettono invece il modello con autoconsumo del proprietario (§1b sopra).
 shared_24x365 = reshape(shared,    24, N_DAYS);
 sold_24x365   = reshape(sold,      24, N_DAYS);
 demand_24x365 = reshape(loadTotal, 24, N_DAYS);
-gen_24x365    = reshape(genPV,     24, N_DAYS);
+gen_24x365    = reshape(genPV_raw, 24, N_DAYS);
 
 % Aggregati mensili (kWh)
 monthOfHour    = month(tGrid);
@@ -158,9 +214,14 @@ fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
 %
 %    Giocatori : PV (produttore) + consumatori
 %    Valore    : v(S) = sum_t min(genPV, load_S) * P_CER   (0 senza PV)
+%
+%  NOTA: qui "genPV" e "load_S" sono al netto dell'autoconsumo del
+%  proprietario dell'impianto (genPVSurplus, loadForShare calcolati in
+%  §1b): l'energia gia' autoconsumata dietro al contatore del proprietario
+%  non e' energia condivisibile con la CER e va esclusa dal gioco.
 %  ========================================================================
 
-Sh = shapley_cer(genPV, loadUsers, userNames, P_CER);
+Sh = shapley_cer(genPVSurplus, loadForShare, userNames, P_CER);
 
 fprintf('\n=== Distribuzione Shapley dell''incentivo CER condivisa ===\n');
 disp(Sh.table);
@@ -192,6 +253,9 @@ xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
 ylabel('Quota Shapley [€/anno]');
 title(sprintf('Ripartizione incentivo CER condivisa  |  Totale = €%.0f', Sh.vGrand));
 
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(Sh.players, Sh.phi, "Shapley");
+
 
 %% ========================================================================
 %  3c) DISTRIBUZIONE DEI BENEFICI - NUCLEOLO
@@ -205,7 +269,7 @@ title(sprintf('Ripartizione incentivo CER condivisa  |  Totale = €%.0f', Sh.vG
 %  quindi STABILE (nessuna sotto-coalizione conviene).
 %  ========================================================================
 
-Nu = nucleolus_cer(genPV, loadUsers, userNames, P_CER);
+Nu = nucleolus_cer(genPVSurplus, loadForShare, userNames, P_CER);
 
 fprintf('\n=== Distribuzione Nucleolo dell''incentivo CER condivisa ===\n');
 disp(Nu.table);
@@ -238,6 +302,9 @@ ylabel('Quota [€/anno]');
 legend('Shapley', 'Nucleolo', 'Location', 'northeast');
 title(sprintf('Ripartizione incentivo CER  |  Totale = €%.0f  |  \\theta_{min}=%.0f €', ...
               Nu.vGrand, Nu.thetaMin));
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(Nu.players, Nu.phi, "Nucleolo");
 
 
 %% ========================================================================

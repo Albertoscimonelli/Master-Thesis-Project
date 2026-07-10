@@ -468,7 +468,7 @@ for i = 1:length(N_inv_vet)
                 if numel(CF_nz) > 1 && sum(diff(sign(CF_nz)) ~= 0) > 1
                     n_multIRR = n_multIRR + 1;
                 end
-                IRR(i,j,k)  = irr(CF);
+                IRR(i,j,k)  = irr_bisection(CF);
                 DCAC(i,j,k) = P_dc_nom(i,j,k) / P_ac_nom(i,j,k);
                 % NPV attualizzato con tasso di sconto r_disc
                 NPV(i,j,k)  = sum( CF ./ (1 + r_disc).^(0:lifetime) );
@@ -729,7 +729,7 @@ for y = 1:lifetime + 1
     CF_opt(y) = REV_opt(y) - CAPEX_opt(y) - OPEX_opt(y);
 end
 
-IRR_opt = irr(CF_opt);
+IRR_opt = irr_bisection(CF_opt);
 NPV_opt = sum( CF_opt ./ (1 + r_disc).^(0:lifetime) );
 
 % --- Grafico flussi di cassa della configurazione ottimale ----------------

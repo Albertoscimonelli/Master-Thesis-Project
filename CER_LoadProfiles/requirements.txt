@@ -1,6 +1,13 @@
 rampdemand>=0.5.0
 pyloadprofilegenerator>=0.1.0
-pandas>=2.0.0,<3.0.0
-numpy>=1.24.0,<2.0.0
+pandas>=3.0.0,<4.0.0
+numpy>=2.0.0,<3.0.0
 pyyaml>=6.0
 matplotlib>=3.7.0
+
+# NOTA: pandas>=3.0 e numpy>=2.0 richiedono le patch di compatibilita'
+# applicate automaticamente da ramp_runner.py (RAMP 0.5.0 non le supporta
+# nativamente). Se si preferisce evitare le patch, usare invece:
+#   pandas>=2.0.0,<3.0.0
+#   numpy>=1.24.0,<2.0.0
+# e rimuovere _patch_ramp_numpy2()/_patch_ramp_pandas3() da ramp_runner.py.

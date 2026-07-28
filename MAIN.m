@@ -100,6 +100,18 @@ pvPlants = struct( ...
     'file',  {pvFile}, ...
     'owner', {"small_industry_1_kWh"});
 
+% Proprietario unico dell'impianto PV, se ce n'e' uno solo: usato in §5 per
+% unire nel grafico a rete il nodo "PV" (quota da produttore) con quello del
+% proprietario (quota da consumatore), dato che rappresentano la stessa
+% azienda. Con piu' proprietari diversi la fusione non e' univoca e viene
+% saltata (il nodo "PV" resta aggregato, come nel modello Shapley/Nucleolo).
+pvOwnerNames = unique([pvPlants.owner]);
+if isscalar(pvOwnerNames)
+    pvOwnerUnico = pvOwnerNames;
+else
+    pvOwnerUnico = "";
+end
+
 genPV_raw    = zeros(N_HOURS, 1);   % produzione totale di TUTTI gli impianti [kWh/h]
 genPVSurplus = zeros(N_HOURS, 1);   % eccedenza disponibile per la CER        [kWh/h]
 loadForShare = loadUsers;           % carichi usati per la condivisione CER: il
@@ -185,6 +197,9 @@ rev_shared_monthly = shared_monthly * P_CER;     % ricavo da energia condivisa [
 rev_sold_monthly   = sold_monthly   * P_SELL;    % ricavo da energia venduta   [€]
 rev_tot_monthly    = rev_shared_monthly + rev_sold_monthly;
 rev_tot_annual     = sum(rev_tot_monthly);
+rev_sold_annual    = sum(rev_sold_monthly);      
+% ricavo da vendita diretta dell'eccedenza sul mercato: NON passa per il gioco cooperativo Shapley/Nucleolo, va
+% interamente al proprietario dell'impianto PV (vedi §3b/§3c e plot_benefit_network.m)
 
 % --- Tabella riepilogativa (12 mesi + riga totale annuo) -----------------
 Mese            = [meseNomi;                "TOTALE ANNO"];
@@ -242,19 +257,29 @@ assert(abs(Sh.vGrand - sum(rev_shared_monthly)) < 1e-6, ...
        'Shapley: valore distribuito incoerente con il ricavo da condivisa');
 
 % --- Grafico distribuzione ----------------------------------------------
+% Il produttore PV e il suo proprietario vengono uniti in un'unica colonna
+% (sono la stessa azienda, vedi merge_pv_owner.m); quella colonna si divide
+% in due colori: la quota CER (Shapley) e il ricavo dalla vendita diretta
+% dell'eccedenza sul mercato, che non passa dal gioco cooperativo.
+[playersSh_m, phiSh_m, idxMergedSh] = merge_pv_owner(Sh.players, Sh.phi, pvOwnerUnico);
+soldPerPlayerSh = zeros(numel(playersSh_m), 1);
+if ~isempty(idxMergedSh)
+    soldPerPlayerSh(idxMergedSh) = rev_sold_annual;
+end
+
 figure('Name', 'Distribuzione Shapley', 'Color', 'w');
-barColors      = repmat([0.20 0.60 0.30], numel(Sh.phi), 1);  % consumatori
-barColors(1,:) = [0.85 0.33 0.10];                            % produttore PV
-hBar = bar(Sh.phi, 'FaceColor', 'flat');
-hBar.CData = barColors;
+hBar = bar([phiSh_m, soldPerPlayerSh], 'stacked');
+hBar(1).FaceColor = method_color("Shapley");
+hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
 grid on; box on;
-xticks(1:numel(Sh.players));
-xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
-ylabel('Quota Shapley [€/anno]');
-title(sprintf('Ripartizione incentivo CER condivisa  |  Totale = €%.0f', Sh.vGrand));
+xticks(1:numel(playersSh_m));
+xticklabels(strrep(playersSh_m, '_', '\_')); xtickangle(45);
+ylabel('Ricavo [€/anno]');
+legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
+title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
 
 % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-plot_benefit_network(Sh.players, Sh.phi, "Shapley");
+plot_benefit_network(Sh.players, Sh.phi, "Shapley", pvOwnerUnico, rev_sold_annual);
 
 
 %% ========================================================================
@@ -285,26 +310,94 @@ fprintf('  Surplus min (theta)   : EUR %9.2f  ->  %s\n', Nu.thetaMin, coreMsg);
 assert(abs(sum(Nu.phi) - Nu.vGrand) < 1e-6, ...
        'Nucleolo: somma delle quote diversa dal valore della grande coalizione');
 
-% --- Confronto Shapley vs Nucleolo --------------------------------------
-Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, Nu.phi - Sh.phi, ...
-             'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', 'Diff_EUR'});
-fprintf('\n=== Confronto Shapley vs Nucleolo [€/anno] ===\n');
-disp(Tcmp);
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", pvOwnerUnico, rev_sold_annual);
 
-figure('Name', 'Shapley vs Nucleolo', 'Color', 'w');
-hB = bar([Sh.phi, Nu.phi], 'grouped');
-hB(1).FaceColor = [0.20 0.60 0.30];
-hB(2).FaceColor = [0.10 0.35 0.75];
-grid on; box on;
-xticks(1:numel(Sh.players));
-xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
-ylabel('Quota [€/anno]');
-legend('Shapley', 'Nucleolo', 'Location', 'northeast');
-title(sprintf('Ripartizione incentivo CER  |  Totale = €%.0f  |  \\theta_{min}=%.0f €', ...
-              Nu.vGrand, Nu.thetaMin));
+
+%% ========================================================================
+%  3d) DISTRIBUZIONE DEI BENEFICI - NASH BARGAINING
+%
+%  Terzo modello di ripartizione, sulla STESSA funzione caratteristica v(S)
+%  di Shapley e Nucleolo. Adattamento del modello di Nash Bargaining
+%  generale (Yan et al., Int. J. Electr. Power Energy Syst. 152 (2023)
+%  109218) al caso di una singola grande coalizione: ogni giocatore incassa
+%  il proprio punto di disaccordo (qui 0, nessuno guadagna nulla da solo)
+%  piu' una quota del surplus proporzionale al proprio contributo marginale
+%  alla grande coalizione (il "potere contrattuale"). Vedi
+%  nash_bargaining_cer.m per i dettagli e i riferimenti.
+%  ========================================================================
+
+NB = nash_bargaining_cer(genPVSurplus, loadForShare, userNames, P_CER);
+
+fprintf('\n=== Distribuzione Nash Bargaining dell''incentivo CER condivisa ===\n');
+disp(NB.table);
+fprintf('  Quota produttore (PV) : EUR %9.2f  (%.1f%%)\n', ...
+        NB.prodShare, 100*NB.prodShare/NB.vGrand);
+fprintf('  Quota consumatori     : EUR %9.2f  (%.1f%%)\n', ...
+        NB.consShare, 100*NB.consShare/NB.vGrand);
+
+% Verifica efficienza: tutto il valore della grande coalizione e' distribuito.
+assert(abs(sum(NB.phi) - NB.vGrand) < 1e-6, ...
+       'Nash Bargaining: somma delle quote diversa dal valore della grande coalizione');
 
 % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-plot_benefit_network(Nu.players, Nu.phi, "Nucleolo");
+plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", pvOwnerUnico, rev_sold_annual);
+
+
+%% ========================================================================
+%  3e) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%
+%  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
+%  caratteristica v(S), i modelli di ripartizione calcolati finora. Pensati
+%  per estendersi facilmente: aggiungere un nuovo modello significa
+%  aggiungere una colonna alla tabella e una tripletta (x-offset, phi,
+%  colore) al grafico, senza toccare il resto della sezione.
+%  ========================================================================
+
+Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, ...
+             'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', 'NashBargaining_EUR'});
+fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
+disp(Tcmp);
+
+% PV + proprietario uniti in un'unica colonna per metodo (vedi §3b), con la
+% vendita diretta dell'eccedenza (fissa, indipendente dal metodo) impilata
+% sopra la quota CER di ciascun metodo. Le colonne dei diversi metodi per
+% ogni giocatore sono affiancate manualmente per ottenere raggruppato +
+% impilato, cosa che bar() non supporta in un'unica chiamata.
+[players_m, phiSh_m2, idxMerged_m] = merge_pv_owner(Sh.players, Sh.phi, pvOwnerUnico);
+[~,        phiNu_m2, ~]            = merge_pv_owner(Nu.players, Nu.phi, pvOwnerUnico);
+[~,        phiNB_m2, ~]            = merge_pv_owner(NB.players, NB.phi, pvOwnerUnico);
+soldPerPlayer_m = zeros(numel(players_m), 1);
+if ~isempty(idxMerged_m)
+    soldPerPlayer_m(idxMerged_m) = rev_sold_annual;
+end
+
+nMetodi  = 3;
+larghezza = 0.8 / nMetodi;
+xShapley  = (1:numel(players_m)) - larghezza;
+xNucleolo = (1:numel(players_m));
+xNashBarg = (1:numel(players_m)) + larghezza;
+
+figure('Name', 'Confronto modelli di ripartizione', 'Color', 'w');
+hold on; grid on; box on;
+hS  = bar(xShapley,  [phiSh_m2, soldPerPlayer_m], larghezza, 'stacked');
+hN  = bar(xNucleolo, [phiNu_m2, soldPerPlayer_m], larghezza, 'stacked');
+hNB = bar(xNashBarg, [phiNB_m2, soldPerPlayer_m], larghezza, 'stacked');
+hS(1).FaceColor  = method_color("Shapley");
+hN(1).FaceColor  = method_color("Nucleolo");
+hNB(1).FaceColor = method_color("Nash Bargaining");
+hS(2).FaceColor  = [0.90 0.45 0.15];   % vendita energia eccedente (mercato,
+hN(2).FaceColor  = [0.90 0.45 0.15];   % stesso ricavo, indipendente dal metodo)
+hNB(2).FaceColor = [0.90 0.45 0.15];
+xticks(1:numel(players_m));
+xticklabels(strrep(players_m, '_', '\_')); xtickangle(45);
+ylabel('Ricavo [€/anno]');
+legend([hS(1) hN(1) hNB(1) hS(2)], ...
+       {'Shapley (quota CER)', 'Nucleolo (quota CER)', 'Nash Bargaining (quota CER)', ...
+        'Vendita energia eccedente'}, ...
+       'Location', 'northeast');
+title(sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
+              Nu.vGrand, Nu.thetaMin));
 
 
 %% ========================================================================

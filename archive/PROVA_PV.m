@@ -1,3 +1,12 @@
+% =========================================================================
+% [SUPERATO da optimizer_PV.m il 2026-07-29 - conservato come storico tesi]
+%
+% Prima versione dell'ottimizzatore PV. NON usare: optimizer_PV.m corregge
+% difetti ancora presenti qui (NPV non attualizzato, c_interconn applicato
+% in modo incoerente, nessun clamp sull'irradianza). Vedi AUDIT_REPORT.md
+% (M8) per l'elenco completo.
+% =========================================================================
+
 clear all
 clc
 close all

@@ -14,6 +14,8 @@ function c = method_color(method)
             c = [0.08 0.25 0.55];   % blu scuro
         case "nash bargaining"
             c = [0.20 0.60 0.30];   % verde
+        case "variance least core"
+            c = [0.85 0.35 0.25];   % rosso mattone
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

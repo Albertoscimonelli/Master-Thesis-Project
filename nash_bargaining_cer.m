@@ -1,4 +1,4 @@
-function S = nash_bargaining_cer(genPV, loadUsers, userNames, P_CER)
+function S = nash_bargaining_cer(genUsers, loadUsers, userNames, P_CER)
 %NASH_BARGAINING_CER  Ripartizione dei ricavi CER tramite la soluzione di
 %   Nash Bargaining pesata (General Nash Bargaining, GNB), adattata dal
 %   modello di Yan et al., "Optimal scheduling strategy and benefit
@@ -23,8 +23,9 @@ function S = nash_bargaining_cer(genPV, loadUsers, userNames, P_CER)
 %   ADATTAMENTO AL GIOCO CER (una sola grande coalizione, niente scambi
 %   P2P multi-VPP come nel paper originale):
 %     - Punto di disaccordo d_i = v({i}): il valore che il giocatore i
-%       otterrebbe da solo. In questo gioco v({i}) = 0 per TUTTI (serve
-%       sia il PV sia almeno un consumatore per condividere energia): quindi
+%       otterrebbe da solo. In questo gioco v({i}) = 0 per TUTTI: eccedenza e
+%       carico residuo di un utente sono complementari (dove produce in
+%       eccesso non ha carico da coprire), quindi da solo non condivide nulla.
 %       d_i = 0 per costruzione, nessun ricavo CER senza partecipare.
 %     - Potere contrattuale alpha_i = contributo marginale alla grande
 %       coalizione, v(N) - v(N \ {i}): quanto la coalizione perderebbe se
@@ -35,29 +36,29 @@ function S = nash_bargaining_cer(genPV, loadUsers, userNames, P_CER)
 %     Con d_i = 0 la formula si riduce a x_i = alpha_i / sum(alpha) * v(N):
 %     ripartizione proporzionale al contributo marginale di ciascuno.
 %
-%   NOTA: il PV e' indispensabile (senza PV, v(S) = 0 per qualsiasi S),
-%   quindi il suo contributo marginale alpha_PV = v(N) e' tipicamente molto
-%   piu' grande di quello dei singoli consumatori: e' una proprieta' nota e
-%   accettata in teoria dei giochi cooperativi per un giocatore "essenziale"
-%   (senza di lui il valore della coalizione crolla a zero).
+%   NOTA: un prosumer che sia l'unico a produrre e' un giocatore ESSENZIALE
+%   (senza di lui v(S) = 0 per qualsiasi S), quindi il suo contributo
+%   marginale alpha_i = v(N) risulta molto piu' grande di quello degli altri:
+%   e' una proprieta' nota e accettata in teoria dei giochi cooperativi.
 %
 %   INPUT
-%     genPV     [H x 1]   generazione PV oraria               [kWh/h]
-%     loadUsers [H x nC]  carichi orari dei consumatori        [kWh/h]
-%     userNames [1 x nC]  nomi dei consumatori                 (string)
-%     P_CER     scalare   incentivo CER su energia condivisa   [EUR/kWh]
+%     genUsers  [H x n]   eccedenza oraria di ciascun utente     [kWh/h]
+%     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
+%     userNames [1 x n]   nomi degli utenti                      (string)
+%     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
 %
 %   OUTPUT (struct S)
-%     .players   [1 x n]  nomi dei giocatori ("PV" + consumatori)
-%     .phi       [n x 1]  ripartizione Nash Bargaining          [EUR]
-%     .vGrand    scalare  valore della grande coalizione        [EUR]
-%     .prodShare scalare  quota del produttore                  [EUR]
-%     .consShare scalare  quota totale dei consumatori           [EUR]
-%     .d         [n x 1]  punti di disaccordo (threat point)     [EUR]
-%     .alpha     [n x 1]  potere contrattuale (contributo marginale) [EUR]
-%     .table     table    riepilogo (giocatore, quota, percentuale, potere)
+%     .players    [1 x n]  nomi dei giocatori (= userNames)
+%     .phi        [n x 1]  ripartizione Nash Bargaining          [EUR]
+%     .vGrand     scalare  valore della grande coalizione        [EUR]
+%     .isProsumer [n x 1]  logico, true se il giocatore ha produzione
+%     .prodShare  scalare  quota totale ai prosumer              [EUR]
+%     .consShare  scalare  quota totale ai consumatori puri      [EUR]
+%     .d          [n x 1]  punti di disaccordo (threat point)     [EUR]
+%     .alpha      [n x 1]  potere contrattuale (contributo marginale) [EUR]
+%     .table      table    riepilogo (giocatore, quota, percentuale, potere)
 
-    [v, players, ~] = cer_coalition_values(genPV, loadUsers, userNames, P_CER);
+    [v, players, ~] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
     n         = numel(players);
     nSub      = numel(v);
     maskGrand = nSub - 1;
@@ -87,13 +88,16 @@ function S = nash_bargaining_cer(genPV, loadUsers, userNames, P_CER)
     x       = d + (alpha / sum(alpha)) * surplus;
 
     % --- Output ---------------------------------------------------------
-    S.players   = players;
-    S.phi       = x;
-    S.vGrand    = vGrand;
-    S.prodShare = x(1);
-    S.consShare = sum(x(2:end));
-    S.d         = d;
-    S.alpha     = alpha;
+    isProsumer = any(genUsers > 0, 1).';   % chi porta produzione nel gioco
+
+    S.players    = players;
+    S.phi        = x;
+    S.vGrand     = vGrand;
+    S.isProsumer = isProsumer;
+    S.prodShare  = sum(x(isProsumer));
+    S.consShare  = sum(x(~isProsumer));
+    S.d          = d;
+    S.alpha      = alpha;
     S.table     = table(players(:), x, 100*x/vGrand, alpha, ...
                         'VariableNames', ...
                         {'Giocatore', 'NashBargaining_EUR', 'Quota_pct', 'PotereContrattuale_EUR'});

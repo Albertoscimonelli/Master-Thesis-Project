@@ -1,4 +1,4 @@
-function plot_benefit_network(players, phi, method, pvOwner, extraRevenue)
+function plot_benefit_network(players, phi, method, soldPerPlayer)
 %PLOT_BENEFIT_NETWORK  Diagramma radiale dei benefici CER attorno alla
 %   cabina primaria.
 %
@@ -8,40 +8,34 @@ function plot_benefit_network(players, phi, method, pvOwner, extraRevenue)
 %   raggio lineare, per non esagerare visivamente le differenze). Le
 %   frecce vanno tutte dalla cabina VERSO ciascun giocatore.
 %
-%   Il produttore PV e il suo proprietario (pvOwner) vengono uniti in un
-%   solo cerchio (vedi merge_pv_owner.m). Se quel cerchio riceve anche
-%   ricavi dalla vendita diretta dell'eccedenza sul mercato (extraRevenue),
-%   viene diviso in due spicchi colorati: quota CER (ripartizione dei
-%   benefici del gioco cooperativo) e vendita mercato.
+%   Ogni giocatore e' un utente della comunita': i prosumer compaiono con la
+%   loro quota CER e, se vendono eccedenza sul mercato, il cerchio si divide
+%   in due spicchi colorati (quota CER e vendita mercato). Non esiste piu' un
+%   nodo "PV" separato da fondere col proprietario: la produzione appartiene
+%   nativamente al giocatore che la possiede.
 %
 %   INPUT
-%     players      [1 x n] string   nomi dei giocatori (players(1) = "PV")
-%     phi          [n x 1] double   beneficio annuo per giocatore [EUR]
-%     method       string           "Shapley" o "Nucleolo" (titolo + colore quota CER)
-%     pvOwner      string           (opzionale) proprietario dell'impianto PV,
-%                                    per fondere il nodo "PV" col suo nodo
-%     extraRevenue scalare          (opzionale) ricavo annuo da vendita diretta
-%                                    dell'eccedenza sul mercato, attribuito
-%                                    interamente al nodo fuso (0 se assente)
+%     players       [1 x n] string   nomi dei giocatori
+%     phi           [n x 1] double   quota CER per giocatore        [EUR]
+%     method        string           nome del metodo (titolo + colore)
+%     soldPerPlayer [n x 1] double   (opzionale) ricavo annuo da vendita
+%                                     diretta dell'eccedenza, per giocatore
 
-    if nargin < 4, pvOwner      = "";  end
-    if nargin < 5, extraRevenue = 0;   end
-
-    [players, phi, mergedIdx] = merge_pv_owner(players, phi, pvOwner);
     n = numel(players);
+    if nargin < 4 || isempty(soldPerPlayer)
+        soldPerPlayer = zeros(n, 1);
+    end
+    players       = players(:).';
+    phi           = phi(:);
+    soldPerPlayer = soldPerPlayer(:);
 
     % --- Beneficio totale per giocatore (usato per il raggio dei cerchi) ----
-    phiTotal = phi;
-    if ~isempty(mergedIdx)
-        phiTotal(mergedIdx) = phi(mergedIdx) + extraRevenue;
-    else
-        extraRevenue = 0;   % nessun nodo a cui attribuirlo: non disegnare spicchi
-    end
+    phiTotal = phi + soldPerPlayer;
 
     % --- Layout: giocatori su una circonferenza attorno alla cabina ---------
     R     = 10;                                    % raggio di disposizione
     theta = linspace(0, 2*pi, n+1).'; theta(end) = [];
-    theta = theta + pi/2;                           % nodo fuso in cima (leggibilita')
+    theta = theta + pi/2;                           % primo nodo in cima
     posX  = R * cos(theta);
     posY  = R * sin(theta);
 
@@ -84,7 +78,7 @@ function plot_benefit_network(players, phi, method, pvOwner, extraRevenue)
 
     % --- Cerchi dei giocatori -------------------------------------------------
     for i = 1:n
-        if i == mergedIdx && extraRevenue > 0
+        if soldPerPlayer(i) > 0 && phiTotal(i) > 0
             shareCER = phi(i) / phiTotal(i);
             aSplit   = pi/2 + 2*pi*shareCER;
             drawWedge(posX(i), posY(i), nodeR(i), pi/2, aSplit,     colCER);
@@ -104,7 +98,7 @@ function plot_benefit_network(players, phi, method, pvOwner, extraRevenue)
 
     legEntries = {sprintf('Quota CER (%s)', method)};
     legHandles = scatter(nan, nan, 80, colCER, 'filled');
-    if extraRevenue > 0
+    if any(soldPerPlayer > 0)
         legHandles(end+1) = scatter(nan, nan, 80, colMarket, 'filled');
         legEntries{end+1}  = 'Vendita energia eccedente (mercato)';
     end

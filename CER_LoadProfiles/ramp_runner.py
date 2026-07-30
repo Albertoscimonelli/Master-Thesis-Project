@@ -32,12 +32,16 @@ def _patch_ramp_numpy2():
                 self.window_1 = window_1
             if window_2 is None:
                 if self.num_windows >= 2:
-                    raise InvalidWindow("Windows 2 is not provided although 2+ windows were declared")
+                    raise InvalidWindow(
+                        "Windows 2 is not provided although 2+ windows were declared"
+                    )
             else:
                 self.window_2 = window_2
             if window_3 is None:
                 if self.num_windows == 3:
-                    raise InvalidWindow("Windows 3 is not provided although 3 windows were declared")
+                    raise InvalidWindow(
+                        "Windows 3 is not provided although 3 windows were declared"
+                    )
             else:
                 self.window_3 = window_3
 

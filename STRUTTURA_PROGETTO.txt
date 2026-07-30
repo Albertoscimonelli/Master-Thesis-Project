@@ -16,11 +16,15 @@ Project/
 |
 |-- README.md                           Descrizione generale del progetto
 |-- STRUTTURA_PROGETTO.txt              Questo file
-|-- GUIDA_modelli_distribuzione.md      Guida matematica ai modelli Shapley/Nucleolo
+|-- GUIDA_modelli_distribuzione.md      Guida matematica ai modelli di ripartizione
 |-- AUDIT_REPORT.md                     Report di audit del codice (bug/miglioramenti)
+|-- REFACTORING_PLAN.md                 Piano ed esito del refactoring (2026-07-29)
 |-- LICENSE                             Licenza MIT
 |-- requirements.txt                    Freeze completo dell'ambiente Python usato
+|-- requirements-dev.txt                Strumenti di sviluppo (pycodestyle)
+|-- setup.cfg                           Configurazione pycodestyle/flake8 (max-line-length 99)
 |-- .gitignore                          File ignorati da Git
+|-- 20250101_20251231_MGP_PrezziZonali_Nord.xlsx   Prezzo zonale orario MGP 2025 (GME, zona Nord)
 |
 +-- CER_LoadProfiles/                   PACCHETTO PYTHON - generazione profili di carico
 |   |-- README.md
@@ -50,12 +54,28 @@ Project/
 |
 +-- MAIN.m                              ENTRY POINT MATLAB - analisi energetica/economica CER
 |-- cer_coalition_values.m              Funzione caratteristica v(S) del gioco cooperativo
+|                                       (un giocatore per utente: prosumer con carico
+|                                        e produzione, dal 2026-07-29)
 |-- shapley_cer.m                       Ripartizione incentivo CER - Shapley value
 |-- nucleolus_cer.m                     Ripartizione incentivo CER - Nucleolo (LP sequenziali)
+|-- nash_bargaining_cer.m               Ripartizione incentivo CER - Nash Bargaining (forma chiusa)
+|-- variance_least_core_cer.m           Ripartizione incentivo CER - Variance Least Core (row-generation)
+|-- load_zonal_price.m                  Prezzo zonale orario MGP, allineato alla griglia oraria
+|-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1)
 |-- irr_bisection.m                     IRR via bisezione (senza Financial Toolbox)
 |-- profilo_prezzi_pun_2025.m           Profilo orario prezzi PUN 2025 (3 modalita' tariffarie)
 |-- optimizer_PV.m                      Dimensionamento/ottimizzazione impianto PV (IRR/NPV)
-+-- PROVA_PV.m                          [LEGACY] versione precedente dell'ottimizzatore PV
+|                                       [standalone: NON invocato da MAIN.m, solo per test]
+|-- load_cer_data.m                     Caricamento profili di carico + generazione PV
+|-- report_allocation.m                 Stampa e verifica di una ripartizione dei benefici
+|-- plot_allocation_comparison.m        Grafico di confronto tra modelli di ripartizione
+|-- plot_cer_energy.m                   Grafici mensili: energia condivisa e ricavi
+|-- plot_pv_vs_demand.m                 Grafico annuale PV vs richiesta comunita'
+|-- plot_load_profiles.m                Profili di consumo in 4 giorni tipo
++-- archive/
+    |-- PROVA_PV.m                      [LEGACY] versione precedente dell'ottimizzatore PV
+    +-- merge_pv_owner.m                [SUPERATO] fondeva il nodo "PV" col proprietario;
+                                        inutile da quando ogni utente e' un giocatore
 
 
 ================================================================================
@@ -266,21 +286,26 @@ Pipeline a sezioni indipendenti:
   0) Configurazione (percorsi, costanti, parametri economici)
   1) Caricamento profili di carico + generazione PV; assegnazione degli
      impianti PV ai proprietari con autoconsumo (vedi Sezione 7)
+  1c) Prezzo zonale orario (load_zonal_price.m) e tariffa incentivante CER
+     oraria TIP_h (compute_cer_incentive.m, eq. 3.1) -> P_CER_h
   2) Energia condivisa/venduta (al netto dell'autoconsumo del proprietario)
-  3) Analisi economica (ricavi mensili/annuali)
-  3b/3c) Ripartizione dell'incentivo CER: Shapley value e Nucleolo
+  3) Analisi economica (ricavi mensili/annuali, incentivo orario P_CER_h)
+  3b/3c/3d/3e) Ripartizione dell'incentivo CER: Shapley value, Nucleolo,
+     Nash Bargaining, Variance Least Core
+  3f) Confronto tra i quattro modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
 --------------------------------------------------------------------------------
- 4.2  cer_coalition_values.m, shapley_cer.m, nucleolus_cer.m
+ 4.2  cer_coalition_values.m, shapley_cer.m, nucleolus_cer.m,
+      nash_bargaining_cer.m, variance_least_core_cer.m
 --------------------------------------------------------------------------------
 
 Modello di gioco cooperativo a utilita' trasferibile per ripartire
 l'incentivo sull'energia condivisa tra PV (produttore) e consumatori.
 
   cer_coalition_values.m   Costruisce v(S) per OGNI coalizione (2^n),
-                            condivisa da entrambi i metodi di riparto cosi'
+                            condivisa dai metodi di riparto cosi'
                             che siano direttamente confrontabili.
   shapley_cer.m             Shapley value in forma esatta (Moncecchi et al.,
                             Appl. Sci. 2020, eq. 39).
@@ -292,11 +317,71 @@ l'incentivo sull'energia condivisa tra PV (produttore) e consumatori.
                             warning ('nucleolus_cer:notUnique') perche' il
                             risultato potrebbe non essere l'unico punto
                             del nucleolo.
+  nash_bargaining_cer.m     Nash Bargaining pesato in forma chiusa (Yan et
+                            al., IJEPES 152 (2023) 109218): quota
+                            proporzionale al contributo marginale.
+  variance_least_core_cer.m Variance Least Core via ROW-GENERATION
+                            (Ferrucci, Fioriti, Poli, IEEE PES ISGT Europe
+                            2025, eq. 12-17): allocazione al tempo stesso
+                            stabile (Least Core) e unica (varianza minima
+                            dalla ripartizione uniforme).
+                            A DIFFERENZA DEGLI ALTRI TRE non usa
+                            cer_coalition_values: valuta v(K) su richiesta
+                            solo per le poche coalizioni generate dal
+                            Separation Problem (MILP), quindi resta
+                            applicabile a comunita' con decine o centinaia
+                            di membri, dove le 2^n coalizioni sarebbero
+                            impossibili da enumerare.
+                            Richiede Optimization Toolbox (linprog,
+                            quadprog, intlinprog).
 
 Per la derivazione matematica completa vedi GUIDA_modelli_distribuzione.md.
 
 --------------------------------------------------------------------------------
- 4.3  profilo_prezzi_pun_2025.m
+ 4.3  load_cer_data.m, report_allocation.m, plot_*.m  (helper di MAIN.m)
+--------------------------------------------------------------------------------
+
+Estratti da MAIN.m nel refactoring del 2026-07-29 (vedi REFACTORING_PLAN.md),
+nessun cambiamento funzionale.
+
+  load_cer_data.m              I/O: profili di carico + generazione PV,
+                                assegnazione impianti/autoconsumo (Sezione 7).
+                                Restituisce una struct D.
+  report_allocation.m          Stampa + verifica di efficienza di una
+                                ripartizione (usata da tutti e 4 i metodi).
+  plot_allocation_comparison.m Grafico a barre raggruppate+impilate che
+                                confronta i modelli di ripartizione.
+  plot_cer_energy.m            Grafici mensili: energia condivisa e ricavi.
+  plot_pv_vs_demand.m          Andamento annuale PV vs richiesta comunita'.
+  plot_load_profiles.m         Profili di consumo in 4 giorni tipo (uno per
+                                stagione), separando commerciali/residenziali.
+
+--------------------------------------------------------------------------------
+ 4.4  load_zonal_price.m, compute_cer_incentive.m  (tariffa CER oraria)
+--------------------------------------------------------------------------------
+
+  load_zonal_price.m       Legge il prezzo zonale orario del Mercato del
+                            Giorno Prima (export GME, es.
+                            20250101_20251231_MGP_PrezziZonali_Nord.xlsx) e lo
+                            allinea alla griglia oraria canonica tGrid.
+                            Gestisce il cambio di ora legale italiana (il
+                            file usa ore legali reali: 25 ore il giorno del
+                            rientro a fine ottobre, 23 quello di fine marzo),
+                            tenendo l'ultima occorrenza dei timestamp
+                            duplicati e lasciando a retime() il completamento
+                            per interpolazione dell'ora mancante di marzo.
+  compute_cer_incentive.m  Calcola la tariffa incentivante premio oraria
+                            TIP_h (eq. 3.1: scaglioni di potenza TP_base/CAP,
+                            correzione zonale FC_zonale, fattore di riduzione
+                            F). Usata in MAIN.m §1c per ottenere P_CER_h, che
+                            sostituisce l'incentivo costante come input di
+                            tutti e 4 i modelli di ripartizione.
+                            NOTA: F e' per ora fissato a 0 (TODO in MAIN.m) -
+                            la definizione completa del fattore di riduzione
+                            non e' ancora disponibile.
+
+--------------------------------------------------------------------------------
+ 4.5  profilo_prezzi_pun_2025.m
 --------------------------------------------------------------------------------
 
 Genera il profilo orario dei prezzi PUN 2025 per 3 modalita' tariffarie
@@ -304,17 +389,17 @@ Genera il profilo orario dei prezzi PUN 2025 per 3 modalita' tariffarie
 2025 e fasce orarie ARERA (F1/F2/F3).
 
 --------------------------------------------------------------------------------
- 4.4  irr_bisection.m
+ 4.6  irr_bisection.m
 --------------------------------------------------------------------------------
 
 Calcola l'Internal Rate of Return per bisezione, senza dipendere dalla
 Financial Toolbox (la funzione irr() nativa di MATLAB la richiede).
-Usata da optimizer_PV.m e PROVA_PV.m al posto di irr(). Assume un solo
+Usata da optimizer_PV.m e archive/PROVA_PV.m al posto di irr(). Assume un solo
 cambio di segno nel flusso di cassa; ritorna NaN se non trova una radice
 nell'intervallo di tassi esplorato [-99%, 1000%].
 
 --------------------------------------------------------------------------------
- 4.5  optimizer_PV.m  (dimensionamento impianto PV)
+ 4.7  optimizer_PV.m  (dimensionamento impianto PV)
 --------------------------------------------------------------------------------
 
 Ottimizzazione di un impianto fotovoltaico su copertura industriale.
@@ -326,7 +411,7 @@ ricavi, IRR, NPV). Seleziona la configurazione ottimale e produce grafici
 3D dello spazio delle soluzioni.
 
 --------------------------------------------------------------------------------
- 4.6  PROVA_PV.m  [LEGACY]
+ 4.8  archive/PROVA_PV.m  [LEGACY]
 --------------------------------------------------------------------------------
 
 Versione precedente di optimizer_PV.m, mantenuta come riferimento
@@ -388,7 +473,7 @@ I due file requirements.txt hanno scopi diversi mantenuti allineati:
 
 
 ================================================================================
- 7. MODELLO DI AUTOCONSUMO E ASSEGNAZIONE DEGLI IMPIANTI PV (MAIN.m §1b)
+ 7. MODELLO DI AUTOCONSUMO E ASSEGNAZIONE DEGLI IMPIANTI PV (load_cer_data.m)
 ================================================================================
 
 Ogni impianto PV e' fisicamente "dietro al contatore" di UN giocatore

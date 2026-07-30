@@ -1,10 +1,11 @@
-function S = nucleolus_cer(genPV, loadUsers, userNames, P_CER)
+function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER)
 %NUCLEOLUS_CER  Ripartizione dei ricavi CER tramite il Nucleolo del gioco
 %   cooperativo (Fioriti et al., Appl. Energy 2021, eq. 7).
 %
 %   Usa la STESSA funzione caratteristica v(S) dello Shapley (cer_coalition_values),
-%   cosi' i due metodi sono direttamente confrontabili:
-%     v(S) = sum_t min(genPV(t), load_S(t)) * P_CER,   0 se il PV non e' in S.
+%   cosi' i due metodi sono direttamente confrontabili. Un giocatore per utente:
+%     v(S) = sum_t min( sum_{i in S} gen_i(t), sum_{i in S} load_i(t) ) * P_CER(t)
+%   P_CER puo' essere uno scalare o un vettore [H x 1] (incentivo orario).
 %
 %   IDEA (eq. 7)
 %     Il surplus (o "scontentezza" rovesciata) di una coalizione J e'
@@ -23,23 +24,24 @@ function S = nucleolus_cer(genPV, loadUsers, userNames, P_CER)
 %     piena equita' assiomatica.
 %
 %   INPUT
-%     genPV     [H x 1]   generazione PV oraria               [kWh/h]
-%     loadUsers [H x nC]  carichi orari dei consumatori        [kWh/h]
-%     userNames [1 x nC]  nomi dei consumatori                 (string)
-%     P_CER     scalare   incentivo CER su energia condivisa   [EUR/kWh]
+%     genUsers  [H x n]   eccedenza oraria di ciascun utente     [kWh/h]
+%     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
+%     userNames [1 x n]   nomi degli utenti                      (string)
+%     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
 %
 %   OUTPUT (struct S)
-%     .players   [1 x n]  nomi dei giocatori ("PV" + consumatori)
-%     .phi       [n x 1]  ripartizione Nucleolo                [EUR]
-%     .vGrand    scalare  valore della grande coalizione       [EUR]
-%     .prodShare scalare  quota del produttore                 [EUR]
-%     .consShare scalare  quota totale dei consumatori         [EUR]
-%     .thetaMin  scalare  surplus della coalizione piu' scontenta [EUR]
-%                         (>= 0  =>  allocazione nel Core, stabile)
-%     .inCore    logico   true se thetaMin >= -tol
-%     .table     table    riepilogo (giocatore, quota, percentuale)
+%     .players    [1 x n]  nomi dei giocatori (= userNames)
+%     .phi        [n x 1]  ripartizione Nucleolo                [EUR]
+%     .vGrand     scalare  valore della grande coalizione       [EUR]
+%     .isProsumer [n x 1]  logico, true se il giocatore ha produzione
+%     .prodShare  scalare  quota totale ai prosumer             [EUR]
+%     .consShare  scalare  quota totale ai consumatori puri     [EUR]
+%     .thetaMin   scalare  surplus della coalizione piu' scontenta [EUR]
+%                          (>= 0  =>  allocazione nel Core, stabile)
+%     .inCore     logico   true se thetaMin >= -tol
+%     .table      table    riepilogo (giocatore, quota, percentuale)
 
-    [v, players, A_inc] = cer_coalition_values(genPV, loadUsers, userNames, P_CER);
+    [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
     n      = numel(players);
     nSub   = numel(v);
     vGrand = v(end);
@@ -120,13 +122,16 @@ function S = nucleolus_cer(genPV, loadUsers, userNames, P_CER)
     end
 
     % --- Output -------------------------------------------------------------
-    S.players   = players;
-    S.phi       = x;
-    S.vGrand    = vGrand;
-    S.prodShare = x(1);
-    S.consShare = sum(x(2:end));
-    S.thetaMin  = thetaMin;
-    S.inCore    = thetaMin >= -tol;
-    S.table     = table(players(:), x, 100*x/vGrand, ...
-                        'VariableNames', {'Giocatore', 'Nucleolo_EUR', 'Quota_pct'});
+    isProsumer = any(genUsers > 0, 1).';   % chi porta produzione nel gioco
+
+    S.players    = players;
+    S.phi        = x;
+    S.vGrand     = vGrand;
+    S.isProsumer = isProsumer;
+    S.prodShare  = sum(x(isProsumer));
+    S.consShare  = sum(x(~isProsumer));
+    S.thetaMin   = thetaMin;
+    S.inCore     = thetaMin >= -tol;
+    S.table      = table(players(:), x, 100*x/vGrand, ...
+                         'VariableNames', {'Giocatore', 'Nucleolo_EUR', 'Quota_pct'});
 end

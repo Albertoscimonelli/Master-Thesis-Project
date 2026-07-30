@@ -136,4 +136,9 @@ def export_to_csv(
         float_format="%.3f",
     )
 
-    logger.info("CSV esportato: %s (%d righe, %d colonne)", filepath, len(df_export), len(df_export.columns))
+    logger.info(
+        "CSV esportato: %s (%d righe, %d colonne)",
+        filepath,
+        len(df_export),
+        len(df_export.columns),
+    )

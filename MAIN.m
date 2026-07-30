@@ -9,11 +9,14 @@ close all;
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
+%   3b-3e) Ripartizione dei benefici con quattro modelli di teoria dei giochi
+%    3f) Confronto tra i modelli
 %    4) Costo energia da rete (PUN 2025, per utente e per modalita)
 %    5) Visualizzazione       (istogrammi, profili, confronti)
 %
-%  Il codice e' organizzato in sezioni indipendenti ed e' predisposto per
-%  estensioni future (cicli su piu' scenari, test di modelli multipli, ecc.).
+%  Questo file e' un ORCHESTRATORE: coordina i passi e commenta le scelte di
+%  modello, ma delega il lavoro agli helper (load_cer_data, report_allocation,
+%  plot_*). Le sezioni restano indipendenti e facili da estendere.
 %  ========================================================================
 
 
@@ -27,6 +30,8 @@ loadFile = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_
 
 pvFile   = "C:\Users\scimo\desktop\Project\PV_Generation\Salvaplast_Project_VD7_HourlyRes_1.CSV";
 
+zonalPriceFile = "C:\Users\scimo\desktop\Project\20250101_20251231_MGP_PrezziZonali_Nord.xlsx";
+
 % --- Costanti temporali --------------------------------------------------
 ANNO    = 2025;
 N_HOURS = 8760;          % ore in un anno standard (24 x 365)
@@ -37,7 +42,17 @@ tGrid = (datetime(ANNO,1,1,0,0,0) : hours(1) : datetime(ANNO,12,31,23,0,0)).';
 
 % --- Parametri economici -------------------------------------------------
 P_SELL = 0.11;           % Prezzo energia venduta in rete        [€/kWh]
-P_CER  = 0.18;           % Incentivo CER su energia condivisa    [€/kWh]
+
+% Incentivo CER su energia condivisa: tariffa incentivante premio (TIP)
+% oraria (eq. 3.1), calcolata in §1b da compute_cer_incentive.m sul prezzo
+% zonale orario. Parametri della formula:
+ZONA_CER    = "nord";    % zona geografica della CER (per FC_zonale) -
+                          % coerente con zonalPriceFile (prezzi zonali Nord)
+P_PV_NOM_KW = 20;        % TODO: potenza nominale impianto PV [kW] - valore
+                          % provvisorio, da confermare (seleziona lo
+                          % scaglione TP_base/CAP della formula)
+F_RIDUZIONE = 0;         % TODO: fattore di riduzione F - definizione non
+                          % ancora nota per intero; per ora nessuna riduzione
 
 % --- Modalita tariffarie PUN ---------------------------------------------
 Modalita = ["MONORARIA", "BIORARIA", "ORARIO_VARIABILE"];
@@ -49,47 +64,15 @@ SHOW_PROFILE_PLOTS = true;   % grafici profili di consumo (4 giorni tipo)
 meseNomi = ["Gennaio";"Febbraio";"Marzo";"Aprile";"Maggio";"Giugno"; ...
             "Luglio";"Agosto";"Settembre";"Ottobre";"Novembre";"Dicembre"];
 
-
-%% ========================================================================
-%  1) CARICAMENTO DATI
-%  ========================================================================
-
-% --- 1a) Profili di carico orari -----------------------------------------
-% Ogni colonna numerica e' un utente della comunita' (kWh/ora). I dati
-% vengono riallineati sulla griglia oraria canonica: cosi' eventuali ore
-% mancanti (es. cambio ora legale) sono interpolate e tutti i vettori hanno
-% esattamente N_HOURS campioni.
-Tload = readtable(loadFile, 'VariableNamingRule', 'preserve');
-
-% Timestamp (gia' datetime, oppure testo ISO da convertire)
-ts = Tload.timestamp;
-if ~isdatetime(ts)
-    ts = datetime(string(ts), 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss');
-end
-
-% Colonne utente (tutte le colonne numeriche)
-isNum     = varfun(@isnumeric, Tload, 'OutputFormat', 'uniform');
-userNames = string(Tload.Properties.VariableNames(isNum));
-loadRaw   = Tload{:, isNum};                       % [nRighe x nUtenti]
-
-% Riallineamento sulla griglia canonica -> [N_HOURS x nUtenti]
-TTload    = retime(timetable(ts, loadRaw, 'VariableNames', {'load'}), tGrid, 'linear');
-loadUsers = TTload.load;                            % [N_HOURS x nUtenti]
-loadTotal = sum(loadUsers, 2);                      % richiesta totale comunita' [kWh/h]
-nUsers    = numel(userNames);
-
-% --- 1b) Generazione fotovoltaica oraria e proprietari degli impianti ----
-% Ogni impianto PV e' fisicamente "dietro al contatore" di UN giocatore
-% della comunita' (il proprietario): la sua produzione copre PRIMA
-% l'autoconsumo del proprietario, e SOLO l'eccedenza e' disponibile per la
-% condivisione con il resto della comunita' -- stessa priorita' usata in
-% optimizer_PV.m (1: autoconsumo edificio, 2: CER, 3: rete).
+% --- Impianti fotovoltaici -----------------------------------------------
+% Ogni impianto e' "dietro al contatore" di UN giocatore: la sua produzione
+% copre prima l'autoconsumo del proprietario, e solo l'eccedenza va alla CER
+% (dettagli in load_cer_data.m).
 %
-% Oggi c'e' un solo impianto, assegnato a small_industry_1 (l'edificio
-% host). La tabella pvPlants e' pensata per estendersi a piu' impianti con
-% proprietari diversi aggiungendo elementi ai due cell array, senza
-% toccare il resto del codice. Esempio futuro (5 impianti, 4 residenziali
-% + 1 industriale):
+% Oggi c'e' un solo impianto, assegnato a small_industry_1 (l'edificio host).
+% La struct e' pensata per estendersi a piu' impianti con proprietari diversi
+% aggiungendo elementi ai due cell array, senza toccare il resto del codice.
+% Esempio futuro (5 impianti, 4 residenziali + 1 industriale):
 %
 %   pvPlants = struct( ...
 %       'file',  {pvFile_h1, pvFile_h2, pvFile_h3, pvFile_h4, pvFile_ind}, ...
@@ -100,59 +83,43 @@ pvPlants = struct( ...
     'file',  {pvFile}, ...
     'owner', {"small_industry_1_kWh"});
 
-% Proprietario unico dell'impianto PV, se ce n'e' uno solo: usato in §5 per
-% unire nel grafico a rete il nodo "PV" (quota da produttore) con quello del
-% proprietario (quota da consumatore), dato che rappresentano la stessa
-% azienda. Con piu' proprietari diversi la fusione non e' univoca e viene
-% saltata (il nodo "PV" resta aggregato, come nel modello Shapley/Nucleolo).
-pvOwnerNames = unique([pvPlants.owner]);
-if isscalar(pvOwnerNames)
-    pvOwnerUnico = pvOwnerNames;
-else
-    pvOwnerUnico = "";
-end
 
-genPV_raw    = zeros(N_HOURS, 1);   % produzione totale di TUTTI gli impianti [kWh/h]
-genPVSurplus = zeros(N_HOURS, 1);   % eccedenza disponibile per la CER        [kWh/h]
-loadForShare = loadUsers;           % carichi usati per la condivisione CER: il
-                                     % carico del proprietario di un impianto e'
-                                     % sostituito dal suo carico RESIDUO (non
-                                     % coperto dall'autoconsumo), per non contare
-                                     % due volte l'energia gia' autoconsumata
+%% ========================================================================
+%  1) CARICAMENTO DATI
+%  ========================================================================
 
-for p = 1:numel(pvPlants)
-    genPV_p   = load_pv_generation(pvPlants(p).file, N_HOURS);
-    genPV_raw = genPV_raw + genPV_p;
+D = load_cer_data(loadFile, pvPlants, tGrid);
 
-    ownerIdx = find(userNames == pvPlants(p).owner, 1);
-    if isempty(ownerIdx)
-        error('MAIN:pvOwnerNotFound', ...
-              'Proprietario PV "%s" non trovato tra gli utenti (%s).', ...
-              pvPlants(p).owner, strjoin(userNames, ', '));
-    end
+userNames         = D.userNames;
+nUsers            = D.nUsers;
+loadUsers         = D.loadUsers;
+loadTotal         = D.loadTotal;
+genPV_raw         = D.genPV_raw;
+genPVSurplus      = D.genPVSurplus;
+genForShare       = D.genForShare;
+loadForShare      = D.loadForShare;
+loadTotalForShare = D.loadTotalForShare;
 
-    % Si legge il carico eventualmente gia' ridotto da un impianto
-    % precedente con lo stesso proprietario, cosi' piu' impianti sullo
-    % stesso giocatore si sommano correttamente in autoconsumo.
-    ownerLoad_p    = loadForShare(:, ownerIdx);
-    surplus_p      = max(0, genPV_p - ownerLoad_p);
-    residualLoad_p = max(0, ownerLoad_p - genPV_p);
 
-    genPVSurplus              = genPVSurplus + surplus_p;
-    loadForShare(:, ownerIdx) = residualLoad_p;
-end
+%% ========================================================================
+%  1c) PREZZO ZONALE E TARIFFA INCENTIVANTE CER (TIP_h)
+%
+%  Il prezzo zonale orario (mercato del giorno prima, MGP) alimenta la
+%  formula 3.1 della tariffa incentivante premio: al posto di un incentivo
+%  CER costante si ottiene un vettore orario P_CER_h, coerente con la griglia
+%  oraria canonica tGrid. Vedi compute_cer_incentive.m per i dettagli e per
+%  il TODO sul fattore di riduzione F.
+%  ========================================================================
 
-loadTotalForShare = sum(loadForShare, 2);
+Pz_h    = load_zonal_price(zonalPriceFile, tGrid);
+P_CER_h = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, F_RIDUZIONE);
 
-% --- Riepilogo consumi annui per utente ----------------------------------
-fprintf('=== Consumi annui per utente ===\n');
-for u = 1:nUsers
-    fprintf('  %-22s %9.1f kWh\n', userNames(u), sum(loadUsers(:,u)));
-end
-fprintf('  %-22s %9.1f kWh\n', "TOTALE COMUNITA", sum(loadTotal));
-fprintf('  %-22s %9.1f kWh\n', "GENERAZIONE PV (tot)", sum(genPV_raw));
-fprintf('  %-22s %9.1f kWh\n', "di cui autoconsumata", sum(genPV_raw) - sum(genPVSurplus));
-fprintf('  %-22s %9.1f kWh\n', "di cui eccedenza CER", sum(genPVSurplus));
+fprintf('\n=== Tariffa incentivante CER (TIP_h) ===\n');
+fprintf('  Prezzo zonale medio: %7.2f EUR/MWh\n', mean(Pz_h));
+fprintf('  TIP_h media:         %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
+        mean(P_CER_h)*1000, mean(P_CER_h));
+fprintf('  TIP_h min / max:     %7.2f / %7.2f EUR/MWh\n', ...
+        min(P_CER_h)*1000, max(P_CER_h)*1000);
 
 
 %% ========================================================================
@@ -168,8 +135,8 @@ sold   = max(0, genPVSurplus - loadTotalForShare);  % surplus immesso in rete [k
 
 % Riorganizzazione in matrici 24 x 365 (riga = ora 0..23, colonna = giorno)
 % Nota: demand_24x365/gen_24x365 usano i valori "grezzi" (intera comunita' e
-% intera produzione) solo per la visualizzazione d'insieme in §5c; shared/sold
-% riflettono invece il modello con autoconsumo del proprietario (§1b sopra).
+% intera produzione) solo per la visualizzazione d'insieme in §5; shared/sold
+% riflettono invece il modello con autoconsumo del proprietario (§1).
 shared_24x365 = reshape(shared,    24, N_DAYS);
 sold_24x365   = reshape(sold,      24, N_DAYS);
 demand_24x365 = reshape(loadTotal, 24, N_DAYS);
@@ -193,13 +160,32 @@ fprintf('  Energia venduta:   %9.1f kWh\n', sold_annual);
 %  3) ANALISI ECONOMICA
 %  ========================================================================
 
-rev_shared_monthly = shared_monthly * P_CER;     % ricavo da energia condivisa [€]
-rev_sold_monthly   = sold_monthly   * P_SELL;    % ricavo da energia venduta   [€]
+% Incentivo orario (TIP_h): il ricavo condiviso si somma ora per ora prima
+% di aggregare per mese, non piu' come prodotto di uno scalare costante.
+rev_shared_monthly = accumarray(monthOfHour, shared .* P_CER_h, [12 1]);  % [€]
+rev_sold_monthly   = sold_monthly * P_SELL;                                % ricavo da energia venduta [€]
 rev_tot_monthly    = rev_shared_monthly + rev_sold_monthly;
 rev_tot_annual     = sum(rev_tot_monthly);
-rev_sold_annual    = sum(rev_sold_monthly);      
-% ricavo da vendita diretta dell'eccedenza sul mercato: NON passa per il gioco cooperativo Shapley/Nucleolo, va
-% interamente al proprietario dell'impianto PV (vedi §3b/§3c e plot_benefit_network.m)
+rev_sold_annual    = sum(rev_sold_monthly);
+
+% ricavo da vendita diretta dell'eccedenza sul mercato: NON passa per il gioco
+% cooperativo, va ai proprietari degli impianti (vedi §3b-§3f e
+% plot_benefit_network.m)
+
+% --- Vendita eccedenza attribuita a ciascun prosumer ---------------------
+% L'eccedenza venduta e' una grandezza di comunita': si ripartisce fra i
+% prosumer PRO-QUOTA sulla produzione oraria, che e' l'unica regola coerente
+% col fatto che l'invenduto nasce dal surplus aggregato. Con un solo impianto
+% si riduce esattamente ad attribuire tutto al suo proprietario.
+
+shareGen = zeros(size(genForShare));
+hasGen   = genPVSurplus > 0;
+shareGen(hasGen, :) = genForShare(hasGen, :) ./ genPVSurplus(hasGen);
+soldPerUser        = (sold(:).' * shareGen).';        % [nUsers x 1]  [kWh/anno]
+revSoldPerPlayer   = soldPerUser * P_SELL;            % [nUsers x 1]  [EUR/anno]
+
+assert(abs(sum(revSoldPerPlayer) - rev_sold_annual) < 1e-6 * max(1, rev_sold_annual), ...
+       'Vendita eccedenza: la ripartizione per utente non somma al totale annuo');
 
 % --- Tabella riepilogativa (12 mesi + riga totale annuo) -----------------
 Mese            = [meseNomi;                "TOTALE ANNO"];
@@ -228,28 +214,16 @@ fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
 %  l'approssimazione per gruppi del paper.
 %
 %    Giocatori : PV (produttore) + consumatori
-%    Valore    : v(S) = sum_t min(genPV, load_S) * P_CER   (0 senza PV)
+%    Valore    : v(S) = sum_t min(genPV, load_S) * P_CER_h(t) (0 senza PV)
 %
 %  NOTA: qui "genPV" e "load_S" sono al netto dell'autoconsumo del
 %  proprietario dell'impianto (genPVSurplus, loadForShare calcolati in
-%  §1b): l'energia gia' autoconsumata dietro al contatore del proprietario
+%  §1): l'energia gia' autoconsumata dietro al contatore del proprietario
 %  non e' energia condivisibile con la CER e va esclusa dal gioco.
 %  ========================================================================
 
-Sh = shapley_cer(genPVSurplus, loadForShare, userNames, P_CER);
-
-fprintf('\n=== Distribuzione Shapley dell''incentivo CER condivisa ===\n');
-disp(Sh.table);
-fprintf('  Valore grande coalizione : EUR %9.2f\n', Sh.vGrand);
-fprintf('  Quota produttore (PV)    : EUR %9.2f  (%.1f%%)\n', ...
-        Sh.prodShare, 100*Sh.prodShare/Sh.vGrand);
-fprintf('  Quota consumatori        : EUR %9.2f  (%.1f%%)\n', ...
-        Sh.consShare, 100*Sh.consShare/Sh.vGrand);
-
-% Verifica efficienza di Pareto: la somma delle quote deve eguagliare il
-% valore della grande coalizione (assioma 1 dello Shapley value).
-assert(abs(sum(Sh.phi) - Sh.vGrand) < 1e-6, ...
-       'Shapley: somma delle quote diversa dal valore della grande coalizione');
+Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(Sh, "Shapley");
 
 % Coerenza con l'analisi economica: il valore distribuito coincide con il
 % ricavo annuo da energia condivisa calcolato nella sezione 3.
@@ -257,29 +231,22 @@ assert(abs(Sh.vGrand - sum(rev_shared_monthly)) < 1e-6, ...
        'Shapley: valore distribuito incoerente con il ricavo da condivisa');
 
 % --- Grafico distribuzione ----------------------------------------------
-% Il produttore PV e il suo proprietario vengono uniti in un'unica colonna
-% (sono la stessa azienda, vedi merge_pv_owner.m); quella colonna si divide
-% in due colori: la quota CER (Shapley) e il ricavo dalla vendita diretta
-% dell'eccedenza sul mercato, che non passa dal gioco cooperativo.
-[playersSh_m, phiSh_m, idxMergedSh] = merge_pv_owner(Sh.players, Sh.phi, pvOwnerUnico);
-soldPerPlayerSh = zeros(numel(playersSh_m), 1);
-if ~isempty(idxMergedSh)
-    soldPerPlayerSh(idxMergedSh) = rev_sold_annual;
-end
-
+% Ogni colonna e' un utente e si divide in due colori: la quota CER (Shapley)
+% e il ricavo dalla vendita diretta dell'eccedenza sul mercato, che non passa
+% dal gioco cooperativo e spetta ai soli prosumer.
 figure('Name', 'Distribuzione Shapley', 'Color', 'w');
-hBar = bar([phiSh_m, soldPerPlayerSh], 'stacked');
+hBar = bar([Sh.phi, revSoldPerPlayer], 'stacked');
 hBar(1).FaceColor = method_color("Shapley");
 hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
 grid on; box on;
-xticks(1:numel(playersSh_m));
-xticklabels(strrep(playersSh_m, '_', '\_')); xtickangle(45);
+xticks(1:numel(Sh.players));
+xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
 ylabel('Ricavo [€/anno]');
 legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
 title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
 
 % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-plot_benefit_network(Sh.players, Sh.phi, "Shapley", pvOwnerUnico, rev_sold_annual);
+plot_benefit_network(Sh.players, Sh.phi, "Shapley", revSoldPerPlayer);
 
 
 %% ========================================================================
@@ -294,24 +261,15 @@ plot_benefit_network(Sh.players, Sh.phi, "Shapley", pvOwnerUnico, rev_sold_annua
 %  quindi STABILE (nessuna sotto-coalizione conviene).
 %  ========================================================================
 
-Nu = nucleolus_cer(genPVSurplus, loadForShare, userNames, P_CER);
+Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_h);
 
-fprintf('\n=== Distribuzione Nucleolo dell''incentivo CER condivisa ===\n');
-disp(Nu.table);
-fprintf('  Quota produttore (PV) : EUR %9.2f  (%.1f%%)\n', ...
-        Nu.prodShare, 100*Nu.prodShare/Nu.vGrand);
-fprintf('  Quota consumatori     : EUR %9.2f  (%.1f%%)\n', ...
-        Nu.consShare, 100*Nu.consShare/Nu.vGrand);
 coreMsg = "fuori dal Core";
 if Nu.inCore, coreMsg = "nel Core (stabile)"; end
-fprintf('  Surplus min (theta)   : EUR %9.2f  ->  %s\n', Nu.thetaMin, coreMsg);
-
-% Verifica efficienza: tutto il valore della grande coalizione e' distribuito.
-assert(abs(sum(Nu.phi) - Nu.vGrand) < 1e-6, ...
-       'Nucleolo: somma delle quote diversa dal valore della grande coalizione');
+report_allocation(Nu, "Nucleolo", ...
+    sprintf('  %-25s: EUR %9.2f  ->  %s', 'Surplus min (theta)', Nu.thetaMin, coreMsg));
 
 % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", pvOwnerUnico, rev_sold_annual);
+plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", revSoldPerPlayer);
 
 
 %% ========================================================================
@@ -327,77 +285,74 @@ plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", pvOwnerUnico, rev_sold_annu
 %  nash_bargaining_cer.m per i dettagli e i riferimenti.
 %  ========================================================================
 
-NB = nash_bargaining_cer(genPVSurplus, loadForShare, userNames, P_CER);
-
-fprintf('\n=== Distribuzione Nash Bargaining dell''incentivo CER condivisa ===\n');
-disp(NB.table);
-fprintf('  Quota produttore (PV) : EUR %9.2f  (%.1f%%)\n', ...
-        NB.prodShare, 100*NB.prodShare/NB.vGrand);
-fprintf('  Quota consumatori     : EUR %9.2f  (%.1f%%)\n', ...
-        NB.consShare, 100*NB.consShare/NB.vGrand);
-
-% Verifica efficienza: tutto il valore della grande coalizione e' distribuito.
-assert(abs(sum(NB.phi) - NB.vGrand) < 1e-6, ...
-       'Nash Bargaining: somma delle quote diversa dal valore della grande coalizione');
+NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(NB, "Nash Bargaining");
 
 % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", pvOwnerUnico, rev_sold_annual);
+plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer);
 
 
 %% ========================================================================
-%  3e) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%  3e) DISTRIBUZIONE DEI BENEFICI - VARIANCE LEAST CORE
 %
-%  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
-%  caratteristica v(S), i modelli di ripartizione calcolati finora. Pensati
-%  per estendersi facilmente: aggiungere un nuovo modello significa
-%  aggiungere una colonna alla tabella e una tripletta (x-offset, phi,
-%  colore) al grafico, senza toccare il resto della sezione.
+%  Quarto modello di ripartizione, sulla STESSA funzione caratteristica v(S)
+%  degli altri tre. Il Variance Least Core (Ferrucci, Fioriti, Poli, IEEE PES
+%  ISGT Europe 2025) sceglie, fra tutte le allocazioni del Least Core (quelle
+%  che massimizzano il surplus della coalizione piu' scontenta, quindi
+%  STABILI), l'unica a distanza quadratica minima dalla ripartizione
+%  uniforme: e' quindi al tempo stesso stabile ed UNIVOCA, a differenza del
+%  Least Core che e' un insieme.
+%
+%  A differenza degli altri metodi NON enumera le 2^n coalizioni: usa la
+%  ROW-GENERATION (Master + Separation MILP, eq. 15-17 del paper), che genera
+%  solo le poche coalizioni realmente vincolanti. E' questa la scelta che
+%  rende il metodo applicabile a comunita' con decine o centinaia di membri.
+%  Vedi variance_least_core_cer.m per i dettagli.
 %  ========================================================================
 
-Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, ...
-             'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', 'NashBargaining_EUR'});
+VLC = variance_least_core_cer(genForShare, loadForShare, userNames, P_CER_h);
+
+coreMsgVLC = "fuori dal Core";
+if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
+report_allocation(VLC, "Variance Least Core", [ ...
+    string(sprintf('  %-25s: EUR %9.2f  ->  %s', ...
+                   'Surplus min (theta_LC)', VLC.thetaLC, coreMsgVLC)), ...
+    string(sprintf('  %-25s: %d iterazioni (LC) + %d (VLC), %d coalizioni generate su %d', ...
+                   'Row-generation', VLC.iterLC, VLC.iterVLC, ...
+                   size(VLC.coalitions, 1), 2^numel(VLC.players) - 2))]);
+
+% Controllo incrociato: il primo LP del Nucleolo E' l'LP del Least Core,
+% quindi i due surplus minimi devono coincidere. E' la verifica piu' forte
+% che la row-generation non abbia trascurato coalizioni vincolanti.
+assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
+       'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3f) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%
+%  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
+%  caratteristica v(S), i modelli di ripartizione calcolati finora.
+%  Aggiungere un nuovo modello = una colonna nella tabella e un elemento
+%  nella struct "metodi", nient'altro.
+%  ========================================================================
+
+Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ...
+             'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
+                               'NashBargaining_EUR', 'VarianceLeastCore_EUR'});
 fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
 disp(Tcmp);
 
-% PV + proprietario uniti in un'unica colonna per metodo (vedi §3b), con la
-% vendita diretta dell'eccedenza (fissa, indipendente dal metodo) impilata
-% sopra la quota CER di ciascun metodo. Le colonne dei diversi metodi per
-% ogni giocatore sono affiancate manualmente per ottenere raggruppato +
-% impilato, cosa che bar() non supporta in un'unica chiamata.
-[players_m, phiSh_m2, idxMerged_m] = merge_pv_owner(Sh.players, Sh.phi, pvOwnerUnico);
-[~,        phiNu_m2, ~]            = merge_pv_owner(Nu.players, Nu.phi, pvOwnerUnico);
-[~,        phiNB_m2, ~]            = merge_pv_owner(NB.players, NB.phi, pvOwnerUnico);
-soldPerPlayer_m = zeros(numel(players_m), 1);
-if ~isempty(idxMerged_m)
-    soldPerPlayer_m(idxMerged_m) = rev_sold_annual;
-end
+metodi = struct( ...
+    'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core"}, ...
+    'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi});
 
-nMetodi  = 3;
-larghezza = 0.8 / nMetodi;
-xShapley  = (1:numel(players_m)) - larghezza;
-xNucleolo = (1:numel(players_m));
-xNashBarg = (1:numel(players_m)) + larghezza;
-
-figure('Name', 'Confronto modelli di ripartizione', 'Color', 'w');
-hold on; grid on; box on;
-hS  = bar(xShapley,  [phiSh_m2, soldPerPlayer_m], larghezza, 'stacked');
-hN  = bar(xNucleolo, [phiNu_m2, soldPerPlayer_m], larghezza, 'stacked');
-hNB = bar(xNashBarg, [phiNB_m2, soldPerPlayer_m], larghezza, 'stacked');
-hS(1).FaceColor  = method_color("Shapley");
-hN(1).FaceColor  = method_color("Nucleolo");
-hNB(1).FaceColor = method_color("Nash Bargaining");
-hS(2).FaceColor  = [0.90 0.45 0.15];   % vendita energia eccedente (mercato,
-hN(2).FaceColor  = [0.90 0.45 0.15];   % stesso ricavo, indipendente dal metodo)
-hNB(2).FaceColor = [0.90 0.45 0.15];
-xticks(1:numel(players_m));
-xticklabels(strrep(players_m, '_', '\_')); xtickangle(45);
-ylabel('Ricavo [€/anno]');
-legend([hS(1) hN(1) hNB(1) hS(2)], ...
-       {'Shapley (quota CER)', 'Nucleolo (quota CER)', 'Nash Bargaining (quota CER)', ...
-        'Vendita energia eccedente'}, ...
-       'Location', 'northeast');
-title(sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
-              Nu.vGrand, Nu.thetaMin));
+plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
+    sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
+            Nu.vGrand, Nu.thetaMin));
 
 
 %% ========================================================================
@@ -434,130 +389,11 @@ disp(Tcost);
 %  5) VISUALIZZAZIONE
 %  ========================================================================
 
-% --- 5a) Energia condivisa mensile + totale annuo ------------------------
-figure('Name', 'Energia condivisa CER', 'Color', 'w');
-bar(1:12, shared_monthly, 'FaceColor', [0.20 0.60 0.30]);
-grid on; box on;
-xticks(1:12); xticklabels(meseNomi); xtickangle(45);
-ylabel('Energia condivisa [kWh]');
-title(sprintf('Energia condivisa mensile  |  Totale annuo = %.0f kWh', shared_annual));
+plot_cer_energy(meseNomi, shared_monthly, shared_annual, ...
+                rev_shared_monthly, rev_sold_monthly, rev_tot_annual);
 
-% --- 5b) Ricavi mensili (condivisa vs venduta) ---------------------------
-figure('Name', 'Ricavi CER', 'Color', 'w');
-bar(1:12, [rev_shared_monthly, rev_sold_monthly], 'stacked');
-grid on; box on;
-xticks(1:12); xticklabels(meseNomi); xtickangle(45);
-ylabel('Ricavo [€]');
-legend('Energia condivisa', 'Energia venduta', 'Location', 'northwest');
-title(sprintf('Ricavi mensili  |  Totale annuo = €%.0f', rev_tot_annual));
+plot_pv_vs_demand(gen_24x365, demand_24x365, shared_24x365, N_DAYS);
 
-% --- 5c) Produzione PV vs richiesta comunita' (media giornaliera) --------
-genDayMean    = mean(gen_24x365,    1);
-demDayMean    = mean(demand_24x365, 1);
-sharedDayMean = mean(shared_24x365, 1);
-
-figure('Name', 'PV vs Richiesta comunita', 'Color', 'w');
-hold on; grid on; box on;
-area(1:N_DAYS, genDayMean, 'FaceAlpha', 0.30, 'FaceColor', [1.0 0.8 0.0], ...
-     'EdgeColor', [0.9 0.6 0.0], 'DisplayName', 'Produzione PV');
-area(1:N_DAYS, sharedDayMean, 'FaceAlpha', 0.45, 'FaceColor', [0.2 0.6 0.3], ...
-     'EdgeColor', 'none', 'DisplayName', 'Energia condivisa');
-plot(1:N_DAYS, demDayMean, 'Color', [0.1 0.3 0.7], 'LineWidth', 1.6, ...
-     'DisplayName', 'Richiesta comunita');
-xlabel('Giorno dell''anno'); ylabel('Potenza media giornaliera [kW]');
-xlim([1 N_DAYS]);
-legend('Location', 'northwest');
-title('Produzione PV, richiesta comunita ed energia condivisa');
-
-% --- 5d) Profili di consumo - 4 giorni tipo (opzionale) ------------------
 if SHOW_PROFILE_PLOTS
-    stagioni = ["Inverno (15 gen)", "Primavera (15 apr)", ...
-                "Estate (15 lug)",  "Autunno (15 ott)"];
-    giorni   = datetime([ANNO 1 15; ANNO 4 15; ANNO 7 15; ANNO 10 15]);
-
-    isRes   = startsWith(userNames, 'household');
-    idxRes  = find(isRes);
-    idxCom  = find(~isRes);
-
-    if ~isempty(idxCom)
-        plotProfiliStagionali(tGrid, loadUsers, idxCom, userNames, giorni, ...
-            stagioni, 'Profili commerciali', 'Profili di consumo COMMERCIALI - 4 giorni tipo');
-    end
-    if ~isempty(idxRes)
-        plotProfiliStagionali(tGrid, loadUsers, idxRes, userNames, giorni, ...
-            stagioni, 'Profili residenziali', 'Profili di consumo RESIDENZIALI - 4 giorni tipo');
-    end
-end
-
-
-%% ========================================================================
-%  FUNZIONI LOCALI
-%  ========================================================================
-
-function gen = load_pv_generation(pvFile, nHoursTarget)
-%LOAD_PV_GENERATION  Legge un export orario PVsyst (E_Grid) e restituisce
-%   la generazione fotovoltaica oraria come vettore colonna [kWh/h].
-%
-%   - Salta le righe di intestazione/metadati PVsyst.
-%   - Riconosce sia "dd/mm/yy HH:MM" sia "dd/mm/yyyy HH:MM:SS".
-%   - Azzera i piccoli valori negativi (autoconsumo notturno inverter).
-%   - Allinea la lunghezza a nHoursTarget (padding con 0 o troncamento).
-
-    lines = readlines(pvFile);
-    lines = strtrim(lines);
-    lines(lines == "") = [];
-
-    % Mantiene solo le righe-dato "data;valore"
-    isData    = ~cellfun('isempty', ...
-                regexp(lines, '^\d{1,2}/\d{1,2}/\d{2,4}\s+\d{1,2}:\d{2}', 'once'));
-    dataLines = lines(isData);
-
-    if isempty(dataLines)
-        error('load_pv_generation:noData', ...
-              'Nessuna riga di dati orari trovata in:\n  %s', pvFile);
-    end
-
-    parts = split(dataLines, ';');        % [N x 2] string array
-    gen   = str2double(parts(:, 2));      % [kW medio orario ~ kWh/h]
-    gen   = max(gen, 0);                  % azzera valori negativi
-
-    % Allinea alla lunghezza attesa
-    nH = numel(gen);
-    if nH < nHoursTarget
-        warning('load_pv_generation:short', ...
-                'File PV con sole %d ore (attese %d): padding con 0.\n  %s', ...
-                nH, nHoursTarget, pvFile);
-        gen(end+1:nHoursTarget, 1) = 0;
-    elseif nH > nHoursTarget
-        gen = gen(1:nHoursTarget);
-    end
-end
-
-
-function plotProfiliStagionali(t, dataMat, colIdx, names, giorni, stagioni, figName, figTitle)
-%PLOTPROFILISTAGIONALI  Traccia i profili orari di un gruppo di utenti in 4
-%   giorni tipo (uno per stagione), in un layout 2x2.
-
-    nC   = numel(colIdx);
-    cmap = lines(nC);
-    figure('Name', figName, 'Color', 'w', 'Position', [120 120 1300 820]);
-    tiledlayout(2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-
-    for d = 1:4
-        nexttile; hold on; grid on; box on;
-        maskDay = dateshift(t, 'start', 'day') == giorni(d);
-        tDay    = t(maskDay);
-        hAxis   = hours(tDay - dateshift(tDay(1), 'start', 'day'));
-        for u = 1:nC
-            plot(hAxis, dataMat(maskDay, colIdx(u)), 'Color', cmap(u,:), ...
-                 'LineWidth', 1.4, 'DisplayName', strrep(names(colIdx(u)), '_', '\_'));
-        end
-        xlim([0 24]); xticks(0:4:24);
-        xlabel('Ora del giorno [h]'); ylabel('Potenza [kW]');
-        title(stagioni(d));
-        if d == 1
-            legend('Location', 'northeast', 'FontSize', 8);
-        end
-    end
-    sgtitle(figTitle, 'FontSize', 13, 'FontWeight', 'bold');
+    plot_load_profiles(tGrid, loadUsers, userNames, ANNO);
 end

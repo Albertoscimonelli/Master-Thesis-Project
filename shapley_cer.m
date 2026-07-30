@@ -1,17 +1,16 @@
-function S = shapley_cer(genPV, loadUsers, userNames, P_CER)
+function S = shapley_cer(genUsers, loadUsers, userNames, P_CER)
 %SHAPLEY_CER  Ripartizione dell'incentivo CER sull'energia condivisa tramite
 %   Shapley value (gioco cooperativo, Moncecchi et al., Appl. Sci. 2020).
 %
 %   GIOCATORI
-%     1 produttore (impianto PV) + N consumatori. Il produttore e' il
-%     giocatore 1, i consumatori i giocatori 2..N+1.
+%     Un giocatore per utente: ciascuno porta con se' il proprio carico
+%     residuo e la propria eccedenza di produzione (nulla se non ha impianti).
 %
 %   VALORE DELLA COALIZIONE  (solo incentivo sull'energia condivisa)
-%     v(C) = 0                                       se il PV non e' in C
-%     v(C) = sum_t min(genPV(t), load_C(t)) * P_CER   altrimenti
-%   dove load_C(t) e' la somma dei carichi dei soli consumatori presenti in C.
-%   Senza produttore non c'e' generazione, quindi nessuna condivisione e v=0;
-%   senza consumatori l'energia condivisa e' nulla e v=0.
+%     v(C) = sum_t min( sum_{i in C} gen_i(t), sum_{i in C} load_i(t) ) * P_CER(t)
+%   P_CER puo' essere uno scalare o un vettore [H x 1] (incentivo orario).
+%   Serve almeno un prosumer in eccedenza e almeno un utente con carico
+%   residuo: da solo nessun giocatore condivide nulla, quindi v({i}) = 0.
 %
 %   SHAPLEY VALUE  (eq. 39 del paper)
 %     phi_i = sum_{C subset N\{i}} |C|!(n-|C|-1)!/n! * (v(C+i) - v(C))
@@ -21,21 +20,21 @@ function S = shapley_cer(genPV, loadUsers, userNames, P_CER)
 %   per gruppi adottata nel paper (necessaria solo per centinaia di utenti).
 %
 %   INPUT
-%     genPV     [H x 1]   generazione PV oraria               [kWh/h]
-%     loadUsers [H x nC]  carichi orari dei consumatori        [kWh/h]
-%     userNames [1 x nC]  nomi dei consumatori                 (string)
-%     P_CER     scalare   incentivo CER su energia condivisa   [EUR/kWh]
+%     genUsers  [H x n]   eccedenza oraria di ciascun utente    [kWh/h]
+%     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
+%     userNames [1 x n]   nomi degli utenti                     (string)
+%     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
 %
 %   OUTPUT (struct S)
-%     .players   [1 x n]  nomi dei giocatori ("PV" + consumatori)
-%     .phi       [n x 1]  Shapley value di ciascun giocatore   [EUR]
-%     .vGrand    scalare  valore della grande coalizione       [EUR]
-%     .prodShare scalare  quota del produttore                 [EUR]
-%     .consShare scalare  quota totale dei consumatori         [EUR]
-%     .table     table    riepilogo (giocatore, quota, percentuale)
+%     .players    [1 x n]  nomi dei giocatori (= userNames)
+%     .phi        [n x 1]  Shapley value di ciascun giocatore   [EUR]
+%     .vGrand     scalare  valore della grande coalizione       [EUR]
+%     .isProsumer [n x 1]  logico, true se il giocatore ha produzione
+%     .prodShare  scalare  quota totale ai prosumer             [EUR]
+%     .consShare  scalare  quota totale ai consumatori puri     [EUR]
+%     .table      table    riepilogo (giocatore, quota, percentuale)
 
-    nC = size(loadUsers, 2);             % numero consumatori
-    n  = nC + 1;                         % giocatori totali (PV = giocatore 1)
+    n = size(loadUsers, 2);              % un giocatore per utente
 
     if n > 20
         warning('shapley_cer:bigGame', ...
@@ -45,8 +44,8 @@ function S = shapley_cer(genPV, loadUsers, userNames, P_CER)
     end
 
     % --- Funzione caratteristica v(S) condivisa con gli altri metodi --------
-    % Bitmask su n bit: bit 1 = produttore, bit (k+1) = consumatore k.
-    [v, players] = cer_coalition_values(genPV, loadUsers, userNames, P_CER);
+    % Bitmask su n bit: bit i = giocatore i.
+    [v, players] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
     nSub = numel(v);
 
     % --- Pesi di Shapley w(s) = s!(n-s-1)!/n! in funzione di s = |C| ---------
@@ -70,11 +69,14 @@ function S = shapley_cer(genPV, loadUsers, userNames, P_CER)
     % --- Output -------------------------------------------------------------
     vGrand = v(end);                     % grande coalizione = tutti i bit a 1
 
-    S.players   = players;
-    S.phi       = phi;
-    S.vGrand    = vGrand;
-    S.prodShare = phi(1);
-    S.consShare = sum(phi(2:end));
-    S.table     = table(players(:), phi, 100*phi/vGrand, ...
-                        'VariableNames', {'Giocatore', 'Shapley_EUR', 'Quota_pct'});
+    isProsumer = any(genUsers > 0, 1).';   % chi porta produzione nel gioco
+
+    S.players    = players;
+    S.phi        = phi;
+    S.vGrand     = vGrand;
+    S.isProsumer = isProsumer;
+    S.prodShare  = sum(phi(isProsumer));
+    S.consShare  = sum(phi(~isProsumer));
+    S.table      = table(players(:), phi, 100*phi/vGrand, ...
+                         'VariableNames', {'Giocatore', 'Shapley_EUR', 'Quota_pct'});
 end

@@ -6,9 +6,12 @@ realistici per nuclei familiari. Se pyLPG o il runtime .NET non sono
 disponibili, genera profili sintetici di fallback.
 """
 
-import logging
-import time
 import calendar
+import logging
+import os
+import shutil
+import stat
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -43,10 +46,6 @@ def _clean_lpg_results() -> None:
     if not _PYLPG_AVAILABLE:
         return
 
-    import shutil
-    import stat
-    import os
-
     lpg_pkg_dir = Path(lpg_execution.__file__).parent
     results_dir = lpg_pkg_dir / "C1" / "results"
 
@@ -68,7 +67,8 @@ def _get_household_ref(ref_name: str) -> object:
     """Ottieni il JsonReference dalla classe lpgdata.Households.
 
     Args:
-        ref_name: Nome dell'attributo in lpgdata.Households (es. 'CHR02_Couple_30_64_age_with_work').
+        ref_name: Nome dell'attributo in lpgdata.Households
+            (es. 'CHR02_Couple_30_64_age_with_work').
 
     Returns:
         L'oggetto JsonReference corrispondente.
@@ -284,7 +284,8 @@ def run_lpg(config: dict) -> pd.DataFrame:
                             parsed_idx = pd.to_datetime(result_df.index, errors="coerce")
                             if parsed_idx.isna().all():
                                 logger.warning(
-                                    "  %s: indice temporale non interpretabile, uso fallback sintetico",
+                                    "  %s: indice temporale non interpretabile, "
+                                    "uso fallback sintetico",
                                     col_name,
                                 )
                                 result_df = None
@@ -292,11 +293,13 @@ def run_lpg(config: dict) -> pd.DataFrame:
                                 result_df.index = parsed_idx
 
                         if result_df is not None:
-                            # Filtra l'anno richiesto e invalida il run se non c'e' alcun dato valido.
+                            # Filtra l'anno richiesto e invalida il run se non
+                            # c'e' alcun dato valido.
                             year_mask = result_df.index.year == year
                             if not year_mask.any():
                                 logger.warning(
-                                    "  %s: pyLPG ha restituito dati fuori anno (%s), uso fallback sintetico",
+                                    "  %s: pyLPG ha restituito dati fuori anno (%s), "
+                                    "uso fallback sintetico",
                                     col_name,
                                     sorted(set(result_df.index.year.tolist())),
                                 )

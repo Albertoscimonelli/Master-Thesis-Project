@@ -60,6 +60,15 @@ Project/
 |-- nucleolus_cer.m                     Ripartizione incentivo CER - Nucleolo (LP sequenziali)
 |-- nash_bargaining_cer.m               Ripartizione incentivo CER - Nash Bargaining (forma chiusa)
 |-- variance_least_core_cer.m           Ripartizione incentivo CER - Variance Least Core (row-generation)
+|-- equal_split_cer.m                   Ripartizione incentivo CER - Equal Split (benchmark, parti uguali)
+|-- proportional_consumption_cer.m      Ripartizione incentivo CER - Proportional to Consumption (benchmark,
+|                                       proporzionale al consumo nelle ore utili)
+|-- remuneration_model1_cer.m           Ripartizione incentivo CER - Remuneration Model 1 (Candela et al.,
+|                                       split alpha/beta produttori/consumatori pesato su potenza contrattuale)
+|-- cascading_tree_cer.m                Ripartizione incentivo CER - Cascading Tree (Trevisan et al.,
+|                                       decomposizione ad albero in categorie)
+|-- weighted_solidarity_cer.m           Ripartizione incentivo CER - Weighted Solidarity (Marrasso et al.,
+|                                       peso tecnico+solidarieta', coefficienti su fronte di Pareto)
 |-- load_zonal_price.m                  Prezzo zonale orario MGP, allineato alla griglia oraria
 |-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1)
 |-- irr_bisection.m                     IRR via bisezione (senza Financial Toolbox)
@@ -68,7 +77,9 @@ Project/
 |                                       [standalone: NON invocato da MAIN.m, solo per test]
 |-- load_cer_data.m                     Caricamento profili di carico + generazione PV
 |-- report_allocation.m                 Stampa e verifica di una ripartizione dei benefici
+|-- method_color.m                      Colore RGB coerente per ciascun modello di ripartizione (grafici)
 |-- plot_allocation_comparison.m        Grafico di confronto tra modelli di ripartizione
+|-- plot_benefit_network.m              Grafico a rete: cabina primaria + benefici + verso del flusso
 |-- plot_cer_energy.m                   Grafici mensili: energia condivisa e ricavi
 |-- plot_pv_vs_demand.m                 Grafico annuale PV vs richiesta comunita'
 |-- plot_load_profiles.m                Profili di consumo in 4 giorni tipo
@@ -291,18 +302,28 @@ Pipeline a sezioni indipendenti:
   2) Energia condivisa/venduta (al netto dell'autoconsumo del proprietario)
   3) Analisi economica (ricavi mensili/annuali, incentivo orario P_CER_h)
   3b/3c/3d/3e) Ripartizione dell'incentivo CER: Shapley value, Nucleolo,
-     Nash Bargaining, Variance Least Core
-  3f) Confronto tra i quattro modelli di ripartizione
+     Nash Bargaining, Variance Least Core (modelli di teoria dei giochi)
+  3f/3g) Ripartizione dell'incentivo CER: Equal Split, Proportional to
+     Consumption (benchmark elementari, senza teoria dei giochi)
+  3h/3i/3j) Ripartizione dell'incentivo CER: Remuneration Model 1, Cascading
+     Tree, Weighted Solidarity (modelli dalla letteratura sulle REC italiane)
+  3k) Confronto tra i nove modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
 --------------------------------------------------------------------------------
  4.2  cer_coalition_values.m, shapley_cer.m, nucleolus_cer.m,
-      nash_bargaining_cer.m, variance_least_core_cer.m
+      nash_bargaining_cer.m, variance_least_core_cer.m,
+      equal_split_cer.m, proportional_consumption_cer.m,
+      remuneration_model1_cer.m, cascading_tree_cer.m, weighted_solidarity_cer.m
 --------------------------------------------------------------------------------
 
-Modello di gioco cooperativo a utilita' trasferibile per ripartire
-l'incentivo sull'energia condivisa tra PV (produttore) e consumatori.
+Nove modelli di ripartizione dell'incentivo sull'energia condivisa tra i
+giocatori (prosumer e consumatori): quattro di teoria dei giochi
+cooperativi a utilita' trasferibile, due benchmark elementari che non
+usano teoria dei giochi (Equal Split, Proportional to Consumption), e tre
+modelli proposti in letteratura per REC italiane (Remuneration Model 1,
+Cascading Tree, Weighted Solidarity).
 
   cer_coalition_values.m   Costruisce v(S) per OGNI coalizione (2^n),
                             condivisa dai metodi di riparto cosi'
@@ -334,6 +355,47 @@ l'incentivo sull'energia condivisa tra PV (produttore) e consumatori.
                             impossibili da enumerare.
                             Richiede Optimization Toolbox (linprog,
                             quadprog, intlinprog).
+  equal_split_cer.m         Benchmark elementare (NON teoria dei giochi):
+                            v(N) diviso in parti uguali tra tutti gli n
+                            giocatori, phi_i = v(N)/n. NON passa da
+                            cer_coalition_values: calcola v(N)
+                            direttamente con la stessa formula, senza
+                            bisogno delle 2^n coalizioni intermedie.
+  proportional_consumption_cer.m  Benchmark elementare (NON teoria dei
+                            giochi): v(N) diviso in proporzione al consumo
+                            di ciascun giocatore nelle sole ore "utili"
+                            (energia condivisa di comunita' > 0). Stessa
+                            scelta di equal_split_cer.m di non passare da
+                            cer_coalition_values.
+  remuneration_model1_cer.m Da Candela et al., IEEE BLORIN 2022. Split
+                            alpha/beta tra classe consumatori e classe
+                            produttori/prosumer, pesato su DUE potenze
+                            distinte: potenza di PRELIEVO per utente
+                            (RATED_LOAD_KW in MAIN.m §0) e potenza di
+                            GENERAZIONE per impianto (pvPlants.kWp).
+                            Entrambe valori TODO da confermare. Dentro
+                            ogni classe la quota oraria e' proporzionale
+                            all'energia di quell'ora.
+  cascading_tree_cer.m      Da Trevisan et al., 2022 (eq. 1-9). L'incentivo
+                            si scompone ricorsivamente in un ALBERO di
+                            categorie (riserva -> fissa/variabile ->
+                            prelievi/immissione -> produttori+prosumer/
+                            soli prosumer), con pesi di ramo di default
+                            (scelte di governance della REC, esposti via
+                            opts). vGrand = quota EFFETTIVAMENTE
+                            redistribuita (= v(N) solo se la riserva e'
+                            zero, il default usato in MAIN.m).
+  weighted_solidarity_cer.m Da Marrasso et al., J. Phys.: Conf. Ser. 3143
+                            (2025) 012113 (eq. 2.1-2.8). Peso orario =
+                            componente tecnica (energia condivisa +
+                            carico) + componente di SOLIDARIETA' (costo
+                            unitario dell'energia, proxy poverta'
+                            energetica). I coefficienti della formula sono
+                            scelti su un FRONTE DI PARETO (indice di Gini
+                            minimo vs reddito medio degli utenti a rischio
+                            poverta' energetica) su una griglia di ~3600
+                            combinazioni, vettorizzata (nessun toolbox
+                            richiesto).
 
 Per la derivazione matematica completa vedi GUIDA_modelli_distribuzione.md.
 
@@ -348,9 +410,17 @@ nessun cambiamento funzionale.
                                 assegnazione impianti/autoconsumo (Sezione 7).
                                 Restituisce una struct D.
   report_allocation.m          Stampa + verifica di efficienza di una
-                                ripartizione (usata da tutti e 4 i metodi).
+                                ripartizione (usata da tutti e 9 i metodi).
+  method_color.m                Colore RGB coerente per ciascun modello di
+                                ripartizione, condiviso da tutti i grafici
+                                (un solo posto dove aggiungere il colore di
+                                un nuovo modello).
   plot_allocation_comparison.m Grafico a barre raggruppate+impilate che
                                 confronta i modelli di ripartizione.
+  plot_benefit_network.m       Grafico a rete: cabina primaria al centro,
+                                un nodo per giocatore (area proporzionale
+                                al beneficio ricevuto), frecce dalla
+                                cabina verso ciascun giocatore.
   plot_cer_energy.m            Grafici mensili: energia condivisa e ricavi.
   plot_pv_vs_demand.m          Andamento annuale PV vs richiesta comunita'.
   plot_load_profiles.m         Profili di consumo in 4 giorni tipo (uno per
@@ -544,6 +614,20 @@ AGGIUNGERE FAMIGLIE:
 
 ASSEGNARE PIU' IMPIANTI PV A PIU' PROPRIETARI:
   -> Estendi la struct pvPlants in MAIN.m §1b (vedi Sezione 7)
+
+AGGIORNARE LE POTENZE (Remuneration Model 1):
+  -> Potenza di PRELIEVO: modifica RATED_LOAD_KW in MAIN.m §0
+     (containers.Map nome->kW), con la potenza impegnata in bolletta di
+     ciascun utente. Se si aggiunge un utente al quartiere va aggiunta
+     anche la sua voce qui, altrimenti MAIN.m solleva un errore
+     esplicito in §3h.
+  -> Potenza di GENERAZIONE: modifica il campo .kWp della struct
+     pvPlants in MAIN.m §0. Sta li' e non in una tabella per utente
+     perche' appartiene all'IMPIANTO: chi possiede piu' impianti somma
+     automaticamente le taglie, chi non ne ha resta a 0.
+  Entrambi i valori attuali sono TODO/placeholder e vanno confermati con
+  dati reali: incidono per circa il 50% sulla quota del prosumer (vedi
+  GUIDA_modelli_distribuzione.md §10.6).
 
 CAMBIARE LA COMPOSIZIONE DEL QUARTIERE:
   -> Modifica SOLO simulation_config.yaml; non serve toccare il codice

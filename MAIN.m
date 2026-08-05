@@ -9,8 +9,8 @@ close all;
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
-%   3b-3e) Ripartizione dei benefici con quattro modelli di teoria dei giochi
-%    3f) Confronto tra i modelli
+%   3b-3j) Ripartizione dei benefici con nove modelli di ripartizione
+%    3k) Confronto tra i modelli
 %    4) Costo energia da rete (PUN 2025, per utente e per modalita)
 %    5) Visualizzazione       (istogrammi, profili, confronti)
 %
@@ -54,6 +54,20 @@ P_PV_NOM_KW = 20;        % TODO: potenza nominale impianto PV [kW] - valore
 F_RIDUZIONE = 0;         % TODO: fattore di riduzione F - definizione non
                           % ancora nota per intero; per ora nessuna riduzione
 
+% --- Potenza impegnata in PRELIEVO per utente [kW] ------------------------
+% Quanto ciascun utente puo' prelevare dalla rete (potenza impegnata in
+% bolletta). Usata SOLO da remuneration_model1_cer.m (§3h, Candela et al.)
+% per pesare il lato CONSUMO nel calcolo di alpha.
+% La potenza di GENERAZIONE non sta qui: appartiene all'impianto, ed e'
+% dichiarata come campo .kWp della struct pvPlants piu' sotto.
+% TODO: valori PROVVISORI/PLACEHOLDER - da confermare per ciascun utente.
+% NOTA SCALABILITA': a molti utenti questa tabella scritta a mano non
+% regge; vedi README §13 (limiti noti allo scaling).
+RATED_LOAD_KW = containers.Map( ...
+    {'office_1_kWh', 'small_industry_1_kWh', 'retail_1_kWh', ...
+     'household_1_kWh', 'household_2_kWh', 'household_3_kWh'}, ...
+    {10, 50, 15, 3, 3, 3});   % TODO: valori placeholder, da confermare
+
 % --- Modalita tariffarie PUN ---------------------------------------------
 Modalita = ["MONORARIA", "BIORARIA", "ORARIO_VARIABILE"];
 
@@ -79,9 +93,14 @@ meseNomi = ["Gennaio";"Febbraio";"Marzo";"Aprile";"Maggio";"Giugno"; ...
 %       'owner', {"household_1_kWh", "household_2_kWh", "household_3_kWh", ...
 %                 "household_4_kWh", "small_industry_1_kWh"});
 %
+% Il campo .kWp e' la potenza nominale dell'impianto: sta qui, e non in una
+% tabella per utente, perche' appartiene all'IMPIANTO. Cosi' e' impossibile
+% dichiarare potenza di generazione a chi non ha impianti, e la cosa regge
+% da sola quando gli impianti diventano molti.
 pvPlants = struct( ...
     'file',  {pvFile}, ...
-    'owner', {"small_industry_1_kWh"});
+    'owner', {"small_industry_1_kWh"}, ...
+    'kWp',   {20});          % TODO: coerente con P_PV_NOM_KW, da confermare
 
 
 %% ========================================================================
@@ -332,23 +351,168 @@ plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlay
 
 
 %% ========================================================================
-%  3f) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%  3f) DISTRIBUZIONE DEI BENEFICI - EQUAL SPLIT
+%
+%  Quinto modello, il piu' semplice possibile: l'incentivo sull'energia
+%  condivisa viene diviso in parti UGUALI tra tutti i giocatori, senza
+%  guardare a produzione o consumo. Serve da benchmark elementare per
+%  misurare quanto i modelli di teoria dei giochi si discostino da una
+%  ripartizione paritaria. Vedi equal_split_cer.m per i dettagli.
+%  ========================================================================
+
+ES = equal_split_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(ES, "Equal Split");
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(ES.players, ES.phi, "Equal Split", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3g) DISTRIBUZIONE DEI BENEFICI - PROPORTIONAL TO CONSUMPTION
+%
+%  Sesto modello, secondo benchmark elementare: l'incentivo sull'energia
+%  condivisa viene diviso in proporzione al consumo di ciascun utente nelle
+%  sole ore "utili" (energia condivisa di comunita' > 0). Chi consuma di
+%  piu' nelle ore in cui la CER matura benefici economici riceve una quota
+%  maggiore. Vedi proportional_consumption_cer.m per i dettagli.
+%  ========================================================================
+
+PC = proportional_consumption_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(PC, "Proportional to Consumption");
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(PC.players, PC.phi, "Proportional to Consumption", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3h) DISTRIBUZIONE DEI BENEFICI - REMUNERATION MODEL 1
+%
+%  Settimo modello, da Candela, Di Silvestre, Gallo, Riva Sanseverino,
+%  Sciume', Zizzo, "A Remuneration Model of Energy Community Members in
+%  Italy", IEEE BLORIN 2022. L'incentivo si divide in due quote (alpha per i
+%  consumatori, beta per i produttori/prosumer) pesate sulla potenza
+%  di ciascuna classe: potenza di PRELIEVO per i consumatori (RATED_LOAD_KW,
+%  §0) e potenza di GENERAZIONE per i produttori (pvPlants.kWp, §0) - due
+%  grandezze fisiche distinte, entrambe valori TODO da confermare.
+%  All'interno di ciascuna classe la quota oraria e' proporzionale
+%  all'energia di quell'ora. Vedi remuneration_model1_cer.m.
+%  ========================================================================
+
+% Potenza impegnata in prelievo: dalla tabella per utente di §0.
+ratedLoadKW = zeros(nUsers, 1);
+for u = 1:nUsers
+    key = char(userNames(u));
+    if ~isKey(RATED_LOAD_KW, key)
+        error('MAIN:ratedLoadMissing', ...
+              'Potenza di prelievo mancante per %s: aggiungerla a RATED_LOAD_KW in §0.', key);
+    end
+    ratedLoadKW(u) = RATED_LOAD_KW(key);
+end
+
+% Potenza di generazione: derivata dagli IMPIANTI, non da una tabella per
+% utente. Chi possiede piu' impianti somma le rispettive potenze; chi non ne
+% possiede resta a 0 automaticamente.
+ratedGenKW = zeros(nUsers, 1);
+for p = 1:numel(pvPlants)
+    ownerIdx = find(userNames == pvPlants(p).owner, 1);
+    ratedGenKW(ownerIdx) = ratedGenKW(ownerIdx) + pvPlants(p).kWp;
+end
+
+RM1 = remuneration_model1_cer(genForShare, loadForShare, userNames, P_CER_h, ...
+                              ratedLoadKW, ratedGenKW);
+report_allocation(RM1, "Remuneration Model 1", ...
+    sprintf('  %-25s: alpha=%.3f  beta=%.3f  (prelievo %.0f kW / generazione %.0f kWp)', ...
+            'Pesi di classe', RM1.alpha, RM1.beta, ...
+            sum(RM1.ratedLoadKW(RM1.consumerEligible)), ...
+            sum(RM1.ratedGenKW(RM1.producerEligible))));
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(RM1.players, RM1.phi, "Remuneration Model 1", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3i) DISTRIBUZIONE DEI BENEFICI - CASCADING TREE
+%
+%  Ottavo modello, da Trevisan, Ghiani, Pilo, "Economic Benefits
+%  Redistribution Methodology for Renewable Energy Communities", 2022.
+%  L'incentivo si scompone ricorsivamente in un albero di categorie
+%  (riserve, quota fissa, quota variabile -> prelievi/immissione ->
+%  produttori+prosumer/soli prosumer), con pesi di ramo di default
+%  (scelte di governance della REC, non derivabili dai dati - vedi
+%  cascading_tree_cer.m per i dettagli e per come modificarli via opts).
+%  ========================================================================
+
+CT = cascading_tree_cer(genForShare, loadForShare, userNames, P_CER_h);
+foldMsg = "";
+if CT.prosumersOnlyFolded
+    foldMsg = "  (nessun vero prosumer: pool soli-prosumer assorbita in immissione generale)";
+end
+report_allocation(CT, "Cascading Tree", [ ...
+    string(sprintf('  %-25s: EUR %9.2f (riserva)  EUR %9.2f (montepremi totale)', ...
+                   'Trattenuto / totale', CT.reservoirAmount, CT.totalIncentive)), ...
+    string(sprintf('  %-25s: fisso=%.0f prelievi=%.0f immissione=%.0f prosumer=%.0f%s', ...
+                   'Pool [EUR]', CT.pools.fixed, CT.pools.withdrawals, ...
+                   CT.pools.feedInGeneral, CT.pools.prosumersOnly, foldMsg))]);
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(CT.players, CT.phi, "Cascading Tree", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3j) DISTRIBUZIONE DEI BENEFICI - WEIGHTED SOLIDARITY
+%
+%  Nono modello, da Marrasso, Martone, Perugini, Roselli, "Towards a fair
+%  revenue distribution of a Renewable Energy Community through a
+%  proportional energy consumption model application", J. Phys.: Conf. Ser.
+%  3143 (2025) 012113. Peso orario = componente tecnica (energia condivisa +
+%  carico dell'utente) + componente di solidarieta' (punteggio a scalini sul
+%  costo unitario dell'energia, proxy di poverta' energetica); i quattro
+%  coefficienti della formula sono scelti su un fronte di Pareto tra indice
+%  di Gini minimo e reddito medio massimo degli utenti a rischio poverta'
+%  energetica. Vedi weighted_solidarity_cer.m per i dettagli.
+%  ========================================================================
+
+WS = weighted_solidarity_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(WS, "Weighted Solidarity", [ ...
+    string(sprintf('  %-25s: alpha1=%.0f alpha2=%.0f beta1=%.0f beta2=%.0f', ...
+                   'Combinazione Pareto-ottima', WS.alpha1, WS.alpha2, WS.beta1, WS.beta2)), ...
+    string(sprintf('  %-25s: %.4f  (%d combinazioni Pareto-ottime)', ...
+                   'Indice di Gini', WS.giniIndex, WS.nParetoPoints))]);
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(WS.players, WS.phi, "Weighted Solidarity", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3k) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
 %
 %  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
 %  caratteristica v(S), i modelli di ripartizione calcolati finora.
 %  Aggiungere un nuovo modello = una colonna nella tabella e un elemento
 %  nella struct "metodi", nient'altro.
+%
+%  NOTA: CT.vGrand (Cascading Tree) coincide col v(N) degli altri metodi
+%  solo perche' il default e' opts.reservoirFraction=0 (nessuna riserva
+%  trattenuta); con una riserva > 0 sarebbe legittimamente piu' piccolo -
+%  per costruzione, non per errore (vedi cascading_tree_cer.m).
 %  ========================================================================
 
-Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ...
+Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ES.phi, PC.phi, ...
+             RM1.phi, CT.phi, WS.phi, ...
              'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
-                               'NashBargaining_EUR', 'VarianceLeastCore_EUR'});
+                               'NashBargaining_EUR', 'VarianceLeastCore_EUR', ...
+                               'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
+                               'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
+                               'WeightedSolidarity_EUR'});
 fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
 disp(Tcmp);
 
 metodi = struct( ...
-    'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core"}, ...
-    'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi});
+    'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core", ...
+              "Equal Split", "Proportional to Consumption", ...
+              "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity"}, ...
+    'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi, ...
+              ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi});
 
 plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
     sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...

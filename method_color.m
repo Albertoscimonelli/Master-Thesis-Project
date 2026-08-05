@@ -16,6 +16,16 @@ function c = method_color(method)
             c = [0.20 0.60 0.30];   % verde
         case "variance least core"
             c = [0.85 0.35 0.25];   % rosso mattone
+        case "equal split"
+            c = [0.60 0.60 0.60];   % grigio
+        case "proportional to consumption"
+            c = [0.90 0.70 0.15];   % giallo/ocra
+        case "remuneration model 1"
+            c = [0.75 0.25 0.55];   % magenta
+        case "cascading tree"
+            c = [0.35 0.75 0.70];   % turchese
+        case "weighted solidarity"
+            c = [0.95 0.55 0.55];   % rosa salmone
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

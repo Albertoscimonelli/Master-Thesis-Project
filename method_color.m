@@ -26,6 +26,10 @@ function c = method_color(method)
             c = [0.35 0.75 0.70];   % turchese
         case "weighted solidarity"
             c = [0.95 0.55 0.55];   % rosa salmone
+        case "pearson key"
+            c = [0.35 0.30 0.65];   % indaco
+        case "pearson-sharing rate"
+            c = [0.60 0.45 0.20];   % bronzo
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

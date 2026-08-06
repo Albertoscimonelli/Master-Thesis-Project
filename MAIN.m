@@ -9,8 +9,8 @@ close all;
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
-%   3b-3j) Ripartizione dei benefici con nove modelli di ripartizione
-%    3k) Confronto tra i modelli
+%   3b-3l) Ripartizione dei benefici con undici modelli di ripartizione
+%    3m) Confronto tra i modelli
 %    4) Costo energia da rete (PUN 2025, per utente e per modalita)
 %    5) Visualizzazione       (istogrammi, profili, confronti)
 %
@@ -484,7 +484,76 @@ plot_benefit_network(WS.players, WS.phi, "Weighted Solidarity", revSoldPerPlayer
 
 
 %% ========================================================================
-%  3k) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%  3k) DISTRIBUZIONE DEI BENEFICI - PEARSON KEY (chiave dinamica M3)
+%
+%  Decimo modello, da Gianaroli, Ricci, Sdringola, Ancona, Branchini, Melino, "Development
+%  of dynamic sharing keys: Algorithms supporting management of renewable
+%  energy community and collective self consumption", Energy & Buildings 311
+%  (2024) 114158 (metodo M3).
+%
+%  E' il primo modello che NON ripartisce direttamente il denaro: ripartisce
+%  ora per ora l'ENERGIA condivisa tra gli utenti con una chiave dinamica, e
+%  solo alla fine la valorizza con la tariffa incentivante P_CER_h. La chiave
+%  premia il SINCRONISMO: per ogni giorno si calcola la correlazione di
+%  Pearson tra il profilo di consumo dell'utente e il profilo di immissione
+%  della comunita', rimappata in [0,1]. L'energia oraria si distribuisce con
+%  quei pesi e con il vincolo SH_i <= consumo_i, ridistribuendo iterativamente
+%  a chi resta cio' che eccede il consumo di chi viene "cappato"
+%  (allocate_shared_energy.m). Vedi pearson_key_cer.m per i dettagli.
+%  ========================================================================
+
+PK = pearson_key_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(PK, "Pearson Key", ...
+    sprintf('  %-25s: media %+.3f  (min %+.3f / max %+.3f tra gli utenti)', ...
+            'Correlazione Pearson', mean(PK.pMeanUser), ...
+            min(PK.pMeanUser), max(PK.pMeanUser)));
+
+% L'energia distribuita ora per ora deve coincidere con l'energia condivisa
+% della comunita' calcolata nella sezione 2: e' il controllo piu' diretto che
+% l'algoritmo iterativo di cap non perda ne' crei energia.
+assert(abs(sum(PK.sharedEnergy) - shared_annual) < 1e-6 * max(1, shared_annual), ...
+       'Pearson Key: energia condivisa ripartita incoerente con il bilancio CER');
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(PK.players, PK.phi, "Pearson Key", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3l) DISTRIBUZIONE DEI BENEFICI - PEARSON-SHARING RATE (chiave dinamica M5)
+%
+%  Undicesimo modello, dallo stesso paper del precedente (metodo M5, eq. 7).
+%  Combina linearmente le due chiavi del paper con alpha + beta = 1: la
+%  correlazione di Pearson di M3 (sincronismo) e lo "sharing rate" di M4, che
+%  penalizza chi in una data ora consuma piu' energia di quanta la comunita'
+%  ne stia immettendo. M4 non e' esposto come modello a se': il suo peso resta
+%  una componente interna, calcolata da sharing_rate_key.m. La ripartizione
+%  oraria dell'energia e il cap al consumo sono gli stessi di M3 (helper
+%  condivisi). Vedi pearson_sharing_key_cer.m per i dettagli, e la nota sulla
+%  lettura dell'eq. 5 del paper in sharing_rate_key.m.
+%
+%  DA RILEGGERE CON I DATI REALI: sulla community provvisoria di oggi questo
+%  metodo e' quasi indistinguibile dalla Pearson Key (scarto < 1%), perche' il
+%  91% dell'energia cade nel caso banale e nessun utente sovraconsuma - l'unico
+%  caso in cui lo sharing rate morde. Non e' un bug: GUIDA §14.6 riporta i tre
+%  indicatori da ricalcolare per verificare se il fenomeno si ripresenta.
+%  ========================================================================
+
+PSK = pearson_sharing_key_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(PSK, "Pearson-Sharing Rate", [ ...
+    string(sprintf('  %-25s: alpha=%.2f (Pearson)  beta=%.2f (sharing rate)  xi=%.3f', ...
+                   'Pesi della chiave', PSK.alpha, PSK.beta, PSK.xi)), ...
+    string(sprintf('  %-25s: lettura "%s" dell''eq. 5 (coerente con Fig. 3 e con l''esempio del paper)', ...
+                   'Sharing rate', PSK.sharingRateMode))]);
+
+assert(abs(sum(PSK.sharedEnergy) - shared_annual) < 1e-6 * max(1, shared_annual), ...
+       'Pearson-Sharing Rate: energia condivisa ripartita incoerente con il bilancio CER');
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(PSK.players, PSK.phi, "Pearson-Sharing Rate", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3m) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
 %
 %  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
 %  caratteristica v(S), i modelli di ripartizione calcolati finora.
@@ -498,21 +567,24 @@ plot_benefit_network(WS.players, WS.phi, "Weighted Solidarity", revSoldPerPlayer
 %  ========================================================================
 
 Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ES.phi, PC.phi, ...
-             RM1.phi, CT.phi, WS.phi, ...
+             RM1.phi, CT.phi, WS.phi, PK.phi, PSK.phi, ...
              'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
                                'NashBargaining_EUR', 'VarianceLeastCore_EUR', ...
                                'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
                                'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
-                               'WeightedSolidarity_EUR'});
+                               'WeightedSolidarity_EUR', 'PearsonKey_EUR', ...
+                               'PearsonSharingRate_EUR'});
 fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
 disp(Tcmp);
 
 metodi = struct( ...
     'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core", ...
               "Equal Split", "Proportional to Consumption", ...
-              "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity"}, ...
+              "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity", ...
+              "Pearson Key", "Pearson-Sharing Rate"}, ...
     'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi, ...
-              ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi});
+              ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi, ...
+              PK.phi,    PSK.phi});
 
 plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
     sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...

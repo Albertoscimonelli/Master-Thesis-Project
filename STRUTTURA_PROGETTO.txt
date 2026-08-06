@@ -69,6 +69,18 @@ Project/
 |                                       decomposizione ad albero in categorie)
 |-- weighted_solidarity_cer.m           Ripartizione incentivo CER - Weighted Solidarity (Marrasso et al.,
 |                                       peso tecnico+solidarieta', coefficienti su fronte di Pareto)
+|-- pearson_key_cer.m                   Ripartizione incentivo CER - Pearson Key (Gianaroli et al., M3:
+|                                       chiave dinamica sulla correlazione di Pearson giornaliera)
+|-- pearson_sharing_key_cer.m           Ripartizione incentivo CER - Pearson-Sharing Rate (Gianaroli et al.,
+|                                       M5: combinazione pesata alpha/beta di Pearson e sharing rate)
+|-- pearson_hourly_key.m                [helper chiavi dinamiche] Pearson giornaliero rimappato in [0,1]
+|                                       ed espanso alle 24 ore del giorno
+|-- sharing_rate_key.m                  [helper chiavi dinamiche] sharing rate orario (eq. 5, componente
+|                                       interna di M5; M4 non e' esposto come metodo a se')
+|-- normalize_key_rows.m                [helper chiavi dinamiche] normalizzazione oraria della chiave
+|                                       (eq. 4), sum_i r(t,i) = 1
+|-- allocate_shared_energy.m            [helper chiavi dinamiche] ripartizione oraria dell'energia
+|                                       condivisa con cap al consumo (algoritmo iterativo di Fig. 2)
 |-- load_zonal_price.m                  Prezzo zonale orario MGP, allineato alla griglia oraria
 |-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1)
 |-- irr_bisection.m                     IRR via bisezione (senza Financial Toolbox)
@@ -307,7 +319,10 @@ Pipeline a sezioni indipendenti:
      Consumption (benchmark elementari, senza teoria dei giochi)
   3h/3i/3j) Ripartizione dell'incentivo CER: Remuneration Model 1, Cascading
      Tree, Weighted Solidarity (modelli dalla letteratura sulle REC italiane)
-  3k) Confronto tra i nove modelli di ripartizione
+  3k/3l) Ripartizione dell'incentivo CER: Pearson Key, Pearson-Sharing Rate
+     (chiavi dinamiche M3/M5 di Gianaroli et al.: ripartiscono l'ENERGIA ora
+      per ora e la valorizzano solo alla fine con P_CER_h)
+  3m) Confronto tra gli undici modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
@@ -315,15 +330,18 @@ Pipeline a sezioni indipendenti:
  4.2  cer_coalition_values.m, shapley_cer.m, nucleolus_cer.m,
       nash_bargaining_cer.m, variance_least_core_cer.m,
       equal_split_cer.m, proportional_consumption_cer.m,
-      remuneration_model1_cer.m, cascading_tree_cer.m, weighted_solidarity_cer.m
+      remuneration_model1_cer.m, cascading_tree_cer.m, weighted_solidarity_cer.m,
+      pearson_key_cer.m, pearson_sharing_key_cer.m
 --------------------------------------------------------------------------------
 
-Nove modelli di ripartizione dell'incentivo sull'energia condivisa tra i
+Undici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
 giocatori (prosumer e consumatori): quattro di teoria dei giochi
 cooperativi a utilita' trasferibile, due benchmark elementari che non
-usano teoria dei giochi (Equal Split, Proportional to Consumption), e tre
+usano teoria dei giochi (Equal Split, Proportional to Consumption), tre
 modelli proposti in letteratura per REC italiane (Remuneration Model 1,
-Cascading Tree, Weighted Solidarity).
+Cascading Tree, Weighted Solidarity) e due chiavi dinamiche che
+ripartiscono l'ENERGIA ora per ora invece del denaro (Pearson Key,
+Pearson-Sharing Rate).
 
   cer_coalition_values.m   Costruisce v(S) per OGNI coalizione (2^n),
                             condivisa dai metodi di riparto cosi'
@@ -396,6 +414,61 @@ Cascading Tree, Weighted Solidarity).
                             poverta' energetica) su una griglia di ~3600
                             combinazioni, vettorizzata (nessun toolbox
                             richiesto).
+  pearson_key_cer.m         Da Gianaroli, Ricci, Sdringola, Ancona, Branchini,
+                            Melino, Energy & Buildings 311 (2024) 114158, M3.
+                            PRIMO METODO CHE NON RIPARTISCE IL DENARO ma
+                            l'ENERGIA condivisa, ora per ora: la chiave e'
+                            la correlazione di Pearson GIORNALIERA tra il
+                            consumo dell'utente e l'immissione della
+                            comunita', rimappata in [0,1] (premia il
+                            sincronismo). L'energia si distribuisce con quei
+                            pesi rispettando il cap SH_i <= consumo_i, e solo
+                            alla fine si valorizza con P_CER_h. L'efficienza
+                            sum(phi) = v(N) vale per costruzione: la somma
+                            oraria delle quote di energia e' esattamente
+                            l'energia condivisa di comunita' di MAIN.m §2.
+  pearson_sharing_key_cer.m Stesso paper, metodo M5 (eq. 7): combinazione
+                            lineare alpha*Pearson + beta*sharing_rate con
+                            alpha+beta=1 (default 0.5/0.5), normalizzata
+                            DOPO la combinazione. Il metodo M4 (solo sharing
+                            rate) NON e' esposto come modello a se': resta la
+                            componente interna calcolata da sharing_rate_key.
+                            NOTA (vale per entrambe le chiavi): sono guidate
+                            dal CONSUMO, quindi attribuiscono 0 al
+                            proprietario dell'impianto (il suo carico residuo
+                            e' nullo proprio nelle ore di eccedenza) - stesso
+                            comportamento di proportional_consumption_cer.m.
+
+Helper condivisi dalle due chiavi dinamiche (nessun toolbox richiesto):
+
+  pearson_hourly_key.m      Pearson giornaliero (24 valori per giorno), p=0
+                            se una delle due varianze e' nulla, rimappatura
+                            (p+1)/2 in [0,1], espansione alle 24 ore.
+                            Restituisce anche il coefficiente grezzo per
+                            giorno/utente (validazione, Fig. 11-12 del
+                            paper). Richiede un numero di ore multiplo di
+                            24, altrimenti errore esplicito.
+  sharing_rate_key.m        Con ratio = consumo / immissione:
+                              SR = ratio                  se ratio < 1
+                              SR = exp(-xi*(ratio-1))     se ratio >= 1
+                            (continua, massimo SR=1 in ratio=1; xi =
+                            ln(2)/0.5 ~ 1.386, calibrato su SR=0.5 per
+                            ratio=1.5). L'eq. 5 STAMPATA nel paper ha le due
+                            espressioni associate alle condizioni INVERTITE:
+                            e' un refuso, smentito da Fig. 3, dal testo e
+                            dall'esempio numerico (che l'implementazione
+                            riproduce esattamente). La versione letterale
+                            resta disponibile con mode = "eq5".
+  normalize_key_rows.m      Normalizzazione oraria della chiave (eq. 4),
+                            usata per restituire r(t,i) a scopo di
+                            ispezione; uniforme 1/n nelle ore a pesi nulli.
+  allocate_shared_energy.m  Algoritmo iterativo di Fig. 2 del paper, comune
+                            a tutte le chiavi dinamiche: distribuisce
+                            Einj(t) con i pesi dati, cappa al consumo chi
+                            sforerebbe, lo esclude e ridistribuisce il
+                            residuo rinormalizzando; al piu' n iterazioni.
+                            Verifica alla fine SH <= consumo e somma oraria
+                            = min(Einj, carico totale).
 
 Per la derivazione matematica completa vedi GUIDA_modelli_distribuzione.md.
 
@@ -410,7 +483,7 @@ nessun cambiamento funzionale.
                                 assegnazione impianti/autoconsumo (Sezione 7).
                                 Restituisce una struct D.
   report_allocation.m          Stampa + verifica di efficienza di una
-                                ripartizione (usata da tutti e 9 i metodi).
+                                ripartizione (usata da tutti e 11 i metodi).
   method_color.m                Colore RGB coerente per ciascun modello di
                                 ripartizione, condiviso da tutti i grafici
                                 (un solo posto dove aggiungere il colore di

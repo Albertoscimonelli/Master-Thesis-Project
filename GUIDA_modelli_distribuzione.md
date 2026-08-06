@@ -2,7 +2,7 @@
 
 Questo documento spiega **cosa** è stato implementato, **come** e soprattutto **perché**
 sono state fatte determinate scelte, con particolare attenzione alla matematica.
-Riguarda i nove metodi di ripartizione dei ricavi della comunità energetica:
+Riguarda gli undici metodi di ripartizione dei ricavi della comunità energetica:
 
 1. **Shapley value** — Moncecchi et al., *Appl. Sci.* 2020 (eq. 39)
 2. **Nucleolo** — Fioriti et al., *Appl. Energy* 2021 (eq. 7)
@@ -17,6 +17,10 @@ Riguarda i nove metodi di ripartizione dei ricavi della comunità energetica:
    Methodology for Renewable Energy Communities*, 2022
 9. **Weighted Solidarity** — Marrasso, Martone, Perugini, Roselli, J. Phys.: Conf. Ser.
    3143 (2025) 012113
+10. **Pearson Key** — Gianaroli, Ricci, Sdringola, Ancona, Branchini, Melino,
+    *Energy & Buildings* 311 (2024) 114158 (metodo M3)
+11. **Pearson-Sharing Rate** — stesso paper, metodo M5 (eq. 7), combinazione pesata di
+    M3 e M4
 
 > **Nota:** le sezioni 2 e 3 sotto trattano in dettaglio Shapley e Nucleolo; il Nash
 > Bargaining è documentato nel codice ([`nash_bargaining_cer.m`](nash_bargaining_cer.m), che ne
@@ -26,7 +30,10 @@ Riguarda i nove metodi di ripartizione dei ricavi della comunità energetica:
 > apparato di teoria dei giochi, sono documentati per esteso nelle sezioni §8 e §9. I tre
 > metodi dalla letteratura sulle REC italiane (Remuneration Model 1, Cascading Tree,
 > Weighted Solidarity) hanno le loro sezioni complete §10-§12, allo stesso livello di
-> dettaglio del Variance Least Core, data la loro complessità.
+> dettaglio del Variance Least Core, data la loro complessità. Le due **chiavi dinamiche**
+> di Gianaroli et al. (§13-§14) sono documentate insieme, perché condividono gran parte
+> della matematica e tutti gli helper: sono anche gli unici due metodi che ripartiscono
+> **energia** invece di denaro.
 
 ---
 
@@ -44,7 +51,13 @@ Riguarda i nove metodi di ripartizione dei ricavi della comunità energetica:
 | [`remuneration_model1_cer.m`](remuneration_model1_cer.m) | Calcola il **Remuneration Model 1**: split α/β tra classe consumatori e classe produttori/prosumer, pesato sulla potenza contrattuale |
 | [`cascading_tree_cer.m`](cascading_tree_cer.m) | Calcola il **Cascading Tree**: `v(N)` scomposto ricorsivamente in un albero di categorie |
 | [`weighted_solidarity_cer.m`](weighted_solidarity_cer.m) | Calcola il **Weighted Solidarity**: peso tecnico+solidarietà, coefficienti scelti su fronte di Pareto |
-| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (confronto) |
+| [`pearson_key_cer.m`](pearson_key_cer.m) | Calcola la **Pearson Key** (M3): chiave dinamica sulla correlazione di Pearson giornaliera |
+| [`pearson_sharing_key_cer.m`](pearson_sharing_key_cer.m) | Calcola la **Pearson-Sharing Rate** (M5): combinazione pesata α/β di Pearson e sharing rate |
+| [`pearson_hourly_key.m`](pearson_hourly_key.m) | Peso grezzo di Pearson: coefficiente giornaliero, rimappato in `[0,1]`, espanso alle 24 ore |
+| [`sharing_rate_key.m`](sharing_rate_key.m) | Peso grezzo dello **sharing rate** (M4, eq. 5): componente interna di M5 |
+| [`normalize_key_rows.m`](normalize_key_rows.m) | Normalizzazione oraria della chiave (eq. 4), `Σ_i r(t,i) = 1` |
+| [`allocate_shared_energy.m`](allocate_shared_energy.m) | Ripartizione oraria dell'**energia** condivisa con cap al consumo (algoritmo di Fig. 2), comune a M3 e M5 |
+| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (confronto) |
 
 **Scelta di design fondamentale.** I metodi *non* ricalcolano l'energia condivisa
 ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
@@ -383,6 +396,13 @@ sarebbero le più scontente.
    pubblicazioni recenti (2022-2025) per comunità energetiche italiane, che introducono
    criteri assenti negli altri metodi: potenza contrattuale/nominale, decomposizione
    gerarchica in categorie, equità sociale (povertà energetica).
+9. **Due chiavi dinamiche, Pearson Key e Pearson-Sharing Rate** (§13-§14) → sono gli
+   unici due metodi che ripartiscono **energia** invece di denaro, ora per ora e con il
+   vincolo fisico `SH_i(t) ≤ load_i(t)`; la conversione in € avviene solo alla fine e
+   l'efficienza `Σφ = v(N)` resta garantita per costruzione, quindi restano confrontabili
+   con gli altri nove. L'algoritmo di ripartizione e i due pesi stanno in **helper
+   condivisi** (`allocate_shared_energy`, `pearson_hourly_key`, `sharing_rate_key`), così
+   M5 riusa M3 e M4 senza duplicare nulla.
 
 ---
 
@@ -1037,6 +1057,460 @@ dall'ordine di grandezza dei kWh orari, quindi dalla taglia della comunità.
 
 ---
 
+## 13. Pearson Key (chiave dinamica M3)
+
+File: [`pearson_key_cer.m`](pearson_key_cer.m).
+
+Riferimento: F. Gianaroli, M. Ricci, P. Sdringola, M. A. Ancona, L. Branchini, F. Melino,
+*Development of dynamic sharing keys: Algorithms supporting management of renewable energy
+community and collective self consumption*, Energy & Buildings 311 (2024) 114158 —
+metodo **M3**.
+
+### 13.1 Cosa cambia rispetto ai nove metodi precedenti
+
+Tutti i metodi §2-§12 ripartiscono **denaro**: partono da `v(N)` (o dall'incentivo orario
+`B_REC(t)`) e ne assegnano quote in €. Le due chiavi dinamiche del paper di Gianaroli
+ragionano invece sull'**energia**:
+
+```
+1. si ripartisce, ORA PER ORA, l'energia condivisa SH(t,i)  [kWh]
+2. la si valorizza alla fine:  φ_i = Σ_t SH(t,i) · P_CER(t)  [EUR]
+```
+
+La differenza non è cosmetica: la ripartizione dell'energia è soggetta a un **vincolo
+fisico** che quella del denaro non ha —
+
+```
+SH(t,i) ≤ load_i(t)      (nessuno può "ricevere" più energia di quanta ne consumi)
+```
+
+ed è questo vincolo a richiedere l'algoritmo iterativo di §13.4. È anche il motivo per cui
+il paper parla di *sharing keys* (chiavi di ripartizione dell'energia condivisa) e non di
+*revenue allocation*: le chiavi nascono per essere applicate nella gestione operativa di
+una CER, non solo a consuntivo.
+
+### 13.2 Il coefficiente di Pearson giornaliero
+
+Per ogni giorno `d` (24 ore) e ogni utente `i`:
+
+$$
+p(i,d) \;=\; \frac{\operatorname{Cov}\bigl(\text{load}_i(d),\, E_{inj}(d)\bigr)}
+{\sigma\bigl(\text{load}_i(d)\bigr)\;\sigma\bigl(E_{inj}(d)\bigr)} \;\in\; [-1,1]
+$$
+
+dove `E_inj(t) = Σ_i gen_i(t)` è l'energia immessa in rete dalla comunità (nel progetto:
+la somma delle eccedenze, già al netto dell'autoconsumo dietro al contatore, §1.2).
+
+**Cosa misura.** Non *quanta* energia consuma l'utente, ma **quando**: la correlazione è
+alta se il profilo di consumo della giornata "segue" quello di immissione (consumo alto
+nelle ore di surplus, basso di notte). È una misura di **sincronismo**, invariante
+rispetto alla scala — raddoppiare tutti i consumi di un utente non cambia il suo `p`.
+
+**Perché su base giornaliera** e non annuale o oraria: su base annuale il coefficiente
+sarebbe un singolo numero per utente e la chiave diventerebbe statica (niente
+"dinamica"); su base oraria non è nemmeno definito (servono più campioni). Le 24 ore del
+giorno sono la finestra naturale del ciclo solare, ed è la scelta del paper.
+
+**Caso degenere.** Se una delle due deviazioni standard è nulla (utente a consumo
+costante o nullo in quel giorno; giornata senza alcuna immissione) il coefficiente non è
+definito: si pone `p = 0` — nessuna correlazione, comportamento neutro. Nel codice il
+test è sul denominatore (`den > 0`), che è l'unica forma numericamente robusta.
+
+### 13.3 Rimappatura e normalizzazione (eq. 4)
+
+I pesi di una chiave devono essere non negativi, quindi si rimappa linearmente:
+
+```
+p_remap(i,d) = ( p(i,d) + 1 ) / 2   ∈ [0,1]
+```
+
+(correlazione perfettamente opposta → peso 0; correlazione nulla → 0.5; correlazione
+perfetta → 1). Tutte le 24 ore del giorno `d` ereditano lo stesso valore
+(`p_hourly(t,i)`), e la chiave normalizzata è
+
+```
+r(t,i) = p_hourly(t,i) / Σ_j p_hourly(t,j)          (eq. 4)   ⇒  Σ_i r(t,i) = 1
+```
+
+> **Attenzione:** la normalizzazione **non** viene fatta dentro
+> [`pearson_hourly_key.m`](pearson_hourly_key.m), che restituisce il peso *grezzo*. Il
+> motivo è M5 (§14): lì Pearson e sharing rate vanno combinati **prima** di normalizzare,
+> e normalizzarli separatamente darebbe un risultato diverso. `normalize_key_rows.m`
+> serve quindi solo a *restituire* `r` per ispezione (campo `.keys`): la ripartizione vera
+> rinormalizza da sola a ogni iterazione, §13.4.
+
+Il campo `.keys` è esattamente la grandezza che il paper riporta nei box plot delle
+Fig. 11-12 ("distribution of normalized Pearson values for each user"), utile se si vuole
+riprodurre quella figura sui dati del progetto; `.pDaily` è invece il coefficiente grezzo
+in `[-1,1]`, prima della rimappatura.
+
+### 13.4 L'algoritmo iterativo con cap al consumo (Fig. 2 del paper)
+
+File: [`allocate_shared_energy.m`](allocate_shared_energy.m) — **condiviso** da M3 e M5:
+cambia solo la matrice dei pesi in ingresso, non l'algoritmo.
+
+Per ogni ora `t`:
+
+1. `E_inj(t) ≥ Σ_i load_i(t)` → **caso banale**: `SH(t,i) = load_i(t)` per tutti. La
+   chiave non ha alcun effetto (c'è energia per tutti). *Vedi §13.8: nel caso di studio
+   questo ramo copre il 91% dell'energia condivisa.*
+2. `E_inj(t) ≤ 0` o carico totale nullo → `SH(t,:) = 0`.
+3. Altrimenti si itera:
+   ```
+   RES = E_inj(t) − Σ_i SH(t,i)                 energia ancora da assegnare
+   r_norm(i) = r(t,i)·attivo(i) / Σ_j r(t,j)·attivo(j)    (rinormalizzazione)
+   SH_temp(i) = SH(t,i) + r_norm(i)·RES
+   se SH_temp(i) > load_i(t):  SH(t,i) = load_i(t),  attivo(i) = false   (CAP)
+   altrimenti:                 SH(t,i) = SH_temp(i)
+   ```
+   Si esce quando nessuno sfora (distribuzione stabile) o quando `RES` è esaurito. Ogni
+   iterazione cappa **almeno un** utente, quindi bastano `n` iterazioni: il ciclo è
+   `O(n)` per ora, non un'iterazione a convergenza asintotica.
+
+Questo è esattamente il comportamento descritto dal paper: quando un utente viene cappato
+"il suo coefficiente viene posto a zero" e il residuo si ridistribuisce tra gli altri
+rinormalizzando — nel codice, la maschera `active`.
+
+**Caso degenere gestito in più rispetto al paper.** Se in un'ora tutti i pesi degli utenti
+ancora attivi sono nulli (`p = -1` per tutti in M3; underflow dell'esponenziale in M5),
+il paper non dice cosa fare e la formula `r/Σr` sarebbe `0/0`: il residuo resterebbe non
+assegnato e l'efficienza `Σφ = v(N)` verrebbe violata. Il codice ripiega allora sul
+**margine residuo** `load_i(t) − SH(t,i)`, l'unico riparto sempre definito e che per
+costruzione non può sforare il cap (in quel ramo `E_inj < Σ load`, quindi
+`RES < Σ margini`).
+
+### 13.5 Perché l'efficienza vale per costruzione
+
+L'algoritmo garantisce, ora per ora,
+
+```
+Σ_i SH(t,i) = min( E_inj(t), Σ_i load_i(t) )
+```
+
+che è **esattamente** l'energia condivisa di comunità calcolata in [`MAIN.m`](MAIN.m) §2.
+Quindi
+
+```
+Σ_i φ_i = Σ_t min(E_inj(t), load_tot(t)) · P_CER(t) = v(N)
+```
+
+lo stesso `v(N)` di tutti gli altri metodi: le quote sono direttamente confrontabili in
+`Tcmp` (§3m). L'`assert` di [`report_allocation.m`](report_allocation.m) lo verifica a
+ogni esecuzione, e `MAIN.m` §3k-§3l aggiunge il controllo **in energia**
+(`Σ_i SH_i = shared_annual`), che è più stringente perché non passa dalla valorizzazione.
+Le due verifiche interne all'helper (`SH ≤ load` e somma oraria) sono `assert` in
+[`allocate_shared_energy.m`](allocate_shared_energy.m).
+
+### 13.6 Mappatura formula → codice
+
+| Formula | Codice |
+|---|---|
+| `p(i,d)`, `p_remap`, espansione oraria | [`pearson_hourly_key.m`](pearson_hourly_key.m) (vettorizzata su `[24 × nGiorni × n]`) |
+| `r(t,i)` (eq. 4) | [`normalize_key_rows.m`](normalize_key_rows.m) — solo per l'output `.keys` |
+| Algoritmo di Fig. 2 | [`allocate_shared_energy.m`](allocate_shared_energy.m) |
+| `φ_i = Σ_t SH(t,i)·P_CER(t)` | `phi = SH.' * P_CER;` in [`pearson_key_cer.m`](pearson_key_cer.m) |
+
+Il calcolo di Pearson è vettorizzato riorganizzando le serie in `[24 × nGiorni × n]` (lo
+stesso `reshape` 24×365 usato in `MAIN.m` §2) e non richiede la Statistics Toolbox:
+`corrcoef` lavorerebbe su una coppia di vettori alla volta, cioè `365 × n` chiamate.
+
+### 13.7 Casi limite (checklist del paper, tutti coperti)
+
+| Caso | Gestione |
+|---|---|
+| `E_inj(t) = 0` (notte) | `SH(t,:) = 0`, nessuna divisione per zero |
+| `Σ_i load_i(t) = 0` | `SH(t,:) = 0` |
+| Varianza nulla nel Pearson | `p = 0` (neutro) |
+| Ore non multiple di 24 | **errore esplicito** `pearson_hourly_key:notWholeDays` — il giorno incompleto va risolto a monte (cambio ora legale: `MAIN.m` §1 riporta già tutto sulla griglia canonica di 8760 ore) |
+| Pesi tutti nulli in un'ora | fallback sul margine residuo (§13.4) |
+| Utente con consumo nullo in un'ora | cappato a 0 alla prima iterazione ed escluso dalla rinormalizzazione |
+
+La validazione contro l'esempio numerico del paper (Fig. 7 per M3) è in **§14.7**, insieme
+a quella di M4 e M5: i tre metodi condividono l'algoritmo di ripartizione, quindi conviene
+verificarli sullo stesso caso.
+
+### 13.8 Lettura dei risultati sul caso reale
+
+Correlazione media annua (coefficiente **grezzo**, prima della rimappatura) e quota
+risultante:
+
+| Giocatore | Pearson medio | Energia M3 [kWh] | Quota M3 [€] | Confronto: Prop. to Consumption [€] |
+|---|---:|---:|---:|---:|
+| office_1 | +0.443 | 6.891 | 879,77 | 898,83 |
+| small_industry_1 (prosumer) | −0.323 | 0 | **0** | 0 |
+| retail_1 | +0.431 | 6.758 | 867,59 | 867,46 |
+| household_1 | +0.133 | 1.562 | 199,77 | 195,04 |
+| household_2 | +0.047 | 1.496 | 193,07 | 185,05 |
+| household_3 | −0.012 | 1.622 | 208,38 | 202,20 |
+
+Tre letture, tutte importanti prima di usare questi numeri:
+
+**(a) Il prosumer riceve 0 — ed è strutturale, non un errore.** Il carico *residuo* del
+proprietario dell'impianto è nullo proprio nelle ore in cui c'è eccedenza da condividere
+(complementarità, §1.2): una chiave guidata dal **consumo** non può quindi assegnargli
+nulla. Vale identicamente per il Proportional to Consumption (§9), che infatti dà lo
+stesso 0. Il suo Pearson medio negativo (−0.323) è la stessa cosa vista da un'altra
+angolazione: quando la comunità immette, lui non preleva. Il ricavo del prosumer arriva
+dalla **vendita diretta dell'eccedenza** (`revSoldPerPlayer`, la barra arancione nei
+grafici), che non passa da nessuno degli undici modelli.
+
+**(b) I risultati sono vicini al Proportional to Consumption, e c'è un motivo preciso.**
+Nel caso di studio, sulle 3.223 ore con energia condivisa positiva, **2.762 ricadono nel
+caso banale** `E_inj ≥ Σ load` — e valgono il **91,3% dell'energia condivisa annua**. In
+quelle ore la chiave *non viene usata affatto*: ciascuno riceve tutto il proprio consumo.
+La chiave di Pearson decide quindi solo l'**8,7%** dell'energia (461 ore in cui
+l'immissione è scarsa), ed è per questo che M3 finisce a poche unità percentuali dal
+riparto proporzionale al consumo. **Non è una proprietà del metodo, è una proprietà della
+comunità**: con un impianto largamente sovradimensionato rispetto al carico residuo, le
+chiavi dinamiche hanno poco spazio per differenziare. Su una comunità con generazione
+scarsa rispetto ai carichi (il caso per cui il paper le propone) la stessa chiave
+produrrebbe differenze molto maggiori. È la prima cosa da verificare se si cambia la
+taglia dell'impianto — vedi la **nota da rileggere coi dati reali** in §14.6, che raccoglie
+gli indicatori da ricalcolare.
+
+**(c) Il coefficiente premia il sincronismo, non il volume.** `office_1` e `retail_1`
+hanno consumi annui molto diversi (10.579 vs 13.884 kWh) ma quote quasi identiche, perché
+hanno Pearson quasi uguale (+0.443 e +0.431): entrambi consumano di giorno. È il
+comportamento voluto — ed è anche la ragione per cui la chiave, da sola, non è una
+regola di ripartizione "equa" in senso assiomatico: non ha nessuna delle proprietà
+verificate per Shapley e Nucleolo (§2.3, §3), è una regola operativa.
+
+---
+
+## 14. Pearson-Sharing Rate (chiave dinamica M5)
+
+File: [`pearson_sharing_key_cer.m`](pearson_sharing_key_cer.m).
+
+Riferimento: stesso paper della §13 — metodo **M5**, eq. 7 (che combina M3 ed M4).
+
+### 14.1 La componente M4: lo "sharing rate" (eq. 5)
+
+File: [`sharing_rate_key.m`](sharing_rate_key.m).
+
+Mentre Pearson guarda alla **forma** del profilo sulla giornata, lo sharing rate guarda
+al **livello** nella singola ora: premia chi consuma fino a concorrenza dell'energia
+immessa, e penalizza chi la supera.
+
+```
+ratio(t,i) = load_i(t) / E_inj(t)
+
+SR(t,i) = ratio(t,i)                    se ratio < 1     (retta crescente)
+SR(t,i) = exp( −ξ · (ratio(t,i) − 1) )  se ratio ≥ 1     (decadimento esponenziale)
+```
+
+È una funzione continua con **massimo in `ratio = 1`** (dove `SR = 1`), cioè nel punto in
+cui il consumo dell'utente eguaglia l'immissione della comunità. Sotto la soglia il peso
+è semplicemente proporzionale al consumo — lo stesso criterio del metodo M1 del paper,
+riparto proporzionale — sopra la soglia decade esponenzialmente per disincentivare il
+sovraconsumo nelle ore di scarsità.
+
+**Calibrazione di ξ.** Il paper la fissa imponendo `SR = 0.5` per `ratio = 1.5` (consumo
+del 50% superiore all'energia disponibile):
+
+```
+0.5 = exp(−ξ·0.5)  ⇒  ξ = ln(2)/0.5 ≈ 1.386
+```
+
+Nel codice è scritta come `log(2)/0.5` e non come la costante `1.386`: il valore resta
+esatto ed è evidente da dove viene. È configurabile via `opts.xi`.
+
+### 14.2 Il refuso dell'eq. 5 (verificato sull'esempio numerico del paper)
+
+L'eq. 5 **come composta tipograficamente** nel paper associa le due espressioni alle
+condizioni **opposte** rispetto a quanto scritto sopra:
+
+```
+SR = exp(−ξ·(ratio−1))   se ratio < 1        ← invertita
+SR = ratio               se ratio ≥ 1        ← invertita
+```
+
+Che si tratti di un refuso di composizione è dimostrato da tre riscontri concordi, tutti
+interni all'articolo:
+
+1. **Fig. 3** mostra una retta rossa crescente da `(0,0)` a `(1,1)`, etichettata
+   `C_ij/E_inj,j`, e — solo oltre `ratio = 1` — la curva blu esponenziale decrescente,
+   etichettata `e^(−ξ(C/E−1))`.
+2. **Il testo** (§2.1.4): *"the assumed sharing rate SR_i follows an increasing **linear**
+   trend if the ratio between the user's consumption and the energy feed into the grid is
+   less than 1, while it follows an **exponentially decreasing** trend if the ratio is
+   greater than 1"*. E poco oltre, commentando la Fig. 8: *"users u2 and u1 are assigned
+   an amount of shared energy equal to the **ratio** between their respective consumption
+   and the energy fed into the grid"* — entrambi hanno `ratio < 1`.
+3. **L'esempio numerico** a tre utenti (§2.2): è riprodotto **esattamente** solo dalla
+   versione implementata qui. Vedi §14.7.
+
+**Scelta implementata:** `opts.sharingRateMode = "fig3"` (default) segue la Fig. 3, il
+testo e l'esempio numerico. La lettura letterale dell'equazione resta disponibile
+(`"eq5"`) per poterle confrontare, ma **non è quella con cui il paper ha prodotto i suoi
+risultati**: sull'esempio a tre utenti darebbe `[0.66 0.24 0.42]` invece di
+`[0.48 0.16 0.68]`. La scelta è documentata nell'header di
+[`sharing_rate_key.m`](sharing_rate_key.m) ed è dichiarata a schermo dal report di
+`MAIN.m` §3l.
+
+**Casi limite.** `E_inj(t) ≤ 0`: il rapporto non è definito e comunque non c'è energia da
+condividere → `SR = 0` (è poi `allocate_shared_energy` a imporre `SH = 0`).
+`load_i(t) = 0` con immissione positiva: `ratio = 0` e `SR = 0`, peso nullo — coerente,
+visto che quell'utente verrebbe comunque cappato a 0 dall'algoritmo di ripartizione.
+
+### 14.3 La combinazione (eq. 7)
+
+```
+combinato(t,i) = α · p_hourly(t,i) + β · SR(t,i)          α + β = 1
+r_M5(t,i)      = combinato(t,i) / Σ_j combinato(t,j)
+SH(t,i)        = algoritmo di Fig. 2 con pesi r_M5        (§13.4, stesso helper)
+φ_i            = Σ_t SH(t,i) · P_CER(t)
+```
+
+**Perché si normalizza dopo e non prima.** Normalizzare separatamente le due componenti e
+poi combinarle darebbe una chiave diversa (la normalizzazione non è lineare rispetto alla
+somma pesata): `α·(p/Σp) + β·(SR/ΣSR) ≠ (α·p + β·SR)/Σ(α·p + β·SR)`. È il motivo per cui
+i due helper restituiscono i pesi **grezzi** (§13.3).
+
+I default sono `α = β = 0.5` come nel paper, configurabili via `opts`; la funzione
+**verifica** `α + β = 1` con entrambi non negativi, invece di rinormalizzarli in silenzio:
+una coppia che non somma a 1 è quasi sempre un errore di chi chiama, non un'intenzione.
+
+### 14.4 Le scale delle due componenti
+
+Entrambe le componenti stanno in `[0,1]`: `p_hourly` vale 0.5 per correlazione nulla e 1
+per correlazione perfetta; `SR` vale 1 nel massimo (`ratio = 1`) e decade da entrambi i
+lati. Con `α = β = 0.5` i due criteri pesano quindi in modo effettivamente confrontabile,
+senza bisogno di normalizzazioni aggiuntive — a differenza del Weighted Solidarity, dove
+si sommano kWh e punteggi adimensionali di scala molto diversa (§12.7b). È anche un
+riscontro indiretto della correzione di §14.2: con la lettura letterale dell'eq. 5, `SR`
+arriverebbe a `e^ξ ≈ 4` per un utente a consumo nullo e la componente di sharing rate
+dominerebbe la combinazione.
+
+### 14.5 Mappatura formula → codice
+
+```matlab
+[pHourly, pDaily] = pearson_hourly_key(loadUsers, Einj);              % §13.2-13.3
+SR        = sharing_rate_key(loadUsers, Einj, opts.xi, opts.sharingRateMode);
+combinato = opts.alpha * pHourly + opts.beta * SR;                    % eq. 7
+SH        = allocate_shared_energy(loadUsers, Einj, combinato);       % Fig. 2
+phi       = SH.' * P_CER;                                             % valorizzazione
+```
+
+Cinque righe: tutta la matematica sta negli helper, condivisi con M3. **M4 non è esposto
+come metodo di ripartizione a sé** (non è fra i modelli richiesti) e resta una componente
+interna; volendolo aggiungere in futuro basterebbe un file `*_cer.m` di cinque righe come
+questo, con `combinato = SR`.
+
+### 14.6 Risultati e sensibilità ad α
+
+Con i default (`α = β = 0.5`, `ξ = 1.386`, lettura `"fig3"`):
+
+| Giocatore | Quota M5 [€] | Quota M3 [€] | Δ |
+|---|---:|---:|---:|
+| office_1 | 879,21 | 879,77 | −0,1% |
+| small_industry_1 | 0 | 0 | — |
+| retail_1 | 867,89 | 867,59 | +0,03% |
+| household_1 | 199,84 | 199,77 | +0,03% |
+| household_2 | 193,16 | 193,07 | +0,05% |
+| household_3 | 208,48 | 208,38 | +0,05% |
+
+Spazzando `α` da 0 (solo sharing rate = M4 puro) a 1 (= M3), le quote percentuali si
+muovono di **meno di mezzo punto**:
+
+```
+α = 0.00 :  37.5   0.0  37.1   8.4   8.2   8.8
+α = 0.50 :  37.4   0.0  37.0   8.5   8.2   8.9
+α = 1.00 :  37.5   0.0  36.9   8.5   8.2   8.9
+```
+
+La verifica `M5(α=1) ≡ M3` è un test di coerenza incluso nei controlli
+dell'implementazione (le due funzioni devono dare quote identiche a meno del round-off).
+Ma la piattezza della tabella qui sopra ha una causa fisica precisa, spiegata sotto.
+
+> ### ⚠ Nota da rileggere quando arriveranno i dati reali
+>
+> **La comunità di oggi (6 utenti, un impianto da 20 kWp) è una configurazione
+> provvisoria**, scelta per sviluppare i metodi: tutti i numeri di §13.8 e §14.6 vanno
+> ricalcolati sui dati definitivi. In particolare va ricontrollato *se si ripresenta* il
+> fenomeno seguente.
+>
+> **Il fenomeno.** M3 e M5 danno praticamente lo stesso risultato (scarto < 1% per
+> utente), **non** perché le due chiavi coincidano — nelle ore vincolanti divergono
+> parecchio (correlazione 0,82; per `office_1` la chiave passa da 0,232 a 0,272, +17%) —
+> ma per due effetti sovrapposti:
+>
+> 1. **Il 91,3% dell'energia condivisa cade nel caso banale** `E_inj ≥ Σ load`, dove
+>    nessuna chiave viene consultata (§13.8b);
+> 2. **nell'8,7% restante il cap assorbe la differenza**: in media **2,27 utenti su 4,68
+>    attivi** ricevono esattamente il proprio consumo, e per loro il peso è irrilevante.
+>
+> **La causa a monte: mancano i sovraconsumatori.** Lo sharing rate differenzia solo chi
+> supera l'immissione (`ratio ≥ 1`, ramo esponenziale). Qui il ratio mediano nelle ore
+> vincolanti è **0,325** e solo il **21%** delle coppie ora/utente sta sul ramo
+> esponenziale: per il resto vale `SR = ratio`, cioè proporzionale al consumo — quello che
+> il cap fa già da sé. L'unico utente grande abbastanza per sovraconsumare
+> (`small_industry_1`, 60 MWh/anno) ha carico residuo nullo in tutte le ore di
+> condivisione, per costruzione (§1.2). Nel paper è l'opposto: le differenze M3/M5 di
+> Tabella 3 sono guidate proprio dai due grandi consumatori u1 (SME, 420 MWh/anno) e u6.
+>
+> **Tre indicatori da ricalcolare sui dati veri** (bastano poche righe sui vettori già
+> disponibili in `MAIN.m`, valori attuali fra parentesi):
+>
+> | Indicatore | Formula | Oggi | Soglia indicativa |
+> |---|---|---:|---|
+> | Energia nelle ore vincolanti | `sum(shared(Einj<loadComm)) / sum(shared)` | 8,7% | sotto ~20% le chiavi contano poco |
+> | Coppie ora/utente con `ratio ≥ 1` | su `loadForShare ./ genPVSurplus` | 21% | sotto ~30% M5 ≈ M3 |
+> | Utenti cappati per ora vincolante | `SH_i ≥ C_i` | 2,27 / 4,68 | oltre metà comprime ogni chiave |
+>
+> **Se il fenomeno si ripresenta** non è un bug: significa che la comunità è
+> sovradimensionata sul lato produzione e non ha sovraconsumo da disincentivare — è un
+> risultato da riportare, non da nascondere. Riportare M3 e M5 come due modelli con
+> conclusioni diverse sarebbe invece fuorviante. Controprova già eseguita sulla
+> configurazione attuale, riducendo solo la taglia dell'impianto:
+>
+> | PV | energia in ore vincolanti | max scostamento M5 vs M3 |
+> |---|---:|---:|
+> | ×1,0 | 8,7% | 0,02 punti % di `v(N)` |
+> | ×0,3 | 46,3% | 0,08 |
+> | ×0,2 | 76,2% | 0,11 |
+> | ×0,1 | 95,0% | 2,69 |
+>
+> Serve scendere a un decimo dell'impianto perché i due metodi si separino in modo
+> leggibile: la sensibilità è ai **dati**, non ai parametri `α`/`β`.
+
+### 14.7 Validazione: l'esempio orario del paper (Fig. 4-9)
+
+Il paper applica i suoi metodi a una **singola ora** con tre utenti (§2.2), riportando i
+kWh assegnati nelle Fig. 5-9. È il banco di prova più diretto dell'implementazione — e
+copre M3, M4 e M5 insieme, perché condividono l'algoritmo di ripartizione.
+
+**Dati** (Fig. 4): `C = [0.72, 0.24, 1.56] kWh`, `E_inj = 1.32 kWh`,
+`p = [0.64, 0.23, 0.51]` (coefficienti di Pearson già rimappati, assunti dal paper),
+`ξ = 1.386`, `α = β = 0.5`.
+
+| Metodo | Atteso (figura) | Ottenuto | Esito |
+|---|---|---|:---:|
+| **M3** (Fig. 7) | `[0.61, 0.22, 0.49]` | `[0.61, 0.22, 0.49]` | ✔ |
+| **M4** — `SR` (testo: `SR(u3) = 78%`) | `[0.55, 0.18, 0.78]` | `[0.55, 0.18, 0.78]` | ✔ |
+| **M4** (Fig. 8) | `[0.48, 0.16, 0.68]` | `[0.48, 0.16, 0.68]` | ✔ |
+| **M5** (Fig. 9) | `[0.54, 0.19, 0.59]` | `[0.54, 0.19, 0.59]` | ✔ |
+
+La riproduzione è **esatta** su tutte e tre le figure. Lo stesso esempio è ciò che
+identifica il refuso dell'eq. 5 (§14.2): con la lettura letterale, M4 darebbe
+`[0.66, 0.24, 0.42]` — incompatibile con la Fig. 8, e con `SR(u3)` che sarebbe `1.18`
+invece del 78% citato nel testo.
+
+Verifiche aggiuntive eseguite sull'implementazione, oltre a questo esempio:
+
+- efficienza oraria `Σ_i SH(t,i) = min(E_inj, Σ load)` e cap `SH ≤ load` su tutte le ore
+  (sono `assert` permanenti in [`allocate_shared_energy.m`](allocate_shared_energy.m));
+- Pearson `+1` per un profilo perfettamente sincrono, `−1` per uno in antifase, `0` a
+  varianza nulla, e rimappatura corrispondente in `{1, 0, 0.5}`;
+- `SR = 1` in `ratio = 1` (continuità tra i due rami) e `SR = 0.5` in `ratio = 1.5`
+  (calibrazione di ξ);
+- `M5(α = 1) ≡ M3` a meno del round-off;
+- ridistribuzione corretta del residuo dopo un cap, e simmetria tra utenti identici;
+- errore esplicito su serie che non coprono giornate intere e su `α + β ≠ 1`;
+- sui dati reali del progetto: `Σ_i SH_i = 18.329,2 kWh` = energia condivisa di `MAIN.m`
+  §2, e `Σ_i φ_i = v(N)` per entrambi i metodi.
+
+---
+
 ### Riferimenti
 - M. Moncecchi, S. Meneghello, M. Merlo, *A Game Theoretic Approach for Energy Sharing
   in the Italian Renewable Energy Communities*, Appl. Sci. 2020, 10(22), 8166. — Shapley (eq. 39).
@@ -1059,3 +1533,8 @@ dall'ordine di grandezza dei kWh orari, quindi dalla taglia della comunità.
   distribution of a Renewable Energy Community through a proportional energy
   consumption model application*, J. Phys.: Conf. Ser. 3143 (2025) 012113. — Weighted
   Solidarity (eq. 2.1-2.8).
+- F. Gianaroli, M. Ricci, P. Sdringola, M. A. Ancona, L. Branchini, F. Melino,
+  *Development of dynamic sharing keys: Algorithms supporting management of renewable
+  energy community and collective self consumption*, Energy & Buildings 311 (2024)
+  114158. — Pearson Key (M3, eq. 4), sharing rate (M4, eq. 5 e Fig. 3), combinazione
+  pesata (M5, eq. 7) e algoritmo iterativo di ripartizione con cap al consumo (Fig. 2).

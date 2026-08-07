@@ -2,7 +2,7 @@
 
 Simulazione e analisi tecnico-economica di una **Comunità Energetica Rinnovabile (CER)**
 italiana: generazione di profili di carico realistici, bilancio energia condivisa/venduta,
-ripartizione dell'incentivo CER tra i membri con undici modelli alternativi (teoria dei giochi
+ripartizione dell'incentivo CER tra i membri con dodici modelli alternativi (teoria dei giochi
 cooperativi, benchmark elementari, modelli dalla letteratura sulle REC italiane e chiavi
 dinamiche di ripartizione dell'energia), costo dell'approvvigionamento da rete,
 dimensionamento di un impianto fotovoltaico.
@@ -25,7 +25,7 @@ dimensionamento di un impianto fotovoltaico.
 3. [Come eseguirlo](#3-come-eseguirlo)
 4. [Struttura del repository](#4-struttura-del-repository)
 5. [Il modello energetico CER](#5-il-modello-energetico-cer)
-6. [Gli undici modelli di ripartizione dei benefici](#6-gli-undici-modelli-di-ripartizione-dei-benefici)
+6. [I dodici modelli di ripartizione dei benefici](#6-i-dodici-modelli-di-ripartizione-dei-benefici)
 7. [Dimensionamento impianto PV (standalone)](#7-dimensionamento-impianto-pv-standalone)
 8. [Configurazione attuale (community di default)](#8-configurazione-attuale-community-di-default)
 9. [Dipendenze e requisiti](#9-dipendenze-e-requisiti)
@@ -45,7 +45,7 @@ con il resto della comunità: sull'energia condivisa lo Stato eroga un incentivo
 tariffa incentivante premio, **TIP_h**). Il progetto risponde a tre domande:
 
 1. **Quanta energia si condivide e quanta si vende in rete?** (bilancio orario annuale)
-2. **Come si ripartisce equamente l'incentivo tra i membri?** (undici modelli a confronto,
+2. **Come si ripartisce equamente l'incentivo tra i membri?** (dodici modelli a confronto,
    dalla teoria dei giochi cooperativi a semplici regole di buon senso, fino a modelli
    proposti in letteratura per le REC italiane e a chiavi dinamiche che ripartiscono
    l'energia ora per ora)
@@ -77,7 +77,7 @@ outputs/csv/*.csv  (kWh/h, 2025, ~8760 righe)
   pyLPG non è disponibile). Output: CSV orari in kWh, compatibili con `readtable()` di
   MATLAB.
 - **Stadio 2 — MATLAB** (root): `MAIN.m` è l'entry point che carica i profili di carico +
-  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con undici modelli,
+  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con dodici modelli,
   calcola il costo dell'approvvigionamento da rete e produce i grafici. `optimizer_PV.m` è
   uno script **indipendente** (non chiamato da `MAIN.m`) per il dimensionamento fisico
   dell'impianto.
@@ -128,16 +128,16 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `equal_split_cer.m`, `proportional_consumption_cer.m` | I due benchmark elementari (§6) |
 | `remuneration_model1_cer.m`, `cascading_tree_cer.m`, `weighted_solidarity_cer.m` | I tre modelli dalla letteratura sulle REC italiane (§6) |
 | `pearson_key_cer.m`, `pearson_sharing_key_cer.m` | Le due chiavi dinamiche di Gianaroli et al. — M3 e M5 (§6) |
+| `similarity_utilization_cer.m` | Ripartizione giornaliera su similarità coseno × fattore di utilizzo (Bilardo 2025) (§6) |
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
-| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e undici i modelli |
+| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e dodici i modelli |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
 | `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §7) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
-| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa degli undici modelli di ripartizione |
+| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei dodici modelli di ripartizione |
 | `STRUTTURA_PROGETTO.txt` | Mappa dettagliatissima di ogni file/funzione/CSV del progetto |
 | `AUDIT_REPORT.md` | Audit del codice — bug noti e possibili miglioramenti (2026-07-10) |
-| `REFACTORING_PLAN.md` | Piano ed esito del refactoring strutturale eseguito (2026-07-29) |
 
 ## 5. Il modello energetico CER
 
@@ -165,16 +165,16 @@ energia venduta(t)   = max( 0, Σ_i gen_i(t) - Σ_i load_i(t) )  → venduta in 
 dal prezzo zonale orario del Mercato del Giorno Prima (`load_zonal_price.m`, letto da
 `20250101_20251231_MGP_PrezziZonali_Nord.xlsx`).
 
-Questo bilancio (con `P_CER_h`) è l'input di **tutti e undici** i modelli di ripartizione:
+Questo bilancio (con `P_CER_h`) è l'input di **tutti e dodici** i modelli di ripartizione:
 ```
 v(S) = Σ_t min( Σ_{i∈S} gen_i(t), Σ_{i∈S} load_i(t) ) · P_CER_h(t)
 ```
 è la **funzione caratteristica** del gioco cooperativo (`cer_coalition_values.m`), e
-`v(N)` (l'intera comunità) è il totale che gli undici modelli si dividono in modo diverso.
+`v(N)` (l'intera comunità) è il totale che i dodici modelli si dividono in modo diverso.
 
-## 6. Gli undici modelli di ripartizione dei benefici
+## 6. I dodici modelli di ripartizione dei benefici
 
-L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo undici modelli alternativi,
+L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo dodici modelli alternativi,
 tutti calcolati in `MAIN.m` (§3b-§3l) e confrontati in tabella e grafico. Firma comune:
 `S = metodo_cer(genUsers, loadUsers, userNames, P_CER, ...)` → struct con almeno `.phi`
 (quota per utente, €), `.vGrand` (= `v(N)`, salvo eccezioni documentate), `.table`.
@@ -194,10 +194,11 @@ Derivazione matematica completa, assiomi ed esempi numerici in
 | 9 | **Weighted Solidarity** | `weighted_solidarity_cer.m` | Peso orario = componente tecnica (energia condivisa + carico) + componente di **solidarietà** (costo unitario dell'energia, proxy povertà energetica); i coefficienti sono scelti su un **fronte di Pareto** (Gini minimo vs reddito medio degli utenti a rischio povertà energetica) (Marrasso et al. 2025) | N/A (non è un gioco) |
 | 10 | **Pearson Key** | `pearson_key_cer.m` | Chiave dinamica M3: ripartisce **l'energia** ora per ora in proporzione alla **correlazione di Pearson giornaliera** tra il consumo dell'utente e l'immissione della comunità (premia il sincronismo), con cap al consumo; solo alla fine la si valorizza con `P_CER_h` (Gianaroli et al. 2024) | N/A (non è un gioco) |
 | 11 | **Pearson-Sharing Rate** | `pearson_sharing_key_cer.m` | Chiave dinamica M5: combinazione pesata `α`/`β` della chiave di Pearson (M3) e dello **sharing rate** (M4), che penalizza chi in un'ora consuma più di quanto la comunità immetta (Gianaroli et al. 2024, eq. 7) | N/A (non è un gioco) |
+| 12 | **Similarity-Utilization** | `similarity_utilization_cer.m` | Ripartizione **giornaliera** proporzionale alla "virtuosità energetica" `f = θ·η`: `θ` è la similarità **coseno** tra profilo di carico del membro e generazione della comunità (premia la sincronia, ignora le quantità), `η = min(1, E_gen/E_load)` penalizza chi consuma più di quanto la comunità produca (Bilardo 2025) | N/A (non è un gioco) |
 
 I metodi 1-4 sono giochi cooperativi a utilità trasferibile e condividono la stessa
 `v(S)` (`cer_coalition_values.m`), tranne il VLC che la valuta su richiesta per restare
-scalabile. I metodi 5-11 **non** usano teoria dei giochi (né passano da
+scalabile. I metodi 5-12 **non** usano teoria dei giochi (né passano da
 `cer_coalition_values.m`: calcolano `v(N)` direttamente) — servono da **termine di
 paragone** per misurare quanto i modelli 1-4 se ne discostino (es. quanto lo Shapley
 premi la produzione rispetto a una ripartizione puramente proporzionale al consumo, o
@@ -216,6 +217,15 @@ il suo carico residuo è nullo proprio nelle ore in cui c'è eccedenza da condiv
 (complementarità, §5) — stesso comportamento del modello 6, e per lui il ricavo arriva
 dalla vendita diretta dell'eccedenza (la barra arancione nei grafici).
 
+Il modello **12** è anch'esso *performance-based* ma lavora su base **giornaliera**: non
+ha vincolo di cap, e la sua chiave `θ·η` è **invariante di scala** (il coseno guarda la
+forma della curva, non i kWh). Il risultato è marcatamente più piatto degli altri —
+le famiglie ricevono 3-5× quanto darebbero i modelli 10-11 a parità di consumi. Con i
+profili netti (default del progetto) anche qui il prosumer riceve `0`; il paper usa
+invece i profili **lordi**, e con quelli riceverebbe la quota maggiore di tutte: è la
+scelta di modello più impattante del metodo, commutabile via `opts` senza toccare il
+codice ([GUIDA §15.3](GUIDA_modelli_distribuzione.md)).
+
 ## 7. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -232,7 +242,7 @@ mantenuta come riferimento storico.
   `CER_LoadProfiles/config/simulation_config.yaml`).
 - **Impianto PV:** uno solo, assegnato a `small_industry_1_kWh` (file
   `PV_Generation/Salvaplast_Project_VD7_HourlyRes_1.CSV`); la struct `pvPlants` in
-  `MAIN.m` §1b è pensata per estendersi a più impianti/proprietari senza altre modifiche.
+  `MAIN.m` §0 è pensata per estendersi a più impianti/proprietari senza altre modifiche.
 - **Anno di simulazione:** 2025, griglia oraria 8760 ore.
 - **Prezzo vendita eccedenza:** `P_SELL = 0.11 €/kWh` (costante).
 - **Zona CER:** Nord (coerente col file prezzi zonali).
@@ -261,9 +271,9 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 
 **Stadio MATLAB** (`MAIN.m`), a schermo e in tabelle/figure:
 - `Treport` — riepilogo mensile/annuale energia condivisa, venduta, ricavi.
-- Report testuale + grafico a barre + grafico a rete per ciascuno degli undici modelli di
+- Report testuale + grafico a barre + grafico a rete per ciascuno dei dodici modelli di
   ripartizione (§6).
-- `Tcmp` — tabella di confronto tra gli undici modelli + grafico a barre raggruppate.
+- `Tcmp` — tabella di confronto tra i dodici modelli + grafico a barre raggruppate.
 - `Tcost` — costo annuo di approvvigionamento da rete per utente, nelle 3 modalità
   tariffarie PUN (monoraria, bioraria, oraria variabile).
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
@@ -317,9 +327,8 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 | Documento | Quando consultarlo |
 |---|---|
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Serve il dettaglio di un file/funzione specifico, o la mappa completa di cartelle e CSV |
-| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno degli undici modelli di ripartizione |
+| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei dodici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
-| [REFACTORING_PLAN.md](REFACTORING_PLAN.md) | Serve capire perché il codice è organizzato in helper separati invece che in un unico script (refactoring 2026-07-29) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
 
 ## 13. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
@@ -346,9 +355,10 @@ Le vie d'uscita, entrambe presenti in letteratura:
 
 Il **Variance Least Core non ha questo problema**: la row-generation è nata esattamente
 per comunità da decine o centinaia di membri e valuta `v(K)` solo sulle poche coalizioni
-vincolanti. I sette metodi non cooperativi (Equal Split, Proportional to Consumption,
+vincolanti. Gli otto metodi non cooperativi (Equal Split, Proportional to Consumption,
 Remuneration Model 1, Cascading Tree, Weighted Solidarity, Pearson Key,
-Pearson-Sharing Rate) sono tutti `O(H·n)` e scalano senza modifiche — le due chiavi
+Pearson-Sharing Rate, Similarity-Utilization) sono tutti `O(H·n)` e scalano senza
+modifiche — le due chiavi
 dinamiche hanno un ciclo sulle 8760 ore con al più `n` iterazioni interne, quindi
 `O(H·n²)` nel caso peggiore (tutti gli utenti cappati uno alla volta): a 100 utenti
 restano nell'ordine dei secondi.

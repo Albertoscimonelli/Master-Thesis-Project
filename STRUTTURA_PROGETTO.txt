@@ -18,7 +18,6 @@ Project/
 |-- STRUTTURA_PROGETTO.txt              Questo file
 |-- GUIDA_modelli_distribuzione.md      Guida matematica ai modelli di ripartizione
 |-- AUDIT_REPORT.md                     Report di audit del codice (bug/miglioramenti)
-|-- REFACTORING_PLAN.md                 Piano ed esito del refactoring (2026-07-29)
 |-- LICENSE                             Licenza MIT
 |-- requirements.txt                    Freeze completo dell'ambiente Python usato
 |-- requirements-dev.txt                Strumenti di sviluppo (pycodestyle)
@@ -73,6 +72,8 @@ Project/
 |                                       chiave dinamica sulla correlazione di Pearson giornaliera)
 |-- pearson_sharing_key_cer.m           Ripartizione incentivo CER - Pearson-Sharing Rate (Gianaroli et al.,
 |                                       M5: combinazione pesata alpha/beta di Pearson e sharing rate)
+|-- similarity_utilization_cer.m        Ripartizione incentivo CER - Similarity-Utilization (Bilardo 2025,
+|                                       chiave giornaliera: similarita' coseno x fattore di utilizzo)
 |-- pearson_hourly_key.m                [helper chiavi dinamiche] Pearson giornaliero rimappato in [0,1]
 |                                       ed espanso alle 24 ore del giorno
 |-- sharing_rate_key.m                  [helper chiavi dinamiche] sharing rate orario (eq. 5, componente
@@ -162,8 +163,8 @@ piu' un parametro configurabile (vedi Sezione 6 per i dettagli storici).
     PV_Generation/Salvaplast_*.CSV ---+--> MAIN.m
                                        |      |
                                        |      +-- §1 caricamento + retime su griglia 8760h
-                                       |      +-- §1b assegnazione impianti PV ai
-                                       |      |    proprietari + autoconsumo (vedi Sez. 7)
+                                       |      |    (con assegnazione impianti PV ai
+                                       |      |     proprietari + autoconsumo, vedi Sez. 7)
                                        |      +-- §2 energia condivisa/venduta (netta da
                                        |      |    autoconsumo)
                                        |      +-- §3 analisi economica (ricavi mensili/annui)
@@ -322,7 +323,9 @@ Pipeline a sezioni indipendenti:
   3k/3l) Ripartizione dell'incentivo CER: Pearson Key, Pearson-Sharing Rate
      (chiavi dinamiche M3/M5 di Gianaroli et al.: ripartiscono l'ENERGIA ora
       per ora e la valorizzano solo alla fine con P_CER_h)
-  3m) Confronto tra gli undici modelli di ripartizione
+  3m) Ripartizione dell'incentivo CER: Similarity-Utilization (Bilardo:
+      chiave GIORNALIERA = similarita' coseno x fattore di utilizzo)
+  3n) Confronto tra i dodici modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
@@ -331,15 +334,17 @@ Pipeline a sezioni indipendenti:
       nash_bargaining_cer.m, variance_least_core_cer.m,
       equal_split_cer.m, proportional_consumption_cer.m,
       remuneration_model1_cer.m, cascading_tree_cer.m, weighted_solidarity_cer.m,
-      pearson_key_cer.m, pearson_sharing_key_cer.m
+      pearson_key_cer.m, pearson_sharing_key_cer.m,
+      similarity_utilization_cer.m
 --------------------------------------------------------------------------------
 
-Undici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
+Dodici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
 giocatori (prosumer e consumatori): quattro di teoria dei giochi
 cooperativi a utilita' trasferibile, due benchmark elementari che non
 usano teoria dei giochi (Equal Split, Proportional to Consumption), tre
 modelli proposti in letteratura per REC italiane (Remuneration Model 1,
-Cascading Tree, Weighted Solidarity) e due chiavi dinamiche che
+Cascading Tree, Weighted Solidarity), una ripartizione giornaliera
+performance-based (Similarity-Utilization) e due chiavi dinamiche che
 ripartiscono l'ENERGIA ora per ora invece del denaro (Pearson Key,
 Pearson-Sharing Rate).
 
@@ -439,6 +444,29 @@ Pearson-Sharing Rate).
                             e' nullo proprio nelle ore di eccedenza) - stesso
                             comportamento di proportional_consumption_cer.m.
 
+  similarity_utilization_cer.m
+                            Da M. Bilardo, Renewable Energy 255 (2025)
+                            123756 (eq. 3-8, Fig. 5). Metodo
+                            performance-based su base GIORNALIERA: la quota
+                            del giorno e' proporzionale a f = theta * eta,
+                            dove theta e' la similarita' COSENO tra il
+                            profilo giornaliero di carico del membro e
+                            quello di generazione della comunita' (premia
+                            la sincronia, ignora le quantita' assolute) ed
+                            eta = min(1, E_gen_comunita'/E_load_membro)
+                            penalizza chi consuma piu' di quanto la
+                            comunita' produca. Normalizzazione GIORNALIERA
+                            (Fig. 5), quindi sum(phi) = v(N) per
+                            costruzione. Espone theta/eta/f_all giornalieri
+                            per riprodurre le Fig. 9-10 del paper.
+                            SCELTA DI MODELLO: theta ed eta sono calcolati
+                            di default sui profili NETTI (come gli altri
+                            metodi); il paper usa i profili LORDI dietro al
+                            contatore. Si commuta con opts.loadForFactors /
+                            opts.genForFactors senza altre modifiche - la
+                            differenza e' grande (il prosumer passa da 0 a
+                            circa un quarto del montepremi), vedi GUIDA §15.3.
+
 Helper condivisi dalle due chiavi dinamiche (nessun toolbox richiesto):
 
   pearson_hourly_key.m      Pearson giornaliero (24 valori per giorno), p=0
@@ -476,14 +504,14 @@ Per la derivazione matematica completa vedi GUIDA_modelli_distribuzione.md.
  4.3  load_cer_data.m, report_allocation.m, plot_*.m  (helper di MAIN.m)
 --------------------------------------------------------------------------------
 
-Estratti da MAIN.m nel refactoring del 2026-07-29 (vedi REFACTORING_PLAN.md),
+Estratti da MAIN.m nel refactoring del 2026-07-29,
 nessun cambiamento funzionale.
 
   load_cer_data.m              I/O: profili di carico + generazione PV,
                                 assegnazione impianti/autoconsumo (Sezione 7).
                                 Restituisce una struct D.
   report_allocation.m          Stampa + verifica di efficienza di una
-                                ripartizione (usata da tutti e 11 i metodi).
+                                ripartizione (usata da tutti e 12 i metodi).
   method_color.m                Colore RGB coerente per ciascun modello di
                                 ripartizione, condiviso da tutti i grafici
                                 (un solo posto dove aggiungere il colore di
@@ -686,7 +714,7 @@ AGGIUNGERE FAMIGLIE:
      template pyLPG diverso
 
 ASSEGNARE PIU' IMPIANTI PV A PIU' PROPRIETARI:
-  -> Estendi la struct pvPlants in MAIN.m §1b (vedi Sezione 7)
+  -> Estendi la struct pvPlants in MAIN.m §0 (vedi Sezione 7)
 
 AGGIORNARE LE POTENZE (Remuneration Model 1):
   -> Potenza di PRELIEVO: modifica RATED_LOAD_KW in MAIN.m §0

@@ -2,7 +2,7 @@
 
 Questo documento spiega **cosa** è stato implementato, **come** e soprattutto **perché**
 sono state fatte determinate scelte, con particolare attenzione alla matematica.
-Riguarda gli undici metodi di ripartizione dei ricavi della comunità energetica:
+Riguarda i dodici metodi di ripartizione dei ricavi della comunità energetica:
 
 1. **Shapley value** — Moncecchi et al., *Appl. Sci.* 2020 (eq. 39)
 2. **Nucleolo** — Fioriti et al., *Appl. Energy* 2021 (eq. 7)
@@ -21,6 +21,7 @@ Riguarda gli undici metodi di ripartizione dei ricavi della comunità energetica
     *Energy & Buildings* 311 (2024) 114158 (metodo M3)
 11. **Pearson-Sharing Rate** — stesso paper, metodo M5 (eq. 7), combinazione pesata di
     M3 e M4
+12. **Similarity-Utilization** — M. Bilardo, *Renewable Energy* 255 (2025) 123756
 
 > **Nota:** le sezioni 2 e 3 sotto trattano in dettaglio Shapley e Nucleolo; il Nash
 > Bargaining è documentato nel codice ([`nash_bargaining_cer.m`](nash_bargaining_cer.m), che ne
@@ -57,7 +58,8 @@ Riguarda gli undici metodi di ripartizione dei ricavi della comunità energetica
 | [`sharing_rate_key.m`](sharing_rate_key.m) | Peso grezzo dello **sharing rate** (M4, eq. 5): componente interna di M5 |
 | [`normalize_key_rows.m`](normalize_key_rows.m) | Normalizzazione oraria della chiave (eq. 4), `Σ_i r(t,i) = 1` |
 | [`allocate_shared_energy.m`](allocate_shared_energy.m) | Ripartizione oraria dell'**energia** condivisa con cap al consumo (algoritmo di Fig. 2), comune a M3 e M5 |
-| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (confronto) |
+| [`similarity_utilization_cer.m`](similarity_utilization_cer.m) | Calcola la **Similarity-Utilization**: chiave giornaliera `θ·η` (similarità coseno × fattore di utilizzo) |
+| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (confronto) |
 
 **Scelta di design fondamentale.** I metodi *non* ricalcolano l'energia condivisa
 ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
@@ -403,6 +405,12 @@ sarebbero le più scontente.
    con gli altri nove. L'algoritmo di ripartizione e i due pesi stanno in **helper
    condivisi** (`allocate_shared_energy`, `pearson_hourly_key`, `sharing_rate_key`), così
    M5 riusa M3 e M4 senza duplicare nulla.
+10. **Un terzo metodo performance-based su base giornaliera, Similarity-Utilization**
+    (§15) → introduce due criteri che nessun altro modello ha: una misura di sincronia
+    **invariante di scala** (coseno, non Pearson) e un freno esplicito al sovraconsumo
+    (`η`), pensato per la condivisione *virtuale* dove consumare di più significa
+    incassare di più. È anche il metodo con la scelta di modello più impattante aperta:
+    profili netti (default del progetto) o lordi (lettura letterale del paper), §15.3.
 
 ---
 
@@ -1252,7 +1260,7 @@ nulla. Vale identicamente per il Proportional to Consumption (§9), che infatti 
 stesso 0. Il suo Pearson medio negativo (−0.323) è la stessa cosa vista da un'altra
 angolazione: quando la comunità immette, lui non preleva. Il ricavo del prosumer arriva
 dalla **vendita diretta dell'eccedenza** (`revSoldPerPlayer`, la barra arancione nei
-grafici), che non passa da nessuno degli undici modelli.
+grafici), che non passa da nessuno dei dodici modelli.
 
 **(b) I risultati sono vicini al Proportional to Consumption, e c'è un motivo preciso.**
 Nel caso di studio, sulle 3.223 ore con energia condivisa positiva, **2.762 ricadono nel
@@ -1511,6 +1519,187 @@ Verifiche aggiuntive eseguite sull'implementazione, oltre a questo esempio:
 
 ---
 
+## 15. Similarity-Utilization
+
+File: [`similarity_utilization_cer.m`](similarity_utilization_cer.m).
+
+Riferimento: M. Bilardo, *A fair dynamic incentive allocation method for virtual energy
+sharing in renewable energy communities that rewards members' virtuosity and engagement*,
+Renewable Energy 255 (2025) 123756 (eq. 3-8, Fig. 5).
+
+### 15.1 Il concetto: virtuosità = sincronia × sobrietà
+
+È il terzo metodo *performance-based* del progetto, ma con una logica diversa dalle due
+chiavi dinamiche di §13-§14: non ripartisce l'energia ora per ora, bensì l'**incentivo**
+giorno per giorno, in proporzione a un fattore di allocazione che è il **prodotto** di due
+termini indipendenti (eq. 6):
+
+$$
+f_{all}(m,d) \;=\; \theta(m,d)\cdot\eta(m,d) \;\in\;[0,1]
+$$
+
+**Similarità `θ` (eq. 7)** — coseno dell'angolo fra il vettore delle 24 ore di carico del
+membro e il vettore delle 24 ore di generazione della comunità:
+
+$$
+\theta_m \;=\; \frac{p_{l,m}\;p_{g,M}^{\top}}
+{\sqrt{\bigl(p_{l,m}p_{l,m}^{\top}\bigr)\cdot\bigl(p_{g,M}p_{g,M}^{\top}\bigr)}}
+$$
+
+Con vettori non negativi il coseno cade sempre in `[0,1]`: vale 1 se le due curve sono
+**proporzionali** e 0 se non si sovrappongono mai. È **invariante di scala** — raddoppiare
+tutti i consumi del membro non cambia `θ` — quindi misura *quando* si consuma, non
+*quanto*.
+
+> **Differenza con la chiave di Pearson (§13).** Sono entrambe misure giornaliere di
+> sincronismo, ma non la stessa cosa: Pearson centra i due vettori sulla media prima di
+> correlarli, il coseno no. In pratica Pearson misura se le due curve **oscillano
+> insieme**, il coseno se **puntano nella stessa direzione**. Un membro con carico
+> costante ha varianza nulla → Pearson indefinito (per convenzione 0, cioè 0.5 dopo la
+> rimappatura), mentre il coseno è ben definito e positivo. Il coseno inoltre non è mai
+> negativo su profili energetici, quindi non ha bisogno della rimappatura `(p+1)/2`.
+
+**Utilizzo `η` (eq. 8)** — quota del fabbisogno giornaliero del membro che la generazione
+di comunità riesce a coprire:
+
+$$
+\eta_m \;=\; \min\!\left(1,\; \frac{\sum_M \int_{\Delta t} p_{g,m}\,dt}{\int_{\Delta t} p_{l,m}\,dt}\right)
+$$
+
+Vale 1 finché la comunità produce abbastanza per quel membro, e decade quando il suo
+consumo giornaliero supera la produzione dell'intera comunità.
+
+**Perché serve `η`.** È il contributo concettuale del paper, spiegato in §3.3: nella
+condivisione **virtuale** un grande consumatore può accaparrarsi l'incentivo semplicemente
+**alzando i propri prelievi**, perché più consuma più energia "condivide" contabilmente. È
+esattamente l'opposto dell'efficienza energetica che una CER dovrebbe promuovere. `η`
+disinnesca questa strategia senza penalizzare l'autoconsumo in sé. Nel paper stesso lo si
+vede nel confronto con il metodo #5 (performance-based sul solo consumo in fascia
+12:00-14:00), che assegna il 66,3% dell'incentivo a un solo membro.
+
+I due fattori sono complementari: `θ` premia la **sincronia**, `η` la **sobrietà**. Il
+prodotto è alto solo per chi fa entrambe le cose.
+
+### 15.2 Ripartizione giornaliera (eq. 4-5, Fig. 5)
+
+```
+I(d)   = Σ_{t ∈ d} shared(t) · P_CER(t)            incentivo maturato quel giorno
+w(m,d) = f_all(m,d) / Σ_m f_all(m,d)               chiave normalizzata del giorno
+φ_m    = Σ_d w(m,d) · I(d)
+```
+
+`shared(t) = min(Σ export, Σ import)` è l'eq. 3 del paper, **identica** al nostro `shared`
+di [`MAIN.m`](MAIN.m) §2: il montepremi è quindi lo stesso `v(N)` di tutti gli altri
+metodi. Poiché `Σ_m w(m,d) = 1` ogni giorno, l'efficienza `Σ_m φ_m = v(N)` vale per
+costruzione.
+
+> **Nota sull'eq. 5.** Come stampata sembra una normalizzazione sull'intero periodo, ma il
+> flowchart di Fig. 5 (ciclo esterno sui giorni, `norm(f_all)` dentro il ciclo) e il §5.2
+> (*"resulting in a daily percentage allocation"*) sono espliciti: è **giornaliera**.
+> L'implementazione segue questi ultimi. Analogamente, l'eq. 7 definisce
+> `p_g,M = Σ_M ∫ p_l,m dt` scrivendo il **carico** al posto della generazione: refuso
+> evidente dal contesto (è la "community's generation aggregate profile").
+
+> **Due medie diverse, da non confondere.** `φ_m / v(N)` è la quota **in euro**, cioè la
+> media delle quote giornaliere **pesata sull'incentivo di ciascun giorno**. La Fig. 10b e
+> la Tabella 5 del paper riportano invece la media **semplice** delle percentuali
+> giornaliere, che dà più peso ai giorni invernali (poco incentivo, chiave molto diversa).
+> Il codice restituisce entrambe: `.phi` e `.meanDailyShare`.
+
+### 15.3 Profili lordi o netti: la scelta di modello più impattante ⚠
+
+Il paper calcola `θ` ed `η` sui profili **lordi**, dietro al contatore — il carico totale
+del membro e la generazione totale della comunità prima dell'autoconsumo. Lo dichiara esso
+stesso tra i limiti (§6): *"an important limitation of the proposed method lies in the use
+of behind-the-meter energy flows... this information is usually only accessible to
+individual members, not to a hypothetical community manager"*.
+
+Nel progetto il **default sono i profili netti** (`genForShare`/`loadForShare`), per
+coerenza con gli altri undici metodi. La differenza è tutt'altro che cosmetica:
+
+| Giocatore | `θ` netti | `θ` lordi | Quota netti [€] | Quota lordi [€] |
+|---|---:|---:|---:|---:|
+| office_1 | 0,521 | 0,585 | 582,14 | 439,06 |
+| small_industry_1 (prosumer) | **0,000** | **0,792** | **0** | **549,83** |
+| retail_1 | 0,635 | 0,713 | 650,97 | 496,44 |
+| household_1 | 0,452 | 0,510 | 471,84 | 362,06 |
+| household_2 | 0,349 | 0,389 | 337,13 | 261,54 |
+| household_3 | 0,320 | 0,359 | 306,51 | 239,66 |
+
+Sui profili **netti** il carico residuo del proprietario dell'impianto è nullo proprio
+nelle ore di eccedenza (complementarità, §1.2): i due vettori sono ortogonali, `θ = 0`
+esatto, e la sua quota è 0 — come in §13-§14. Sui profili **lordi** lo stesso membro ha la
+**similarità più alta della comunità** (0,792: è l'edificio che ospita l'impianto, con
+carico industriale diurno) e incassa il 23% del montepremi. Passare da una lettura
+all'altra sposta ~550 € su 2.349 €.
+
+Il montepremi `v(N)` **non cambia** in nessuno dei due casi, quindi il confronto in `Tcmp`
+resta valido comunque. La commutazione è una riga, senza toccare il codice:
+
+```matlab
+SU = similarity_utilization_cer(genForShare, loadForShare, userNames, P_CER_h, ...
+        struct('loadForFactors', loadUsers, 'genForFactors', genPV_raw));
+```
+
+> **Decisione aperta.** Il default netto è stato scelto per coerenza interna al progetto,
+> non perché sia più fedele al paper — anzi, la lettura letterale è quella lorda. È un
+> punto da chiudere con letture aggiuntive prima di portare questo metodo in tesi.
+
+### 15.4 Mappatura formula → codice
+
+| Formula | Codice |
+|---|---|
+| `θ` (eq. 7) | coseno vettorizzato su `[24 × nGiorni × n]`, `θ = 0` se un denominatore è nullo |
+| `η` (eq. 8) | `min(1, E_gen(d) ./ E_load(m,d))`, `η = 1` se il membro non consuma quel giorno |
+| `f_all` (eq. 6) | `fAll = theta .* eta` |
+| `norm(f_all)` (eq. 5, Fig. 5) | `dailyShare = fAll ./ sum(fAll, 2)`, uniforme nei giorni degeneri |
+| `I(d)` (eq. 4) | `sum(reshape(shared .* P_CER, 24, nDays), 1).'` |
+| `φ_m` | `dailyShare.' * dailyIncentive` |
+
+Nessun toolbox richiesto. Costo `O(H·n)`, ~0,04 s sui dati del progetto.
+
+### 15.5 Casi limite
+
+| Caso | Gestione |
+|---|---|
+| Giorno senza generazione di comunità | `θ` indefinito → 0, `f_all = 0` per tutti → chiave uniforme di ripiego; quel giorno vale comunque `0 €`, quindi la scelta non influenza `φ`. Il conteggio è in `.nDegenerateDays` (59 giorni con `η < 1`, 6 giorni degeneri sui dati attuali) |
+| Membro senza consumi in un giorno | `η = 1` (fabbisogno nullo banalmente coperto), `θ = 0` → quota 0 |
+| Ore non multiple di 24 | errore esplicito `similarity_utilization_cer:notWholeDays` |
+| `meanDailyShare` | calcolata sui soli giorni con chiave definita, per non far entrare la uniforme di ripiego nella statistica |
+
+### 15.6 Lettura dei risultati sul caso reale
+
+Con i profili netti (default):
+
+| Giocatore | `θ` medio | `η` medio | Quota [€] | Quota [%] | Confronto: Pearson Key [€] |
+|---|---:|---:|---:|---:|---:|
+| office_1 | 0,521 | 0,957 | 582,14 | 24,8% | 879,77 |
+| small_industry_1 | 0,000 | 0,910 | 0 | 0% | 0 |
+| retail_1 | 0,635 | 0,953 | 650,97 | 27,7% | 867,59 |
+| household_1 | 0,452 | 0,975 | 471,84 | 20,1% | 199,77 |
+| household_2 | 0,349 | 0,976 | 337,13 | 14,4% | 193,07 |
+| household_3 | 0,320 | 0,975 | 306,51 | 13,1% | 208,38 |
+
+Due osservazioni:
+
+**(a) È molto più piatto degli altri performance-based, e non per caso.** Le famiglie
+prendono 2,4× quanto darebbe loro la Pearson Key, l'ufficio il 34% in meno. Il motivo è
+strutturale: il coseno è **invariante di scala**, quindi una famiglia con un carico
+piccolo ma ben allineato alla produzione vale quanto un ufficio con un carico dieci volte
+maggiore e allineato uguale. Le chiavi di §13-§14 finiscono invece a ridosso del riparto
+proporzionale al consumo, perché il cap `SH_i ≤ load_i` le riporta lì (§13.8b). È il
+metodo che si discosta di più da *tutti* gli altri undici — e l'unico in cui la taglia del
+consumo non conta quasi nulla.
+
+**(b) `η` morde poco ma non è inerte.** Media 0,958, con 59 giorni su 365 in cui almeno un
+membro scende sotto 1 — tutti invernali, quando la produzione crolla. Il più penalizzato è
+`small_industry_1` (0,910), l'unico con un fabbisogno paragonabile alla produzione
+giornaliera dell'intera comunità: esattamente il comportamento che il fattore vuole
+correggere. Su una comunità con generazione più scarsa `η` diventerebbe il fattore
+dominante — è lo stesso avvertimento della nota di §14.6, e vale anche qui.
+
+---
+
 ### Riferimenti
 - M. Moncecchi, S. Meneghello, M. Merlo, *A Game Theoretic Approach for Energy Sharing
   in the Italian Renewable Energy Communities*, Appl. Sci. 2020, 10(22), 8166. — Shapley (eq. 39).
@@ -1538,3 +1727,6 @@ Verifiche aggiuntive eseguite sull'implementazione, oltre a questo esempio:
   energy community and collective self consumption*, Energy & Buildings 311 (2024)
   114158. — Pearson Key (M3, eq. 4), sharing rate (M4, eq. 5 e Fig. 3), combinazione
   pesata (M5, eq. 7) e algoritmo iterativo di ripartizione con cap al consumo (Fig. 2).
+- M. Bilardo, *A fair dynamic incentive allocation method for virtual energy sharing in
+  renewable energy communities that rewards members' virtuosity and engagement*,
+  Renewable Energy 255 (2025) 123756. — Similarity-Utilization (eq. 3-8, Fig. 5).

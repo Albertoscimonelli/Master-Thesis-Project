@@ -59,6 +59,16 @@ function SH = allocate_shared_energy(loadUsers, Einj, w)
               'La matrice dei pesi deve essere [%d x %d], e'' [%d x %d].', ...
               H, n, size(w, 1), size(w, 2));
     end
+    % Senza questo controllo un NaN in ingresso si propagherebbe fino alle
+    % verifiche finali, che lo segnalerebbero come violazione del cap: una
+    % diagnosi fuorviante rispetto alla causa vera (dati sporchi a monte).
+    if ~all(isfinite(loadUsers), 'all') || ~all(isfinite(Einj)) || ~all(isfinite(w), 'all')
+        error('allocate_shared_energy:nonFiniteInput', ...
+              ['Ingressi con NaN o Inf (carichi: %d, immissione: %d, pesi: %d ' ...
+               'valori non finiti): controllare i profili a monte.'], ...
+              sum(~isfinite(loadUsers), 'all'), sum(~isfinite(Einj)), ...
+              sum(~isfinite(w), 'all'));
+    end
 
     SH      = zeros(H, n);
     maxIter = n + 5;          % sicurezza anti-loop-infinito (bastano n giri)

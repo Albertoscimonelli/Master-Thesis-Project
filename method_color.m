@@ -30,6 +30,8 @@ function c = method_color(method)
             c = [0.35 0.30 0.65];   % indaco
         case "pearson-sharing rate"
             c = [0.60 0.45 0.20];   % bronzo
+        case "similarity-utilization"
+            c = [0.50 0.60 0.20];   % verde oliva
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

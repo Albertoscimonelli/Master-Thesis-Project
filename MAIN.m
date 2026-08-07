@@ -9,8 +9,8 @@ close all;
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
-%   3b-3l) Ripartizione dei benefici con undici modelli di ripartizione
-%    3m) Confronto tra i modelli
+%   3b-3m) Ripartizione dei benefici con dodici modelli di ripartizione
+%    3n) Confronto tra i modelli
 %    4) Costo energia da rete (PUN 2025, per utente e per modalita)
 %    5) Visualizzazione       (istogrammi, profili, confronti)
 %
@@ -44,7 +44,7 @@ tGrid = (datetime(ANNO,1,1,0,0,0) : hours(1) : datetime(ANNO,12,31,23,0,0)).';
 P_SELL = 0.11;           % Prezzo energia venduta in rete        [€/kWh]
 
 % Incentivo CER su energia condivisa: tariffa incentivante premio (TIP)
-% oraria (eq. 3.1), calcolata in §1b da compute_cer_incentive.m sul prezzo
+% oraria (eq. 3.1), calcolata in §1c da compute_cer_incentive.m sul prezzo
 % zonale orario. Parametri della formula:
 ZONA_CER    = "nord";    % zona geografica della CER (per FC_zonale) -
                           % coerente con zonalPriceFile (prezzi zonali Nord)
@@ -553,7 +553,49 @@ plot_benefit_network(PSK.players, PSK.phi, "Pearson-Sharing Rate", revSoldPerPla
 
 
 %% ========================================================================
-%  3m) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%  3m) DISTRIBUZIONE DEI BENEFICI - SIMILARITY-UTILIZATION
+%
+%  Dodicesimo modello, da M. Bilardo, "A fair dynamic incentive allocation
+%  method for virtual energy sharing in renewable energy communities that
+%  rewards members' virtuosity and engagement", Renewable Energy 255 (2025)
+%  123756. Come le due chiavi dinamiche precedenti e' un metodo
+%  "performance-based", ma ripartisce l'incentivo GIORNO PER GIORNO con un
+%  fattore che premia la "virtuosita' energetica", prodotto di due termini:
+%    theta = similarita' COSENO tra il profilo giornaliero di carico
+%            dell'utente e quello di generazione della comunita' (premia chi
+%            consuma quando la comunita' produce; ignora le quantita');
+%    eta   = quota del fabbisogno giornaliero che la generazione di comunita'
+%            riesce a coprire, min(1, E_gen/E_load) (penalizza chi consuma
+%            piu' di quanto la comunita' produca).
+%  Vedi similarity_utilization_cer.m per i dettagli.
+%
+%  SCELTA DI MODELLO: theta ed eta sono qui calcolati sui profili NETTI
+%  (genForShare/loadForShare), come tutti gli altri metodi del progetto. Il
+%  paper li calcola invece sui profili LORDI dietro al contatore; per
+%  riprodurlo alla lettera basta passare gli opts, senza altre modifiche:
+%
+%    SU = similarity_utilization_cer(genForShare, loadForShare, userNames, ...
+%             P_CER_h, struct('loadForFactors', loadUsers, ...
+%                             'genForFactors',  genPV_raw));
+%
+%  Il montepremi v(N) non cambia in nessuno dei due casi. Vedi GUIDA §15.3.
+%  ========================================================================
+
+SU = similarity_utilization_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(SU, "Similarity-Utilization", [ ...
+    string(sprintf('  %-25s: media %.3f (min %.3f / max %.3f tra gli utenti)', ...
+                   'Similarita'' theta', mean(SU.thetaMean), ...
+                   min(SU.thetaMean), max(SU.thetaMean))), ...
+    string(sprintf('  %-25s: media %.3f (min %.3f / max %.3f tra gli utenti)', ...
+                   'Utilizzo eta', mean(SU.etaMean), ...
+                   min(SU.etaMean), max(SU.etaMean)))]);
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(SU.players, SU.phi, "Similarity-Utilization", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3n) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
 %
 %  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
 %  caratteristica v(S), i modelli di ripartizione calcolati finora.
@@ -567,13 +609,13 @@ plot_benefit_network(PSK.players, PSK.phi, "Pearson-Sharing Rate", revSoldPerPla
 %  ========================================================================
 
 Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ES.phi, PC.phi, ...
-             RM1.phi, CT.phi, WS.phi, PK.phi, PSK.phi, ...
+             RM1.phi, CT.phi, WS.phi, PK.phi, PSK.phi, SU.phi, ...
              'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
                                'NashBargaining_EUR', 'VarianceLeastCore_EUR', ...
                                'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
                                'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
                                'WeightedSolidarity_EUR', 'PearsonKey_EUR', ...
-                               'PearsonSharingRate_EUR'});
+                               'PearsonSharingRate_EUR', 'SimilarityUtilization_EUR'});
 fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
 disp(Tcmp);
 
@@ -581,10 +623,10 @@ metodi = struct( ...
     'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core", ...
               "Equal Split", "Proportional to Consumption", ...
               "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity", ...
-              "Pearson Key", "Pearson-Sharing Rate"}, ...
+              "Pearson Key", "Pearson-Sharing Rate", "Similarity-Utilization"}, ...
     'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi, ...
               ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi, ...
-              PK.phi,    PSK.phi});
+              PK.phi,    PSK.phi,   SU.phi});
 
 plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
     sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...

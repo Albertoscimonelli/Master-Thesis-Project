@@ -32,6 +32,16 @@ function c = method_color(method)
             c = [0.60 0.45 0.20];   % bronzo
         case "similarity-utilization"
             c = [0.50 0.60 0.20];   % verde oliva
+        % I tre metodi di Cremers et al. non sono regole di ripartizione
+        % autonome ma APPROSSIMAZIONI dello Shapley: tinte chiare della stessa
+        % famiglia fredda, cosi' nel grafico di confronto si leggono come un
+        % gruppo accanto allo Shapley esatto (blu medio).
+        case "marginal contribution"
+            c = [0.55 0.78 0.95];   % azzurro chiaro
+        case "stratified expected value"
+            c = [0.30 0.72 0.88];   % ciano
+        case "adaptive sampling shapley"
+            c = [0.65 0.55 0.90];   % lavanda
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

@@ -2,7 +2,7 @@
 
 Simulazione e analisi tecnico-economica di una **Comunità Energetica Rinnovabile (CER)**
 italiana: generazione di profili di carico realistici, bilancio energia condivisa/venduta,
-ripartizione dell'incentivo CER tra i membri con dodici modelli alternativi (teoria dei giochi
+ripartizione dell'incentivo CER tra i membri con quindici modelli alternativi (teoria dei giochi
 cooperativi, benchmark elementari, modelli dalla letteratura sulle REC italiane e chiavi
 dinamiche di ripartizione dell'energia), costo dell'approvvigionamento da rete,
 dimensionamento di un impianto fotovoltaico.
@@ -25,7 +25,7 @@ dimensionamento di un impianto fotovoltaico.
 3. [Come eseguirlo](#3-come-eseguirlo)
 4. [Struttura del repository](#4-struttura-del-repository)
 5. [Il modello energetico CER](#5-il-modello-energetico-cer)
-6. [I dodici modelli di ripartizione dei benefici](#6-i-dodici-modelli-di-ripartizione-dei-benefici)
+6. [I quindici modelli di ripartizione dei benefici](#6-i-quindici-modelli-di-ripartizione-dei-benefici)
 7. [Dimensionamento impianto PV (standalone)](#7-dimensionamento-impianto-pv-standalone)
 8. [Configurazione attuale (community di default)](#8-configurazione-attuale-community-di-default)
 9. [Dipendenze e requisiti](#9-dipendenze-e-requisiti)
@@ -45,7 +45,7 @@ con il resto della comunità: sull'energia condivisa lo Stato eroga un incentivo
 tariffa incentivante premio, **TIP_h**). Il progetto risponde a tre domande:
 
 1. **Quanta energia si condivide e quanta si vende in rete?** (bilancio orario annuale)
-2. **Come si ripartisce equamente l'incentivo tra i membri?** (dodici modelli a confronto,
+2. **Come si ripartisce equamente l'incentivo tra i membri?** (quindici modelli a confronto,
    dalla teoria dei giochi cooperativi a semplici regole di buon senso, fino a modelli
    proposti in letteratura per le REC italiane e a chiavi dinamiche che ripartiscono
    l'energia ora per ora)
@@ -77,7 +77,7 @@ outputs/csv/*.csv  (kWh/h, 2025, ~8760 righe)
   pyLPG non è disponibile). Output: CSV orari in kWh, compatibili con `readtable()` di
   MATLAB.
 - **Stadio 2 — MATLAB** (root): `MAIN.m` è l'entry point che carica i profili di carico +
-  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con dodici modelli,
+  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con quindici modelli,
   calcola il costo dell'approvvigionamento da rete e produce i grafici. `optimizer_PV.m` è
   uno script **indipendente** (non chiamato da `MAIN.m`) per il dimensionamento fisico
   dell'impianto.
@@ -129,13 +129,15 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `remuneration_model1_cer.m`, `cascading_tree_cer.m`, `weighted_solidarity_cer.m` | I tre modelli dalla letteratura sulle REC italiane (§6) |
 | `pearson_key_cer.m`, `pearson_sharing_key_cer.m` | Le due chiavi dinamiche di Gianaroli et al. — M3 e M5 (§6) |
 | `similarity_utilization_cer.m` | Ripartizione giornaliera su similarità coseno × fattore di utilizzo (Bilardo 2025) (§6) |
+| `marginal_contribution_cer.m`, `stratified_expected_value_cer.m`, `adaptive_sampling_shapley_cer.m` | Le tre **approssimazioni dello Shapley** di Cremers et al. 2023 — non regole nuove, ma lo stesso valore a costo polinomiale (§6) |
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
-| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e dodici i modelli |
+| `cer_shared_value.m` | Helper condiviso dalle tre approssimazioni: `v` di **una** coalizione dai profili aggregati, `O(H)` invece di `O(H·2ⁿ)` |
+| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e quindici i modelli |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
 | `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §7) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
-| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei dodici modelli di ripartizione |
+| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei quindici modelli di ripartizione |
 | `STRUTTURA_PROGETTO.txt` | Mappa dettagliatissima di ogni file/funzione/CSV del progetto |
 | `AUDIT_REPORT.md` | Audit del codice — bug noti e possibili miglioramenti (2026-07-10) |
 
@@ -165,17 +167,17 @@ energia venduta(t)   = max( 0, Σ_i gen_i(t) - Σ_i load_i(t) )  → venduta in 
 dal prezzo zonale orario del Mercato del Giorno Prima (`load_zonal_price.m`, letto da
 `20250101_20251231_MGP_PrezziZonali_Nord.xlsx`).
 
-Questo bilancio (con `P_CER_h`) è l'input di **tutti e dodici** i modelli di ripartizione:
+Questo bilancio (con `P_CER_h`) è l'input di **tutti e quindici** i modelli di ripartizione:
 ```
 v(S) = Σ_t min( Σ_{i∈S} gen_i(t), Σ_{i∈S} load_i(t) ) · P_CER_h(t)
 ```
 è la **funzione caratteristica** del gioco cooperativo (`cer_coalition_values.m`), e
-`v(N)` (l'intera comunità) è il totale che i dodici modelli si dividono in modo diverso.
+`v(N)` (l'intera comunità) è il totale che i quindici modelli si dividono in modo diverso.
 
-## 6. I dodici modelli di ripartizione dei benefici
+## 6. I quindici modelli di ripartizione dei benefici
 
-L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo dodici modelli alternativi,
-tutti calcolati in `MAIN.m` (§3b-§3l) e confrontati in tabella e grafico. Firma comune:
+L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo quindici modelli,
+tutti calcolati in `MAIN.m` (§3b-§3p) e confrontati in tabella e grafico (§3r). Firma comune:
 `S = metodo_cer(genUsers, loadUsers, userNames, P_CER, ...)` → struct con almeno `.phi`
 (quota per utente, €), `.vGrand` (= `v(N)`, salvo eccezioni documentate), `.table`.
 Derivazione matematica completa, assiomi ed esempi numerici in
@@ -195,10 +197,14 @@ Derivazione matematica completa, assiomi ed esempi numerici in
 | 10 | **Pearson Key** | `pearson_key_cer.m` | Chiave dinamica M3: ripartisce **l'energia** ora per ora in proporzione alla **correlazione di Pearson giornaliera** tra il consumo dell'utente e l'immissione della comunità (premia il sincronismo), con cap al consumo; solo alla fine la si valorizza con `P_CER_h` (Gianaroli et al. 2024) | N/A (non è un gioco) |
 | 11 | **Pearson-Sharing Rate** | `pearson_sharing_key_cer.m` | Chiave dinamica M5: combinazione pesata `α`/`β` della chiave di Pearson (M3) e dello **sharing rate** (M4), che penalizza chi in un'ora consuma più di quanto la comunità immetta (Gianaroli et al. 2024, eq. 7) | N/A (non è un gioco) |
 | 12 | **Similarity-Utilization** | `similarity_utilization_cer.m` | Ripartizione **giornaliera** proporzionale alla "virtuosità energetica" `f = θ·η`: `θ` è la similarità **coseno** tra profilo di carico del membro e generazione della comunità (premia la sincronia, ignora le quantità), `η = min(1, E_gen/E_load)` penalizza chi consuma più di quanto la comunità produca (Bilardo 2025) | N/A (non è un gioco) |
+| 13 | **Marginal Contribution** | `marginal_contribution_cer.m` | *Approssimazione dello Shapley*, `O(n)`: tiene **un solo** contributo marginale, l'ultimo — `MC_i = v(N) − v(N\{i})` — poi normalizzato a `v(N)` (Cremers et al. 2023, eq. 9-10) | approssima il metodo 1 |
+| 14 | **Stratified Expected Value** | `stratified_expected_value_cer.m` | *Approssimazione dello Shapley*, `O(n²)` e **deterministica**: stima il contributo marginale di **ogni strato** con una sola valutazione di `v` su copie di un utente fittizio **medio** (Cremers et al. 2023, eq. 11-13). È il metodo nuovo proposto dal paper — ⚠ ma sui nostri dati è il **meno** accurato dei tre, vedi sotto | approssima il metodo 1 |
+| 15 | **Adaptive Sampling Shapley** | `adaptive_sampling_shapley_cer.m` | *Approssimazione dello Shapley*, `O(n·M)` e **stocastica**: campiona `M` coalizioni per giocatore, concentrando i campioni sugli strati a varianza più alta (O'Brien et al. 2015, App. C di Cremers et al.) | approssima il metodo 1 |
 
 I metodi 1-4 sono giochi cooperativi a utilità trasferibile e condividono la stessa
 `v(S)` (`cer_coalition_values.m`), tranne il VLC che la valuta su richiesta per restare
-scalabile. I metodi 5-12 **non** usano teoria dei giochi (né passano da
+scalabile — come fanno anche i metodi 13-15, tramite l'helper `cer_shared_value.m`.
+I metodi 5-12 **non** usano teoria dei giochi (né passano da
 `cer_coalition_values.m`: calcolano `v(N)` direttamente) — servono da **termine di
 paragone** per misurare quanto i modelli 1-4 se ne discostino (es. quanto lo Shapley
 premi la produzione rispetto a una ripartizione puramente proporzionale al consumo, o
@@ -207,7 +213,7 @@ utenti più vulnerabili). Il **Cascading Tree** è l'unico i cui parametri (`opt
 possono far sì che `vGrand` sia inferiore a `v(N)` (se si trattiene una riserva) — con i
 default usati in `MAIN.m` questo non accade.
 
-I modelli **10 e 11 sono di natura diversa dagli altri nove**: non ripartiscono
+I modelli **10 e 11 sono di natura diversa dai modelli 1-9**: non ripartiscono
 direttamente il denaro, ma **l'energia condivisa ora per ora** con una chiave dinamica
 `r(t,i)`, sotto il vincolo fisico che nessuno riceva più energia di quanta ne consumi in
 quell'ora (algoritmo iterativo di cap, `allocate_shared_energy.m`); la quota in € è
@@ -225,6 +231,43 @@ profili netti (default del progetto) anche qui il prosumer riceve `0`; il paper 
 invece i profili **lordi**, e con quelli riceverebbe la quota maggiore di tutte: è la
 scelta di modello più impattante del metodo, commutabile via `opts` senza toccare il
 codice ([GUIDA §15.3](GUIDA_modelli_distribuzione.md)).
+
+I modelli **13-15 sono di natura ancora diversa: non propongono un criterio di equità
+alternativo, ma approssimano il metodo 1**. Servono perché lo Shapley esatto costa `O(2ⁿ)`
+e diventa irrealizzabile oltre ~20 giocatori — sono cioè, insieme al VLC, la risposta della
+letteratura al bloccante di [§13.1](#131-tre-modelli-diventano-matematicamente-impossibili--bloccante).
+Vanno quindi giudicati sull'**errore**, non sull'equità: con `n = 6` lo Shapley esatto è
+disponibile come *ground truth*, e `MAIN.m` §3q ne misura lo scarto (eq. 16-17 del paper).
+
+> ⚠ **Risultato: la graduatoria del paper si rovescia.** Scarto medio dallo Shapley esatto
+> sui dati del progetto: **Marginal Contribution 1,07%**, **Adaptive Sampling 1,52%**,
+> **Stratified Expected Value 21,98%** — mentre nel paper è quest'ultima la più accurata.
+> L'errore è sistematico (gonfia i consumatori del +19÷25%, sgonfia il prosumer del −20%) e
+> la causa è strutturale: la SEV rappresenta ogni strato con un utente **medio**, ipotesi
+> valida quando l'impianto è in comproprietà fra tutti — il caso del paper — e insostenibile
+> quando la generazione è di **un solo membro su sei**, perché il 52% delle coalizioni vale
+> allora esattamente zero e l'utente medio non sa rappresentarle. L'implementazione è
+> verificata: agli strati dove l'approssimazione non può sbagliare riproduce il valore vero
+> a `10⁻¹³` (`opts.validateStrata`, attivo in `MAIN.m` §3o). Derivazione, tabelle e
+> condizioni per riprendere il metodo in
+> [GUIDA §16.7-§16.9](GUIDA_modelli_distribuzione.md).
+
+Il modello **15 è l'unico stocastico del progetto**: rieseguito dà numeri leggermente
+diversi, ed è la critica che il paper stesso gli muove (in una CER i membri devono poter
+riverificare il conto dell'aggregatore). Il seed è esplicito (`opts.seed`, default 42) e
+isolato dal generatore globale di MATLAB, quindi l'esecuzione è riproducibile.
+
+> **Metodi valutati e non implementati.** Non tutti i modelli letti in letteratura sono
+> finiti nel progetto. **PDM3 e PDM4** (Basilico et al., *Applied Energy* 389 (2025)
+> 125752) sono stati valutati e **scartati deliberatamente**: ripartiscono l'NPV di un
+> impianto in *comproprietà* fra co-investitori, quindi un membro vi entra solo tramite la
+> sua quota di produzione e il suo tasso di autoconsumo — il consumo non compare mai da
+> solo. Con la nostra topologia (un impianto, un proprietario, cinque consumatori puri) i
+> cinque consumatori riceverebbero quote **identiche** a prescindere dai loro profili, e
+> tre input su quattro sarebbero inventati. Le formule sono state comunque riprodotte
+> esattamente sul caso studio del paper: la rinuncia è di modello, non tecnica. Ragioni per
+> esteso, numeri e condizioni per riprenderli in
+> [GUIDA — Appendice A.1](GUIDA_modelli_distribuzione.md).
 
 ## 7. Dimensionamento impianto PV (standalone)
 
@@ -271,9 +314,11 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 
 **Stadio MATLAB** (`MAIN.m`), a schermo e in tabelle/figure:
 - `Treport` — riepilogo mensile/annuale energia condivisa, venduta, ricavi.
-- Report testuale + grafico a barre + grafico a rete per ciascuno dei dodici modelli di
+- Report testuale + grafico a barre + grafico a rete per ciascuno dei quindici modelli di
   ripartizione (§6).
-- `Tcmp` — tabella di confronto tra i dodici modelli + grafico a barre raggruppate.
+- `Trd` — accuratezza delle tre approssimazioni dello Shapley rispetto al valore esatto
+  (§3q, eq. 16-17 di Cremers et al.).
+- `Tcmp` — tabella di confronto tra i quindici modelli + grafico a barre raggruppate.
 - `Tcost` — costo annuo di approvvigionamento da rete per utente, nelle 3 modalità
   tariffarie PUN (monoraria, bioraria, oraria variabile).
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
@@ -327,7 +372,7 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 | Documento | Quando consultarlo |
 |---|---|
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Serve il dettaglio di un file/funzione specifico, o la mappa completa di cartelle e CSV |
-| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei dodici modelli di ripartizione |
+| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei quindici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
 
@@ -346,12 +391,35 @@ lentezza, è irrealizzabile su qualsiasi hardware. `shapley_cer.m` emette già u
 sopra i 20 giocatori; oltre quella soglia `MAIN.m` §3b fallirebbe in allocazione di
 memoria.
 
-Le vie d'uscita, entrambe presenti in letteratura:
+**Per lo Shapley la via d'uscita è già in repo (metodi 13-15, §6).** Le tre
+approssimazioni di Cremers et al. sono state introdotte esattamente per questo: valutano
+`v` su richiesta (`cer_shared_value.m`) e costano `O(n)`, `O(n²)` e `O(n·M)` invece di
+`O(2ⁿ)`. A `n = 100` sono rispettivamente ~100, ~20 000 e ~200 000 valutazioni, contro
+`10³⁰`. Con `n = 6` il loro errore rispetto allo Shapley esatto è già misurato
+(`MAIN.m` §3q) — e il risultato **va letto prima di affidarsi a loro su larga scala**:
+
+| Metodo | Costo | Scarto medio dallo Shapley esatto |
+|---|---|---:|
+| Marginal Contribution | `O(n)` | 1,07% |
+| Adaptive Sampling | `O(n·M)` | 1,52% |
+| Stratified Expected Value | `O(n²)` | **21,98%** ⚠ |
+
+La SEV non è utilizzabile con l'attuale topologia (un solo prosumer pivotale, vedi §6 e
+[GUIDA §16.8](GUIDA_modelli_distribuzione.md)); potrebbe però tornare la migliore proprio
+a `n` grande, se l'espansione porterà **più impianti distribuiti fra i membri** — è la
+condizione da ricontrollare, non un verdetto definitivo. Restano poi le due vie d'uscita
+classiche, complementari a queste:
 - **Raggruppamento per archetipo** — è la scelta di Moncecchi et al. (il paper di
   riferimento dello Shapley) che gestisce 131 utenti calcolando il valore su pochi
   *gruppi* e ripartendolo poi internamente in proporzione al consumo. Il docstring di
   `shapley_cer.m` già menziona questa approssimazione come non necessaria a `n` piccolo.
+  Aprirebbe anche la strada al calcolo **esatto per `K` classi** di Cremers et al. §4.2,
+  oggi inerte perché i sei profili reali sono tutti diversi
+  ([GUIDA §16.10](GUIDA_modelli_distribuzione.md)).
 - **Campionamento Monte Carlo** delle permutazioni per lo Shapley (stimatore standard).
+
+Restano invece scoperti **Nucleolo e Nash Bargaining**, che passano ancora da
+`cer_coalition_values.m` e per i quali il progetto non ha oggi un'alternativa scalabile.
 
 Il **Variance Least Core non ha questo problema**: la row-generation è nata esattamente
 per comunità da decine o centinaia di membri e valuta `v(K)` solo sulle poche coalizioni

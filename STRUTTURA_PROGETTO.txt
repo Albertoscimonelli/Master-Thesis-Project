@@ -74,6 +74,15 @@ Project/
 |                                       M5: combinazione pesata alpha/beta di Pearson e sharing rate)
 |-- similarity_utilization_cer.m        Ripartizione incentivo CER - Similarity-Utilization (Bilardo 2025,
 |                                       chiave giornaliera: similarita' coseno x fattore di utilizzo)
+|-- marginal_contribution_cer.m         APPROSSIMAZIONE dello Shapley (Cremers et al. 2023, eq. 9-10):
+|                                       solo l'ultimo contributo marginale v(N)-v(N\{i}), O(n)
+|-- stratified_expected_value_cer.m     APPROSSIMAZIONE dello Shapley (Cremers et al. 2023, eq. 11-13):
+|                                       un contributo per strato su un utente fittizio medio, O(n^2)
+|-- adaptive_sampling_shapley_cer.m     APPROSSIMAZIONE dello Shapley (O'Brien et al. 2015, App. C):
+|                                       campionamento stratificato adattivo - unico metodo STOCASTICO
+|-- cer_shared_value.m                  [helper approssimazioni] v di UNA coalizione dai profili
+|                                       aggregati, O(H) invece di O(H*2^n); accetta anche coalizioni
+|                                       fittizie (serve a stratified_expected_value_cer)
 |-- pearson_hourly_key.m                [helper chiavi dinamiche] Pearson giornaliero rimappato in [0,1]
 |                                       ed espanso alle 24 ore del giorno
 |-- sharing_rate_key.m                  [helper chiavi dinamiche] sharing rate orario (eq. 5, componente
@@ -325,7 +334,16 @@ Pipeline a sezioni indipendenti:
       per ora e la valorizzano solo alla fine con P_CER_h)
   3m) Ripartizione dell'incentivo CER: Similarity-Utilization (Bilardo:
       chiave GIORNALIERA = similarita' coseno x fattore di utilizzo)
-  3n) Confronto tra i dodici modelli di ripartizione
+  3n/3o/3p) APPROSSIMAZIONI dello Shapley (Cremers et al.): Marginal
+      Contribution, Stratified Expected Value, Adaptive Sampling. Non sono
+      regole di ripartizione nuove: ricalcolano lo stesso valore di 3b a
+      costo polinomiale, per comunita' dove le 2^n coalizioni non si possono
+      enumerare.
+  3q) Accuratezza delle tre approssimazioni rispetto allo Shapley esatto
+      (eq. 16-17 del paper). RISULTATO: la graduatoria del paper si rovescia
+      - MC 1,07%, Adaptive Sampling 1,52%, Stratified Expected Value 21,98%
+      (vedi GUIDA §16.7-§16.8 per il perche').
+  3r) Confronto tra i quindici modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
@@ -335,18 +353,26 @@ Pipeline a sezioni indipendenti:
       equal_split_cer.m, proportional_consumption_cer.m,
       remuneration_model1_cer.m, cascading_tree_cer.m, weighted_solidarity_cer.m,
       pearson_key_cer.m, pearson_sharing_key_cer.m,
-      similarity_utilization_cer.m
+      similarity_utilization_cer.m, marginal_contribution_cer.m,
+      stratified_expected_value_cer.m, adaptive_sampling_shapley_cer.m,
+      cer_shared_value.m
 --------------------------------------------------------------------------------
 
-Dodici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
+Quindici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
 giocatori (prosumer e consumatori): quattro di teoria dei giochi
 cooperativi a utilita' trasferibile, due benchmark elementari che non
 usano teoria dei giochi (Equal Split, Proportional to Consumption), tre
 modelli proposti in letteratura per REC italiane (Remuneration Model 1,
 Cascading Tree, Weighted Solidarity), una ripartizione giornaliera
-performance-based (Similarity-Utilization) e due chiavi dinamiche che
+performance-based (Similarity-Utilization), due chiavi dinamiche che
 ripartiscono l'ENERGIA ora per ora invece del denaro (Pearson Key,
-Pearson-Sharing Rate).
+Pearson-Sharing Rate) e tre APPROSSIMAZIONI dello Shapley (Marginal
+Contribution, Stratified Expected Value, Adaptive Sampling).
+
+Gli ultimi tre sono di natura diversa da tutti gli altri: non propongono un
+criterio di equita' alternativo, ma ricalcolano lo STESSO valore del metodo
+di Shapley a costo polinomiale, per comunita' dove le 2^n coalizioni non si
+possono enumerare. Vanno giudicati sull'ERRORE, non sull'equita'.
 
   cer_coalition_values.m   Costruisce v(S) per OGNI coalizione (2^n),
                             condivisa dai metodi di riparto cosi'
@@ -466,6 +492,69 @@ Pearson-Sharing Rate).
                             opts.genForFactors senza altre modifiche - la
                             differenza e' grande (il prosumer passa da 0 a
                             circa un quarto del montepremi), vedi GUIDA §15.3.
+
+Le tre APPROSSIMAZIONI dello Shapley (Cremers, Robu, Zhang, Andoni, Norbu,
+Flynn, Applied Energy 331 (2023) 120328). Tutte partono dalla scrittura
+dello Shapley per STRATI (eq. 8): phi_i e' la media, sugli n strati, del
+contributo marginale medio del giocatore a quello strato. Il costo
+esponenziale sta dentro quella media; i tre metodi si distinguono solo per
+come la aggirano. Nessuno passa da cer_coalition_values: valutano v su
+richiesta con cer_shared_value. Nessun toolbox richiesto.
+
+  marginal_contribution_cer.m
+                            Eq. 9-10. Tiene UN SOLO strato, l'ultimo:
+                            MC_i = v(N) - v(N\{i}), poi normalizzato a v(N)
+                            (l'efficienza non e' automatica). O(n)
+                            valutazioni di v. ATTENZIONE: MC_i = 0 esatto per
+                            ogni consumatore la cui rimozione non riduce
+                            l'energia condivisa - con un solo impianto e
+                            carico abbondante degenera in "tutto al
+                            prosumer". Sulla community attuale non accade
+                            (S.nullPlayers = 0), ma e' fragile rispetto al
+                            dimensionamento del PV.
+  stratified_expected_value_cer.m
+                            Eq. 11-13, il metodo NUOVO del paper. Stima il
+                            contributo di OGNI strato con una sola
+                            valutazione di v su j copie di un utente
+                            FITTIZIO MEDIO (media dei profili degli altri
+                            n-1, su ENTRAMBI i lati: il paper media la sola
+                            domanda perche' li' la generazione e' comune).
+                            O(n^2), DETERMINISTICO.
+                            ATTENZIONE - non usare i suoi numeri senza
+                            leggere GUIDA §16.8: sui dati del progetto
+                            sbaglia del 21,98% (il peggiore dei tre, mentre
+                            nel paper e' il migliore). L'eq. 11 assume membri
+                            INTERCAMBIABILI: vero nel paper, dove l'impianto
+                            e' in comproprieta', falso qui, dove la
+                            generazione e' di un solo membro su sei e il 52%
+                            delle coalizioni vale esattamente zero.
+                            opts.validateStrata (n <= 12) enumera il valore
+                            vero di ogni strato e verifica che agli strati 0
+                            e n-1 - dove l'approssimazione non puo' sbagliare
+                            - la stima sia esatta: e' il controllo che separa
+                            un errore di IMPLEMENTAZIONE da un limite di
+                            MODELLO. E' attivo in MAIN.m §3o.
+  adaptive_sampling_shapley_cer.m
+                            O'Brien et al. 2015, App. C di Cremers et al.
+                            (eq. C.1-C.7). Campiona M coalizioni per
+                            giocatore, spartendole fra gli strati in
+                            proporzione alla deviazione standard stimata dei
+                            contributi (piu' campioni dove c'e' piu'
+                            incertezza); media e varianza aggiornate in linea
+                            con Welford. Gli strati 0 e n-1 hanno una sola
+                            coalizione e sono valutati esatti una volta sola.
+                            O(n*M). UNICO METODO STOCASTICO del progetto:
+                            seed esplicito (opts.seed, default 42) e
+                            RandStream isolato dal generatore globale, quindi
+                            riproducibile - ma cambiando seed i numeri
+                            cambiano, ed e' la critica che il paper stesso
+                            gli muove.
+  cer_shared_value.m        [helper] v = sum_t min(gen(t), load(t)) * P_CER(t)
+                            su UNA coalizione, a partire dai profili gia'
+                            aggregati dal chiamante. Prende aggregati e non
+                            una maschera di giocatori perche' la Stratified
+                            Expected Value valuta v anche su utenti FITTIZI,
+                            che nessuna bitmask puo' rappresentare.
 
 Helper condivisi dalle due chiavi dinamiche (nessun toolbox richiesto):
 

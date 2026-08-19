@@ -2,7 +2,7 @@
 
 Questo documento spiega **cosa** è stato implementato, **come** e soprattutto **perché**
 sono state fatte determinate scelte, con particolare attenzione alla matematica.
-Riguarda i dodici metodi di ripartizione dei ricavi della comunità energetica:
+Riguarda i quindici metodi di ripartizione dei ricavi della comunità energetica:
 
 1. **Shapley value** — Moncecchi et al., *Appl. Sci.* 2020 (eq. 39)
 2. **Nucleolo** — Fioriti et al., *Appl. Energy* 2021 (eq. 7)
@@ -22,6 +22,11 @@ Riguarda i dodici metodi di ripartizione dei ricavi della comunità energetica:
 11. **Pearson-Sharing Rate** — stesso paper, metodo M5 (eq. 7), combinazione pesata di
     M3 e M4
 12. **Similarity-Utilization** — M. Bilardo, *Renewable Energy* 255 (2025) 123756
+13. **Marginal Contribution** — Cremers, Robu, Zhang, Andoni, Norbu, Flynn,
+    *Appl. Energy* 331 (2023) 120328 (§4.1.1)
+14. **Stratified Expected Value** — stesso paper, §4.1.2 (il metodo nuovo che propone)
+15. **Adaptive Sampling Shapley** — O'Brien, El Gamal, Rajagopal, *IEEE Trans. Smart Grid*
+    6(6) 2015, nella formulazione dello stesso paper (§4.1.3 e Appendice C)
 
 > **Nota:** le sezioni 2 e 3 sotto trattano in dettaglio Shapley e Nucleolo; il Nash
 > Bargaining è documentato nel codice ([`nash_bargaining_cer.m`](nash_bargaining_cer.m), che ne
@@ -34,7 +39,10 @@ Riguarda i dodici metodi di ripartizione dei ricavi della comunità energetica:
 > dettaglio del Variance Least Core, data la loro complessità. Le due **chiavi dinamiche**
 > di Gianaroli et al. (§13-§14) sono documentate insieme, perché condividono gran parte
 > della matematica e tutti gli helper: sono anche gli unici due metodi che ripartiscono
-> **energia** invece di denaro.
+> **energia** invece di denaro. Stessa scelta per i **tre metodi di Cremers et al.**
+> (§16), che condividono l'intero impianto matematico — lo Shapley scritto per strati —
+> e che non sono regole di ripartizione autonome ma **approssimazioni dello Shapley**
+> stesso, pensate per comunità dove le `2^n` coalizioni non si possono enumerare.
 
 ---
 
@@ -59,7 +67,11 @@ Riguarda i dodici metodi di ripartizione dei ricavi della comunità energetica:
 | [`normalize_key_rows.m`](normalize_key_rows.m) | Normalizzazione oraria della chiave (eq. 4), `Σ_i r(t,i) = 1` |
 | [`allocate_shared_energy.m`](allocate_shared_energy.m) | Ripartizione oraria dell'**energia** condivisa con cap al consumo (algoritmo di Fig. 2), comune a M3 e M5 |
 | [`similarity_utilization_cer.m`](similarity_utilization_cer.m) | Calcola la **Similarity-Utilization**: chiave giornaliera `θ·η` (similarità coseno × fattore di utilizzo) |
-| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (confronto) |
+| [`marginal_contribution_cer.m`](marginal_contribution_cer.m) | Calcola la **Marginal Contribution**: solo l'ultimo contributo marginale `v(N) − v(N\{i})`, normalizzato |
+| [`stratified_expected_value_cer.m`](stratified_expected_value_cer.m) | Calcola la **Stratified Expected Value**: un contributo marginale per strato, stimato su un utente fittizio medio |
+| [`adaptive_sampling_shapley_cer.m`](adaptive_sampling_shapley_cer.m) | Calcola l'**Adaptive Sampling Shapley**: campionamento stratificato adattivo (unico metodo stocastico) |
+| [`cer_shared_value.m`](cer_shared_value.m) | `v` di **una** coalizione dai suoi profili aggregati, valutata su richiesta in `O(H)`: helper comune ai tre metodi sopra |
+| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (Marginal Contribution), `3o` (Stratified Expected Value), `3p` (Adaptive Sampling), `3q` (accuratezza delle approssimazioni), `3r` (confronto) |
 
 **Scelta di design fondamentale.** I metodi *non* ricalcolano l'energia condivisa
 ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
@@ -67,11 +79,16 @@ ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
 **matematicamente confrontabili** (giocano lo stesso identico gioco) — esattamente
 l'impostazione con cui Fioriti li mette a confronto nelle Fig. 9–10.
 
-**Unica eccezione:** il Variance Least Core usa la stessa *formula* di `v(S)`, ma la
-valuta **su richiesta** invece di leggerla dal vettore precalcolato. Il motivo è di
-scalabilità, non di modellazione: `cer_coalition_values` costruisce `2^n` valori, quindi
-è impraticabile oltre ~20 giocatori, mentre il VLC è pensato per comunità da decine o
-centinaia di membri (vedi §7).
+**Eccezioni.** Il Variance Least Core (§7) e i tre metodi di Cremers et al. (§16) usano
+la stessa *formula* di `v(S)`, ma la valutano **su richiesta** invece di leggerla dal
+vettore precalcolato. Il motivo è di scalabilità, non di modellazione:
+`cer_coalition_values` costruisce `2^n` valori, quindi è impraticabile oltre ~20
+giocatori, mentre questi quattro metodi sono pensati proprio per comunità da decine o
+centinaia di membri. Il VLC ha il suo `coalition_value` locale (nato prima);
+i tre metodi di §16 passano dall'helper condiviso
+[`cer_shared_value.m`](cer_shared_value.m), che lavora sui profili **aggregati** e non su
+una maschera di giocatori — indispensabile per la Stratified Expected Value, che valuta
+`v` anche su un utente *fittizio* che nessuna bitmask può rappresentare (§16.4).
 
 ---
 
@@ -411,6 +428,16 @@ sarebbero le più scontente.
     (`η`), pensato per la condivisione *virtuale* dove consumare di più significa
     incassare di più. È anche il metodo con la scelta di modello più impattante aperta:
     profili netti (default del progetto) o lordi (lettura letterale del paper), §15.3.
+11. **Tre approssimazioni dello Shapley, non tre nuove regole** (§16) → sono gli unici
+    metodi del progetto che non propongono un criterio di equità alternativo, ma
+    ricalcolano *lo stesso numero* di §2 a costo polinomiale, per comunità dove le `2^n`
+    coalizioni non si possono enumerare (il bloccante di [README §13.1](README.md)).
+    Vanno giudicati sull'**errore**, non sull'equità, e con `n = 6` abbiamo lo Shapley
+    esatto come ground truth per misurarlo. Il risultato è di per sé un contributo: la
+    graduatoria del paper **si rovescia** (§16.7), perché la Stratified Expected Value
+    assume membri intercambiabili e da noi la generazione è di **un solo membro su sei**
+    (§16.8). Introducono anche l'unico metodo **stocastico** del progetto (§16.5), con
+    seed esplicito e isolato per renderlo riproducibile.
 
 ---
 
@@ -1203,7 +1230,7 @@ Quindi
 ```
 
 lo stesso `v(N)` di tutti gli altri metodi: le quote sono direttamente confrontabili in
-`Tcmp` (§3m). L'`assert` di [`report_allocation.m`](report_allocation.m) lo verifica a
+`Tcmp` (§3r). L'`assert` di [`report_allocation.m`](report_allocation.m) lo verifica a
 ogni esecuzione, e `MAIN.m` §3k-§3l aggiunge il controllo **in energia**
 (`Σ_i SH_i = shared_annual`), che è più stringente perché non passa dalla valorizzazione.
 Le due verifiche interne all'helper (`SH ≤ load` e somma oraria) sono `assert` in
@@ -1260,7 +1287,7 @@ nulla. Vale identicamente per il Proportional to Consumption (§9), che infatti 
 stesso 0. Il suo Pearson medio negativo (−0.323) è la stessa cosa vista da un'altra
 angolazione: quando la comunità immette, lui non preleva. Il ricavo del prosumer arriva
 dalla **vendita diretta dell'eccedenza** (`revSoldPerPlayer`, la barra arancione nei
-grafici), che non passa da nessuno dei dodici modelli.
+grafici), che non passa da nessuno dei quindici modelli.
 
 **(b) I risultati sono vicini al Proportional to Consumption, e c'è un motivo preciso.**
 Nel caso di studio, sulle 3.223 ore con energia condivisa positiva, **2.762 ricadono nel
@@ -1688,7 +1715,8 @@ strutturale: il coseno è **invariante di scala**, quindi una famiglia con un ca
 piccolo ma ben allineato alla produzione vale quanto un ufficio con un carico dieci volte
 maggiore e allineato uguale. Le chiavi di §13-§14 finiscono invece a ridosso del riparto
 proporzionale al consumo, perché il cap `SH_i ≤ load_i` le riporta lì (§13.8b). È il
-metodo che si discosta di più da *tutti* gli altri undici — e l'unico in cui la taglia del
+metodo che si discosta di più da *tutte* le altre undici regole di ripartizione (i metodi
+1-11; i metodi 13-15 non sono regole ma approssimazioni dello Shapley, §16) — e l'unico in cui la taglia del
 consumo non conta quasi nulla.
 
 **(b) `η` morde poco ma non è inerte.** Media 0,958, con 59 giorni su 365 in cui almeno un
@@ -1697,6 +1725,510 @@ membro scende sotto 1 — tutti invernali, quando la produzione crolla. Il più 
 giornaliera dell'intera comunità: esattamente il comportamento che il fattore vuole
 correggere. Su una comunità con generazione più scarsa `η` diventerebbe il fattore
 dominante — è lo stesso avvertimento della nota di §14.6, e vale anche qui.
+
+---
+
+## 16. Le tre approssimazioni dello Shapley (Cremers et al. 2023)
+
+File: [`marginal_contribution_cer.m`](marginal_contribution_cer.m),
+[`stratified_expected_value_cer.m`](stratified_expected_value_cer.m),
+[`adaptive_sampling_shapley_cer.m`](adaptive_sampling_shapley_cer.m), con l'helper
+condiviso [`cer_shared_value.m`](cer_shared_value.m).
+
+Riferimento: S. Cremers, V. Robu, P. Zhang, M. Andoni, S. Norbu, D. Flynn, *Efficient
+methods for approximating the Shapley value for asset sharing in energy communities*,
+Applied Energy 331 (2023) 120328 (§4.1.1–4.1.3, Appendice C).
+
+Sono documentati **insieme** per lo stesso motivo delle due chiavi dinamiche (§13-§14):
+condividono l'intero impianto matematico — la scrittura dello Shapley *per strati* — e
+differiscono solo in **come** stimano il contributo di ciascuno strato.
+
+### 16.1 Non sono regole di ripartizione: sono approssimazioni
+
+È la differenza che rende questi tre metodi diversi da tutti i dodici precedenti. Gli
+altri propongono un **criterio di equità alternativo** (stabilità, sincronia, solidarietà,
+potenza contrattuale…): danno una risposta *diversa* e vanno confrontati fra loro. Questi
+tre approssimano lo **stesso numero** già calcolato in forma esatta in §2 — lo Shapley
+value — e vanno quindi giudicati su un metro completamente diverso: **quanto poco
+sbagliano**, non quanto sono equi.
+
+Il problema che risolvono è di scala. Lo Shapley esatto costa `O(2^n)`: con i nostri
+`n = 6` sono 64 coalizioni e il calcolo è istantaneo, ma il paper lavora su comunità da
+**200 prosumer**, dove `2^200` non esiste su carta. È la stessa barriera documentata in
+[README §13.1](README.md) come **bloccante** per lo scaling del progetto a ~100 utenti —
+e questi tre metodi sono, insieme al VLC, la risposta della letteratura a quel problema.
+
+Con `n = 6` il loro valore per il progetto non è quindi la ripartizione che producono, ma
+il fatto che avendo lo Shapley **esatto** come *ground truth* possiamo **misurare il loro
+errore** (§16.7) e stabilire se siano affidabili prima di doverli usare per forza a
+`n = 100`. È esattamente l'impostazione del paper, che per costruire un ground truth a 200
+agenti sviluppa un metodo di calcolo esatto per classi (§4.2 del paper, qui non
+implementato: vedi §16.10).
+
+### 16.2 La base comune: lo Shapley scritto per strati (eq. 8)
+
+Tutti e tre partono da una riscrittura esatta dello Shapley. Uno **strato** `j` è
+l'insieme delle coalizioni di cardinalità `j`. Definiamo il **contributo marginale medio
+allo strato `j`**:
+
+$$
+\mu(i,j) \;=\; \frac{1}{\binom{n-1}{j}}
+\sum_{\substack{S \subseteq N\setminus\{i\} \\ |S| = j}}
+\bigl[\, v(S \cup \{i\}) - v(S) \,\bigr]
+$$
+
+Allora (eq. 8 del paper):
+
+$$
+\varphi_i \;=\; \frac{1}{n}\sum_{j=0}^{n-1} \mu(i,j)
+$$
+
+**È un'identità, non un'approssimazione:** lo Shapley è la media semplice dei contributi
+marginali medi degli `n` strati. La verifica numerica è disponibile nel codice e torna a
+`2,3·10⁻¹³` (§16.9).
+
+Il costo esponenziale sta tutto **dentro** `μ(i,j)`, che somma `C(n-1, j)` coalizioni. I
+tre metodi si distinguono esclusivamente per come lo aggirano:
+
+| Metodo | Come stima `μ(i,j)` |
+|---|---|
+| Marginal Contribution | ne calcola **uno solo**, l'ultimo (`j = n-1`), e butta gli altri |
+| Stratified Expected Value | ne stima **tutti**, ma con **una sola** valutazione di `v` per strato |
+| Adaptive Sampling | ne stima **tutti**, campionando a caso `M` coalizioni in totale |
+
+### 16.3 Marginal Contribution (eq. 9-10)
+
+File: [`marginal_contribution_cer.m`](marginal_contribution_cer.m).
+
+Lo strato `n-1` contiene **una sola** coalizione, `N\{i}`: lì `μ` non è una media di
+niente, è un valore esatto ottenibile con una valutazione di `v`. Il metodo tiene solo
+quello:
+
+```
+MC_i = v(N) − v(N\{i})                                    (eq. 9)
+```
+
+Servono `n+1` valutazioni di `v` invece di `2^n`: complessità **`O(n)`**, la più bassa
+delle tre.
+
+**La normalizzazione non è un dettaglio.** A differenza dello Shapley, l'efficienza
+`Σφ = v(N)` non è una proprietà del metodo e va imposta a mano:
+
+```
+φ_i = v(N) · MC_i / Σ_q MC_q                              (eq. 10)
+```
+
+Nel gioco CER il fattore di scala è tipicamente **molto** minore di 1 — sui nostri dati
+vale **0,5123** — perché ogni giocatore rivendica per intero l'energia condivisa che
+sparirebbe senza di lui, e lo stesso kWh viene così contato più volte.
+
+#### Il rischio di degenerazione (da tenere d'occhio)
+
+`MC_i = 0` esattamente ogni volta che togliere `i` non riduce l'energia condivisa. Per un
+consumatore ciò accade quando il carico residuo degli **altri** basta comunque ad
+assorbire tutta l'eccedenza: quel consumatore riceve **zero**, per quanto grande sia il
+suo consumo. Togliendo l'unico prosumer, al contrario, l'energia condivisa crolla a zero e
+`MC` vale l'intero `v(N)`. Con un solo impianto e carico abbondante la ripartizione
+degenera quindi in **"tutto al prosumer"**.
+
+Sulla community attuale **non** accade (0 giocatori con `MC = 0`), perché il picco del
+PV supera in alcune ore il carico residuo, ma è una proprietà fragile rispetto al
+dimensionamento dell'impianto: `S.nullPlayers` la sorveglia a ogni esecuzione. Nel paper
+il fenomeno non esiste, perché l'impianto è in **comproprietà** e nessun membro è mai del
+tutto superfluo.
+
+### 16.4 Stratified Expected Value (eq. 11-13)
+
+File: [`stratified_expected_value_cer.m`](stratified_expected_value_cer.m). È il metodo
+**nuovo** proposto dal paper, e quello con più conseguenze per noi.
+
+L'idea: invece di enumerare le `C(n-1, j)` coalizioni dello strato `j`, se ne costruisce
+**una sola rappresentativa**, fatta di `j` copie di un utente **fittizio medio** `p₋ᵢ` che
+porta la media dei profili degli altri `n-1` (eq. 11):
+
+```
+gen_p₋ᵢ(t)  = ( Σ_{q≠i} gen_q(t)  ) / (n−1)
+load_p₋ᵢ(t) = ( Σ_{q≠i} load_q(t) ) / (n−1)
+```
+
+$$
+SEV_i \;=\; \frac{1}{n}\sum_{j=0}^{n-1}
+\Bigl[\, v\bigl(\{j \text{ copie di } p_{-i}\} \cup \{i\}\bigr) - v\bigl(\{j \text{ copie}\}\bigr) \,\Bigr]
+$$
+
+poi normalizzato come sopra (eq. 13). Costo: `O(n²)` valutazioni di `v`, e il metodo resta
+**deterministico**.
+
+**Adattamento al nostro gioco.** Il paper media i soli profili di *domanda*, perché la
+generazione è dell'impianto condiviso ed è un dato esterno alla coalizione. Da noi ogni
+utente porta anche la propria eccedenza, quindi si mediano **entrambi i lati** —
+altrimenti l'utente medio non rappresenterebbe i giocatori del nostro gioco. È l'unica
+libertà presa rispetto al testo, ed è forzata dalla struttura di `v(S)`.
+
+**`p₋ᵢ` non è un utente reale.** I profili veri sono complementari (in ogni ora eccedenza
+*oppure* carico residuo, mai entrambi), quindi `v({i}) = 0` per ogni giocatore vero.
+L'utente medio invece **mescola** utenti diversi e ha entrambi i lati nella stessa ora,
+perciò `v({1 copia}) > 0`. È voluto: è uno stand-in statistico dello strato, non un membro
+della comunità.
+
+#### Due identità esatte nel nostro gioco
+
+Poiché la nostra `v(S)` dipende **solo dai profili sommati** della coalizione:
+
+- **strato 0** — `v({i}) − v(∅) = 0`, come per ogni giocatore reale;
+- **strato n−1** — `n−1` copie dell'utente medio riproducono *esattamente* l'aggregato
+  degli altri `n−1` utenti veri, quindi l'ultimo termine **coincide con `MC_i` dell'eq. 9**
+  (a meno del rumore della divisione per `n−1`).
+
+Sono le due identità su cui poggia tutta la verifica di §16.9: agli estremi
+l'approssimazione **non ha spazio per sbagliare**, quindi se lì i conti tornano l'utente
+medio è costruito bene e ogni scostamento residuo è di modello, non di codice.
+
+### 16.5 Adaptive Sampling Shapley (eq. C.1-C.7)
+
+File: [`adaptive_sampling_shapley_cer.m`](adaptive_sampling_shapley_cer.m). Non è del
+paper — è di O'Brien et al. (2015) — ma Cremers et al. lo implementano come riferimento
+*stato dell'arte* con cui confrontarsi, e qui serve allo stesso scopo.
+
+Per ogni giocatore si estraggono `M` coalizioni casuali (default `M = 1000`, come nel
+paper) e la media campionaria stima `μ(i,j)`. La parte **adattiva** è come si spartiscono
+gli `M` campioni fra gli strati: non in parti uguali, ma in proporzione alla deviazione
+standard stimata dei contributi di ciascuno strato (eq. C.1),
+
+```
+π_i,j(m) = ε(m)/|strati| + (1 − ε(m)) · σ_i,j / Σ_s σ_i,s
+```
+
+così gli strati con contributi più dispersi — dove la media campionaria è più incerta —
+ricevono più campioni. Il peso `ε(m)` è una doppia sigmoide (eq. C.2) che vale **1**
+all'inizio (esplorazione uniforme: le `σ` non sono ancora stimate) e decade a ~0,06 alla
+fine (sfruttamento). Media e deviazione standard si aggiornano in linea con l'algoritmo di
+**Welford** (eq. C.3-C.6), senza conservare i campioni.
+
+**I due strati degeneri.** Gli strati `0` e `n-1` contengono una sola coalizione ciascuno,
+quindi ricampionarli non aggiunge informazione: come nell'implementazione del paper (nota
+in fondo all'Appendice C) sono valutati **una volta sola in forma esatta** ed esclusi dal
+campionamento. Ne segue che il termine di strato `n-1` è esattamente `MC_i`, e il termine
+di strato `0` è `v({i}) = 0`. Poiché gli strati campionabili diventano `1…n-2`, il termine
+uniforme dell'eq. C.1 è `1/|strati campionabili|` e non `1/n`: è una conseguenza diretta
+di quell'esclusione, non una modifica della formula.
+
+#### È l'unico metodo stocastico del progetto ⚠
+
+Rieseguito sugli stessi dati restituisce numeri **diversi**, e due utenti con profili
+identici possono ricevere quote diverse. In una CER, dove i membri devono poter
+riverificare il conto dell'aggregatore, è un problema di **fiducia** prima ancora che di
+accuratezza — è la critica esplicita che il paper gli muove (§2.2 e §5.3) ed è la
+motivazione per cui propone la SEV.
+
+Nel progetto il generatore è inizializzato con un **seed** esplicito (`opts.seed`, default
+42) e **isolato** dal generatore globale di MATLAB, così l'esecuzione è riproducibile e
+lanciare questo metodo non altera altri risultati casuali della sessione. Cambiare seed
+cambia i numeri: è proprio la variabilità che il paper contesta, resa visibile invece che
+nascosta.
+
+**Nota di scala.** Con `n = 6` questo metodo *non è davvero un'approssimazione*: lo strato
+più numeroso ha `C(5,2) = 10` coalizioni, quindi 1000 campioni per giocatore le enumerano
+molte volte e la stima converge allo Shapley esatto a meno del rumore di campionamento. Il
+divario diventa significativo solo con decine o centinaia di membri.
+
+### 16.6 Complessità a confronto (Tabella 2 del paper)
+
+| Metodo | Valutazioni di `v` | Con `n = 6` | Deterministico? |
+|---|---|---:|:---:|
+| Shapley esatto | `O(2ⁿ)` | 64 | sì |
+| Marginal Contribution | `O(n)` | 7 | sì |
+| Stratified Expected Value | `O(n²)` | 72 | sì |
+| Adaptive Sampling | `O(n·M)` | ~12 000 | **no** |
+
+A `n = 6` la SEV costa *più* dello Shapley esatto: il vantaggio compare solo quando `2ⁿ`
+esplode. A `n = 100` sarebbero 20 000 valutazioni contro `10³⁰`.
+
+### 16.7 Risultati sul caso reale: la graduatoria del paper si rovescia ⚠
+
+Montepremi `v(N)` = **2 348,59 €**. Confronto con lo Shapley esatto (eq. 16 del paper,
+`RD = |φ̂ − φ| / |φ| · 100`):
+
+| Giocatore | Shapley esatto | MC | SEV | AS | RD MC | RD SEV | RD AS |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| office_1 | 438,28 | 436,12 | 520,29 | 451,86 | 0,49% | 18,71% | 3,10% |
+| small_industry_1 | 1 193,16 | 1 203,30 | 951,79 | 1 188,74 | 0,85% | 20,23% | 0,37% |
+| retail_1 | 427,42 | 423,46 | 517,36 | 418,49 | 0,92% | 21,05% | 2,09% |
+| household_1 | 94,61 | 92,38 | 116,52 | 92,78 | 2,36% | 23,16% | 1,93% |
+| household_2 | 93,90 | 93,26 | 117,64 | 94,93 | 0,69% | 25,28% | 1,10% |
+| household_3 | 101,23 | 100,09 | 124,98 | 101,78 | 1,12% | 23,46% | 0,55% |
+| **RD media (eq. 17)** | | **1,07%** | **21,98%** | **1,52%** | | | |
+
+Nel paper la SEV è il metodo **più** accurato e la MC il **meno**; da noi succede
+l'esatto contrario. E l'errore della SEV non è rumore: è **sistematico e con segno** —
+gonfia tutti i consumatori (+19÷25%) e sgonfia il prosumer (−20%).
+
+Non è un difetto dell'implementazione. La spiegazione, dimostrata numericamente in §16.8,
+è che la SEV poggia su un'ipotesi che questa comunità viola.
+
+### 16.8 Perché la SEV sbaglia: Jensen e le coalizioni a valore nullo
+
+L'eq. 11 assume implicitamente che i membri siano **intercambiabili**: che un utente medio
+sia un buon rappresentante di un utente qualunque. Nel paper è vero, perché la generazione
+è di un impianto in **comproprietà** e ogni membro ne porta una fetta — nessuno è mai
+indispensabile. Da noi la generazione appartiene a **un solo membro su sei**.
+
+Il confronto strato per strato con il valore **vero** `μ(i,j)` (calcolabile per
+enumerazione, §16.9) mostra dove si rompe:
+
+| Giocatore | strato | `μ` vero [€] | stima SEV [€] | scarto |
+|---|---:|---:|---:|---:|
+| office_1 | 1 | 185,40 | 640,79 | **+246%** |
+| office_1 | 2 | 363,25 | 783,35 | +116% |
+| office_1 | 3 | 533,55 | 822,49 | +54% |
+| office_1 | 4 | 696,24 | 840,65 | +21% |
+| office_1 | 5 | 851,23 | 851,23 | **0** |
+| small_industry_1 (prosumer) | 1…4 | 492…1 902 | 501…1 911 | < 1,5% |
+
+Lo **strato 1** dice tutto. Delle 5 coalizioni-singoletto che `office_1` può incontrare,
+**una sola** contiene il prosumer e vale qualcosa; le altre quattro valgono **esattamente
+zero**. Il contributo atteso vero è quindi *"1/5 di probabilità di incontrare l'intero
+impianto"*. L'utente medio lo trasforma in *"certezza di incontrare 1/5 dell'impianto"* —
+e poiché il `min()` della nostra `v` è **concavo**, le due cose non coincidono affatto
+(disuguaglianza di Jensen):
+
+$$
+\mathbb{E}\bigl[\min(G \cdot \mathbb{1}\{\text{prosumer} \in S\},\; L_S)\bigr]
+\;\neq\;
+\min\bigl(\mathbb{E}[G \cdot \mathbb{1}\{\cdot\}],\; \mathbb{E}[L_S]\bigr)
+$$
+
+Nel paper il termine aleatorio `1{prosumer ∈ S}` **non esiste**: la generazione è un dato
+deterministico che cresce con la taglia della coalizione, quindi lo scarto di Jensen è
+trascurabile. Da noi **il 52% delle coalizioni proprie vale esattamente zero** (32 su 62:
+tutte quelle senza il prosumer), ed è precisamente ciò che l'utente medio non sa
+rappresentare.
+
+L'effetto sulle quote finali passa poi dalla normalizzazione. Prima dell'eq. 13:
+
+| Giocatore | Shapley | SEV grezzo | scarto |
+|---|---:|---:|---:|
+| office_1 | 438,28 | 656,42 | +49,8% |
+| small_industry_1 | 1 193,16 | 1 200,82 | **+0,6%** |
+| retail_1 | 427,42 | 652,73 | +52,7% |
+| household_1/2/3 | ~96 | ~151 | +55÷58% |
+| **somma** | 2 348,59 | 2 963,07 | |
+
+Il prosumer è stimato quasi perfettamente; sono i consumatori a essere gonfiati del ~55%.
+La normalizzazione, moltiplicando **tutto** per 0,7926, scarica quindi l'eccesso sul solo
+giocatore che era corretto: da qui il suo −20%.
+
+> **Condizione per riprenderlo.** La SEV tornerà accurata quando nessun giocatore sarà più
+> pivotale, cioè con **più impianti distribuiti fra i membri** — la configurazione in cui
+> le coalizioni a valore nullo spariscono. È la condizione da ricontrollare prima di
+> portare i numeri di questo metodo in tesi. Fino ad allora il risultato da riportare è
+> quello di §16.7, che è comunque un contributo: **misura fino a che punto le
+> approssimazioni pensate per comunità omogenee reggano su una comunità con un unico
+> prosumer pivotale**.
+
+**Perché invece la MC se la cava (1,07%)?** Perché usa *solo* lo strato `n-1`, dove
+l'approssimazione è **esatta per costruzione** (§16.4). Il suo errore non è di
+approssimazione dello strato, ma di "un solo strato invece della media degli `n`" — e qui
+capita che le proporzioni fra giocatori siano stabili fra gli strati. È in parte
+fortuito e **non va generalizzato**: degenera appena nessun consumatore è pivotale
+(§16.3).
+
+### 16.9 Verifiche disponibili
+
+- **`opts.validateStrata = true`** (solo `n ≤ 12`) in
+  [`stratified_expected_value_cer.m`](stratified_expected_value_cer.m): enumera tutte le
+  coalizioni e calcola `μ(i,j)` **vero** (eq. 8), cioè esattamente la grandezza che l'eq.
+  12 approssima. Verifica poi che agli strati `0` e `n-1` — dove esiste una sola coalizione
+  e l'approssimazione non ha spazio per sbagliare — i due valori **coincidano**, e solleva
+  errore altrimenti. È il controllo che separa un errore di **implementazione** (che li
+  farebbe divergere) da un limite di **modello** (che si concentra sugli strati
+  intermedi). Popola `.muExact` e `.strataBias`. È **attivo in `MAIN.m` §3o**: con 6
+  giocatori costa 192 valutazioni di `v`. Stessa logica di `opts.validateDense` nel VLC
+  (§7.7).
+- **Esito attuale:** scarto `0` allo strato 0, `2,3·10⁻¹³` allo strato `n-1`, fino a
+  **+324%** su quelli intermedi. È la firma di un'implementazione corretta con un limite di
+  modello.
+- **`mean(SEV.muExact, 2)` è lo Shapley esatto** (identità dell'eq. 8): confrontarla con
+  `shapley_cer.m` è un cross-check gratuito, e torna a `2,3·10⁻¹³`.
+- **`assert` in `MAIN.m` §3o:** `SEV.lastStratumMC == MC.mcRaw`. Vale per l'identità di
+  §16.4 e salterebbe se l'utente medio fosse costruito male; è attivo anche senza
+  `validateStrata`.
+- **`assert` in `MAIN.m` §3q:** i tre metodi hanno lo stesso `v(N)` dello Shapley esatto.
+  Senza, la §3q non starebbe misurando l'errore di approssimazione ma un errore di modello.
+- **Riproducibilità dell'Adaptive Sampling:** stesso seed → risultati identici; seed
+  diverso → risultati diversi. Entrambe verificate.
+
+### 16.10 Mappatura formula → codice
+
+| Formula | Codice |
+|---|---|
+| `v` di una coalizione, `O(H)` | [`cer_shared_value.m`](cer_shared_value.m) |
+| `MC_i = v(N) − v(N\{i})` (eq. 9) | ciclo su `i` in `marginal_contribution_cer.m`, per differenza sugli aggregati |
+| Normalizzazione (eq. 10, 13) | `normFactor = vGrand / sum(...)`, esposto in `.normFactor` |
+| Utente medio `p₋ᵢ` (eq. 11) | `genAvg = (genComm − genUsers(:,i)) / (n−1)` (e uguale per il carico) |
+| `SEV_i` (eq. 12) | doppio ciclo `i` × `j`, `strataMC(i, j+1)` |
+| `μ(i,j)` vero (eq. 8) | funzione locale `exact_strata_mc`, solo con `validateStrata` |
+| Sigmoide `ε(m)` (eq. C.2) | `epsSig`, precalcolata per tutti gli `M` campioni |
+| Probabilità di strato (eq. C.1) | `prob` nel ciclo di campionamento |
+| Aggiornamento Welford (eq. C.3-C.6) | blocco `delta`/`hits`/`m2`/`sigma` |
+| `RL_i` (eq. C.7) | `rl = mean(muStrata, 2)` |
+| `RD` e `RD` media (eq. 16-17) | `MAIN.m` §3q, tabella `Trd` |
+
+**Non implementato: il calcolo esatto per `K` classi** (§4.2 del paper, Algoritmi 1-2).
+Serve al paper per costruire il *ground truth* a 200 agenti, raggruppando gli utenti in
+poche classi con profilo di domanda **identico** e sfruttando la distribuzione
+ipergeometrica multivariata. Da noi sarebbe inerte: i sei profili reali sono tutti diversi,
+quindi `K = n` e il metodo degenera nello Shapley esatto che già calcoliamo. Tornerebbe
+utile solo con molti utenti replicati per archetipo — che è però anche una delle vie
+d'uscita già elencate in [README §13.1](README.md), e andrebbero valutate insieme.
+
+---
+
+## Appendice A — Metodi valutati e non implementati
+
+Questa appendice raccoglie i metodi di ripartizione letti e valutati per il progetto ma
+**deliberatamente non implementati**, con le ragioni della scelta e le condizioni alle
+quali varrebbe la pena riprenderli. Serve a distinguere ciò che non è stato fatto per
+scelta da ciò che non è stato fatto per dimenticanza.
+
+### A.1 PDM3 e PDM4 — Basilico et al. (2025)
+
+Riferimento: P. Basilico, A. Biancardi, I. D'Adamo, M. Gastaldi, T. Yigitcanlar,
+*Renewable energy communities for sustainable cities: Economic insights into subsidies,
+market dynamics and benefits distribution*, Applied Energy 389 (2025) 125752 (eq. 8-24).
+
+#### Cosa sono
+
+Due modelli di ripartizione (*profit distribution models*) per una REC composta da
+**renewable self-consumers (RSC)**, cioè co-proprietari di un impianto condiviso. Il
+valore da dividere è l'**NPV dell'investimento** nell'impianto. Entrambi condividono lo
+stesso blocco di calcolo (eq. 8-16) e differiscono solo nel peso finale:
+
+```
+ω_avg     = media dei tassi di autoconsumo dei membri          (eq. 8)
+E_PSC(j)  = E_p(j) · min(ω_avg, ω_self,c(j))     autoconsumo "capped" alla media (eq. 10)
+E_PNSC(j) = E_p(j) · min(ω_avg, 1 − ω_self,c(j)) vendita "capped"                (eq. 11)
+E_EX(j)   = E_p(j) − E_PSC(j) − E_PNSC(j)        eccedenza destinata allo scambio interno
+
+OB(j) = E_PSC·p_c + [S_u·E_PSC + S_u·ΣE_EX/N] + E_PNSC·p_s + 0.5·E_EX·p_ex + ΣS_EX·ω_v(j)
+        └ bolletta ┘ └────── incentivo ──────┘ └ vendita ┘ └── scambio ──┘ └── premio ──┘
+```
+
+- **PDM3** (eq. 17-19): `ω_v(j) ∝ p_ex / p_p(j)`, dove `p_p(j)` è il prezzo di scambio che
+  ciascun membro **propone** in fase di statuto. Simula un'asta: chi propone meno prende
+  di più. Il paper ricava i quattro profili da un sondaggio su 276 cittadini italiani.
+- **PDM4**: `ω_v(j)` deriva dalla **fascia di reddito** dichiarata, con pesi (0,40 / 0,30 /
+  0,20 / 0,10 dal più povero al più ricco) che il paper stesso definisce *"subjective"*.
+
+#### Perché sono stati valutati
+
+Appartengono alla stessa famiglia *performance-based* dei metodi §13-§15, sono recenti
+(2025), sviluppati sul contesto normativo italiano, e affrontano esplicitamente la
+povertà energetica — lo stesso tema del Weighted Solidarity (§12) ma con un meccanismo
+diverso.
+
+#### Perché NON sono stati implementati
+
+**(a) Rispondono a una domanda diversa dagli altri modelli.** I quindici metodi del
+progetto dividono `v(N)`, l'incentivo CER sull'energia condivisa. PDM3/PDM4 dividono il
+**ritorno di un investimento in comproprietà** tra co-investitori: le voci interne
+(risparmio in bolletta, ricavo da vendita, incentivo, scambio) sono le componenti del
+rendimento di un impianto. Si può forzare `v(N)` al posto dell'NPV — la formula lo
+consente, perché delle `OB(j)` si usa solo il rapporto `OB(j)/ΣOB` — ma resta un modello
+di *quotisti*, non di membri di una CER a proprietà singola.
+
+**(b) La topologia della nostra comunità è incompatibile.** Nelle formule un membro entra
+**solo** attraverso `E_p(j)` (la sua quota di produzione) e `ω_self,c(j)` (il suo tasso di
+autoconsumo): **il suo consumo non compare mai da solo**. Il paper può permetterselo
+perché tutti e quattro i suoi membri sono co-proprietari; il consumatore puro compare solo
+in §5.3, trattato *fuori* dal modello con una formula a sé (eq. 24) che gli assegna un
+risparmio fisso.
+
+Da noi c'è un impianto solo, di `small_industry_1`, e cinque consumatori puri. Con le
+quote di proprietà reali si ottiene `E_p = [0, 101.884, 0, 0, 0, 0]` kWh, quindi per i
+cinque consumatori `E_PSC = E_PNSC = E_EX = 0` e restano solo due voci — la quota
+collettiva dell'incentivo (uguale per tutti) e il premio dal peso esterno:
+
+| Giocatore | bolletta | vendita | scambio | incentivo | premio | **quota** |
+|---|---:|---:|---:|---:|---:|---:|
+| office_1 | 0 | 0 | 0 | 1.882 € | 830 € | **11,450 %** |
+| small_industry_1 | 797 € | 756 € | 4.980 € | 2.763 € | 830 € | **42,749 %** |
+| retail_1 | 0 | 0 | 0 | 1.882 € | 830 € | **11,450 %** |
+| household_1 / 2 / 3 | 0 | 0 | 0 | 1.882 € | 830 € | **11,450 %** ciascuno |
+
+I cinque consumatori ricevono quote **identiche a zero cifre decimali** (spread misurato:
+`0,00e+00` punti percentuali) pur avendo consumi annui da 3.401 a 13.884 kWh e profili
+completamente diversi. L'unica cosa che potrebbe distinguerli sarebbe il placeholder di
+prezzo o di reddito inventato da noi. Su cinque membri su sei, **il metodo non leggerebbe
+i dati del progetto**.
+
+**(c) Tre input su quattro non sono derivabili dai nostri dati.**
+
+| Input | Stato |
+|---|---|
+| `p_p(j)` prezzo di scambio proposto | Non esiste. Nel paper è la dichiarazione di persone reali in fase statutaria |
+| fascia di reddito + pesi | Non esiste. Dichiarata in statuto, pesi soggettivi |
+| `p_c` prezzo di acquisto retail | Abbiamo il PUN all'ingrosso (0,116 €/kWh), non una bolletta (0,25-0,35 €/kWh) |
+| quote di proprietà | Le abbiamo, ma sono quelle "sbagliate" per il metodo (vedi (b)) |
+
+C'è una differenza qualitativa rispetto ai placeholder già tollerati nel progetto
+(`RATED_LOAD_KW`, §10.5): la potenza impegnata **esiste** ed è scritta su ogni bolletta,
+va solo recuperata. Il prezzo proposto in asta è invece l'esito di una procedura mai
+avvenuta, in una REC che non esiste ancora: non è un dato mancante, è un dato non
+definibile per una comunità simulata.
+
+**(d) Corollario: la nostra forbice di prezzo annulla il meccanismo di PDM3.** Uno scambio
+interno ha senso solo se `p_s < p_ex < p_c`, altrimenti una delle due parti preferisce la
+rete. Con `p_s = 0,110` e `p_c = 0,116 €/kWh` la banda è larga **0,6 centesimi** contro i
+**30 centesimi** del paper, e i pesi collassano:
+
+| Banda dei prezzi proposti | Pesi `ω_v` risultanti | max/min |
+|---|---|---:|
+| Paper, 0,081–0,309 €/kWh | 0,480 / 0,231 / 0,163 / 0,126 | **3,81×** |
+| Nostra, 0,110–0,116 €/kWh | 0,257 / 0,252 / 0,248 / 0,243 | **1,05×** |
+
+Il canale "comportamento virtuoso", cioè l'unico contributo originale di PDM3, si
+ridurrebbe di fatto a una ripartizione paritaria.
+
+#### La rinuncia non è per difficoltà tecnica
+
+Le formule sono non ambigue e sono state **riprodotte esattamente** in uno script di prova
+(non incluso nel progetto), sul caso studio a 4 RSC del paper:
+
+| Grandezza | Atteso (paper) | Ottenuto |
+|---|---|---|
+| `E_PSC` (Tab. 7) | `[4874, 4874, 3412, 1950]` | `[4875, 4875, 3412, 1950]` |
+| `E_EX` (Tab. 7) | `[2925, 1462, 1462, 2925]` | `[2925, 1462, 1462, 2925]` |
+| **PDM3** (Fig. 5) | `30,45 / 28,63 / 23,09 / 17,84 %` | `30,44 / 28,64 / 23,11 / 17,80 %` |
+| **PDM4** (Fig. 5) | `27,68 / 28,41 / 24,11 / 19,80 %` | `27,69 / 28,42 / 24,11 / 19,79 %` |
+
+L'implementazione costerebbe circa 150 righe e nessuna dipendenza nuova. È stata scartata
+per le ragioni (a)-(d), non per il costo.
+
+#### A quali condizioni riprenderli
+
+Basta che **una** di queste cambi:
+
+1. **Scenario a impianto cofinanziato.** Se si dichiara l'impianto in comproprietà (anche
+   solo come scenario, non come configurazione reale), il metodo torna nel suo habitat:
+   ogni membro ha una quota `E_out/N` e un `ω_self,c` calcolabile ora per ora dai nostri
+   profili come `Σ_t min(genPV_raw(t)/N, load_i(t))`. Verificato sui nostri dati: si
+   otterrebbe `ω_self,c` da 0,105 (household_2) a 0,982 (small_industry_1) e quote fra
+   14,8 % e 18,9 %, cioè **tutti i membri differenziati dal proprio comportamento**.
+2. **Dati di bolletta e reddito reali** per i membri — che servirebbero comunque anche al
+   Weighted Solidarity (§12.7a) e al Remuneration Model 1 (§10.5).
+3. **Aggancio a `optimizer_PV.m`** invece che a `v(N)`. Quello script calcola già NPV e IRR
+   dell'impianto: è esattamente la grandezza che PDM3/PDM4 sono nati per ripartire, e
+   sarebbe il collegamento — oggi assente — fra il ramo di dimensionamento e quello di
+   ripartizione dei benefici.
+
+#### Nota: PDM1 e PDM2 del paper sono già nel progetto
+
+Il paper confronta i suoi due modelli con altri tre. Due li abbiamo già: **PDM1**
+(*"revenues split equally"*) è l'**Equal Split** (§8), e **PDM2** (*"revenues shared
+entirely according to energy consumption profile"*) è concettualmente il **Proportional to
+Consumption** (§9). Il confronto con le due estremità che il paper usa come riferimento è
+quindi già disponibile in `Tcmp`.
 
 ---
 
@@ -1730,3 +2262,15 @@ dominante — è lo stesso avvertimento della nota di §14.6, e vale anche qui.
 - M. Bilardo, *A fair dynamic incentive allocation method for virtual energy sharing in
   renewable energy communities that rewards members' virtuosity and engagement*,
   Renewable Energy 255 (2025) 123756. — Similarity-Utilization (eq. 3-8, Fig. 5).
+- S. Cremers, V. Robu, P. Zhang, M. Andoni, S. Norbu, D. Flynn, *Efficient methods for
+  approximating the Shapley value for asset sharing in energy communities*, Applied Energy
+  331 (2023) 120328. — Marginal Contribution (§4.1.1, eq. 9-10), Stratified Expected Value
+  (§4.1.2, eq. 11-13), lo Shapley per strati (eq. 8) e le metriche di errore (eq. 16-17).
+  Il calcolo esatto per `K` classi (§4.2) è valutato e **non** implementato, vedi §16.10.
+- G. O'Brien, A. El Gamal, R. Rajagopal, *Shapley value estimation for compensation of
+  participants in demand response programs*, IEEE Trans. Smart Grid 6(6) 2015, 2837-2844. —
+  Campionamento stratificato adattivo, nella formulazione dell'Appendice C di Cremers et al.
+- P. Basilico, A. Biancardi, I. D'Adamo, M. Gastaldi, T. Yigitcanlar, *Renewable energy
+  communities for sustainable cities: Economic insights into subsidies, market dynamics
+  and benefits distribution*, Applied Energy 389 (2025) 125752. — PDM3 e PDM4 (eq. 8-24):
+  valutati e **non** implementati, vedi Appendice A.1.

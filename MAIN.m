@@ -595,7 +595,172 @@ plot_benefit_network(SU.players, SU.phi, "Similarity-Utilization", revSoldPerPla
 
 
 %% ========================================================================
-%  3n) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
+%  3n) DISTRIBUZIONE DEI BENEFICI - MARGINAL CONTRIBUTION
+%
+%  Tredicesimo modello, e primo dei tre di Cremers, Robu, Zhang, Andoni,
+%  Norbu, Flynn, "Efficient methods for approximating the Shapley value for
+%  asset sharing in energy communities", Applied Energy 331 (2023) 120328.
+%
+%  I tre metodi che seguono NON sono regole di ripartizione alternative allo
+%  Shapley: sono APPROSSIMAZIONI dello Shapley stesso, pensate per comunita'
+%  in cui le 2^n coalizioni non si possono enumerare (il paper arriva a 200
+%  prosumer). Con i nostri 6 giocatori lo Shapley esatto e' istantaneo, quindi
+%  qui servono a misurare QUANTO le approssimazioni si discostino dal valore
+%  esatto - il confronto della §3q, che riproduce le Tabelle E.3-E.4 del
+%  paper sui nostri dati.
+%
+%  Questo primo metodo tiene un solo contributo marginale, l'ultimo:
+%    MC_i = v(N) - v(N\{i}),  poi normalizzato a v(N)  (eq. 9-10).
+%  Costa O(n) valutazioni di v invece di O(2^n). Vedi
+%  marginal_contribution_cer.m, in particolare la nota sul comportamento
+%  degenere quando un consumatore e' superfluo (MC = 0 -> quota nulla).
+%  ========================================================================
+
+MC = marginal_contribution_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(MC, "Marginal Contribution", [ ...
+    string(sprintf('  %-25s: %.4f  (v(N) / somma dei contributi grezzi)', ...
+                   'Fattore di normalizz.', MC.normFactor)), ...
+    string(sprintf('  %-25s: %d su %d giocatori con MC = 0, quindi quota nulla', ...
+                   'Giocatori superflui', MC.nullPlayers, numel(MC.players)))]);
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(MC.players, MC.phi, "Marginal Contribution", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3o) DISTRIBUZIONE DEI BENEFICI - STRATIFIED EXPECTED VALUE
+%
+%  Quattordicesimo modello, dallo stesso paper (§4.1.2, eq. 11-13): e' il
+%  metodo NUOVO proposto dagli autori. Invece di tenere il solo ultimo strato
+%  li tiene TUTTI, stimando il contributo marginale atteso di ogni strato con
+%  una sola valutazione di v su copie di un utente FITTIZIO medio (eq. 11).
+%  Costa O(n^2) valutazioni di v, resta DETERMINISTICO, e nei test del paper
+%  batte sempre la Marginal Contribution e spesso anche il campionamento
+%  adattivo, a un decimo del costo.
+%
+%  ATTENZIONE: sui NOSTRI dati e' invece il peggiore dei tre (~22% di scarto
+%  dallo Shapley esatto, vedi §3q). L'eq. 11 assume che i membri siano
+%  intercambiabili, cosa vera nel paper - dove l'impianto e' in comproprieta'
+%  e nessuno e' indispensabile - ma falsa qui, dove la generazione e' di un
+%  solo membro su sei. Spiegazione per esteso in stratified_expected_value_cer.m.
+%  ========================================================================
+
+% opts.validateStrata enumera il contributo marginale VERO di ogni strato
+% (eq. 8) e verifica che agli strati 0 e n-1 -- dove esiste una sola
+% coalizione e l'approssimazione non ha spazio per sbagliare -- la stima sia
+% esatta. E' cio' che distingue un errore di IMPLEMENTAZIONE da un limite di
+% MODELLO, e con 6 giocatori costa 192 valutazioni di v: si tiene acceso.
+SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, P_CER_h, ...
+                                    struct('validateStrata', true));
+
+interior   = 2:(nUsers-1);                       % strati intermedi (1..n-2)
+relBiasMax = 100 * max(SEV.strataBias(:, interior) ./ ...
+                       max(SEV.muExact(:, interior), eps), [], 'all');
+report_allocation(SEV, "Stratified Expected Value", [ ...
+    string(sprintf('  %-25s: %.4f  (v(N) / somma dei valori SEV grezzi)', ...
+                   'Fattore di normalizz.', SEV.normFactor)), ...
+    string(sprintf('  %-25s: %d strati per giocatore, %d valutazioni di v (contro %d coalizioni)', ...
+                   'Costo di calcolo', nUsers, 2*nUsers^2, 2^nUsers)), ...
+    string(sprintf('  %-25s: nullo sugli strati 0 e n-1, fino a %+.0f%% su quelli intermedi', ...
+                   'Scarto vs eq. 8 esatta', relBiasMax))]);
+
+% Controllo incrociato forte: nel nostro gioco v dipende solo dai profili
+% AGGREGATI della coalizione, quindi n-1 copie dell'utente medio riproducono
+% esattamente l'aggregato degli altri n-1 utenti veri. L'ultimo strato della
+% SEV deve percio' coincidere con il contributo marginale della §3n - se non
+% coincide, l'utente fittizio dell'eq. 11 e' costruito male.
+assert(max(abs(SEV.lastStratumMC - MC.mcRaw)) < 1e-6 * max(1, abs(SEV.vGrand)), ...
+       'Stratified Expected Value: ultimo strato diverso dal contributo marginale');
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(SEV.players, SEV.phi, "Stratified Expected Value", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3p) DISTRIBUZIONE DEI BENEFICI - ADAPTIVE SAMPLING SHAPLEY
+%
+%  Quindicesimo modello: l'approssimazione per CAMPIONAMENTO STRATIFICATO
+%  ADATTIVO di O'Brien, El Gamal, Rajagopal (IEEE Trans. Smart Grid 2015),
+%  che nel paper di Cremers et al. fa da riferimento "stato dell'arte"
+%  (§4.1.3 e Appendice C). Per ogni giocatore estrae M coalizioni casuali,
+%  distribuendo i campioni fra gli strati in proporzione alla dispersione
+%  stimata dei contributi marginali.
+%
+%  E' l'unico metodo STOCASTICO del progetto: il seed lo rende riproducibile,
+%  ma cambiandolo i numeri cambiano - ed e' esattamente la critica che il
+%  paper gli muove (in una CER i membri devono poter riverificare il conto).
+%  Con soli 6 giocatori gli strati hanno al massimo 10 coalizioni, quindi
+%  M = 1000 campioni le enumerano molte volte e la stima converge di fatto
+%  allo Shapley esatto. Vedi adaptive_sampling_shapley_cer.m.
+%  ========================================================================
+
+AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, P_CER_h);
+report_allocation(AS, "Adaptive Sampling Shapley", [ ...
+    string(sprintf('  %-25s: M = %d campioni/giocatore, seed = %d (metodo STOCASTICO)', ...
+                   'Campionamento', AS.M, AS.seed)), ...
+    string(sprintf('  %-25s: %.4f  (v(N) / somma delle stime grezze)', ...
+                   'Fattore di normalizz.', AS.normFactor))]);
+
+% --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+plot_benefit_network(AS.players, AS.phi, "Adaptive Sampling Shapley", revSoldPerPlayer);
+
+
+%% ========================================================================
+%  3q) ACCURATEZZA DELLE APPROSSIMAZIONI DELLO SHAPLEY
+%
+%  I tre metodi di §3n-3p approssimano la STESSA grandezza gia' calcolata in
+%  forma esatta in §3b. Qui si misura di quanto se ne discostino, con la
+%  differenza relativa percentuale del paper (eq. 16):
+%
+%    RD(phi_i) = |phi_stimato_i - phi_Shapley_i| / |phi_Shapley_i| * 100
+%
+%  e la sua media sui giocatori (eq. 17; nel paper e' pesata sulla numerosita'
+%  delle classi, qui ogni utente e' una classe a se', quindi e' una media
+%  semplice). E' la riproduzione, sui nostri dati, delle Tabelle E.3-E.4 del
+%  paper.
+%
+%  RISULTATO: la graduatoria del paper si ROVESCIA. Da noi la Marginal
+%  Contribution sbaglia ~1%, il campionamento adattivo ~1.5% e la Stratified
+%  Expected Value ~22%, mentre nel paper e' quest'ultima la piu' accurata.
+%  Il motivo e' strutturale, non numerico: SEV rappresenta ogni strato con un
+%  utente MEDIO, ipotesi ragionevole quando l'impianto e' in comproprieta' fra
+%  tutti (il caso del paper) e insostenibile quando la generazione e' di un
+%  solo membro su sei (il nostro), perche' spalma su tutti una produzione che
+%  in realta' e' di uno solo. E' un esito da riportare come tale: misura fino
+%  a che punto le approssimazioni pensate per comunita' OMOGENEE reggano su
+%  una comunita' con un unico prosumer pivotale.
+%  ========================================================================
+
+approxPhi = [MC.phi, SEV.phi, AS.phi];
+
+% Un giocatore con Shapley nullo non ha una differenza RELATIVA definita:
+% si riporta NaN invece di dividere per zero.
+okShapley = abs(Sh.phi) > 1e-9 * max(1, abs(Sh.vGrand));
+RD = nan(size(approxPhi));
+RD(okShapley, :) = 100 * abs(approxPhi(okShapley, :) - Sh.phi(okShapley)) ...
+                       ./ abs(Sh.phi(okShapley));
+
+Trd = table(Sh.players(:), Sh.phi, MC.phi, SEV.phi, AS.phi, ...
+            RD(:,1), RD(:,2), RD(:,3), ...
+            'VariableNames', {'Giocatore', 'ShapleyEsatto_EUR', ...
+                              'MarginalContribution_EUR', 'StratifiedExpValue_EUR', ...
+                              'AdaptiveSampling_EUR', 'MC_RD_pct', 'SEV_RD_pct', ...
+                              'AS_RD_pct'});
+fprintf('\n=== Accuratezza delle approssimazioni dello Shapley (eq. 16 del paper) ===\n');
+disp(Trd);
+fprintf('  %-25s: MC %.4f%%   SEV %.4f%%   AS %.4f%%\n', ...
+        'RD media (eq. 17)', mean(RD(:,1), 'omitnan'), ...
+        mean(RD(:,2), 'omitnan'), mean(RD(:,3), 'omitnan'));
+
+% I tre approssimatori giocano lo stesso gioco degli altri metodi: se il
+% montepremi non coincide con quello dello Shapley esatto, il confronto della
+% §3q non sta misurando l'errore di approssimazione ma un errore di modello.
+assert(max(abs([MC.vGrand, SEV.vGrand, AS.vGrand] - Sh.vGrand)) < 1e-6 * max(1, abs(Sh.vGrand)), ...
+       'Approssimazioni Shapley: v(N) diverso da quello dello Shapley esatto');
+
+
+%% ========================================================================
+%  3r) CONFRONTO TRA I MODELLI DI RIPARTIZIONE
 %
 %  Tabella e grafico riepilogativi che confrontano, sulla STESSA funzione
 %  caratteristica v(S), i modelli di ripartizione calcolati finora.
@@ -610,12 +775,15 @@ plot_benefit_network(SU.players, SU.phi, "Similarity-Utilization", revSoldPerPla
 
 Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ES.phi, PC.phi, ...
              RM1.phi, CT.phi, WS.phi, PK.phi, PSK.phi, SU.phi, ...
+             MC.phi, SEV.phi, AS.phi, ...
              'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
                                'NashBargaining_EUR', 'VarianceLeastCore_EUR', ...
                                'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
                                'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
                                'WeightedSolidarity_EUR', 'PearsonKey_EUR', ...
-                               'PearsonSharingRate_EUR', 'SimilarityUtilization_EUR'});
+                               'PearsonSharingRate_EUR', 'SimilarityUtilization_EUR', ...
+                               'MarginalContribution_EUR', 'StratifiedExpValue_EUR', ...
+                               'AdaptiveSampling_EUR'});
 fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
 disp(Tcmp);
 
@@ -623,10 +791,13 @@ metodi = struct( ...
     'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core", ...
               "Equal Split", "Proportional to Consumption", ...
               "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity", ...
-              "Pearson Key", "Pearson-Sharing Rate", "Similarity-Utilization"}, ...
+              "Pearson Key", "Pearson-Sharing Rate", "Similarity-Utilization", ...
+              "Marginal Contribution", "Stratified Expected Value", ...
+              "Adaptive Sampling Shapley"}, ...
     'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi, ...
               ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi, ...
-              PK.phi,    PSK.phi,   SU.phi});
+              PK.phi,    PSK.phi,   SU.phi, ...
+              MC.phi,    SEV.phi,   AS.phi});
 
 plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
     sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...

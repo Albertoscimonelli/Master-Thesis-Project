@@ -42,6 +42,12 @@ function c = method_color(method)
             c = [0.30 0.72 0.88];   % ciano
         case "adaptive sampling shapley"
             c = [0.65 0.55 0.90];   % lavanda
+        % Unico metodo con un criterio SOCIALE esplicito (indice LIHC): tinta
+        % calda e satura, imparentata con il rosa salmone della Weighted
+        % Solidarity - l'altro modello che guarda alla poverta' energetica -
+        % ma abbastanza scura da distinguersene nel grafico di confronto.
+        case "tri-level ep"
+            c = [0.80 0.20 0.35];   % rosso ciliegia
         otherwise
             c = [0.55 0.35 0.75];   % viola - fallback per modelli futuri
     end

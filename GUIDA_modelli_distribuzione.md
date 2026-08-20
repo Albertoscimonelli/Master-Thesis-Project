@@ -27,6 +27,9 @@ Riguarda i quindici metodi di ripartizione dei ricavi della comunità energetica
 14. **Stratified Expected Value** — stesso paper, §4.1.2 (il metodo nuovo che propone)
 15. **Adaptive Sampling Shapley** — O'Brien, El Gamal, Rajagopal, *IEEE Trans. Smart Grid*
     6(6) 2015, nella formulazione dello stesso paper (§4.1.3 e Appendice C)
+16. **Tri-level EP** (proprietà + proporzionale + povertà energetica LIHC) — Campagna,
+    Rancilio, Radaelli, Merlo, *Sustainable Energy, Grids and Networks* 39 (2024) 101471
+    (eq. 11-15) — ⚠ **implementazione provvisoria su dati segnaposto**, vedi §17
 
 > **Nota:** le sezioni 2 e 3 sotto trattano in dettaglio Shapley e Nucleolo; il Nash
 > Bargaining è documentato nel codice ([`nash_bargaining_cer.m`](nash_bargaining_cer.m), che ne
@@ -71,7 +74,9 @@ Riguarda i quindici metodi di ripartizione dei ricavi della comunità energetica
 | [`stratified_expected_value_cer.m`](stratified_expected_value_cer.m) | Calcola la **Stratified Expected Value**: un contributo marginale per strato, stimato su un utente fittizio medio |
 | [`adaptive_sampling_shapley_cer.m`](adaptive_sampling_shapley_cer.m) | Calcola l'**Adaptive Sampling Shapley**: campionamento stratificato adattivo (unico metodo stocastico) |
 | [`cer_shared_value.m`](cer_shared_value.m) | `v` di **una** coalizione dai suoi profili aggregati, valutata su richiesta in `O(H)`: helper comune ai tre metodi sopra |
-| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (Marginal Contribution), `3o` (Stratified Expected Value), `3p` (Adaptive Sampling), `3q` (accuratezza delle approssimazioni), `3r` (confronto) |
+| [`tri_level_ep_cer.m`](tri_level_ep_cer.m) | Calcola il **Tri-level EP**: quota di solidarietà + livello proporzionale + livello di proprietà. ⚠ Contiene tutti i **dati segnaposto** e il registro delle 11 ipotesi |
+| [`lihc_index.m`](lihc_index.m) | Indice **LIHC** booleano (eq. 12) e continuo (eq. 13) — calcolatore puro, senza segnaposto |
+| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (Marginal Contribution), `3o` (Stratified Expected Value), `3p` (Adaptive Sampling), `3q` (accuratezza delle approssimazioni), `3r` (Tri-level EP), `3s` (confronto) |
 
 **Scelta di design fondamentale.** I metodi *non* ricalcolano l'energia condivisa
 ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
@@ -2081,6 +2086,237 @@ ipergeometrica multivariata. Da noi sarebbe inerte: i sei profili reali sono tut
 quindi `K = n` e il metodo degenera nello Shapley esatto che già calcoliamo. Tornerebbe
 utile solo con molti utenti replicati per archetipo — che è però anche una delle vie
 d'uscita già elencate in [README §13.1](README.md), e andrebbero valutate insieme.
+
+---
+
+## 17. Tri-level EP: proprietà + proporzionale + povertà energetica (Campagna et al. 2024)
+
+File: [`tri_level_ep_cer.m`](tri_level_ep_cer.m), con l'helper
+[`lihc_index.m`](lihc_index.m). Riferimento: L. Campagna, G. Rancilio, L. Radaelli,
+M. Merlo, *"Renewable energy communities and mitigation of energy poverty: Instruments
+for policymakers and community managers"*, **Sustainable Energy, Grids and Networks 39
+(2024) 101471**, eq. 11-15, Fig. 7-8, tetto di §4.3.
+
+> ⚠ **Implementazione provvisoria.** Il metodo gira su dati segnaposto: undici ipotesi
+> sono attive per difetto, elencate in §17.7. I numeri riportati qui sotto servono a
+> descrivere il **comportamento** del modello sulla nostra topologia, non a produrre
+> risultati sulla comunità reale.
+
+### 17.1 Perché serviva
+
+È l'unico modello del progetto che misura la povertà energetica con un **indicatore
+riconosciuto** invece che con un proxy. L'unico altro che ci prova, la Weighted
+Solidarity (§12), costruisce un punteggio a quartili sul costo unitario dell'energia: sui
+nostri dati lo spread fra il membro "più povero" e il "più ricco" è del 2,9%, contro il
+fattore quattro del suo paper, e la classificazione che ne esce riflette la collocazione
+oraria dei consumi, non una vulnerabilità economica.
+
+### 17.2 L'idea: ogni livello alla propria fonte di ricavo
+
+Il gestore della CER ha in mano due flussi distinti. L'incentivo sull'**energia
+condivisa** (`R_sh`) nasce dal fatto che qualcuno consumava nella stessa ora in cui
+qualcun altro immetteva: è merito dei consumatori. Il ricavo da **vendita in rete**
+(`R_inj`) nasce da energia che *nessuno* nella comunità ha consumato: è merito di chi ha
+pagato l'impianto.
+
+Il bi-livello del paper (Fig. 7) fa corrispondere ogni livello alla sua fonte — il
+proporzionale al primo ricavo, la proprietà al secondo — e ne ricava i pesi dal
+**rapporto fra i due ricavi**, il che elimina l'arbitrio. Il tri-livello aggiunge sopra
+un prelievo di solidarietà:
+
+```
+share_EP   = min(33% ; n% · N_vu)          n% = 1,32% (= 0,66 × 2%)     (eq. 14)
+share_rest = 1 − share_EP                                               (eq. 15)
+
+R_tot = R_sh + R_inj
+
+phi_i = share_EP   · R_tot · epKey_i
+      + share_rest · ( R_sh · propKey_i + R_inj · ownKey_i )
+```
+
+`propKey` viene dall'eq. 11, ora per ora: `Σ_h [ Ec_i,h / Ec_REC,h · Rev_h ] / R_sh`.
+La somma si chiude per costruzione, perché `share_EP·R_tot + share_rest·R_tot = R_tot`.
+
+### 17.3 Le tre volte in cui il paper non torna
+
+Ricostruire le formule riga per riga ha fatto emergere tre incoerenze fra il testo
+pubblicato e le sue stesse tabelle. Ciascuna richiede una decisione, e ciascuna è scritta
+nel codice invece di essere presa in silenzio.
+
+**(a) L'eq. 12 stampa l'unione, il testo dice l'intersezione.** L'equazione usa `∪`, ma
+il testo immediatamente sotto dice *"the formula returns a value of 1 if the household
+meets **both** conditions"*, e il nome dell'indice — *Low Income* **High** *Cost* —
+descrive una congiunzione. Con l'unione, chiunque spenda più della mediana risulterebbe
+povero e l'indice si svuoterebbe. Implementato **AND**.
+
+**(b) L'eq. 13 è pubblicata senza gate.** Applicata alla lettera ai dati della loro
+Tabella 4 restituisce `0,85` per Old Couple 1, mentre la Tabella 7 riporta `1,00`.
+Con il gate sul booleano — l'indice continuo misura la *profondità* solo di chi è già
+stato riconosciuto povero — tutta la colonna "25% users PE" si riproduce. È del resto
+l'unica lettura possibile di un indice che "vale 1 quando non c'è rischio".
+
+**(c) I due parametri esterni non sono pubblicati, e la soglia dichiarata non torna.**
+`P50(s_e)` non compare mai nel testo. È stata ricavata invertendo l'eq. 13 sui due nuclei
+inequivocabilmente poveri:
+
+| Nucleo | `(y−s_e)/(2·y*)` | `P50/s_e` richiesto | `P50` implicito | Tab. 7 |
+|---|---|---|---|---|
+| Old Couple 3 | 0,9933 | 0,5468 | 1.327,6 € | 0,77 |
+| Old Couple 4 | 0,9351 | 0,5449 | 1.318,5 € | 0,74 |
+
+I due valori concordano su **≈1.323 €/anno**, ordine di grandezza coerente con l'utente
+tipo ARERA (elettricità + gas). Verifica indipendente su un terzo nucleo non usato per la
+stima: Young Couple 2 dà `0,794` contro lo `0,79` della tabella.
+
+Ma proprio Young Couple 2 rivela il problema della soglia. Il paper dichiara
+`y* = 10.052 €/anno`, e con quel valore Young Couple 2 ha `10.498,12 €` di reddito netto
+per percettore — **sopra** la soglia, quindi non povero. Il paper però lo elenca fra i
+vulnerabili. L'unica soglia compatibile con tutte e dodici le famiglie sta fra
+**10.498,12 e 11.154,34 €/anno**. Il default resta il valore *dichiarato*, per non
+truccare una costante in silenzio: `lihc_index` riporta lo scostamento a video invece di
+nasconderlo.
+
+### 17.4 Verifica: la Tabella 7 si riproduce
+
+`lihc_index(..., struct('validatePaper', true))` esegue la riproduzione sui dodici nuclei
+della Tabella 4. Esito con `P50 = 1323` e `y* = 10052`:
+
+```
+  Eq. 13 + gate booleano          : scarto massimo 0.0040 (entro 0.01)
+  Scostamento sull'eq. 12         : Young2, con y* = 10052
+  Intervallo compatibile          : y* fra 10498.12 e 11154.33
+```
+
+Lo scarto massimo (0,0040 su Young Couple 2) sta dentro la tolleranza imposta dai due
+decimali con cui il paper riporta la tabella.
+
+### 17.5 L'invariante di efficienza è diverso dagli altri quindici metodi
+
+Il Tri-level EP è l'unico modello del progetto che ripartisce **entrambi** i montepremi,
+perché il suo livello di proprietà redistribuisce proprio il ricavo di vendita. Quindi
+`S.vGrand = R_sh + R_inj`, non `v(N)` — stessa situazione, e stessa scelta dichiarata,
+del Cascading Tree (§11).
+
+Per restare confrontabile si espongono due decomposizioni: `.phiFromShared`, che somma
+esattamente a `v(N)`, e `.phiFromSold`, che somma a `R_inj`. È `.phiFromShared` a entrare
+in `Tcmp` e nel grafico di confronto di `MAIN.m`: usare `.phi` conterebbe due volte la
+vendita, che per tutti gli altri metodi è impilata a parte.
+
+**Test di degenerazione.** Con `opts.nPct = 0` la formula collassa in
+`R_sh·propKey + R_inj·ownKey`, cioè **esattamente lo stato attuale del progetto**:
+ripartizione proporzionale al consumo del montepremi condiviso, più la vendita
+attribuita pro-quota ai proprietari. `MAIN.m` §3r verifica che `.phiFromSold` coincida
+con `revSoldPerPlayer` entro `1e-9`. È l'assert più informativo del metodo: se cade, è
+rotta la composizione dei livelli, non i dati segnaposto.
+
+### 17.6 Risultati sul caso reale ⚠
+
+Con i dati segnaposto, sui profili orari reali:
+
+| Grandezza | Valore |
+|---|---|
+| Montepremi da energia condivisa `R_sh` | 2.348,59 € |
+| Montepremi da vendita `R_inj` | **4.655,27 €** |
+| Peso del livello proporzionale | 34% |
+| Peso del livello di proprietà | **66%** |
+| Vulnerabili (LIHC) | 1 su 6 (`household_1`, `LIHC_cont = 0,72`) |
+| `share_EP` | 1,32% (tetto 33% ben lontano) |
+
+Quattro letture, tutte da rifare quando arriveranno i dati veri:
+
+1. **Il ricavo di vendita è quasi il doppio di quello da energia condivisa.** Il livello
+   di proprietà pesa perciò due terzi del montepremi, e con un solo impianto va
+   interamente a `small_industry_1`. Nel paper il rapporto è rovesciato — la loro CER è
+   dimensionata per massimizzare la condivisione — quindi il metodo qui si comporta in
+   modo qualitativamente diverso da come lo descrivono gli autori.
+2. **Il livello di proprietà non discrimina.** Un impianto, un proprietario: `ownKey` è
+   un vettore indicatore. Il livello acquista significato solo con più impianti o quote
+   di cofinanziamento.
+3. **`small_industry_1` prende zero dal montepremi condiviso.** Il suo carico residuo è
+   nullo proprio nelle ore in cui c'è condivisione, quindi `propKey = 0`. Non è
+   un'anomalia del metodo: la Proportional to Consumption (§9) dà lo stesso risultato,
+   per la stessa ragione.
+4. **La taratura dell'`n%` non si trasporta.** A Teglio `share_EP` valeva ~1.042 € su
+   ~26.300 €, cioè ~347 € a testa, che coprivano circa il 100% di una bolletta elettrica
+   domestica: il paper ha scelto il 2% *perché* accadesse questo. Da noi la stessa
+   percentuale dà ~92 € contro una bolletta di ~409 €, cioè circa il 23%. La conclusione
+   non è "il metodo non funziona" ma **"`n%` va ritarato sulla nostra scala"**, ed è un
+   risultato, non un fallimento.
+
+**Differenza di governance, che non è un parametro.** A Teglio gli impianti sono del
+Comune, su edifici pubblici, in una CER dichiaratamente sociale: chiedergli di cedere una
+quota ai vulnerabili è coerente col suo mandato. Qui lo stesso livello preleva da una
+piccola industria **privata**, e il prelievo di solidarietà diventa una richiesta di
+natura completamente diversa. Il codice lo implementa comunque, ma il risultato numerico
+presuppone un accordo che nel nostro caso non esiste.
+
+### 17.7 Le undici ipotesi, e come ritrovarle
+
+Tutti i dati provvisori vivono **dentro `tri_level_ep_cer.m`**, non in `MAIN.m`: un unico
+file da aprire quando arrivano i dati veri. Tre meccanismi ridondanti perché l'elenco non
+si perda:
+
+- `grep -n "IPOTESI" tri_level_ep_cer.m` — i marcatori nel codice;
+- `help tri_level_ep_cer` — il registro con cosa si assume, perché, con che valore e la
+  procedura per rimuoverla;
+- l'**avviso a ogni esecuzione**, che elenca *solo* le ipotesi ancora attive: una sparisce
+  appena il dato vero viene passato via `opts`. La stessa lista è in `S.assumptions`.
+
+| # | Ipotesi | Valore provvisorio | Come si rimuove |
+|---|---|---|---|
+| 1 | Reddito familiare | Tab. 4 del paper, per archetipo | open data MEF × classi d'età ISTAT |
+| 2 | Spesa gas | 15.000 kWh/anno × 0,12 €/kWh | bollette gas reali |
+| 3 | Markup retail dal PUN | ×2,5 | tariffa di fornitura reale |
+| 4 | `P50` | 1.323 €/anno | mediana ARERA/ISTAT |
+| 5 | `y*` | 10.052 €/anno (Tab. 7 ne richiede ~11.000) | chiarimento dagli autori |
+| 6 | AND al posto di `∪` (eq. 12) | — | correzione al paper, non ipotesi |
+| 7 | Gate booleano sull'eq. 13 | — | correzione al paper, non ipotesi |
+| 8 | Quote di proprietà dalla produzione | 100% `small_industry_1` | tabella di cofinanziamento |
+| 9 | Carico residuo come `Ec` dell'eq. 11 | `loadForShare` | scelta di modellazione |
+| 10 | `N_inc` | 2 per ogni nucleo | anagrafica reale |
+| 11 | `n%` e tetto | 1,32% e 33% | ritaratura sulla nostra scala |
+
+Le due che pesano di più sono la **1** e la **10**, e per la stessa ragione: nella
+Tabella 4 le spese energetiche dei quattro Old Couple sono quasi identiche, ed è solo il
+reddito — diviso per i percettori — a separare i poveri dai non poveri. Su Old Couple 3
+la classificazione si decide per **67 euro**: con `N_inc = 2` il reddito netto per
+percettore è 9.985 € e il nucleo è vulnerabile, con `N_inc = 1` sale a 19.970 € e non lo
+è più. L'assegnazione `N_inc = 2` è scritta nell'etichetta degli archetipi CHR02
+("with work") e CHR03 ("both at work"), ma è **assunta** per la coppia di pensionati
+CHR54 — proprio l'archetipo con la maggiore probabilità a priori di essere povero.
+
+La **2** merita una nota, perché sembra più debole di quanto sia. Il perimetro dell'eq. 12
+è la spesa energetica *totale*: con la sola elettricità nessuna famiglia supera `P50`, il
+livello EP si spegne e il tri-livello coincide col bi-livello. Il gas però non è
+inventato — sono i 15.000 kWh/anno del `house_type` HT06 già dichiarato in
+[`CER_LoadProfiles/config/simulation_config.yaml`](CER_LoadProfiles/config/simulation_config.yaml),
+e per confronto i nuclei di Teglio consumavano 1.481 m³ ≈ 15.850 kWh. Vale anche la pena
+notare che **il paper stesso non misurava il gas**: *"gas consumption is typical for
+mountain areas"*. Dichiararlo da statistica non è un peggioramento rispetto al paper — è
+il suo stesso metodo.
+
+### 17.8 Verifiche disponibili
+
+- **Riproduzione della Tabella 7** — `lihc_index(..., 'validatePaper', true)`, §17.4.
+- **Degenerazione a `n% = 0`** — assert in `MAIN.m` §3r, §17.5.
+- **Efficienza** — assert interni e `report_allocation`, sia col tetto spento
+  (`vGrand = R_tot`) sia acceso (`vGrand = R_tot − cashFund`).
+- **Decomposizione per montepremi** — `Σ phiFromShared = v(N)`, `Σ phiFromSold = R_inj`.
+- **Casi limite coperti** — `N_vu = 0`; vendita positiva senza produzione (solleva
+  `ownershipUndefined`); comunità di soli non domestici; input con `NaN`/`Inf` (solleva
+  `nonFiniteInput`); `useContinuous = true`; tetto bolletta attivo (nessuno supera la
+  propria bolletta e l'efficienza resta esatta sul montepremi ridotto).
+
+### 17.9 Mappatura formula → codice
+
+| Formula del paper | Dove |
+|---|---|
+| eq. 11, chiave proporzionale oraria | `tri_level_ep_cer.m`, blocco "Livello 2" |
+| eq. 12, LIHC booleano (con AND) | `lihc_index.m`, `isEP = highCost & lowIncome` |
+| eq. 13, LIHC continuo (con gate) | `lihc_index.m`, `cont(isEP) = min(1, ...)` |
+| eq. 14-15, `share_EP` / `share_rest` | `tri_level_ep_cer.m`, blocco "Eq. 14-15" |
+| Fig. 7, pesi bi-livello `R_sh`/`R_inj` | `tri_level_ep_cer.m`, blocco "Composizione" |
+| §4.3, tetto del 100% e fondo di comunità | `tri_level_ep_cer.m`, `opts.billCap` → `.cashFund` |
 
 ---
 

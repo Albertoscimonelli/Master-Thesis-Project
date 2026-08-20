@@ -130,6 +130,8 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `pearson_key_cer.m`, `pearson_sharing_key_cer.m` | Le due chiavi dinamiche di Gianaroli et al. — M3 e M5 (§6) |
 | `similarity_utilization_cer.m` | Ripartizione giornaliera su similarità coseno × fattore di utilizzo (Bilardo 2025) (§6) |
 | `marginal_contribution_cer.m`, `stratified_expected_value_cer.m`, `adaptive_sampling_shapley_cer.m` | Le tre **approssimazioni dello Shapley** di Cremers et al. 2023 — non regole nuove, ma lo stesso valore a costo polinomiale (§6) |
+| `tri_level_ep_cer.m` | Ripartizione **tri-livello** proprietà + proporzionale + povertà energetica LIHC (Campagna et al. 2024) (§6). ⚠ **Provvisorio**: gira su dati segnaposto, 11 ipotesi attive nel registro dell'header |
+| `lihc_index.m` | Indice di povertà energetica **LIHC** (Low Income High Cost), booleano e continuo — calcolatore puro, riusabile |
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
 | `cer_shared_value.m` | Helper condiviso dalle tre approssimazioni: `v` di **una** coalizione dai profili aggregati, `O(H)` invece di `O(H·2ⁿ)` |
 | `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e quindici i modelli |
@@ -200,10 +202,32 @@ Derivazione matematica completa, assiomi ed esempi numerici in
 | 13 | **Marginal Contribution** | `marginal_contribution_cer.m` | *Approssimazione dello Shapley*, `O(n)`: tiene **un solo** contributo marginale, l'ultimo — `MC_i = v(N) − v(N\{i})` — poi normalizzato a `v(N)` (Cremers et al. 2023, eq. 9-10) | approssima il metodo 1 |
 | 14 | **Stratified Expected Value** | `stratified_expected_value_cer.m` | *Approssimazione dello Shapley*, `O(n²)` e **deterministica**: stima il contributo marginale di **ogni strato** con una sola valutazione di `v` su copie di un utente fittizio **medio** (Cremers et al. 2023, eq. 11-13). È il metodo nuovo proposto dal paper — ⚠ ma sui nostri dati è il **meno** accurato dei tre, vedi sotto | approssima il metodo 1 |
 | 15 | **Adaptive Sampling Shapley** | `adaptive_sampling_shapley_cer.m` | *Approssimazione dello Shapley*, `O(n·M)` e **stocastica**: campiona `M` coalizioni per giocatore, concentrando i campioni sugli strati a varianza più alta (O'Brien et al. 2015, App. C di Cremers et al.) | approssima il metodo 1 |
+| 16 | **Tri-level EP** | `tri_level_ep_cer.m` | Tre livelli sovrapposti: una quota `min(33%, 1,32%·N_vu)` va ai soli membri in **povertà energetica** (indice LIHC, `lihc_index.m`); il resto si divide fra criterio **proporzionale** al consumo orario (finanziato dal ricavo di energia condivisa) e criterio di **proprietà** (finanziato dal ricavo di vendita), con pesi pari al rapporto fra i due ricavi (Campagna et al. 2024, eq. 11-15). ⚠ **Provvisorio**, 11 ipotesi attive — vedi sotto | N/A (non è un gioco) |
 
 I metodi 1-4 sono giochi cooperativi a utilità trasferibile e condividono la stessa
 `v(S)` (`cer_coalition_values.m`), tranne il VLC che la valuta su richiesta per restare
 scalabile — come fanno anche i metodi 13-15, tramite l'helper `cer_shared_value.m`.
+
+> ⚠ **Il metodo 16 è provvisorio e non va usato per produrre risultati.**
+> `tri_level_ep_cer.m` gira su **dati segnaposto** (reddito delle famiglie, spesa
+> gas, markup dal PUN al prezzo di bolletta, mediana nazionale della spesa
+> energetica): undici ipotesi sono attive per difetto. Sono elencate nel registro
+> in testa alla funzione (`help tri_level_ep_cer`), marcate nel codice come
+> `[IPOTESI n]` (`grep -n IPOTESI tri_level_ep_cer.m`) e **stampate a ogni
+> esecuzione**, ma solo quelle ancora in vigore: un'ipotesi sparisce dall'elenco
+> appena il dato vero viene passato via `opts`. La stessa lista è esposta come
+> `S.assumptions`.
+>
+> Il metodo 16 è anche l'unico che ripartisce **entrambi** i montepremi (energia
+> condivisa *e* vendita in rete), perché il suo livello di proprietà redistribuisce
+> proprio il ricavo di vendita: `vGrand = v(N) + ricavo di vendita`, non `v(N)`.
+> Nella tabella di confronto e nel grafico entra quindi `phiFromShared`, che somma
+> esattamente a `v(N)`; il totale sui due montepremi resta in `phi`.
+>
+> **Sui nostri dati il ricavo di vendita (≈4.655 €) è quasi il doppio di quello da
+> energia condivisa (≈2.349 €)**: il livello di proprietà pesa perciò il 66% del
+> montepremi e va interamente a `small_industry_1`, unico proprietario
+> dell'impianto. È il primo numero da rileggere quando arriveranno i dati veri.
 I metodi 5-12 **non** usano teoria dei giochi (né passano da
 `cer_coalition_values.m`: calcolano `v(N)` direttamente) — servono da **termine di
 paragone** per misurare quanto i modelli 1-4 se ne discostino (es. quanto lo Shapley

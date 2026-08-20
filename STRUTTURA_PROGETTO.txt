@@ -83,6 +83,17 @@ Project/
 |-- cer_shared_value.m                  [helper approssimazioni] v di UNA coalizione dai profili
 |                                       aggregati, O(H) invece di O(H*2^n); accetta anche coalizioni
 |                                       fittizie (serve a stratified_expected_value_cer)
+|-- tri_level_ep_cer.m                  Ripartizione incentivo CER - Tri-level EP (Campagna et al.
+|                                       2024, eq. 11-15): quota di solidarieta' ai membri in poverta'
+|                                       energetica + livello proporzionale + livello di proprieta'.
+|                                       ATTENZIONE: PROVVISORIO, gira su dati segnaposto. Contiene
+|                                       TUTTI i dati provvisori e il registro delle 11 ipotesi, che
+|                                       stampa a ogni esecuzione. Vedi "help tri_level_ep_cer" e
+|                                       "grep -n IPOTESI tri_level_ep_cer.m"
+|-- lihc_index.m                        [helper Tri-level EP] indice LIHC (Low Income High Cost)
+|                                       booleano (eq. 12) e continuo (eq. 13). Calcolatore PURO:
+|                                       nessun segnaposto, riusabile. opts.validatePaper riproduce
+|                                       la Tabella 7 del paper
 |-- pearson_hourly_key.m                [helper chiavi dinamiche] Pearson giornaliero rimappato in [0,1]
 |                                       ed espanso alle 24 ore del giorno
 |-- sharing_rate_key.m                  [helper chiavi dinamiche] sharing rate orario (eq. 5, componente
@@ -343,7 +354,13 @@ Pipeline a sezioni indipendenti:
       (eq. 16-17 del paper). RISULTATO: la graduatoria del paper si rovescia
       - MC 1,07%, Adaptive Sampling 1,52%, Stratified Expected Value 21,98%
       (vedi GUIDA §16.7-§16.8 per il perche').
-  3r) Confronto tra i quindici modelli di ripartizione
+  3r) Ripartizione dell'incentivo CER: Tri-level EP (Campagna et al. 2024 -
+      proprieta' + proporzionale + poverta' energetica LIHC). PROVVISORIO:
+      gira su dati segnaposto e stampa il registro delle ipotesi ancora
+      attive. Unico metodo che ripartisce ENTRAMBI i montepremi (condivisa
+      + vendita), quindi vGrand != v(N): nel confronto della 3s entra
+      TL.phiFromShared, che somma esattamente a v(N).
+  3s) Confronto tra i sedici modelli di ripartizione
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
@@ -355,7 +372,7 @@ Pipeline a sezioni indipendenti:
       pearson_key_cer.m, pearson_sharing_key_cer.m,
       similarity_utilization_cer.m, marginal_contribution_cer.m,
       stratified_expected_value_cer.m, adaptive_sampling_shapley_cer.m,
-      cer_shared_value.m
+      cer_shared_value.m, tri_level_ep_cer.m, lihc_index.m
 --------------------------------------------------------------------------------
 
 Quindici modelli di ripartizione dell'incentivo sull'energia condivisa tra i
@@ -555,6 +572,46 @@ richiesta con cer_shared_value. Nessun toolbox richiesto.
                             una maschera di giocatori perche' la Stratified
                             Expected Value valuta v anche su utenti FITTIZI,
                             che nessuna bitmask puo' rappresentare.
+  tri_level_ep_cer.m        Campagna, Rancilio, Radaelli, Merlo, SEGAN 39
+                            (2024) 101471, eq. 11-15. Tre livelli:
+                            share_EP = min(33%, 1,32%*N_vu) va ai soli membri
+                            in poverta' energetica (indice LIHC); il resto si
+                            divide fra criterio PROPORZIONALE al consumo
+                            orario (finanziato dal ricavo di energia
+                            condivisa) e criterio di PROPRIETA' (finanziato
+                            dal ricavo di vendita), con pesi pari al rapporto
+                            fra i due ricavi. Unico metodo del progetto che
+                            ripartisce ENTRAMBI i montepremi, quindi
+                            vGrand = v(N) + vendita: espone .phiFromShared
+                            (somma a v(N)) e .phiFromSold (somma alla
+                            vendita) per restare confrontabile.
+                            *** PROVVISORIO: 11 IPOTESI ATTIVE ***
+                            Tutti i dati segnaposto - reddito delle famiglie,
+                            spesa gas, markup dal PUN al prezzo di bolletta,
+                            mediana nazionale della spesa energetica - stanno
+                            QUI DENTRO e non in MAIN.m, deliberatamente: un
+                            unico file da aprire quando arrivano i dati veri.
+                            Il registro delle ipotesi e' nell'header, i punti
+                            nel codice sono marcati [IPOTESI n], e a ogni
+                            esecuzione vengono stampate SOLO quelle ancora
+                            attive (una sparisce appena il dato vero viene
+                            passato via opts). Stessa lista in .assumptions.
+                            Test di degenerazione: con opts.nPct = 0 collassa
+                            esattamente nello stato attuale del progetto.
+  lihc_index.m              [helper] Indice LIHC booleano (eq. 12) e continuo
+                            (eq. 13). Calcolatore PURO, senza segnaposto.
+                            Due divergenze deliberate dal testo pubblicato:
+                            (1) l'eq. 12 stampa l'UNIONE ma il testo dice
+                            "both conditions" e il nome dell'indice descrive
+                            una congiunzione -> implementato AND;
+                            (2) l'eq. 13 e' pubblicata senza gate sul
+                            booleano, e senza gate la Tabella 7 del paper non
+                            si riproduce. P50 e' una costante NAZIONALE, mai
+                            la mediana del campione: con 3 famiglie quella
+                            segnalerebbe meccanicamente meta' comunita'.
+                            opts.validatePaper riproduce la Tabella 7 sui 12
+                            nuclei del paper (scarto max 0,0040) e riporta lo
+                            scostamento sulla soglia y* dichiarata.
 
 Helper condivisi dalle due chiavi dinamiche (nessun toolbox richiesto):
 

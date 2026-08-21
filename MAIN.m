@@ -5,7 +5,7 @@ close all;
 %  MAIN.m  -  Analisi energetica ed economica della CER
 %
 %  Pipeline:
-%    0) Configurazione (percorsi, costanti, flag)
+%    0) Configurazione        (lettura della scheda dati CER_input.txt)
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
@@ -17,61 +17,76 @@ close all;
 %  Questo file e' un ORCHESTRATORE: coordina i passi e commenta le scelte di
 %  modello, ma delega il lavoro agli helper (load_cer_data, report_allocation,
 %  plot_*). Le sezioni restano indipendenti e facili da estendere.
+%
+%  NON contiene dati. Membri, tariffe, potenze, impianti, redditi, costi di
+%  investimento e parametri di governance stanno tutti in CER_input.txt, letta
+%  da load_cer_input.m. Per analizzare un'altra comunita' si modifica quella
+%  scheda: qui non si tocca nulla.
 %  ========================================================================
 
 
 %% ========================================================================
 %  0) CONFIGURAZIONE
+%
+%  Tutti i dati della comunita' stanno nella scheda CER_input.txt: membri,
+%  categorie, tariffe, potenze impegnate, impianti, redditi, costi di
+%  investimento. Qui resta solo il flusso di calcolo. Per analizzare
+%  un'altra CER si modifica la scheda, non questo file.
+%
+%  I campi lasciati a '?' nella scheda NON vengono passati ai metodi: ognuno
+%  applica il proprio default e lo dichiara come ipotesi attiva nel registro
+%  stampato a fine esecuzione. Riempire un '?' spegne una riga di quel
+%  registro, ed e' cosi' che si misura quanto e' pronta l'analisi.
 %  ========================================================================
 
-% --- Percorsi file -------------------------------------------------------
-loadFile = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\profili_tutti.csv";
-
-
-pvFile   = "C:\Users\scimo\desktop\Project\PV_Generation\Salvaplast_Project_VD7_HourlyRes_1.CSV";
-
-zonalPriceFile = "C:\Users\scimo\desktop\Project\20250101_20251231_MGP_PrezziZonali_Nord.xlsx";
+CFG = load_cer_input("CER_input.txt");
 
 % --- Costanti temporali --------------------------------------------------
-ANNO    = 2025;
-N_HOURS = 8760;          % ore in un anno standard (24 x 365)
-N_DAYS  = 365;
+ANNO    = CFG.cer.anno;
+N_HOURS = CFG.cer.n_ore;
+N_DAYS  = N_HOURS / 24;
 
 % Griglia oraria canonica dell'anno (asse di riferimento per tutti i dati)
 tGrid = (datetime(ANNO,1,1,0,0,0) : hours(1) : datetime(ANNO,12,31,23,0,0)).';
+assert(numel(tGrid) == N_HOURS, ...
+       'CER_input.txt: n_ore = %d incoerente con l''anno %d, che ha %d ore.', ...
+       N_HOURS, ANNO, numel(tGrid));
 
 % --- Parametri economici -------------------------------------------------
-P_SELL = 0.11;           % Prezzo energia venduta in rete        [€/kWh]
+P_SELL = CFG.mercato.prezzo_vendita_EUR_kWh;   % energia venduta in rete [€/kWh]
 
 % Incentivo CER su energia condivisa: tariffa incentivante premio (TIP)
 % oraria (eq. 3.1), calcolata in §1c da compute_cer_incentive.m sul prezzo
 % zonale orario. Parametri della formula:
-ZONA_CER    = "nord";    % zona geografica della CER (per FC_zonale) -
-                          % coerente con zonalPriceFile (prezzi zonali Nord)
-P_PV_NOM_KW = 20;        % TODO: potenza nominale impianto PV [kW] - valore
-                          % provvisorio, da confermare (seleziona lo
-                          % scaglione TP_base/CAP della formula)
-F_RIDUZIONE = 0;         % TODO: fattore di riduzione F - definizione non
-                          % ancora nota per intero; per ora nessuna riduzione
+ZONA_CER    = CFG.cer.zona_mercato;   % per FC_zonale - deve essere coerente
+                                      % con [FILE].prezzi_zonali
 
-% --- Potenza impegnata in PRELIEVO per utente [kW] ------------------------
-% Quanto ciascun utente puo' prelevare dalla rete (potenza impegnata in
-% bolletta). Usata SOLO da remuneration_model1_cer.m (§3h, Candela et al.)
-% per pesare il lato CONSUMO nel calcolo di alpha.
-% La potenza di GENERAZIONE non sta qui: appartiene all'impianto, ed e'
-% dichiarata come campo .kWp della struct pvPlants piu' sotto.
-% TODO: valori PROVVISORI/PLACEHOLDER - da confermare per ciascun utente.
-% NOTA SCALABILITA': a molti utenti questa tabella scritta a mano non
-% regge; vedi README §13 (limiti noti allo scaling).
-RATED_LOAD_KW = containers.Map( ...
-    {'office_1_kWh', 'small_industry_1_kWh', 'retail_1_kWh', ...
-     'household_1_kWh', 'household_2_kWh', 'household_3_kWh'}, ...
-    {10, 50, 15, 3, 3, 3});   % TODO: valori placeholder, da confermare
+% Potenza che seleziona lo scaglione TP_base/CAP della tariffa. Se la scheda
+% non la dichiara si usa la potenza installata totale: e' piu' difendibile di
+% una costante scritta a mano, e si aggiorna da sola quando si aggiungono
+% impianti. (Con impianti di taglia molto diversa la tariffa andrebbe valutata
+% per impianto: vedi README §14.4.)
+if CFG.noto.mercato.tip_potenza_rif_kW
+    P_PV_NOM_KW = CFG.mercato.tip_potenza_rif_kW;
+else
+    P_PV_NOM_KW = sum(CFG.impianti.kWp, 'omitnan');
+end
+
+% Il fattore di riduzione F non e' ancora definito per intero: finche' nella
+% scheda vale '?', nessuna riduzione viene applicata.
+if CFG.noto.mercato.tip_fattore_riduzione
+    F_RIDUZIONE = CFG.mercato.tip_fattore_riduzione;
+else
+    F_RIDUZIONE = 0;
+end
 
 % --- Modalita tariffarie PUN ---------------------------------------------
+% L'elenco delle modalita' esistenti. Quale sia la tariffa DI CIASCUN UTENTE
+% e' un dato della scheda ([MEMBRI].tariffa), usato in §3a.
 Modalita = ["MONORARIA", "BIORARIA", "ORARIO_VARIABILE"];
 
 % --- Flag di visualizzazione ---------------------------------------------
+% Preferenza di presentazione, non un dato della comunita': resta qui.
 SHOW_PROFILE_PLOTS = true;   % grafici profili di consumo (4 giorni tipo)
 
 % Nomi dei mesi (per tabelle e grafici)
@@ -81,32 +96,21 @@ meseNomi = ["Gennaio";"Febbraio";"Marzo";"Aprile";"Maggio";"Giugno"; ...
 % --- Impianti fotovoltaici -----------------------------------------------
 % Ogni impianto e' "dietro al contatore" di UN giocatore: la sua produzione
 % copre prima l'autoconsumo del proprietario, e solo l'eccedenza va alla CER
-% (dettagli in load_cer_data.m).
+% (dettagli in load_cer_data.m). La struct arriva dalla sezione [IMPIANTI]
+% della scheda, una riga per impianto: aggiungerne uno non richiede alcuna
+% modifica al codice.
 %
-% Oggi c'e' un solo impianto, assegnato a small_industry_1 (l'edificio host).
-% La struct e' pensata per estendersi a piu' impianti con proprietari diversi
-% aggiungendo elementi ai due cell array, senza toccare il resto del codice.
-% Esempio futuro (5 impianti, 4 residenziali + 1 industriale):
-%
-%   pvPlants = struct( ...
-%       'file',  {pvFile_h1, pvFile_h2, pvFile_h3, pvFile_h4, pvFile_ind}, ...
-%       'owner', {"household_1_kWh", "household_2_kWh", "household_3_kWh", ...
-%                 "household_4_kWh", "small_industry_1_kWh"});
-%
-% Il campo .kWp e' la potenza nominale dell'impianto: sta qui, e non in una
-% tabella per utente, perche' appartiene all'IMPIANTO. Cosi' e' impossibile
-% dichiarare potenza di generazione a chi non ha impianti, e la cosa regge
-% da sola quando gli impianti diventano molti.
-pvPlants = struct( ...
-    'file',  {pvFile}, ...
-    'owner', {"small_industry_1_kWh"}, ...
-    'kWp',   {20});          % TODO: coerente con P_PV_NOM_KW, da confermare
+% Il campo .kWp appartiene all'IMPIANTO, non all'utente. Cosi' e' impossibile
+% dichiarare potenza di generazione a chi non ha impianti, e la cosa regge da
+% sola quando gli impianti diventano molti.
+pvPlants = CFG.impiantiStruct;
 
 
 %% ========================================================================
 %  1) CARICAMENTO DATI
 %  ========================================================================
 
+loadFile = fullfile(CFG.radice, CFG.file.profili_carico);
 D = load_cer_data(loadFile, pvPlants, tGrid);
 
 userNames         = D.userNames;
@@ -119,6 +123,12 @@ genForShare       = D.genForShare;
 loadForShare      = D.loadForShare;
 loadTotalForShare = D.loadTotalForShare;
 
+% --- Membri della scheda, riordinati sull'ordine delle colonne del CSV ---
+% L'identita' dei giocatori nasce dal CSV (una colonna = un utente); la
+% scheda e' scritta a mano e puo' elencarli in altro ordine. Da qui in poi
+% M.<campo> e' sempre [nUsers x 1] e allineato a userNames.
+M = align_members_to_users(CFG, userNames);
+
 
 %% ========================================================================
 %  1c) PREZZO ZONALE E TARIFFA INCENTIVANTE CER (TIP_h)
@@ -130,6 +140,7 @@ loadTotalForShare = D.loadTotalForShare;
 %  il TODO sul fattore di riduzione F.
 %  ========================================================================
 
+zonalPriceFile = fullfile(CFG.radice, CFG.file.prezzi_zonali);
 Pz_h    = load_zonal_price(zonalPriceFile, tGrid);
 P_CER_h = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, F_RIDUZIONE);
 
@@ -232,6 +243,12 @@ fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
 %  dell'eq. 19 di Dynge & Cali, che serve agli indicatori di equita' della
 %  §3t. La §4 continua a presentarne la tabella: si e' spostato il conto,
 %  non il risultato.
+%
+%  DUE GRANDEZZE DIVERSE, e serve tenerle distinte:
+%    costMat  [nUsers x 3]  quanto spenderebbe ciascuno in OGNUNA delle tre
+%                           modalita' - la tabella comparativa della §4
+%    costUser [nUsers x 1]  quanto spende DAVVERO, con la tariffa che ha in
+%                           bolletta ([MEMBRI].tariffa) - la baseline della §3t
 %  ========================================================================
 
 % Profilo prezzi orario per ciascuna modalita'
@@ -247,6 +264,21 @@ for u = 1:nUsers
     for m = 1:numel(Modalita)
         costMat(u, m) = sum(priceByMod{m} .* loadUsers(:, u));
     end
+end
+
+% --- Costo con la tariffa EFFETTIVA di ciascun utente --------------------
+% costMat risponde a "quanto spenderebbe ciascuno in ognuna delle tre
+% modalita'": e' la tabella comparativa della §4, e resta. costUser risponde
+% a "quanto spende davvero", incrociando il profilo di carico con la tariffa
+% che quell'utente ha in bolletta ([MEMBRI].tariffa nella scheda).
+%
+% E' la baseline y_noLEM dell'eq. 19 usata dagli indicatori della §3t. Prima
+% si assumeva la MONORARIA per tutti; ora la differenza fra i membri riflette
+% anche il contratto, non la sola collocazione oraria dei consumi.
+costUser = zeros(nUsers, 1);
+for u = 1:nUsers
+    iMod = find(Modalita == M.tariffa(u), 1);
+    costUser(u) = costMat(u, iMod);
 end
 
 
@@ -419,23 +451,17 @@ plot_benefit_network(PC.players, PC.phi, "Proportional to Consumption", revSoldP
 %  Sciume', Zizzo, "A Remuneration Model of Energy Community Members in
 %  Italy", IEEE BLORIN 2022. L'incentivo si divide in due quote (alpha per i
 %  consumatori, beta per i produttori/prosumer) pesate sulla potenza
-%  di ciascuna classe: potenza di PRELIEVO per i consumatori (RATED_LOAD_KW,
-%  §0) e potenza di GENERAZIONE per i produttori (pvPlants.kWp, §0) - due
-%  grandezze fisiche distinte, entrambe valori TODO da confermare.
+%  di ciascuna classe: potenza di PRELIEVO per i consumatori
+%  ([MEMBRI].P_prel_kW) e potenza di GENERAZIONE per i produttori
+%  ([IMPIANTI].kWp) - due grandezze fisiche distinte, dichiarate in due
+%  tabelle distinte della scheda proprio per non confonderle.
 %  All'interno di ciascuna classe la quota oraria e' proporzionale
 %  all'energia di quell'ora. Vedi remuneration_model1_cer.m.
 %  ========================================================================
 
-% Potenza impegnata in prelievo: dalla tabella per utente di §0.
-ratedLoadKW = zeros(nUsers, 1);
-for u = 1:nUsers
-    key = char(userNames(u));
-    if ~isKey(RATED_LOAD_KW, key)
-        error('MAIN:ratedLoadMissing', ...
-              'Potenza di prelievo mancante per %s: aggiungerla a RATED_LOAD_KW in §0.', key);
-    end
-    ratedLoadKW(u) = RATED_LOAD_KW(key);
-end
+% Potenza impegnata in prelievo: colonna P_prel_kW di [MEMBRI], gia'
+% riordinata sull'ordine dei giocatori da align_members_to_users.
+ratedLoadKW = M.P_prel_kW;
 
 % Potenza di generazione: derivata dagli IMPIANTI, non da una tabella per
 % utente. Chi possiede piu' impianti somma le rispettive potenze; chi non ne
@@ -470,7 +496,15 @@ plot_benefit_network(RM1.players, RM1.phi, "Remuneration Model 1", revSoldPerPla
 %  cascading_tree_cer.m per i dettagli e per come modificarli via opts).
 %  ========================================================================
 
-CT = cascading_tree_cer(genForShare, loadForShare, userNames, P_CER_h);
+% I quattro pesi di ramo sono scelte di governance, non dati: stanno nella
+% sezione [GOVERNANCE] della scheda. Lasciarli a '?' riporta ai default.
+optCT = opts_from_config(CFG.governance, CFG.noto.governance, [ ...
+    "ct_riserva",        "reservoirFraction"
+    "ct_quota_fissa",    "fixedFraction"
+    "ct_quota_prelievi", "withdrawalsFraction"
+    "ct_quota_prosumer", "prosumersOnlyFraction"]);
+
+CT = cascading_tree_cer(genForShare, loadForShare, userNames, P_CER_h, optCT);
 foldMsg = "";
 if CT.prosumersOnlyFolded
     foldMsg = "  (nessun vero prosumer: pool soli-prosumer assorbita in immissione generale)";
@@ -498,6 +532,13 @@ plot_benefit_network(CT.players, CT.phi, "Cascading Tree", revSoldPerPlayer);
 %  coefficienti della formula sono scelti su un fronte di Pareto tra indice
 %  di Gini minimo e reddito medio massimo degli utenti a rischio poverta'
 %  energetica. Vedi weighted_solidarity_cer.m per i dettagli.
+%
+%  NOTA: questo e' l'unico metodo che NON usa le tariffe per utente della
+%  scheda. Stima il costo unitario Cu internamente da un'unica modalita'
+%  tariffaria (opts.tariffMode, default MONORARIA), perche' la sua API
+%  prende uno scalare e non un vettore. E' anche il motivo per cui il suo
+%  Cu varia cosi' poco fra i membri (README §12): riflette la collocazione
+%  oraria dei consumi, non il contratto ne' la vulnerabilita' economica.
 %  ========================================================================
 
 WS = weighted_solidarity_cer(genForShare, loadForShare, userNames, P_CER_h);
@@ -566,7 +607,12 @@ plot_benefit_network(PK.players, PK.phi, "Pearson Key", revSoldPerPlayer);
 %  indicatori da ricalcolare per verificare se il fenomeno si ripresenta.
 %  ========================================================================
 
-PSK = pearson_sharing_key_cer(genForShare, loadForShare, userNames, P_CER_h);
+% Solo alpha dalla scheda: beta = 1 - alpha lo impone il metodo, e passarli
+% entrambi aprirebbe la porta a una coppia incoerente.
+optPSK = opts_from_config(CFG.governance, CFG.noto.governance, ...
+                          ["psk_alpha", "alpha"]);
+
+PSK = pearson_sharing_key_cer(genForShare, loadForShare, userNames, P_CER_h, optPSK);
 report_allocation(PSK, "Pearson-Sharing Rate", [ ...
     string(sprintf('  %-25s: alpha=%.2f (Pearson)  beta=%.2f (sharing rate)  xi=%.3f', ...
                    'Pesi della chiave', PSK.alpha, PSK.beta, PSK.xi)), ...
@@ -722,7 +768,14 @@ plot_benefit_network(SEV.players, SEV.phi, "Stratified Expected Value", revSoldP
 %  allo Shapley esatto. Vedi adaptive_sampling_shapley_cer.m.
 %  ========================================================================
 
-AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, P_CER_h);
+% M e seed vengono dalla scheda: il seed e' cio' che rende riverificabile
+% l'unico conto stocastico del progetto, quindi va dichiarato insieme ai dati
+% e non nascosto in un default.
+optAS = opts_from_config(CFG.governance, CFG.noto.governance, [ ...
+    "as_campioni", "M"
+    "as_seed",     "seed"]);
+
+AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, P_CER_h, optAS);
 report_allocation(AS, "Adaptive Sampling Shapley", [ ...
     string(sprintf('  %-25s: M = %d campioni/giocatore, seed = %d (metodo STOCASTICO)', ...
                    'Campionamento', AS.M, AS.seed)), ...
@@ -813,15 +866,56 @@ assert(max(abs([MC.vGrand, SEV.vGrand, AS.vGrand] - Sh.vGrand)) < 1e-6 * max(1, 
 %  della §3s si usa TL.phiFromShared, che somma esattamente a v(N).
 %  ========================================================================
 
-TL = tri_level_ep_cer(genForShare, loadForShare, userNames, P_CER_h, ...
-                      struct('revSold', rev_sold_annual));
+% --- Dati della scheda che spengono le ipotesi del metodo ----------------
+% Ogni campo passato qui e' una riga in meno nel registro stampato sotto; i
+% campi assenti lasciano al metodo il proprio default, che il metodo dichiara.
+% Un vettore per membro si passa SOLO se la colonna della scheda non ha
+% nemmeno un '?': un vettore con un buco non e' un dato.
+optTL = struct('revSold', rev_sold_annual);
+
+optTL = opts_from_config(CFG.mercato, CFG.noto.mercato, [ ...
+    "markup_retail",      "retailMarkup"
+    "prezzo_gas_EUR_kWh", "gasPrice"], optTL);
+
+optTL = opts_from_config(CFG.poverta, CFG.noto.poverta, [ ...
+    "mediana_spesa_energetica_EUR",  "medianEnergyExpense"
+    "soglia_poverta_EUR_percettore", "povertyThreshold"
+    "quota_n_pct",                   "nPct"
+    "tetto_quota_EP",                "capEP"
+    "usa_profondita_poverta",        "useContinuous"
+    "applica_tetto_bolletta",        "billCap"], optTL);
+
+% Chi e' un nucleo domestico: dichiarato in [MEMBRI].categoria invece che
+% dedotto dal nome. Un "comune_1_kWh" di categoria domestica sfuggirebbe
+% all'euristica sui nomi; la categoria no.
+optTL.isHousehold = M.isHousehold;
+
+if M.noto.reddito_EUR,    optTL.income          = M.reddito_EUR;    end
+if M.noto.n_perc,         optTL.nIncomeEarners  = M.n_perc;         end
+if M.noto.mutuo_EUR_anno, optTL.mortgagePerUser = M.mutuo_EUR_anno; end
+
+% La spesa gas si costruisce da due dati distinti: i kWh del membro e il
+% prezzo di comunita'. Serve che siano noti entrambi.
+if M.noto.gas_kWh && CFG.noto.mercato.prezzo_gas_EUR_kWh
+    optTL.gasExpense = M.gas_kWh * CFG.mercato.prezzo_gas_EUR_kWh;
+end
+
+% Quote di proprieta' dalle quote di investimento effettivamente versate.
+% align_members_to_users azzera il flag se sono tutte nulle: in quel caso non
+% sono un dato di proprieta' ma la sua assenza, e il metodo deduce le quote
+% dalla produzione dichiarandolo.
+if M.noto.quota_inv_EUR
+    optTL.ownershipShare = M.quota_inv_EUR / sum(M.quota_inv_EUR);
+end
+
+TL = tri_level_ep_cer(genForShare, loadForShare, userNames, P_CER_h, optTL);
 
 report_allocation(TL, "Tri-level EP", [ ...
     string(sprintf('  %-25s: %d su %d membri (%s)', 'Vulnerabili (LIHC)', ...
                    TL.nVulnerable, nUsers, ...
                    strjoin(cellstr(TL.players(TL.isVulnerable)), ', '))), ...
-    string(sprintf('  %-25s: %.2f%% del montepremi totale (tetto %.0f%%)', ...
-                   'Quota poverta'' energ.', 100*TL.shareEP, 100*0.33)), ...
+    string(sprintf('  %-25s: %.2f%% del montepremi totale (n%% = %.2f%%, tetto %.0f%%)', ...
+                   'Quota poverta'' energ.', 100*TL.shareEP, 100*TL.nPct, 100*TL.capEP)), ...
     string(sprintf('  %-25s: condivisa EUR %.2f + vendita EUR %.2f', ...
                    'Montepremi', TL.revShared, TL.revSold))]);
 
@@ -845,8 +939,17 @@ assert(abs(sum(TL.phiFromShared) - sum(rev_shared_monthly)) ...
 % attribuita pro-quota ai proprietari (revSoldPerPlayer, §3) e montepremi
 % condiviso ripartito in proporzione al consumo. Se questo assert cade, e'
 % rotta la composizione dei livelli, non i dati segnaposto.
-TLdeg = tri_level_ep_cer(genForShare, loadForShare, userNames, P_CER_h, ...
-                         struct('revSold', rev_sold_annual, 'nPct', 0, 'quiet', true));
+% La chiave di proprieta' resta quella dedotta dalla produzione anche se la
+% scheda dichiara le quote di investimento: il test confronta phiFromSold con
+% la ripartizione PRO-QUOTA SULLA PRODUZIONE della §3, e con quote di
+% cofinanziamento diverse dalla produzione i due valori divergerebbero per
+% ragioni di modello, non di codice. E' la composizione dei livelli che si
+% vuole testare, non la chiave.
+optDeg = rmfield_if(optTL, 'ownershipShare');
+optDeg.nPct  = 0;
+optDeg.quiet = true;
+
+TLdeg = tri_level_ep_cer(genForShare, loadForShare, userNames, P_CER_h, optDeg);
 assert(max(abs(TLdeg.phiFromSold - revSoldPerPlayer)) < 1e-9 * max(1, rev_sold_annual), ...
        ['Tri-level EP: con n%% = 0 la ripartizione della vendita non coincide ' ...
         'con quella pro-quota della sezione 3']);
@@ -961,16 +1064,18 @@ plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
 %      help fairness_index_bm
 %  ========================================================================
 
-% Baseline "senza CER" (y_noLEM dell'eq. 19): costo annuo da rete in
-% MONORARIA, la stessa modalita' con cui weighted_solidarity_cer stima il
-% costo unitario dell'energia. Calcolata in §3a.
-iMonoraria = find(Modalita == "MONORARIA", 1);
-assert(~isempty(iMonoraria), 'Indici di equita'': modalita'' MONORARIA non trovata');
-costNoCER  = costMat(:, iMonoraria);
+% Baseline "senza CER" (y_noLEM dell'eq. 19): costo annuo di
+% approvvigionamento di ciascun membro con la PROPRIA tariffa, calcolato in
+% §3a. Prima si assumeva la monoraria per tutti; ora due membri con lo stesso
+% profilo ma contratti diversi hanno baseline diverse, che e' il punto
+% dell'indicatore.
+costNoCER = costUser;
 
 % --- Indice di comunita': eterogeneita' della composizione (eq. 10) -------
 % Non dipende da come si ripartiscono i benefici: descrive CHI c'e' nella CER.
-HET = gini_heterogeneity(userNames);
+% La tipologia arriva da [MEMBRI].categoria, dichiarata, invece che dedotta
+% dal nome utente: due membri possono avere nomi simili e categorie diverse.
+HET = gini_heterogeneity(userNames, struct('memberTypes', M.categoria));
 
 fprintf('\n=== Indici di valutazione dell''equita'' ===\n');
 fprintf('  %-34s: %.4f  (%d tipologie su %d membri)\n', ...
@@ -1178,7 +1283,16 @@ Tcost = array2table(costMat, ...
         'RowNames', cellstr(userNames));
 Tcost{'COMUNITA', :} = sum(costMat, 1);      % riga con il totale comunita'
 
+% Le tre colonne sono il confronto; queste due dicono quale vale davvero.
+% La spesa annua non e' un dato della scheda: si ottiene incrociando la
+% tariffa dichiarata dal membro con il suo profilo di carico orario.
+Tcost.Tariffa   = [M.tariffa; "-"];
+Tcost.Effettivo = [costUser;  sum(costUser)];
+
 fprintf('\n=== Costo annuo energia da rete (PUN 2025) [€] ===\n');
+fprintf(['  Le prime tre colonne confrontano le modalita'' tariffarie; ' ...
+         '"Effettivo" e'' la spesa\n  con la tariffa che ciascun membro ha ' ...
+         'davvero ([MEMBRI].tariffa nella scheda).\n']);
 disp(Tcost);
 
 

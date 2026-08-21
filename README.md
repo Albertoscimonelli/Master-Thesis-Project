@@ -103,8 +103,10 @@ completo) o [CER_LoadProfiles/requirements.txt](CER_LoadProfiles/requirements.tx
 % In MATLAB, dalla root del progetto:
 MAIN
 ```
-I percorsi dei file di input (`loadFile`, `pvFile`, `zonalPriceFile`) sono **hardcoded**
-nella sezione `%% 0) CONFIGURAZIONE` di `MAIN.m` — da aggiornare se si spostano i dati.
+`MAIN.m` legge tutta la configurazione dalla scheda [`CER_input.txt`](CER_input.txt)
+(§9): membri, tariffe, impianti, percorsi dei file. I percorsi sono **relativi alla
+scheda**, quindi il progetto gira anche spostato di cartella o su un'altra macchina, e
+per analizzare un'altra comunità si modifica la scheda senza toccare il codice.
 Richiede **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`) per Nucleolo e
 Variance Least Core.
 
@@ -121,7 +123,10 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `CER_LoadProfiles/` | Pacchetto Python — generazione profili di carico (RAMP + pyLPG) |
 | `PV_Generation/` | Export orario PVsyst della produzione dell'impianto PV |
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
-| `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica |
+| `CER_input.txt` | **Scheda dati della CER** — l'unico file da modificare per analizzare un'altra comunità: membri, categorie, tariffe, potenze, impianti, dati socio-economici, costi di investimento, parametri di governance (§9) |
+| `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica. Non contiene dati |
+| `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
+| `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
 | `load_cer_data.m` | Caricamento profili + assegnazione impianti PV/autoconsumo (§5) |
 | `load_zonal_price.m`, `compute_cer_incentive.m` | Prezzo zonale → tariffa incentivante oraria TIP_h |
 | `cer_coalition_values.m` | Funzione caratteristica `v(S)` del gioco cooperativo, condivisa dai metodi 1-4 |
@@ -409,21 +414,59 @@ economico (CAPEX, OPEX, ricavi, IRR via `irr_bisection.m`, NPV) per selezionare 
 configurazione che massimizza IRR o NPV. `archive/PROVA_PV.m` è la versione precedente,
 mantenuta come riferimento storico.
 
-## 9. Configurazione attuale (community di default)
+## 9. La scheda dati `CER_input.txt`
 
-- **Comunità:** 6 utenti — `office_1`, `small_industry_1`, `retail_1`, `household_1`,
-  `household_2`, `household_3` (configurabile in
-  `CER_LoadProfiles/config/simulation_config.yaml`).
-- **Impianto PV:** uno solo, assegnato a `small_industry_1_kWh` (file
-  `PV_Generation/Salvaplast_Project_VD7_HourlyRes_1.CSV`); la struct `pvPlants` in
-  `MAIN.m` §0 è pensata per estendersi a più impianti/proprietari senza altre modifiche.
-- **Anno di simulazione:** 2025, griglia oraria 8760 ore.
-- **Prezzo vendita eccedenza:** `P_SELL = 0.11 €/kWh` (costante).
-- **Zona CER:** Nord (coerente col file prezzi zonali).
-- **Potenza nominale PV per la formula TIP:** `P_PV_NOM_KW = 20` — **provvisorio**, vedi §12.
-- **Potenze per Remuneration Model 1** — **valori TODO/placeholder**, vedi §12:
-  potenza di prelievo per utente in `RATED_LOAD_KW`, potenza di generazione per
-  impianto nel campo `.kWp` di `pvPlants`.
+Tutta la configurazione della comunità sta in **un unico file di testo**, letto da
+`load_cer_input.m`. `MAIN.m` non contiene dati: per analizzare un'altra CER si modifica
+la scheda, non il codice. Il file è anche pensato per essere stampato come appendice di
+tesi.
+
+**Formato:** sezioni `[NOME]`, righe `chiave = valore`, tabelle a `|` (la prima riga è
+l'intestazione), commenti con `#`.
+
+**Le due forme di dato mancante, che non sono la stessa cosa:**
+
+| | Significato | Effetto |
+|---|---|---|
+| `-` | **non applicabile** — il reddito di un ufficio non manca, non esiste | `NaN`, nessuna conseguenza |
+| `?` | **non ancora noto** | il campo **non** viene passato al metodo, che applica il proprio default e **lo dichiara** come ipotesi attiva in `S.assumptions` |
+
+È il meccanismo che tiene onesto il registro delle ipotesi: riempire un `?` con un dato
+vero toglie una riga da quel registro, scriverci il valore che il modello userebbe
+comunque la toglierebbe senza che nulla sia stato verificato. Sulla community di default
+tutte le colonne socio-economiche sono a `?`, e le 11 ipotesi del Tri-level EP restano
+tutte attive; compilandole scendono a 3 — le sole tre che sono correzioni dichiarate
+(ipotesi 6, 7, 9) e non dati mancanti.
+
+**Le sezioni:**
+
+| Sezione | Contenuto |
+|---|---|
+| `[CER]` | nome, comune, zona di mercato, cabina primaria, anno, griglia oraria |
+| `[RIEPILOGO]` | conteggi e potenza installata **dichiarati**. Non è una fonte di dati: il loader li ricalcola dalle tabelle e si ferma se non tornano |
+| `[FILE]` | percorsi **relativi** alla scheda (profili di carico, prezzi zonali, cartella PV) |
+| `[MERCATO]` | prezzo di vendita, markup retail, prezzo gas, parametri della tariffa TIP |
+| `[INVESTIMENTO]` | WACC, vita utile, costi specifici CAPEX/OPEX. **Trasportati, non ancora usati**: `MAIN.m` si ferma al flusso di cassa annuo |
+| `[POVERTA_ENERGETICA]` | soglie dell'indice LIHC e taratura della quota di solidarietà |
+| `[GOVERNANCE]` | scelte deliberate dalla CER: pesi del Cascading Tree, α della Pearson-Sharing, M e seed dell'Adaptive Sampling |
+| `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, gas, quota di investimento, mutuo, impianto posseduto |
+| `[IMPIANTI]` | **una riga per impianto**: proprietario, kWp, export PVsyst, tilt/azimut, CAPEX/OPEX |
+
+**Community di default:** 6 membri (`office_1`, `small_industry_1`, `retail_1`,
+`household_1..3`), 1 impianto da 20 kWp su `small_industry_1_kWh`, anno 2025, zona Nord,
+`prezzo_vendita = 0.110 €/kWh`. I profili orari si rigenerano da
+`CER_LoadProfiles/config/simulation_config.yaml`: la scheda **descrive** i membri, non li
+crea, e `align_members_to_users.m` si ferma elencando tutti i disallineamenti fra le due
+liste.
+
+**Tariffa per utente.** La spesa annua di ciascun membro non si dichiara: si ottiene
+incrociando la sua `tariffa` con il proprio profilo di carico. È la colonna `Effettivo`
+di `Tcost` (§11) ed è la baseline `y_noLEM` degli indicatori di equità — prima si
+assumeva la monoraria per tutti.
+
+**Due valori ora derivati invece che scritti a mano.** Se `tip_potenza_rif_kW` è `?`, lo
+scaglione della tariffa TIP usa la potenza installata totale di `[IMPIANTI]`, che si
+aggiorna da sola; se `tip_fattore_riduzione` è `?`, non si applica riduzione.
 
 ## 10. Dipendenze e requisiti
 
@@ -456,20 +499,34 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
   ciascun metodo (§3t, §7). Stampa anche `contendibleShare`, cioè quanta energia condivisa
   è davvero in palio fra i metodi.
 - `Tcost` — costo annuo di approvvigionamento da rete per utente, nelle 3 modalità
-  tariffarie PUN (monoraria, bioraria, oraria variabile), calcolato in §3a.
+  tariffarie PUN (monoraria, bioraria, oraria variabile), calcolato in §3a, più la
+  tariffa che ciascun membro ha davvero e la colonna `Effettivo` con la spesa che ne
+  risulta.
+- Il riepilogo della scheda dati con l'elenco dei campi ancora a `?` (§9), stampato per
+  primo da `load_cer_input`.
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
 
 ## 12. Limitazioni note / TODO
 
-- `P_PV_NOM_KW = 20` in `MAIN.m` §0 è un valore **provvisorio** (TODO nel codice): da
-  confermare, seleziona lo scaglione della formula TIP.
-- `F_RIDUZIONE = 0` in `MAIN.m` §0: il fattore di riduzione F della formula TIP non è
-  ancora definito per intero (TODO nel codice), per ora nessuna riduzione applicata.
-- Le potenze usate da Remuneration Model 1 sono **valori TODO/placeholder**: potenza di
-  prelievo in `RATED_LOAD_KW` (`MAIN.m` §0) e potenza di generazione nel campo `.kWp`
-  di `pvPlants`. Hanno impatto di primo ordine sul risultato — con una potenza sola al
-  posto di due, i pesi α/β passerebbero da 0.81/0.19 a 0.63/0.37 e il prosumer
-  riceverebbe quasi il doppio ([GUIDA §10.6](GUIDA_modelli_distribuzione.md)).
+- **I dati mancanti sono ora elencati dal codice, non da questa lista.** `load_cer_input`
+  stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
+  proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
+  difficile, non per tenerne il conto: quello si legge dall'output.
+- `tip_fattore_riduzione` (fattore F della formula TIP) **non è ancora definito per
+  intero**: finché la scheda lo lascia a `?`, nessuna riduzione viene applicata.
+- Lo scaglione della tariffa TIP usa la **potenza installata totale**. Con impianti di
+  taglia molto diversa andrebbe valutato per impianto; ora che `[IMPIANTI]` porta il kWp
+  di ciascuno, il dato per farlo esiste già (§14.4).
+- Le potenze usate da Remuneration Model 1 restano **da confermare**: potenza di prelievo
+  in `[MEMBRI].P_prel_kW`, potenza di generazione in `[IMPIANTI].kWp`. Hanno impatto di
+  primo ordine sul risultato — con una potenza sola al posto di due, i pesi α/β
+  passerebbero da 0.81/0.19 a 0.63/0.37 e il prosumer riceverebbe quasi il doppio
+  ([GUIDA §10.6](GUIDA_modelli_distribuzione.md)).
+- **I costi di investimento sono dichiarati ma non usati.** `[INVESTIMENTO]` e le colonne
+  `capex_EUR` / `quota_inv_EUR` sono lette e validate, ma `MAIN.m` si ferma al flusso di
+  cassa annuo: non calcola NPV, IRR né payback. È anche la ragione dell'ipotesi 3 di
+  `fairness_index_bm` ("costi di investimento per membro ASSENTI: `D_i` calcolato sui
+  benefici LORDI"), che resta attiva finché quei campi non alimentano un calcolo.
 - **Weighted Solidarity — la componente di solidarietà è un proxy debole.** Il modello
   di Marrasso classifica gli utenti "a rischio povertà energetica" dal costo unitario
   in bolletta `Cu`; nel paper quel dato viene da bollette reali e varia di ~4× tra i
@@ -582,23 +639,20 @@ normale. La correzione non cambia la matematica: basta **processare le combinazi
 blocchi** dimensionati su un budget di memoria, invece che tutte insieme. Sono poche
 righe, ma vanno aggiunte prima di girare a `n` grande.
 
-### 14.3 Le tabelle di configurazione a mano non reggono
+### 14.3 Le tabelle di configurazione a mano — risolto
 
-`RATED_LOAD_KW` in `MAIN.m` §0 è un `containers.Map` con **una voce per utente**: a 100
-utenti è ingestibile e fragile (una voce mancante ferma l'esecuzione). Le due impostazioni
-sensate, da scegliere al momento dell'espansione:
+Era il problema del `containers.Map` `RATED_LOAD_KW`, con una voce per utente scritta
+dentro `MAIN.m`. **Non esiste più:** la potenza impegnata è una colonna di `[MEMBRI]`
+nella scheda `CER_input.txt` (§9), e una tabella di sessanta righe si compila come una di
+sei. `align_members_to_users.m` verifica la corrispondenza con le colonne del CSV e
+riporta **tutti** i disallineamenti insieme, invece di fermarsi al primo.
 
-- **Tabella per archetipo** — i nomi utente sono già strutturati (`office_1_kWh`,
-  `household_23_kWh`): si estrae il prefisso e si assegna la potenza per *tipo*. 90
-  famiglie in più non richiedono alcuna modifica alla configurazione.
-- **Derivazione dal picco di carico** — potenza calcolata dal picco orario reale di
-  ciascun utente, arrotondato al taglio contrattuale standard superiore. Zero
-  configurazione e riflette il profilo effettivo, ma richiede un fattore di sicurezza
-  (il dato orario in kWh sottostima la potenza istantanea di picco).
-
-La potenza di **generazione** non ha questo problema: è già dichiarata come campo `.kWp`
-della struct `pvPlants`, quindi cresce insieme agli impianti e non richiede una tabella
-parallela.
+Resta una scelta da fare quando i membri diventeranno molti: **compilare a mano sessanta
+potenze impegnate** oppure **derivarle dal picco di carico** di ciascun utente,
+arrotondato al taglio contrattuale superiore. La seconda strada richiede zero
+configurazione e riflette il profilo effettivo, ma serve un fattore di sicurezza — il
+dato orario in kWh sottostima la potenza istantanea di picco. Oggi la scheda non la
+implementa: dichiara le potenze.
 
 ### 14.4 Punti minori da tenere d'occhio
 
@@ -609,9 +663,10 @@ parallela.
 - **`plot_benefit_network.m`**: dispone i giocatori su una circonferenza con
   un'etichetta ciascuno. A 100 nodi il grafico diventa illeggibile — servirà una
   visualizzazione aggregata o per gruppi.
-- **`P_PV_NOM_KW`** (scaglione della tariffa TIP) è ancora uno scalare unico di
-  comunità. Con molti impianti di taglia diversa la tariffa andrebbe valutata per
-  impianto; ora che `pvPlants` porta il campo `.kWp`, il dato per farlo esiste già.
+- **Scaglione della tariffa TIP**: è ancora uno scalare unico di comunità (la potenza
+  installata totale, o `tip_potenza_rif_kW` se dichiarato). Con molti impianti di taglia
+  diversa la tariffa andrebbe valutata per impianto; ora che `[IMPIANTI]` porta il kWp di
+  ciascuno, il dato per farlo esiste già.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
   `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §12) — con 100
   profili la varianza tra run diventa più visibile nei risultati aggregati.

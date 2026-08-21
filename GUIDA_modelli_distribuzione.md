@@ -765,8 +765,8 @@ L'implementazione le tiene separate:
 
 | Grandezza | Dove è dichiarata | Perché lì |
 |---|---|---|
-| Potenza di prelievo `ratedLoadKW` [kW] | `RATED_LOAD_KW` in `MAIN.m` §0 | è una caratteristica del contratto dell'**utente** |
-| Potenza di generazione `ratedGenKW` [kWp] | campo `.kWp` di `pvPlants` in `MAIN.m` §0 | appartiene all'**impianto**, non alla persona |
+| Potenza di prelievo `ratedLoadKW` [kW] | colonna `P_prel_kW` di `[MEMBRI]` in `CER_input.txt` | è una caratteristica del contratto dell'**utente** |
+| Potenza di generazione `ratedGenKW` [kWp] | colonna `kWp` di `[IMPIANTI]` in `CER_input.txt` | appartiene all'**impianto**, non alla persona |
 
 Derivare la potenza di generazione dagli impianti (invece che da una seconda tabella per
 utente) ha tre vantaggi: è **impossibile** dichiarare potenza di generazione a chi non ha
@@ -807,24 +807,28 @@ sempre a `(alpha+beta)·B_REC(t) = B_REC(t)`.
 
 ### 10.5 I dati esterni richiesti
 
-Nessuna delle due potenze è derivabile dai profili orari: sono dati esterni, oggi
-entrambi **TODO/placeholder** da confermare (vedi README.md §11).
+Nessuna delle due potenze è derivabile dai profili orari: sono dati esterni, dichiarati
+in due tabelle distinte della scheda `CER_input.txt` e ancora **da confermare** (README
+§12).
 
-```matlab
-% MAIN.m §0 - potenza impegnata in PRELIEVO, per utente [kW]
-RATED_LOAD_KW = containers.Map( ...
-    {'office_1_kWh', 'small_industry_1_kWh', ...}, {10, 50, ...});
+```text
+[MEMBRI]   -- potenza impegnata in PRELIEVO, per utente [kW]
+id | nome_csv             | ... | P_prel_kW | ... | impianto
+ 1 | office_1_kWh         | ... |        10 | ... | -
+ 2 | small_industry_1_kWh | ... |        50 | ... | PV01
 
-% MAIN.m §0 - potenza nominale di GENERAZIONE, per impianto [kWp]
-pvPlants = struct('file', {pvFile}, 'owner', {"small_industry_1_kWh"}, 'kWp', {20});
+[IMPIANTI] -- potenza nominale di GENERAZIONE, per impianto [kWp]
+id   | proprietario         | kWp | file_produzione                        | ...
+PV01 | small_industry_1_kWh |  20 | Salvaplast_Project_VD7_HourlyRes_1.CSV | ...
 ```
 
-In `MAIN.m` §3h la potenza di generazione per utente si ricava sommando i `.kWp` degli
-impianti di cui è proprietario (0 per chi non ne ha).
+In `MAIN.m` §3h la potenza di generazione per utente si ricava sommando i `kWp` degli
+impianti di cui è proprietario (0 per chi non ne ha); la potenza di prelievo arriva già
+allineata ai giocatori da `align_members_to_users`.
 
-> **Scalabilità:** `RATED_LOAD_KW` ha una voce per utente e non regge a comunità grandi;
-> le alternative (tabella per archetipo, oppure derivazione dal picco di carico) sono
-> discusse in README §13.3.
+> **Scalabilità:** con una riga per membro la tabella regge anche a comunità grandi; resta
+> aperta la scelta se compilare le potenze a mano o derivarle dal picco di carico
+> (README §14.3).
 
 ### 10.6 Perché due potenze e non una: l'impatto numerico
 
@@ -858,8 +862,8 @@ Sui dati del progetto l'effetto sulle singole quote annue è questo:
 Il prosumer perde metà della propria quota, che si redistribuisce agli altri cinque
 membri. È il motivo per cui la distinzione tra potenza di prelievo e potenza di
 generazione va trattata come **scelta di modello**, non come dettaglio di
-configurazione — e per cui i due TODO (`RATED_LOAD_KW`, `pvPlants(.kWp)`) vanno
-confermati con dati reali prima di portare in tesi i numeri di questo metodo.
+configurazione — e per cui le due colonne (`[MEMBRI].P_prel_kW`, `[IMPIANTI].kWp`) vanno
+confermate con dati reali prima di portare in tesi i numeri di questo metodo.
 
 ---
 
@@ -2843,8 +2847,8 @@ i dati del progetto**.
 | quote di proprietà | Le abbiamo, ma sono quelle "sbagliate" per il metodo (vedi (b)) |
 
 C'è una differenza qualitativa rispetto ai placeholder già tollerati nel progetto
-(`RATED_LOAD_KW`, §10.5): la potenza impegnata **esiste** ed è scritta su ogni bolletta,
-va solo recuperata. Il prezzo proposto in asta è invece l'esito di una procedura mai
+(`[MEMBRI].P_prel_kW`, §10.5): la potenza impegnata **esiste** ed è scritta su ogni
+bolletta, va solo recuperata. Il prezzo proposto in asta è invece l'esito di una procedura mai
 avvenuta, in una REC che non esiste ancora: non è un dato mancante, è un dato non
 definibile per una comunità simulata.
 

@@ -1,0 +1,243 @@
+# =============================================================================
+#  CER_input.txt   Scheda dati della Comunita' Energetica Rinnovabile
+# =============================================================================
+#  Unico file di ingresso di MAIN.m: qui stanno i DATI, in MAIN.m solo il
+#  calcolo. Modificare questo foglio NON richiede di toccare il codice.
+#
+#  SINTASSI
+#    [SEZIONE]         apre una sezione
+#    chiave = valore   dato scalare
+#    a | b | c         riga di tabella (la PRIMA riga della tabella e'
+#                      l'intestazione, e da' il nome alle colonne)
+#    #                 commento fino a fine riga
+#
+#  DUE MODI DI NON AVERE UN DATO, e non sono la stessa cosa:
+#    -   NON APPLICABILE. Il reddito di un ufficio, il gas di un capannone
+#        elettrico. Il modello lo tratta come NaN e non se ne aspetta uno.
+#    ?   NON ANCORA NOTO. Il modello usa il proprio default E LO DICHIARA
+#        come ipotesi attiva nel registro stampato a fine esecuzione
+#        (S.assumptions). Ogni '?' che si riempie e' una riga in meno in
+#        quel registro: e' cosi' che si misura quanto e' completa la scheda.
+#
+#  UNITA': sempre esplicite nel nome della chiave o della colonna.
+#  Compilato il: 2026-08-21   Stato: community di default a 6 membri.
+# =============================================================================
+
+
+# =============================================================================
+[CER]
+# Identita' e perimetro della comunita'.
+# =============================================================================
+nome             = CER Prova
+comune           = Pordenone
+provincia        = PN
+zona_mercato     = nord    # nord|centro|sud -> FC_zonale della tariffa TIP
+                           # (+10 / +4 / +0 EUR/MWh, compute_cer_incentive.m)
+cabina_primaria  = ?       # codice cabina AT/MT: definisce chi puo' aderire
+forma_giuridica  = ?       # es. associazione riconosciuta, cooperativa
+anno             = 2025    # anno simulato; deve coincidere con i profili
+n_ore            = 8760    # griglia oraria canonica. NON configurabile:
+                           # lo stadio Python produce solo dati orari.
+
+
+# =============================================================================
+[RIEPILOGO]
+# Riepilogo DICHIARATO, pensato per essere citato in tesi.
+# Non e' una fonte di dati: il loader lo ricalcola da [MEMBRI] e [IMPIANTI]
+# e si ferma se non torna. Serve a impedire che una tabella modificata e un
+# testo non aggiornato finiscano insieme nello stesso capitolo.
+# =============================================================================
+membri_totali             = 6
+consumatori               = 5     # ruolo C
+prosumer                  = 1     # ruolo P
+produttori_puri           = 0     # ruolo E
+penetrazione_prosumer_pct = 16.7  # (prosumer + produttori) / membri_totali
+potenza_installata_kWp    = 20
+impianti_totali           = 1
+
+
+# =============================================================================
+[FILE]
+# Percorsi RELATIVI alla cartella di questa scheda. Niente percorsi assoluti:
+# il progetto deve girare anche spostato di cartella o su un'altra macchina.
+# =============================================================================
+profili_carico = CER_LoadProfiles/outputs/csv/profili_tutti.csv
+prezzi_zonali  = 20250101_20251231_MGP_PrezziZonali_Nord.xlsx
+cartella_pv    = PV_Generation
+
+
+# =============================================================================
+[MERCATO]
+# Prezzi e incentivo. Sono i parametri che valorizzano l'energia.
+# =============================================================================
+prezzo_vendita_EUR_kWh = 0.110   # eccedenza immessa in rete (era P_SELL)
+markup_retail          = ?       # da PUN all'ingrosso a prezzo finale in
+                                 # bolletta. Fallback: 2.50 x PUN. Il markup
+                                 # reale non e' ne' moltiplicativo ne'
+                                 # costante: si sostituisce con la tariffa di
+                                 # fornitura reale, non con un numero migliore.
+prezzo_gas_EUR_kWh     = 0.120   # converte i kWh di [MEMBRI].gas_kWh in
+                                 # spesa. Non e' il dato che manca: quello e'
+                                 # la bolletta gas, colonna gas_kWh.
+tip_potenza_rif_kW     = ?       # potenza che seleziona lo scaglione
+                                 # TP_base/CAP della TIP: <=200 | <=600 | >600
+                                 # Fallback: la potenza installata totale di
+                                 # [IMPIANTI], che si aggiorna da sola.
+tip_fattore_riduzione  = ?       # fattore F della formula: definizione non
+                                 # ancora nota per intero. Fallback: F = 0.
+
+
+# =============================================================================
+[INVESTIMENTO]
+# TRASPORTATI, NON ANCORA USATI. MAIN.m si ferma al flusso di cassa annuo:
+# non calcola NPV ne' IRR. Questi campi sono qui perche' la scheda descriva
+# la CER per intero e perche' il giorno in cui si aggiunge l'analisi
+# finanziaria i dati siano gia' al loro posto, non da ritrovare.
+# I costi specifici replicano optimizer_PV.m, che oggi vive scollegato.
+# =============================================================================
+tasso_sconto                 = 0.04    # WACC [-]
+inflazione_opex              = 0.05    # [-]
+escalation_energia           = 0.03    # [-]
+vita_utile_anni              = 20
+degrado_pv_pct_anno          = 0.50    # non modellato: la produzione oraria
+                                       # e' costante su tutta la vita utile
+costo_moduli_EUR_kWp         = 180
+costo_inverter_EUR_kWac      = 50
+costo_bop_EUR_kWp            = 270     # strutture, cablaggio DC
+quota_ingegneria             = 0.40    # frazione del costo tecnico
+costo_allacciamento_EUR_kWac = 50
+costi_fissi_progetto_EUR     = ?       # 50000 in optimizer_PV, ma e' una
+                                       # taglia industriale: da ritarare
+om_variabile_EUR_MWp_anno    = 10000
+om_fisso_EUR_anno            = 5000
+contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile
+
+
+# =============================================================================
+[POVERTA_ENERGETICA]
+# Soglie dell'indice LIHC (Low Income High Cost) e taratura della quota di
+# solidarieta' del metodo Tri-level EP.
+#
+# Le quattro soglie sono a '?' perche' i valori che il modello userebbe non
+# sono misure: sono costanti prese in prestito dal paper di riferimento, e
+# scriverle qui le farebbe sparire dal registro delle ipotesi senza che nulla
+# sia stato verificato. Il fallback e' indicato accanto a ciascuna.
+# =============================================================================
+mediana_spesa_energetica_EUR  = ?   # P50 nazionale [EUR/anno]. Fallback: 1323,
+                                    # che il paper non pubblica ed e' stata
+                                    # ricavata invertendo l'eq. 13. Si sostituisce
+                                    # con la mediana ARERA/ISTAT dell'annata.
+soglia_poverta_EUR_percettore = ?   # y* [EUR/anno/percettore]. Fallback: 10052,
+                                    # il valore dichiarato dal paper - che pero'
+                                    # con quel valore riconosce 2 dei 3 nuclei
+                                    # che esso stesso elenca come vulnerabili.
+quota_n_pct                   = ?   # n%: quota del montepremi per ogni nucleo
+                                    # vulnerabile. Fallback: 0.0132, tarato su
+                                    # una CER di 16 membri, da ritarare sulla
+                                    # nostra scala.
+tetto_quota_EP                = ?   # tetto complessivo della quota EP.
+                                    # Fallback: 0.33, stessa provenienza.
+
+# Queste due non sono dati ma scelte di lettura del modello: hanno una
+# risposta anche quando non si sa nulla, quindi niente '?'.
+usa_profondita_poverta        = false   # true = pesa n% sulla PROFONDITA'
+                                        # della poverta' invece che sul conteggio
+applica_tetto_bolletta        = false   # true = nessuno riceve piu' della
+                                        # propria bolletta annua
+
+
+# =============================================================================
+[GOVERNANCE]
+# Scelte deliberate dalla CER, non derivabili dai dati. '?' = default del
+# metodo. Cambiare questi numeri cambia la ripartizione senza che nulla di
+# fisico sia cambiato: e' il punto, ed e' bene che si veda.
+# =============================================================================
+ct_riserva        = 0.00   # Cascading Tree: quota trattenuta dalla CER
+ct_quota_fissa    = 0.30   # quota fissa (uguale per tutti)
+ct_quota_prelievi = 0.50   # del variabile, quanto va ai prelievi
+ct_quota_prosumer = 0.60   # dell'immissione, quanto ai soli prosumer
+psk_alpha         = 0.50   # Pearson-Sharing: peso della correlazione di
+                           # Pearson; il resto (1-alpha) allo sharing rate
+as_campioni       = 1000   # Adaptive Sampling: M campioni per giocatore
+as_seed           = 42     # unico metodo stocastico del progetto: il seed
+                           # e' cio' che rende il conto riverificabile
+
+
+# =============================================================================
+[MEMBRI]
+# Una riga per membro. E' la tabella che scala: 6 righe o 60, non cambia nulla.
+#
+# nome_csv    DEVE coincidere con una colonna di [FILE].profili_carico.
+#             E' la chiave che lega la scheda ai profili orari.
+# ruolo       C = consumatore | P = prosumer (consuma e possiede impianto)
+#                             | E = produttore puro (solo impianto)
+# categoria   domestico | terziario | commerciale | industriale | PA
+#             Usata come tipologia nell'indice di eterogeneita' della CER.
+# archetipo   profilo di generazione del carico (template LPG o caso RAMP)
+# tariffa     MONORARIA | BIORARIA | ORARIO_VARIABILE
+#             La spesa annua NON si dichiara: si calcola incrociando questa
+#             tariffa con il profilo di carico dell'utente.
+# P_prel_kW   potenza impegnata in PRELIEVO da contratto. La potenza di
+#             GENERAZIONE non sta qui: appartiene all'impianto ([IMPIANTI].kWp).
+# n_comp      componenti del nucleo;  n_perc  quanti PERCEPISCONO reddito
+#             (non quanti sono: sta al denominatore dell'indice di poverta')
+# reddito_EUR reddito familiare annuo lordo
+# gas_kWh     consumo annuo di gas per riscaldamento [kWh], da BOLLETTA.
+#             Senza, l'indice di poverta' energetica si spegne: la sola
+#             elettricita' non supera mai la mediana nazionale. Finche' vale
+#             '?' il modello usa 15000 kWh, la taglia del template HT06 con
+#             cui i profili sono stati simulati.
+# quota_inv_EUR   quanto quel membro ha messo nell'impianto [EUR]. Finche'
+#                 sono tutti '?' o 0, la proprieta' viene dedotta dalla
+#                 produzione (chi produce possiede), che con un impianto solo
+#                 assegna il 100% al suo proprietario.
+# mutuo_EUR_anno  rata annua a carico del membro, se ha finanziato la quota
+# impianto        id di [IMPIANTI], oppure '-' se non possiede impianti
+#
+# PERCHE' TANTI '?' NELLE COLONNE SOCIO-ECONOMICHE
+# Il progetto non ha ancora questi dati, e scriverci il valore che il modello
+# userebbe comunque non li creerebbe: li renderebbe solo invisibili, perche'
+# sparirebbero dal registro delle ipotesi. Un '?' e' una domanda aperta che
+# resta scritta a fine esecuzione finche' qualcuno non le risponde.
+#   reddito_EUR, n_perc  -> open data MEF sulle dichiarazioni dei redditi del
+#                           comune della CER, incrociati con le classi d'eta'
+#                           ISTAT. Sono le due voci che decidono da sole chi
+#                           risulta vulnerabile.
+#   gas_kWh              -> bollette gas reali
+#   quota_inv_EUR        -> atto costitutivo / piano di cofinanziamento
+# =============================================================================
+id | nome_csv             | ruolo | categoria   | archetipo         | tariffa          | P_prel_kW | n_comp | n_perc | reddito_EUR | gas_kWh | quota_inv_EUR | mutuo_EUR_anno | impianto
+ 1 | office_1_kWh         | C     | terziario   | office            | BIORARIA         |        10 |      - |      - |           - |       - |             ? |              0 | -
+ 2 | small_industry_1_kWh | P     | industriale | small_industry    | ORARIO_VARIABILE |        50 |      - |      - |           - |       - |             ? |              0 | PV01
+ 3 | retail_1_kWh         | C     | commerciale | retail            | MONORARIA        |        15 |      - |      - |           - |       - |             ? |              0 | -
+ 4 | household_1_kWh      | C     | domestico   | CHR54_pensionati  | MONORARIA        |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
+ 5 | household_2_kWh      | C     | domestico   | CHR02_coppia_lav  | MONORARIA        |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
+ 6 | household_3_kWh      | C     | domestico   | CHR03_fam_1figlio | MONORARIA        |         3 |      3 |      ? |           ? |       ? |             ? |              0 | -
+
+# --- Come si estende (esempio, non attivo) ----------------------------------
+# Aggiungere righe. Perche' una riga nuova funzioni servono due cose:
+#   1. una colonna con lo stesso nome_csv in profili_tutti.csv (si ottiene
+#      alzando i conteggi in CER_LoadProfiles/config/simulation_config.yaml
+#      e rigenerando i profili);
+#   2. se il ruolo e' P o E, una riga corrispondente in [IMPIANTI].
+# Poi aggiornare [RIEPILOGO], che altrimenti blocca l'esecuzione.
+#
+#  7 | household_4_kWh    | P     | domestico   | CHR03_fam_1figlio | BIORARIA         |         6 |      4 |      2 |       31000 |   15000 |          6000 |            420 | PV02
+#  8 | comune_1_kWh       | C     | PA          | office            | ORARIO_VARIABILE |        30 |      - |      - |           - |       0 |             0 |              0 | -
+
+
+# =============================================================================
+[IMPIANTI]
+# Una riga per impianto. Ogni impianto sta SEMPRE dietro al contatore di un
+# membro: la sua produzione copre PRIMA l'autoconsumo del proprietario, e solo
+# l'eccedenza diventa energia condivisibile con la CER.
+#
+# file_produzione  export orario PVsyst (colonna E_Grid), cercato in
+#                  [FILE].cartella_pv
+# capex_EUR / opex_EUR_anno  trasportati, vedi [INVESTIMENTO]
+# =============================================================================
+id   | proprietario         | kWp | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
+PV01 | small_industry_1_kWh |  20 | Salvaplast_Project_VD7_HourlyRes_1.CSV |    ? |      ? |           2025 |         ? |             ?
+
+# --- Esempio di secondo impianto (non attivo) -------------------------------
+# PV02 | household_4_kWh    |   6 | <export_PVsyst_da_produrre>.CSV        |   30 |      0 |           2025 |      6000 |           120

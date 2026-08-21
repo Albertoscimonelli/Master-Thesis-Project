@@ -94,6 +94,32 @@ Project/
 |                                       booleano (eq. 12) e continuo (eq. 13). Calcolatore PURO:
 |                                       nessun segnaposto, riusabile. opts.validatePaper riproduce
 |                                       la Tabella 7 del paper
+|-- fairness_indicators_lem.m           [indici di equita'] I sette indicatori di Dynge & Cali 2025
+|                                       (MinMax eq. 11/16/17, QoS eq. 12/18, EI eq. 15/19) su UNA
+|                                       ripartizione. Non produce quote, le giudica: non passa da
+|                                       report_allocation. Ricava i kWh dagli euro riusando
+|                                       allocate_shared_energy con pesi costanti. Espone
+|                                       .contendibleShare, la frazione di energia su cui la chiave
+|                                       incide davvero. QoE non implementato (serve lambda_t, che
+|                                       in una CER virtuale non esiste)
+|-- fairness_index_bm.m                 [indici di equita'] Fairness Index di Casalicchio et al. 2022
+|                                       (eq. 12-14) su TUTTE le ripartizioni insieme. Il contributo
+|                                       BC_i = v(N)-v(N\{i}) e' gia' MC.mcRaw. La distribuzione
+|                                       peggiore Dw NON e' nel paper: derivata come vertice del
+|                                       simplesso (vedi GUIDA §18.5). opts.validateSelf esegue un
+|                                       auto-test analitico (la Tab. 7 del paper non e' riproducibile:
+|                                       i D_i per membro stanno solo in un grafico)
+|-- gini_index.m                        [helper indici] Indice di Gini. Condiviso da
+|                                       weighted_solidarity_cer (eq. 2.8) e dall'Equality Index
+|                                       (EI = 1 - Gini): una sola definizione, i due usi non possono
+|                                       divergere
+|-- jain_index.m                        [helper indici] Indice di Jain, nucleo del Quality of Service.
+|                                       Normalizzato a [1/m, 1], NON a [0,1]: con sei membri il
+|                                       minimo e' 0,167. Vettore nullo -> NaN, non 1
+|-- gini_heterogeneity.m                [indici di equita'] Gini di ETEROGENEITA' della composizione
+|                                       (Casalicchio eq. 10). NON e' un Gini di reddito: e' un indice
+|                                       di diversita' di Simpson normalizzato. Categoria dedotta dai
+|                                       nomi utente -> G = 0,80; tipologia fine -> G = 1,00 (degenere)
 |-- pearson_hourly_key.m                [helper chiavi dinamiche] Pearson giornaliero rimappato in [0,1]
 |                                       ed espanso alle 24 ore del giorno
 |-- sharing_rate_key.m                  [helper chiavi dinamiche] sharing rate orario (eq. 5, componente
@@ -113,6 +139,17 @@ Project/
 |-- method_color.m                      Colore RGB coerente per ciascun modello di ripartizione (grafici)
 |-- plot_allocation_comparison.m        Grafico di confronto tra modelli di ripartizione
 |-- plot_benefit_network.m              Grafico a rete: cabina primaria + benefici + verso del flusso
+|-- coalition_excess.m                  [indici di equita'] Eccesso di coalizione (Volpato et al.
+|                                       2024, eq. 23): e_S = v(S) - somma delle quote di S. Positivo
+|                                       = quel sottogruppo guadagnerebbe di piu' USCENDO dalla CER.
+|                                       Unico indicatore di STABILITA': gli altri misurano quanto e'
+|                                       uniforme la ripartizione o quanto e' vicina al merito, non se
+|                                       regge. Enumera 2^n coalizioni (stesso limite di Shapley e
+|                                       Nucleolo). Segno OPPOSTO a Nu.thetaMin, che e' il surplus
+|-- plot_fairness_indicators.m          Mappa di calore metodi x indicatori di equita', a due
+|                                       pannelli (1 = piu' equo / 0 = piu' equo). Il colore normalizza
+|                                       per COLONNA: mostra la graduatoria dentro ciascun indicatore,
+|                                       il valore assoluto e' il numero scritto sulla cella
 |-- plot_cer_energy.m                   Grafici mensili: energia condivisa e ricavi
 |-- plot_pv_vs_demand.m                 Grafico annuale PV vs richiesta comunita'
 |-- plot_load_profiles.m                Profili di consumo in 4 giorni tipo
@@ -129,8 +166,9 @@ Project/
 Il progetto ha due stadi, eseguiti in sequenza:
 
   STADIO 1 - Python (CER_LoadProfiles/): genera i profili di carico annuali
-  STADIO 2 - MATLAB (root): analizza energia, ricavi, ripartizione CER, e
-             dimensiona l'impianto PV
+  STADIO 2 - MATLAB (root): analizza energia, ricavi, ripartizione CER,
+             ne valuta l'equita' con dieci indicatori (4.3), e dimensiona
+             l'impianto PV
 
 --------------------------------------------------------------------------------
  2.1  Stadio Python
@@ -361,7 +399,27 @@ Pipeline a sezioni indipendenti:
       + vendita), quindi vGrand != v(N): nel confronto della 3s entra
       TL.phiFromShared, che somma esattamente a v(N).
   3s) Confronto tra i sedici modelli di ripartizione
-  4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria
+  3t) INDICI DI VALUTAZIONE DELL'EQUITA': dieci indicatori applicati a tutti e
+      sedici i metodi - MinMax, QoS, EI (Dynge & Cali 2025, eq. 11-19), piu'
+      Gini, Jain, Gini di eterogeneita' e Fairness Index rispetto alla
+      distribuzione per contributo (Casalicchio et al. 2022, eq. 10, 12-14).
+      Produce la tabella Tfair e una mappa di calore a tre pannelli.
+      Stampa "Energia contendibile": la frazione di energia condivisa su cui
+      la chiave di ripartizione puo' davvero incidere (8,7% sulla community
+      di default). E' la chiave di lettura della sezione - il restante 91,3%
+      matura in ore in cui l'immissione copre l'intero carico e ognuno riceve
+      esattamente il proprio consumo, qualunque sia il metodo. Per questo le
+      colonne ENERGETICHE sono quasi costanti e a discriminare sono quelle
+      ECONOMICHE (EI, Gini, Fairness Index).
+      QoE (Dynge eq. 13-14) e Price of Fairness (Volpato et al. 2024, eq. 21)
+      sono ESCLUSI con motivazione: vedi GUIDA §18.7.
+      Quattro assert di regressione: Equal Split -> EI = 1 esatto; Marginal
+      Contribution -> FI = 0 esatto; MinMax originale identico fra i sedici;
+      energia implicita = energia condivisa.
+  4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria.
+     NOTA: il CALCOLO (priceByMod, costMat) e' stato anticipato alla sezione
+     3a, perche' e' la baseline y_noLEM dell'eq. 19 usata dalla 3t. Qui resta
+     solo la presentazione della tabella Tcost.
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
 
 --------------------------------------------------------------------------------
@@ -647,7 +705,125 @@ Helper condivisi dalle due chiavi dinamiche (nessun toolbox richiesto):
 Per la derivazione matematica completa vedi GUIDA_modelli_distribuzione.md.
 
 --------------------------------------------------------------------------------
- 4.3  load_cer_data.m, report_allocation.m, plot_*.m  (helper di MAIN.m)
+ 4.3  fairness_indicators_lem.m, fairness_index_bm.m, gini_index.m,
+      jain_index.m, gini_heterogeneity.m  (INDICI DI VALUTAZIONE DELL'EQUITA')
+--------------------------------------------------------------------------------
+
+Dieci indicatori che NON ripartiscono nulla: giudicano le ripartizioni prodotte
+dai sedici metodi della 4.2. Orchestrati da MAIN.m 3t. Derivazioni complete,
+mappatura formula -> codice e avvertenze in GUIDA_modelli_distribuzione.md 18.
+
+  fairness_indicators_lem.m  I sette indicatori di Dynge & Cali, "Distributive
+                            energy justice in local electricity markets",
+                            Applied Energy 384 (2025) 125463:
+                              MinMax originale (eq. 11)  prelievo da rete
+                              MinMax prosumer  (eq. 16)  quota di surplus
+                              MinMax consumer  (eq. 17)  volume ricevuto
+                              QoS originale    (eq. 12)  Jain sui volumi
+                              QoS nuovo        (eq. 18)  rho*Jain + mu*Jain
+                              EI originale     (eq. 15)  1 - Gini
+                              EI nuovo         (eq. 19)  rho*(...) + mu*(...)
+                            Firma (phi, genUsers, loadUsers, opts): parte da
+                            una ripartizione, non la produce. Non passa da
+                            report_allocation, che verificherebbe l'efficienza
+                            di un'allocazione.
+                            DA EURO A kWh: quattordici metodi su sedici danno
+                            solo euro. In assenza di opts.SH l'energia si
+                            ricava chiamando allocate_shared_energy con pesi
+                            COSTANTI pari a phi. Pearson Key e Pearson-Sharing
+                            Rate hanno la loro SH nativa e possono passarla.
+                            AGGREGAZIONE: MinMax sui volumi ANNUI, QoS come
+                            media dei dodici Jain mensili, EI annuale - le
+                            scelte del paper (par. 6.1, Fig. 3-5-8).
+                            .contendibleShare misura quanta energia condivisa
+                            e' davvero in palio: 8,7% sulla community di
+                            default. E' la chiave di lettura di tutta la
+                            sezione (vedi 4.1, punto 3t).
+                            QoE (eq. 13-14) NON implementato: richiede il
+                            prezzo di mercato locale lambda_t, che in una CER
+                            a condivisione virtuale non esiste.
+  fairness_index_bm.m       Fairness Index di Casalicchio, Manzolini, Prina,
+                            Moser, "From investment optimization to fair
+                            benefit distribution in renewable energy community
+                            modelling", Applied Energy 310 (2022) 118447,
+                            eq. 12-14. Misura la distanza di ogni metodo dalla
+                            distribuzione per CONTRIBUTO.
+                            BC_i = v(N) - v(N\{i}) e' gia' MC.mcRaw della 3n:
+                            l'eq. 10 di Cremers coincide con l'eq. 13 di
+                            Casalicchio, quindi la Marginal Contribution ha
+                            FI = 0 ESATTO. E' l'auto-verifica piu' forte.
+                            La distribuzione peggiore Dw NON e' data dal
+                            paper: derivata come vertice del simplesso che
+                            massimizza la distanza L1 (GUIDA 18.5).
+                            DUE BRANCHE non confrontabili: la prima da' una
+                            distanza in [0,1), la seconda l'INTERO numero di
+                            membri lasciati a zero. Un FI di 1,00 puo' voler
+                            dire l'una o l'altra cosa: la colonna QuoteNulle
+                            di Tfair lo distingue.
+                            opts.validateSelf (attivo di default) esegue un
+                            auto-test analitico. La Tab. 7 del paper NON e'
+                            riproducibile: i D_i per membro stanno solo nella
+                            Fig. 13, che e' un grafico.
+                            SCOSTAMENTO: il paper nettizza i costi di
+                            investimento, che al progetto mancano -> D_i sui
+                            benefici LORDI. Unico vero buco dati.
+  gini_index.m              Indice di Gini, formula standard su vettore
+                            ordinato. Condiviso da weighted_solidarity_cer
+                            (eq. 2.8) e dall'Equality Index (EI = 1 - Gini):
+                            una sola definizione, i due usi non possono
+                            divergere. Vettore vuoto o somma nulla -> 0.
+  jain_index.m              Indice di Jain (1998), nucleo del Quality of
+                            Service. ATTENZIONE alla scala: normalizzato a
+                            [1/m, 1], NON a [0,1]. Con sei membri il minimo
+                            e' 0,167, quindi un QoS di 0,20 e' quasi il peggio
+                            possibile, non "il 20% di equita'". Vettore nullo
+                            -> NaN (un'allocazione in cui nessuno riceve nulla
+                            non e' "perfettamente equa").
+  coalition_excess.m        Eccesso di coalizione di Volpato, Carraro, Dal Cin,
+                            Rech, "On the Different Fair Allocations of
+                            Economic Benefits for Energy Communities",
+                            Energies 17 (2024) 4788, eq. 23:
+                                e_S = v(S) - somma_{i in S} x_i
+                            Per ogni sottogruppo confronta quanto genererebbe
+                            USCENDO dalla CER con quanto riceve restandoci.
+                            Positivo = ha convenienza a uscire.
+                            E' l'unico indicatore che misura se la ripartizione
+                            REGGE. Gli altri nove misurano quanto e' uniforme
+                            (MinMax/QoS/EI/Gini/Jain) o quanto e' vicina al
+                            merito (Fairness Index): domande diverse, che
+                            possono dare risposte OPPOSTE. L'Equal Split e'
+                            primo sull'uniformita' (EI = 1, Gini = 0) e ultimo
+                            sulla stabilita' (+607 EUR, nove sottogruppi
+                            vorrebbero uscire).
+                            SEGNO: qui positivo = vuole uscire (convenzione del
+                            paper). nucleolus_cer e variance_least_core_cer
+                            riportano il SURPLUS, che e' l'opposto:
+                            .maxExcess = -Nu.thetaMin. La coincidenza e'
+                            verificata da un assert in MAIN.m 3t, insieme al
+                            fatto che il Nucleolo deve risultare il metodo con
+                            eccesso MINIMO (lo minimizza per costruzione).
+                            Enumera 2^n coalizioni: stesso limite di scala di
+                            Shapley, Nucleolo e Variance Least Core, nessun
+                            vincolo nuovo. opts.v/.A_inc per riusare una v(S)
+                            gia' calcolata.
+  gini_heterogeneity.m      Gini di ETEROGENEITA' della composizione
+                            (Casalicchio eq. 10). Nonostante il nome del
+                            paper NON e' un Gini di reddito: e' un indice di
+                            diversita' di Simpson normalizzato, misura quanto
+                            sono varie le TIPOLOGIE dei membri.
+                            G = 0 tutti della stessa tipologia; G = 1 tutte
+                            distinte (e li' l'indice smette di discriminare).
+                            Default: categoria dedotta dal nome utente
+                            (household_2_kWh -> household) -> G = 0,80.
+                            Tipologia fine via opts.memberTypes -> G = 1,00,
+                            degenere su sei membri tutti diversi.
+
+Tutti e cinque registrano le proprie IPOTESI in .assumptions, con lo stesso
+schema di tri_level_ep_cer.m (Id / Voce / Valore / ComeRimuoverla), e le
+stampano se non si passa opts.quiet.
+
+--------------------------------------------------------------------------------
+ 4.4  load_cer_data.m, report_allocation.m, plot_*.m  (helper di MAIN.m)
 --------------------------------------------------------------------------------
 
 Estratti da MAIN.m nel refactoring del 2026-07-29,
@@ -668,13 +844,27 @@ nessun cambiamento funzionale.
                                 un nodo per giocatore (area proporzionale
                                 al beneficio ricevuto), frecce dalla
                                 cabina verso ciascun giocatore.
+  plot_fairness_indicators.m   Mappa di calore metodi x indicatori di equita'
+                                (4.3), a tre pannelli con versi diversi, uno
+                                per DOMANDA (1 = piu' equo per MinMax/QoS/EI/
+                                Jain, 0 = piu' equo per Gini/FI/sigma, piu'
+                                basso = piu' stabile per l'eccesso di
+                                coalizione, che e' migliore quanto piu' e'
+                                NEGATIVO). Il colore
+                                normalizza per COLONNA, quindi mostra la
+                                graduatoria dentro ciascun indicatore e non
+                                il valore assoluto: quello e' il numero
+                                scritto sulla cella. Per questo non c'e'
+                                colorbar. I NaN restano trasparenti e marcati
+                                "n/d": non applicabile e zero sono cose
+                                diverse.
   plot_cer_energy.m            Grafici mensili: energia condivisa e ricavi.
   plot_pv_vs_demand.m          Andamento annuale PV vs richiesta comunita'.
   plot_load_profiles.m         Profili di consumo in 4 giorni tipo (uno per
                                 stagione), separando commerciali/residenziali.
 
 --------------------------------------------------------------------------------
- 4.4  load_zonal_price.m, compute_cer_incentive.m  (tariffa CER oraria)
+ 4.5  load_zonal_price.m, compute_cer_incentive.m  (tariffa CER oraria)
 --------------------------------------------------------------------------------
 
   load_zonal_price.m       Legge il prezzo zonale orario del Mercato del
@@ -698,7 +888,7 @@ nessun cambiamento funzionale.
                             non e' ancora disponibile.
 
 --------------------------------------------------------------------------------
- 4.5  profilo_prezzi_pun_2025.m
+ 4.6  profilo_prezzi_pun_2025.m
 --------------------------------------------------------------------------------
 
 Genera il profilo orario dei prezzi PUN 2025 per 3 modalita' tariffarie
@@ -706,7 +896,7 @@ Genera il profilo orario dei prezzi PUN 2025 per 3 modalita' tariffarie
 2025 e fasce orarie ARERA (F1/F2/F3).
 
 --------------------------------------------------------------------------------
- 4.6  irr_bisection.m
+ 4.7  irr_bisection.m
 --------------------------------------------------------------------------------
 
 Calcola l'Internal Rate of Return per bisezione, senza dipendere dalla
@@ -716,7 +906,7 @@ cambio di segno nel flusso di cassa; ritorna NaN se non trova una radice
 nell'intervallo di tassi esplorato [-99%, 1000%].
 
 --------------------------------------------------------------------------------
- 4.7  optimizer_PV.m  (dimensionamento impianto PV)
+ 4.8  optimizer_PV.m  (dimensionamento impianto PV)
 --------------------------------------------------------------------------------
 
 Ottimizzazione di un impianto fotovoltaico su copertura industriale.
@@ -728,7 +918,7 @@ ricavi, IRR, NPV). Seleziona la configurazione ottimale e produce grafici
 3D dello spazio delle soluzioni.
 
 --------------------------------------------------------------------------------
- 4.8  archive/PROVA_PV.m  [LEGACY]
+ 4.9  archive/PROVA_PV.m  [LEGACY]
 --------------------------------------------------------------------------------
 
 Versione precedente di optimizer_PV.m, mantenuta come riferimento

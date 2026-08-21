@@ -199,9 +199,12 @@ function S = weighted_solidarity_cer(genUsers, loadUsers, userNames, P_CER, opts
     end
 
     % --- Indice di Gini per ogni combinazione (eq. 2.8) ----------------------
+    % La formula sta in gini_index.m, condivisa con gli indicatori di equita'
+    % di fairness_indicators_lem.m (dove l'Equality Index e' 1 - Gini): una
+    % sola definizione, cosi' i due usi non possono divergere.
     gini = zeros(nCombos, 1);
     for c = 1:nCombos
-        gini(c) = local_gini(phiAll(:, c));
+        gini(c) = gini_index(phiAll(:, c));
     end
 
     % --- Fronte di Pareto (min Gini, max reddito medio EP) e selezione ------
@@ -304,16 +307,3 @@ function [Q1, med] = local_tukey_quartiles(x)
     end
 end
 
-
-function g = local_gini(x)
-%LOCAL_GINI  Indice di Gini (eq. 2.8 di Marrasso et al.), formula standard
-%   su vettore ordinato in senso crescente (Farris, 2010).
-    x = sort(x(:));
-    m = numel(x);
-    if m == 0 || sum(x) <= 0
-        g = 0;
-        return;
-    end
-    idx = (1:m).';
-    g = (2 * sum(idx .* x)) / (m * sum(x)) - (m + 1) / m;
-end

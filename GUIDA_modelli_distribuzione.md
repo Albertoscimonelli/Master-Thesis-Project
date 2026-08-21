@@ -47,6 +47,15 @@ Riguarda i quindici metodi di ripartizione dei ricavi della comunità energetica
 > e che non sono regole di ripartizione autonome ma **approssimazioni dello Shapley**
 > stesso, pensate per comunità dove le `2^n` coalizioni non si possono enumerare.
 
+> **§18 non è un metodo.** L'ultima sezione, [§18 Indici di valutazione
+> dell'equità](#18-indici-di-valutazione-dellequità), non descrive un modello di
+> ripartizione ma i dieci **indicatori** con cui si giudicano tutti gli altri, raggruppati
+> per le tre domande a cui rispondono: quanto è *uniforme* la ripartizione (MinMax, QoS,
+> EI, Gini, Jain — Dynge & Cali 2025), quanto è vicina al *merito* (Fairness Index —
+> Casalicchio et al. 2022), e se *regge* (eccesso di coalizione — Volpato et al. 2024).
+> Include la derivazione della `Dw` che il paper non fornisce, e le ragioni per cui QoE e
+> Price of Fairness sono stati **esclusi**.
+
 ---
 
 ## 0. Architettura dei file
@@ -76,7 +85,14 @@ Riguarda i quindici metodi di ripartizione dei ricavi della comunità energetica
 | [`cer_shared_value.m`](cer_shared_value.m) | `v` di **una** coalizione dai suoi profili aggregati, valutata su richiesta in `O(H)`: helper comune ai tre metodi sopra |
 | [`tri_level_ep_cer.m`](tri_level_ep_cer.m) | Calcola il **Tri-level EP**: quota di solidarietà + livello proporzionale + livello di proprietà. ⚠ Contiene tutti i **dati segnaposto** e il registro delle 11 ipotesi |
 | [`lihc_index.m`](lihc_index.m) | Indice **LIHC** booleano (eq. 12) e continuo (eq. 13) — calcolatore puro, senza segnaposto |
-| [`MAIN.m`](MAIN.m) | Sezioni `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (Marginal Contribution), `3o` (Stratified Expected Value), `3p` (Adaptive Sampling), `3q` (accuratezza delle approssimazioni), `3r` (Tri-level EP), `3s` (confronto) |
+| [`fairness_indicators_lem.m`](fairness_indicators_lem.m) | I sette **indicatori di equità** di Dynge & Cali (MinMax, QoS, EI) su una ripartizione — §18 |
+| [`fairness_index_bm.m`](fairness_index_bm.m) | **Fairness Index** di Casalicchio et al.: distanza dalla distribuzione per contributo — §18 |
+| [`gini_index.m`](gini_index.m) | Indice di **Gini**, condiviso da `weighted_solidarity_cer` (eq. 2.8) e dall'Equality Index (`EI = 1 − Gini`) |
+| [`jain_index.m`](jain_index.m) | Indice di **Jain**, nucleo del Quality of Service (eq. 12 e 18) |
+| [`gini_heterogeneity.m`](gini_heterogeneity.m) | Gini di **eterogeneità** della composizione (Casalicchio eq. 10) — *non* è un Gini di reddito |
+| [`coalition_excess.m`](coalition_excess.m) | **Eccesso di coalizione** (Volpato eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — §18.6 |
+| [`plot_fairness_indicators.m`](plot_fairness_indicators.m) | Mappa di calore metodi × indicatori, normalizzata per colonna |
+| [`MAIN.m`](MAIN.m) | Sezioni `3a` (costo da rete senza CER, baseline), `3b` (Shapley), `3c` (Nucleolo), `3d` (Nash), `3e` (VLC), `3f` (Equal Split), `3g` (Proportional to Consumption), `3h` (Remuneration Model 1), `3i` (Cascading Tree), `3j` (Weighted Solidarity), `3k` (Pearson Key), `3l` (Pearson-Sharing Rate), `3m` (Similarity-Utilization), `3n` (Marginal Contribution), `3o` (Stratified Expected Value), `3p` (Adaptive Sampling), `3q` (accuratezza delle approssimazioni), `3r` (Tri-level EP), `3s` (confronto), `3t` (**indici di equità**) |
 
 **Scelta di design fondamentale.** I metodi *non* ricalcolano l'energia condivisa
 ciascuno per conto suo: partono tutti dalla **stessa** `v(S)` di
@@ -2317,6 +2333,425 @@ il suo stesso metodo.
 | eq. 14-15, `share_EP` / `share_rest` | `tri_level_ep_cer.m`, blocco "Eq. 14-15" |
 | Fig. 7, pesi bi-livello `R_sh`/`R_inj` | `tri_level_ep_cer.m`, blocco "Composizione" |
 | §4.3, tetto del 100% e fondo di comunità | `tri_level_ep_cer.m`, `opts.billCap` → `.cashFund` |
+
+---
+
+## 18. Indici di valutazione dell'equità
+
+Le sezioni §2-§17 spiegano **come** i sedici metodi ripartiscono. Questa spiega **come si
+giudica** una ripartizione. È l'unica sezione che non descrive un modello: descrive dieci
+misure, tutte calcolate in `MAIN.m` §3t su tutti e sedici i metodi.
+
+Fonti:
+
+- **[D]** M. F. Dynge, U. Cali, *Distributive energy justice in local electricity markets:
+  Assessing the performance of fairness indicators*, **Applied Energy 384 (2025) 125463**
+  — eq. 11, 12, 15, 16, 17, 18, 19.
+- **[C]** V. Casalicchio, G. Manzolini, M. G. Prina, D. Moser, *From investment
+  optimization to fair benefit distribution in renewable energy community modelling*,
+  **Applied Energy 310 (2022) 118447** — eq. 10, 12-13, 14.
+- **[V]** G. Volpato, G. Carraro, E. Dal Cin, S. Rech, *On the Different Fair Allocations
+  of Economic Benefits for Energy Communities*, **Energies 17 (2024) 4788** — eq. 23
+  (l'eq. 21 dello stesso paper, il Price of Fairness, è **esclusa**: §18.8).
+
+### 18.0 Tre domande diverse
+
+I dieci indicatori non misurano la stessa cosa in modi diversi. Rispondono a **tre domande
+distinte**, che possono dare risposte opposte:
+
+| Gruppo | Domanda | Dove |
+|---|---|---|
+| MinMax, QoS, EI, Gini, Jain | quanto è **uniforme** la ripartizione | §18.4 |
+| Fairness Index, σ | quanto è vicina al **merito** di ciascuno | §18.5 |
+| Eccesso di coalizione | se **regge**: qualcuno ha convenienza a uscire? | §18.6 |
+
+L'Equal Split è primo sulla prima domanda (`EI = 1.00`, `Gini = 0.00`) e ultimo sulla terza
+(eccesso `+606 €`, nove sottogruppi vorrebbero uscire). Il Nucleolo fa l'opposto:
+`EI = 0.45`, il peggiore del lotto, ma nessuna coalizione scontenta. **Guardare una colonna
+sola porta a conclusioni sbagliate**, ed è il motivo per cui la mappa di calore di
+[`plot_fairness_indicators.m`](plot_fairness_indicators.m) ha tre pannelli separati invece
+di una scala unica.
+
+### 18.1 Il problema: due mercati diversi
+
+Gli indicatori di **[D]** nascono per un *local electricity market* peer-to-peer: ogni ora
+il market clearing decide chi compra da chi, e c'è un prezzo locale `λ_t` diverso dal
+prezzo di rete. La nostra CER è un'altra cosa — condivisione **virtuale**: fisicamente
+tutti prelevano dalla rete al prezzo retail, l'impianto immette, e l'incentivo sull'energia
+condivisa arriva *ex post*. La traduzione delle grandezze è quindi il primo passo, non un
+dettaglio:
+
+| Grandezza di [D] | Significato | Nella CER |
+|---|---|---|
+| `g_imp(t,i)` | prelievo da rete | `loadForShare(t,i)` — il carico **residuo**: nella condivisione virtuale tutto ciò che non è autoconsumato dietro al contatore viene prelevato |
+| `g_exp(t,i)` | immissione in rete | `sold(t) · shareGen(t,i)` |
+| `x_LM(t,i)` | venduto localmente | `shared(t) · shareGen(t,i)` |
+| `i_LM(t,i)` | comprato localmente | `SH(t,i)`, l'energia condivisa **attribuita** |
+| `b_ch`, `b_dis` | carica/scarica batteria | **assenti** dal modello, valgono 0 |
+| `λ_t` | prezzo di mercato locale | **non esiste** → vedi §18.6 |
+
+Nota che `x_LM + g_exp = genForShare` per costruzione, perché `shared + sold = genAgg`.
+
+### 18.2 Da euro a kWh: l'energia implicita
+
+MinMax e QoS misurano **kWh**. Ma quattordici dei sedici metodi producono solo **euro**:
+solo Pearson Key e Pearson-Sharing Rate (§13-§14) ripartiscono nativamente energia e
+espongono una `S.SH` oraria. Serve quindi una regola per sapere a quanti kWh corrisponda
+la quota monetaria di ciascuno.
+
+La regola scelta riusa l'helper che già esiste:
+
+```matlab
+SH = allocate_shared_energy(loadForShare, genPVSurplus, repmat(phi.', H, 1));
+```
+
+Pesi **costanti nel tempo** pari a `φᵢ`: chi prende il 30% del montepremi si vede
+attribuire il 30% dell'energia condivisa, ora per ora, con il cap fisico
+`SH(t,i) ≤ loadForShare(t,i)` e la garanzia `Σᵢ SH(t,i) = shared(t)` che
+[`allocate_shared_energy.m`](allocate_shared_energy.m) già fornisce (§13.4). Nessuna
+matematica nuova.
+
+`MAIN.m` §3t riporta, per i due metodi che l'energia oraria ce l'hanno davvero, lo scarto
+fra implicita e nativa: **circa l'1%** su entrambi. È una diagnostica, non un `assert` —
+uno scarto grande direbbe che la chiave oraria del metodo è molto diversa da una chiave
+piatta, che è informazione sul metodo, non un errore.
+
+### 18.3 Aggregazione temporale: perché non ora per ora
+
+Gli indicatori **non** si calcolano sull'ora. Nella maggior parte delle ore qualcuno ha
+prelievo nullo e il MinMax collasserebbe a zero. **[D]** lavora su volumi mensili (Fig. 3)
+e i suoi esempi numerici lo confermano: §6.1.1 ricava `MinMax = 0.11` da «10.5 e 93
+kWh/mese», cioè `10.5/93`. Analogamente il «MinMax originale» di Fig. 4 vale 0.13–0.17,
+che è esattamente `5/32` sui consumi annui di Tab. 3.
+
+Quindi:
+
+- **MinMax** → rapporto dei volumi **annui**. Che è anche il rapporto dei volumi mensili
+  medi (dividere entrambi per 12 non cambia nulla) ed è letteralmente la somma su `t` delle
+  eq. 16-17.
+- **QoS** → indice di Jain calcolato su **ogni mese** e mediato sui dodici, come dice la
+  didascalia della Fig. 5.
+- **EI** → annuale, come la Fig. 8.
+
+Di ogni indicatore si espone anche il vettore mensile (`.*Monthly`), per non nascondere la
+scelta di aggregazione.
+
+### 18.4 I sette indicatori di [D]
+
+| Indicatore | Eq. | Formula |
+|---|---|---|
+| MinMax originale | 11 | `minₕ(gᵢₘₚ) / maxₕ(gᵢₘₚ)` |
+| MinMax prosumer | 16 | `minₕ(sₕ) / maxₕ(sₕ)` con `sₕ = Σₜx_LM / Σₜ(x_LM + g_exp)`, solo prosumer |
+| MinMax consumer | 17 | `minₕ(Σₜ i_LM) / maxₕ(Σₜ i_LM)`, solo consumatori |
+| QoS originale | 12 | `Jain(x_LM + i_LM)` su tutti |
+| QoS nuovo | 18 | `ρ·Jain(sₕ sui prosumer) + μ·Jain(i_LM sui consumatori)` |
+| EI originale | 15 | `1 − Gini(yₕ)` |
+| EI nuovo | 19 | `ρ·(1 − Gini(yₕ/y_noLEM sui prosumer)) + μ·(1 − Gini(yₕ sui consumatori))` |
+
+con `ρ = P/n` (quota prosumer) e `μ = C/n` (quota consumatori).
+
+**Scelte registrate come ipotesi** (`.assumptions`, pattern di §17):
+
+1. `yₕ = φᵢ`, la quota CER, **esclusa** la vendita dell'eccedenza: quella esisterebbe
+   comunque anche senza CER (ritiro dedicato), includerla gonfierebbe il prosumer. Per il
+   Tri-level EP si usa `phiFromShared`, coerentemente con `Tcmp` (§17).
+2. `y_noLEM` = costo annuo da rete in **MONORARIA** (`costMat`, calcolato in `MAIN.m` §3a),
+   la stessa modalità con cui `weighted_solidarity_cer` stima il costo unitario (§12.2).
+3. L'energia implicita di §18.2.
+4. La lettura dell'eq. 16.
+
+**Ambiguità dell'eq. 16.** La quota di surplus si legge sia come *rapporto di somme*
+`Σₜx_LM / Σₜ(x_LM+g_exp)`, sia come *somma di rapporti* `Σₜ[x_LM/(x_LM+g_exp)]`. Il testo
+di §4.2.5 di **[D]** («the prosumer selling the smallest **share** of its surplus»)
+sostiene la prima, che è il default; `opts.shareMode = "sumOfRatios"` dà l'altra.
+
+**Gini e Jain esposti a sé stanti.** `EI = 1 − Gini` e `QoS = Jain`: tenere i due nuclei
+impliciti li renderebbe inutilizzabili, e sono le grandezze con cui ragiona la
+letteratura. `gini_index.m` è lo stesso file usato da `weighted_solidarity_cer.m` per la
+sua eq. 2.8 — una sola definizione, così i due usi non possono divergere.
+
+### 18.5 Il Fairness Index di [C]
+
+Misura quanto un metodo si discosti da una distribuzione di **riferimento** fondata sul
+contributo di ciascun membro:
+
+```
+BCᵢ  = OPT − OPT₋ᵢ = v(N) − v(N∖{i})                              (eq. 12)
+Dcdᵢ = BCᵢ / Σₗ BCₗ                                               (eq. 13)
+
+FI = Σᵢ|Dᵢ − Dcdᵢ| / Σᵢ|Dwᵢ − Dcdᵢ|     se m = m_tot
+FI = m_tot − m                          altrimenti                (eq. 14)
+```
+
+dove `m` è il numero di membri con quota positiva.
+
+**Il contributo era già in casa.** `BCᵢ = v(N) − v(N∖{i})` è *esattamente* il contributo
+marginale «ultimo» dell'eq. 9 di Cremers (§16.3), cioè `MC.mcRaw`. E la normalizzazione
+dell'eq. 10 di Cremers **coincide** con l'eq. 13 di Casalicchio. Ne segue l'auto-verifica
+più forte disponibile: se tutti i `BCᵢ > 0`, la **Marginal Contribution ha `FI = 0`
+esatto**. Sulla community di default l'assert passa (`FI ≈ 9·10⁻¹⁷`). Passa anche per il
+Nash Bargaining, che è proporzionale allo stesso contributo — e infatti le due colonne di
+`Tcmp` sono identiche.
+
+#### Derivazione di `Dw`, che il paper non dà
+
+**[C]** descrive `Dwᵢ` solo a parole («the worst case… maximizing the denominator»), senza
+formula. La deriviamo.
+
+`f(D) = Σᵢ|Dᵢ − Dcdᵢ|` è **convessa** in `D`, e il dominio è il simplesso
+`{Dᵢ ≥ 0, ΣDᵢ = 1}`. Il massimo di una funzione convessa su un politopo compatto sta in un
+**vertice**, e i vertici del simplesso sono i versori `e_k`. In `e_k`:
+
+```
+f(e_k) = |1 − Dcd_k| + Σ_{i≠k} |Dcdᵢ|
+```
+
+Basta prendere il `k` che massimizza. Poiché `Σᵢ|Dcdᵢ|` è costante, equivale a
+
+```
+denom = 1 + Σᵢ|Dcdᵢ| + max_k( −Dcd_k − |Dcd_k| )
+```
+
+che **con tutti i `Dcdᵢ ≥ 0`** — il nostro caso — si riduce a `denom = 2·(1 − minᵢ Dcdᵢ)`.
+La forma generale copre anche i contributi negativi, che il paper dichiara ammessi.
+
+**Corollario utile:** il caso peggiore è un vertice, quindi ha `m = 1` e finisce nella
+*seconda* branca. Ne segue che nella prima branca `FI < 1` **strettamente** — il che
+spiega perché **[C]** scriva «0 ≤ FI < 1» e non «≤ 1». `fairness_index_bm.m` lo verifica
+con un `assert`.
+
+#### Le due branche non sono confrontabili
+
+`FI = 1.00` può voler dire due cose opposte:
+
+- nella branca del **rapporto**: distanza quasi massima dal riferimento;
+- nella branca **intera**: un solo membro lasciato a quota zero.
+
+Sulla community di default cinque metodi (Proportional to Consumption, Pearson Key,
+Pearson-Sharing Rate, Similarity-Utilization, Tri-level EP) danno `φ = 0` al prosumer e
+finiscono quindi nella branca intera con `FI = 1` esatto. Per questo `Tfair` porta la
+colonna `QuoteNulle` e `MAIN.m` stampa una nota: senza, la tabella si legge male.
+
+#### Scostamento dal paper
+
+**[C]** registra i risparmi **al netto dei costi di investimento** (§2.5). `MAIN.m` non ha
+i costi di investimento per membro — stanno in `optimizer_PV.m`, che è uno script a sé —
+quindi `Dᵢ` si calcola sui benefici lordi. È l'unico vero **buco dati** dell'intera §18, ed
+è registrato in `.assumptions`.
+
+#### Auto-test
+
+La Tab. 7 di **[C]** (`FI = 0.198/0.306/0.062/0.186/0.074` per i BM A-E) **non** è
+riproducibile: i `Dᵢ` e `Dcdᵢ` per singolo membro stanno solo nella Fig. 13, che è un
+grafico. `opts.validateSelf` (attivo di default) verifica quindi la formula su casi
+costruiti a penna — denominatore, metodo coincidente col riferimento, ripartizione
+uniforme, branca intera, contributi negativi.
+
+### 18.6 Eccesso di coalizione (eq. 23 di [V])
+
+```
+e_S = v(S) − Σ_{i∈S} xᵢ                                            (eq. 23)
+```
+
+Per **ogni** sottogruppo `S` confronta due cose: quanto quel sottogruppo genererebbe da
+solo, uscito dalla CER (`v(S)`), e quanto i suoi membri ricevono restandoci dentro. Se la
+differenza è positiva, hanno un motivo economico per andarsene.
+
+#### Perché serve: misura una cosa che gli altri non guardano
+
+Gli indicatori di §18.4 misurano quanto è **uniforme** la ripartizione; il Fairness Index
+di §18.5 quanto è vicina al **merito**. Nessuno dei due dice se **regge**. E la differenza
+non è teorica:
+
+| | EI orig | Gini | Eccesso max | Coalizioni instabili |
+|---|---:|---:|---:|---:|
+| **Equal Split** | **1.00** | **0.00** | **+606 €** | **9** |
+| **Nucleolo** | 0.45 | 0.55 | −90 € | 0 |
+
+L'Equal Split è la ripartizione più equa possibile secondo la prima domanda, e la meno
+stabile di tutte secondo la terza. Il Nucleolo fa l'opposto. È esattamente l'argomento
+della Fig. 10 di **[V]**: lo Shapley lascia coalizioni scontente, il Nucleolo no.
+
+#### Un esempio coi numeri
+
+Equal Split: `v(N) = 2 348.59 €` diviso in sei parti da `391.43 €`. Prendi il sottogruppo
+`{office, small_industry, retail}` — le tre aziende senza le tre famiglie:
+
+```
+quanto ricevono dentro la CER   3 × 391.43  =  1 174.30 €
+quanto genererebbero da sole    v(S)        =  1 780.80 €
+                                             ─────────────
+eccesso                                        + 606.50 €
+```
+
+Hanno 606 € di ragioni per uscire. Col Nucleolo l'eccesso massimo è `−90.15 €`: perfino la
+coalizione più scontenta (`household_1` da sola) ci guadagna 90 € a restare.
+
+#### Attenzione al segno: opposto a quello del Nucleolo
+
+Qui si usa la convenzione di **[V]**: eccesso **positivo** = la coalizione vuole uscire.
+[`nucleolus_cer.m`](nucleolus_cer.m) e
+[`variance_least_core_cer.m`](variance_least_core_cer.m) riportano invece il **surplus**
+della coalizione più scontenta (§3.1, §7.2):
+
+```
+surplus_S = Σ_{i∈S} xᵢ − v(S) = −e_S
+```
+
+quindi `EX.maxExcess = −Nu.thetaMin`. Sono la stessa grandezza letta al contrario, ed è la
+**verifica incrociata gratuita** del modulo: `MAIN.m` §3t ne ha due `assert`, uno sul
+Nucleolo e uno sul Variance Least Core, più un terzo che impone al Nucleolo di risultare il
+metodo con eccesso minimo — è quello che minimizza per costruzione.
+
+#### Cosa aspettarsi su questa topologia
+
+A differenza degli indicatori energetici (§18.9, punto 4) questo **discrimina fortemente**,
+da `−90 €` a `+607 €`. Il motivo è che guarda i soldi, e i soldi sono l'unica cosa che i
+sedici metodi spostano davvero.
+
+Nota che `v({i}) = 0` per ogni singolo giocatore (netting dietro al contatore, §1.2): da
+solo nessuno condivide nulla. L'eccesso di un singleton vale quindi `−φᵢ`, negativo per
+chiunque riceva qualcosa — la **razionalità individuale è garantita** da qualunque
+ripartizione non negativa. I problemi vengono dalle coalizioni **intermedie**, quelle che
+contengono il prosumer più un sottoinsieme di consumatori: nella tabella sopra la
+coalizione peggiore dell'Equal Split è proprio `{office, small_industry, retail}`.
+
+#### Costo e scalabilità
+
+Enumera le `2ⁿ` coalizioni, quindi si ferma verso i 20 membri (`opts.maxPlayers`). **Non
+aggiunge un limite nuovo**: Shapley, Nucleolo e Variance Least Core hanno già lo stesso
+vincolo — è il bloccante di [README §14.1](README.md). Con `n ≤ 20` il costo è
+trascurabile, e `opts.v`/`opts.A_inc` permettono di riusare una `v(S)` già calcolata.
+
+### 18.7 Gini di eterogeneità (eq. 10 di [C])
+
+```
+G = (1 − Σ_k f_k²) · m / (m − 1)
+```
+
+**Non è un Gini di reddito**, malgrado il nome usato nel paper: è un indice di diversità di
+Simpson normalizzato, e misura quanto sono **varie le tipologie** dei membri, non quanto è
+diseguale la ripartizione. In **[C]** serve a spiegare perché comunità più eterogenee
+sfruttino meglio il Demand Side Management (`G = 0.83` contro `G = 0.71`).
+
+- `G = 0` → tutti i membri della stessa tipologia (massima omogeneità).
+- `G = 1` → tutte le tipologie distinte, un membro ciascuna. È il punto in cui l'indice
+  **smette di discriminare**.
+
+La tipologia si ricava di default dal nome utente togliendo indice e suffisso
+(`household_2_kWh → household`), ottenendo la categoria di consumo: sulla community di
+default `f = [1/6, 1/6, 1/6, 3/6]` e quindi **`G = 0.80`**. La granularità **fine** — i tre
+template LPG distinti di `simulation_config.yaml` più i tre use case RAMP — si passa con
+`opts.memberTypes`, ma su sei membri tutti distinti dà `G = 1.00` esatto, cioè degenera:
+per questo il default è la categoria grossolana. La scelta è registrata come ipotesi.
+
+### 18.8 Due indicatori esclusi, con la ragione
+
+**QoE (eq. 13-14 di [D]) — non implementato.** Il prezzo percepito dell'eq. 13 richiede
+`λ_t`, il prezzo di mercato locale. In una CER a condivisione virtuale non esiste: non c'è
+nessun prezzo al quale i membri si scambino energia fra loro. Si potrebbe inventare un
+surrogato (costo unitario netto annuo per utente), ma sarebbe un'altra grandezza con lo
+stesso nome. **[D]** stesso non propone modifiche al QoE e ne rinvia la valutazione a
+meccanismi di prezzo con prezzi differenziati per partecipante (§6.2.1).
+
+**Price of Fairness — non implementato.** Riferimento: **[V]**, eq. 21 — cioè lo *stesso
+paper* da cui viene l'eccesso di coalizione di §18.6. Di quel lavoro si prende l'eq. 23 e
+si lascia l'eq. 21, e vale la pena capire perché:
+
+```
+POF = (u^incr,tot,SW − u^incr,tot,NB) / u^incr,tot,SW · 100 [%]
+```
+
+La formula è banale, ma le due grandezze che confronta vengono da **due ottimizzazioni di
+esercizio diverse** dello stesso modello: `SW` massimizza il beneficio totale (eq. 18),
+`NB` massimizza il prodotto di Nash (eq. 19-20, equivalente a `max Σᵢ log uᵢ`). Le variabili
+decisionali sono i flussi P2G/P2P e la **domanda spostabile** (PBDR, eq. 6-8). Nel loro
+caso studio il totale scende da €241 a €238, e quel 1.35% è il PoF.
+
+Nel nostro modello quelle variabili **non esistono**:
+
+- `shared(t) = min(Σgen, Σload)` è deterministico — nessun clearing da ottimizzare;
+- l'incentivo `P_CER_h` è **uniforme fra i membri** — in Volpato il compromesso nasce
+  proprio dal fatto che i prezzi P2P e P2G sono diversi, quindi *chi* scambia e *quando*
+  cambia il totale in euro anche a energia fissa;
+- la domanda è rigida — niente load shifting.
+
+Quindi `u^tot,SW = u^tot,NB` e **`PoF ≡ 0` per costruzione**, per tutti e sedici i metodi.
+Un numero che non porta informazione. Per renderlo significativo servirebbe aggiungere una
+**leva operativa** — load shifting (il PBDR di Volpato eq. 6-8, o il `SinkDSM` che
+Casalicchio usa in **[C]** §2.1) oppure un accumulo — cioè un nuovo livello del modello
+energetico, non un indicatore. Da tenere presente se in futuro si aggiunge il DSM: la
+stessa leva servirebbe a entrambi i paper.
+
+> Attenzione a non confondersi: il nostro
+> [`nash_bargaining_cer.m`](nash_bargaining_cer.m) (§1) è una regola di **ripartizione** in
+> forma chiusa, non l'ottimizzazione NB dell'esercizio dell'eq. 19 di Volpato.
+
+### 18.9 Leggere i numeri: quattro degenerazioni strutturali
+
+Non sono bug. Sono proprietà del modello, dello stesso tipo del ribaltamento di graduatoria
+riportato in §16.9 per la Stratified Expected Value: vanno riportate, non nascoste.
+
+**1. Un solo prosumer.** `MinMax_pro = 1` e `Gini` dei prosumer `= 0` per definizione, quindi
+il termine prosumer di `EI_new` vale `ρ` a prescindere dal metodo. Gli indici lato prosumer
+non dicono nulla finché l'impianto è uno solo.
+
+**2. Il lato prosumer del QoS nuovo vale 1 anche con più impianti.** Nella CER la quota
+condivisa dell'immissione del prosumer `i` è
+
+```
+shared(t)·shareGen(t,i) / genForShare(t,i) = shared(t) / genAgg(t)
+```
+
+cioè **la stessa per tutti i prosumer**, perché l'attribuzione è pro-quota sulla
+produzione. Jain di un vettore costante vale 1. Nel mercato di **[D]** è il market clearing
+a decidere chi vende localmente, quindi lì varia. Non è un difetto: è il modello che, lato
+prosumer, è equo *per costruzione*.
+
+**3. Il MinMax originale è identico per tutti e sedici i metodi** (0.1767). I flussi fisici
+di una CER non cambiano al cambiare di chi prende i soldi: solo il denaro si sposta. È la
+versione estrema della critica che **[D]** muove all'indicatore («almost equal values for
+all cases», §6.1.1). `MAIN.m` §3t ha un `assert` che lo verifica, e lo riporta una volta
+sola come proprietà della comunità.
+
+**4. Anche `MinMax_con`, `QoS` e `Jain` variano pochissimo fra i metodi — e questo è il
+risultato più importante della sezione.** Nelle ore in cui l'immissione copre l'**intero**
+carico residuo della comunità (`Einj ≥ Σload`), `allocate_shared_energy` prende il ramo
+banale e assegna a ciascuno esattamente il proprio carico: la chiave di ripartizione, che
+sia Equal Split o Shapley, non ha voce in capitolo. Sulla community di default:
+
+| | valore |
+|---|---|
+| Ore con condivisione possibile | 3 223 |
+| di cui **sature** (`Einj ≥ Σload`) | 2 762 — **85.7%** |
+| Energia condivisa annua | 18 329 kWh |
+| maturata in ore sature | 16 740 kWh — **91.3%** |
+| **Energia contendibile** | **1 590 kWh — 8.7%** |
+
+Solo su quel 8.7% i metodi si differenziano, ed è per questo che `MinMax_con` sta fra
+0.2098 e 0.2177 su tutti e sedici. La causa è la topologia: un impianto da 20 kWp su un
+edificio industriale produce un surplus enorme rispetto al carico residuo degli altri
+cinque membri.
+
+**Conseguenza operativa:** con `contendibleShare` così basso, gli indicatori **energetici**
+descrivono la comunità più che il metodo. A discriminare sono quelli **economici** — `EI`
+va da 0.45 (Nucleolo) a 1.00 (Equal Split), il `Gini` da 0 a 0.55. `MAIN.m` §3t stampa
+`contendibleShare` a ogni esecuzione proprio perché le colonne quasi costanti non vengano
+scambiate per un errore di calcolo.
+
+### 18.10 Mappatura formula → codice
+
+| Formula | Codice |
+|---|---|
+| eq. 11, 16, 17 (MinMax) | `fairness_indicators_lem.m`, `local_minmax` + `local_share_sold` |
+| eq. 12, 18 (QoS) | idem, ciclo sui dodici mesi + [`jain_index.m`](jain_index.m) |
+| eq. 15, 19 (EI) | idem, `1 - gini_index(...)`, pesi `ρ`/`μ` |
+| `i_LM` implicita da `φ` | `allocate_shared_energy(loadUsers, genAgg, repmat(phi.', H, 1))` |
+| eq. 12-13 ([C], contributo) | `MC.mcRaw` di [`marginal_contribution_cer.m`](marginal_contribution_cer.m) |
+| eq. 14 ([C], FI) | `fairness_index_bm.m`, due branche + `local_worst_distribution` |
+| eq. 10 ([C], eterogeneità) | [`gini_heterogeneity.m`](gini_heterogeneity.m) |
+| eq. 23 ([V], eccesso) | [`coalition_excess.m`](coalition_excess.m), su `v` e `A_inc` di [`cer_coalition_values.m`](cer_coalition_values.m) |
+| Orchestrazione, tabella, grafico | `MAIN.m` §3t + [`plot_fairness_indicators.m`](plot_fairness_indicators.m) |
 
 ---
 

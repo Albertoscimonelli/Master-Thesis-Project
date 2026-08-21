@@ -26,13 +26,14 @@ dimensionamento di un impianto fotovoltaico.
 4. [Struttura del repository](#4-struttura-del-repository)
 5. [Il modello energetico CER](#5-il-modello-energetico-cer)
 6. [I quindici modelli di ripartizione dei benefici](#6-i-quindici-modelli-di-ripartizione-dei-benefici)
-7. [Dimensionamento impianto PV (standalone)](#7-dimensionamento-impianto-pv-standalone)
-8. [Configurazione attuale (community di default)](#8-configurazione-attuale-community-di-default)
-9. [Dipendenze e requisiti](#9-dipendenze-e-requisiti)
-10. [Output prodotti](#10-output-prodotti)
-11. [Limitazioni note / TODO](#11-limitazioni-note--todo)
-12. [Documentazione aggiuntiva](#12-documentazione-aggiuntiva)
-13. [Scaling a comunità grandi (~100 utenti): cosa va risolto prima](#13-scaling-a-comunità-grandi-100-utenti-cosa-va-risolto-prima)
+7. [Indici di valutazione dell'equità](#7-indici-di-valutazione-dellequità)
+8. [Dimensionamento impianto PV (standalone)](#8-dimensionamento-impianto-pv-standalone)
+9. [Configurazione attuale (community di default)](#9-configurazione-attuale-community-di-default)
+10. [Dipendenze e requisiti](#10-dipendenze-e-requisiti)
+11. [Output prodotti](#11-output-prodotti)
+12. [Limitazioni note / TODO](#12-limitazioni-note--todo)
+13. [Documentazione aggiuntiva](#13-documentazione-aggiuntiva)
+14. [Scaling a comunità grandi (~100 utenti): cosa va risolto prima](#14-scaling-a-comunità-grandi-100-utenti-cosa-va-risolto-prima)
 
 ---
 
@@ -132,12 +133,18 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `marginal_contribution_cer.m`, `stratified_expected_value_cer.m`, `adaptive_sampling_shapley_cer.m` | Le tre **approssimazioni dello Shapley** di Cremers et al. 2023 — non regole nuove, ma lo stesso valore a costo polinomiale (§6) |
 | `tri_level_ep_cer.m` | Ripartizione **tri-livello** proprietà + proporzionale + povertà energetica LIHC (Campagna et al. 2024) (§6). ⚠ **Provvisorio**: gira su dati segnaposto, 11 ipotesi attive nel registro dell'header |
 | `lihc_index.m` | Indice di povertà energetica **LIHC** (Low Income High Cost), booleano e continuo — calcolatore puro, riusabile |
+| `fairness_indicators_lem.m` | I sette indicatori di equità distributiva di Dynge & Cali 2025 — MinMax, QoS, EI (originali e riformulati) su **una** ripartizione (§7) |
+| `fairness_index_bm.m` | **Fairness Index** di Casalicchio et al. 2022: distanza di ciascun metodo dalla distribuzione per contributo `v(N) − v(N∖{i})` (§7) |
+| `coalition_excess.m` | **Eccesso di coalizione** di Volpato et al. 2024 (eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — l'unico indicatore di **stabilità** (§7) |
+| `gini_index.m`, `jain_index.m` | I due nuclei degli indicatori sopra (`EI = 1 − Gini`, `QoS = Jain`), esposti a sé stanti e condivisi anche da `weighted_solidarity_cer.m` |
+| `gini_heterogeneity.m` | Gini di **eterogeneità** della composizione della comunità (Casalicchio eq. 10) — non è un Gini di reddito |
+| `plot_fairness_indicators.m` | Mappa di calore metodi × indicatori di equità (§7) |
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
 | `cer_shared_value.m` | Helper condiviso dalle tre approssimazioni: `v` di **una** coalizione dai profili aggregati, `O(H)` invece di `O(H·2ⁿ)` |
 | `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e quindici i modelli |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
-| `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §7) |
+| `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §8) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
 | `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei quindici modelli di ripartizione |
 | `STRUTTURA_PROGETTO.txt` | Mappa dettagliatissima di ogni file/funzione/CSV del progetto |
@@ -193,7 +200,7 @@ Derivazione matematica completa, assiomi ed esempi numerici in
 | 4 | **Variance Least Core** | `variance_least_core_cer.m` | L'allocazione del Least Core più vicina alla ripartizione uniforme, via row-generation — scala a decine/centinaia di membri (Ferrucci, Fioriti, Poli 2025) | Sì |
 | 5 | **Equal Split** | `equal_split_cer.m` | Benchmark ingenuo: `v(N)` diviso in **parti uguali** tra tutti gli utenti — `φ_i = v(N)/n` | N/A (non è un gioco) |
 | 6 | **Proportional to Consumption** | `proportional_consumption_cer.m` | Benchmark ingenuo: quota proporzionale al **consumo** di ciascun utente nelle sole ore "utili" (energia condivisa di comunità > 0) — `φ_i = v(N) · cons_i / Σ_j cons_j` | N/A (non è un gioco) |
-| 7 | **Remuneration Model 1** | `remuneration_model1_cer.m` | Split α/β tra classe consumatori e classe produttori/prosumer, pesato sulla **potenza contrattuale/nominale** [kW] di ciascuna classe (dato manuale, vedi §8); dentro ogni classe, proporzionale all'energia oraria (Candela et al. 2022) | N/A (non è un gioco) |
+| 7 | **Remuneration Model 1** | `remuneration_model1_cer.m` | Split α/β tra classe consumatori e classe produttori/prosumer, pesato sulla **potenza contrattuale/nominale** [kW] di ciascuna classe (dato manuale, vedi §9); dentro ogni classe, proporzionale all'energia oraria (Candela et al. 2022) | N/A (non è un gioco) |
 | 8 | **Cascading Tree** | `cascading_tree_cer.m` | L'incentivo si scompone ricorsivamente in un **albero di categorie** (riserva → fissa/variabile → prelievi/immissione → produttori+prosumer/soli prosumer), con pesi di ramo di default (scelte di governance) (Trevisan et al. 2022) | N/A (non è un gioco) |
 | 9 | **Weighted Solidarity** | `weighted_solidarity_cer.m` | Peso orario = componente tecnica (energia condivisa + carico) + componente di **solidarietà** (costo unitario dell'energia, proxy povertà energetica); i coefficienti sono scelti su un **fronte di Pareto** (Gini minimo vs reddito medio degli utenti a rischio povertà energetica) (Marrasso et al. 2025) | N/A (non è un gioco) |
 | 10 | **Pearson Key** | `pearson_key_cer.m` | Chiave dinamica M3: ripartisce **l'energia** ora per ora in proporzione alla **correlazione di Pearson giornaliera** tra il consumo dell'utente e l'immissione della comunità (premia il sincronismo), con cap al consumo; solo alla fine la si valorizza con `P_CER_h` (Gianaroli et al. 2024) | N/A (non è un gioco) |
@@ -259,7 +266,7 @@ codice ([GUIDA §15.3](GUIDA_modelli_distribuzione.md)).
 I modelli **13-15 sono di natura ancora diversa: non propongono un criterio di equità
 alternativo, ma approssimano il metodo 1**. Servono perché lo Shapley esatto costa `O(2ⁿ)`
 e diventa irrealizzabile oltre ~20 giocatori — sono cioè, insieme al VLC, la risposta della
-letteratura al bloccante di [§13.1](#131-tre-modelli-diventano-matematicamente-impossibili--bloccante).
+letteratura al bloccante di [§14.1](#141-tre-modelli-diventano-matematicamente-impossibili--bloccante).
 Vanno quindi giudicati sull'**errore**, non sull'equità: con `n = 6` lo Shapley esatto è
 disponibile come *ground truth*, e `MAIN.m` §3q ne misura lo scarto (eq. 16-17 del paper).
 
@@ -293,7 +300,107 @@ isolato dal generatore globale di MATLAB, quindi l'esecuzione è riproducibile.
 > esteso, numeri e condizioni per riprenderli in
 > [GUIDA — Appendice A.1](GUIDA_modelli_distribuzione.md).
 
-## 7. Dimensionamento impianto PV (standalone)
+## 7. Indici di valutazione dell'equità
+
+I sedici modelli di §6 dicono **quanto** prende ciascuno; questa sezione dice **quale
+ripartizione sia più equa**, e rispetto a quale definizione di equità. Dieci indicatori,
+calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da due articoli:
+
+| Indicatore | Eq. | File | Cosa misura | Verso |
+|---|---|---|---|:---:|
+| **MinMax originale** | 11 | `fairness_indicators_lem.m` | min/max del prelievo da rete | 1 = equo |
+| **MinMax prosumer** | 16 | " | min/max della quota di surplus condivisa | 1 = equo |
+| **MinMax consumer** | 17 | " | min/max del volume di condivisa ricevuto | 1 = equo |
+| **QoS originale** | 12 | " | indice di **Jain** sui volumi scambiati | 1 = equo |
+| **QoS nuovo** | 18 | " | `ρ·Jain`(quote prosumer) + `μ·Jain`(volumi consumer) | 1 = equo |
+| **EI originale** | 15 | " | `1 −` **Gini** dei risparmi | 1 = equo |
+| **EI nuovo** | 19 | " | `ρ·(1−Gini` risparmi *relativi*`) + μ·(1−Gini` risparmi`)` | 1 = equo |
+| **Gini di eterogeneità** | 10 | `gini_heterogeneity.m` | varietà delle tipologie di membro (**non** un Gini di reddito) | — |
+| **Fairness Index** + σ | 12-14 | `fairness_index_bm.m` | distanza dalla distribuzione per **contributo** `BCᵢ = v(N) − v(N∖{i})` | 0 = equo |
+| **Eccesso di coalizione** | 23 | `coalition_excess.m` | se qualche sottogruppo guadagnerebbe di più **uscendo** dalla CER | ↓ = stabile |
+
+Fonti: Dynge, Cali, *Distributive energy justice in local electricity markets*, Appl.
+Energy 384 (2025) 125463 (eq. 11-19); Casalicchio, Manzolini, Prina, Moser, *From
+investment optimization to fair benefit distribution in renewable energy community
+modelling*, Appl. Energy 310 (2022) 118447 (eq. 10, 12-14); Volpato, Carraro, Dal Cin,
+Rech, *On the Different Fair Allocations of Economic Benefits for Energy Communities*,
+Energies 17 (2024) 4788 (eq. 23). Derivazioni, mappatura formula → codice e avvertenze in
+[GUIDA §18](GUIDA_modelli_distribuzione.md).
+
+**Gini e Jain sono esposti a sé stanti** oltre che dentro EI e QoS: sono le grandezze con
+cui ragiona la letteratura, e tenerle implicite le renderebbe inutilizzabili.
+
+### 7.0 Tre domande diverse, non tre modi di misurare la stessa cosa
+
+| Gruppo | Domanda a cui risponde |
+|---|---|
+| MinMax, QoS, EI, Gini, Jain | quanto è **uniforme** la ripartizione |
+| Fairness Index, σ | quanto è vicina al **merito** di ciascuno |
+| Eccesso di coalizione | se **regge**, cioè se un sottogruppo ha convenienza a uscire |
+
+Le tre domande possono dare risposte **opposte**, ed è il caso: l'**Equal Split** è primo
+sulla prima (`EI = 1.00`, `Gini = 0.00` — per quegli indici è la ripartizione più equa
+possibile) e **ultimo** sulla terza (eccesso `+606 €`, nove sottogruppi vorrebbero
+uscire). Il **Nucleolo** fa l'opposto: `EI = 0.45`, il peggiore del lotto, ma è l'unico
+insieme al Variance Least Core a garantire che nessuno voglia andarsene. Guardare una
+colonna sola porta a conclusioni sbagliate.
+
+### 7.1 Due indicatori esclusi, e perché
+
+- **QoE** (Dynge eq. 13-14) richiede il prezzo di mercato locale `λ_t`. In una CER a
+  condivisione **virtuale** non esiste: tutti comprano dalla rete al prezzo retail e
+  l'incentivo arriva ex post. Il paper stesso non ne propone modifiche e ne rinvia la
+  valutazione ad altri meccanismi di prezzo (§6.2.1).
+- **Price of Fairness** (Volpato, Carraro, Dal Cin, Rech, *Energies* 17 (2024) 4788,
+  eq. 21) confronta due **ottimizzazioni di esercizio**, le cui variabili decisionali sono
+  i flussi P2G/P2P e la domanda spostabile. Qui quelle variabili non esistono —
+  `shared(t) = min(Σgen, Σload)` è deterministico, l'incentivo è uniforme fra i membri, la
+  domanda è rigida — quindi il PoF sarebbe **identicamente nullo per costruzione**.
+  Servirebbe prima aggiungere una leva operativa (load shifting o accumulo).
+
+### 7.2 Leggere i numeri: quattro degenerazioni strutturali
+
+Non sono bug, sono proprietà del modello. Vanno riportate, non nascoste.
+
+1. **Un solo prosumer** ⇒ `MinMax_pro = 1` e `Gini` dei prosumer `= 0` per definizione.
+2. **Il lato prosumer del QoS nuovo vale 1 anche con più impianti**: nella CER la quota
+   condivisa dell'immissione è `shared(t)/genAgg(t)` per chiunque, perché l'attribuzione è
+   pro-quota sulla produzione. Lato prosumer il modello è equo *per costruzione*.
+3. **Il MinMax originale è identico per tutti e sedici i metodi**: i flussi fisici di una
+   CER non cambiano al cambiare di chi prende i soldi. È la versione estrema della critica
+   che il paper stesso muove all'indicatore.
+4. **Anche `MinMax_con`, `QoS` e `Jain` variano pochissimo fra i metodi.** Sulla community
+   di default solo l'**8.7%** dell'energia condivisa è *contendibile*: nel restante 91.3%
+   l'immissione copre l'intero carico residuo e ogni utente riceve esattamente il proprio
+   consumo, qualunque sia la chiave. Con `contendibleShare` così basso, gli indicatori
+   **energetici** descrivono la comunità più che il metodo — a discriminare sono quelli
+   **economici** (EI, Gini, Fairness Index).
+
+`MAIN.m` §3t stampa `contendibleShare` a ogni esecuzione, proprio perché le colonne
+quasi costanti non vengano scambiate per un errore di calcolo.
+
+### 7.3 Verifiche automatiche
+
+`MAIN.m` §3t contiene sette `assert` che valgono come test di regressione:
+
+- **Equal Split ⇒ `EI_orig = 1`** esatto (il Gini di un vettore uniforme è zero).
+- **Marginal Contribution ⇒ `FI = 0`** esatto, perché la normalizzazione dell'eq. 10 di
+  Cremers *coincide* con l'eq. 13 di Casalicchio. (Se qualche `BCᵢ = 0`, il metodo cade
+  nella branca intera e l'assert verifica quella.)
+- **MinMax originale identico** fra i sedici metodi.
+- **L'energia implicita somma all'energia condivisa** di comunità.
+- **Eccesso del Nucleolo `= −Nu.thetaMin`** e **del VLC `= −VLC.thetaLC`**: sono la stessa
+  grandezza con il segno opposto (il Nucleolo riporta il *surplus* della coalizione più
+  scontenta, `Σxᵢ − v(S)`). Verifica gratis che l'eccesso giri sulla stessa `v(S)` del gioco.
+- **Il Nucleolo ha l'eccesso minimo** fra i sedici — è ciò che minimizza per costruzione.
+- Tutti gli indicatori di Dynge **dentro `[0,1]`**.
+
+Inoltre `fairness_index_bm.m` ha un auto-test analitico (`opts.validateSelf`, attivo di
+default): la Tab. 7 del paper **non** è riproducibile — i `Dᵢ` per membro stanno solo in un
+grafico — quindi si verifica la formula su casi costruiti a penna, contributi negativi
+inclusi.
+
+## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
 ottimizza il layout di un impianto fotovoltaico su copertura industriale (numero di
@@ -302,7 +409,7 @@ economico (CAPEX, OPEX, ricavi, IRR via `irr_bisection.m`, NPV) per selezionare 
 configurazione che massimizza IRR o NPV. `archive/PROVA_PV.m` è la versione precedente,
 mantenuta come riferimento storico.
 
-## 8. Configurazione attuale (community di default)
+## 9. Configurazione attuale (community di default)
 
 - **Comunità:** 6 utenti — `office_1`, `small_industry_1`, `retail_1`, `household_1`,
   `household_2`, `household_3` (configurabile in
@@ -313,12 +420,12 @@ mantenuta come riferimento storico.
 - **Anno di simulazione:** 2025, griglia oraria 8760 ore.
 - **Prezzo vendita eccedenza:** `P_SELL = 0.11 €/kWh` (costante).
 - **Zona CER:** Nord (coerente col file prezzi zonali).
-- **Potenza nominale PV per la formula TIP:** `P_PV_NOM_KW = 20` — **provvisorio**, vedi §11.
-- **Potenze per Remuneration Model 1** — **valori TODO/placeholder**, vedi §11:
+- **Potenza nominale PV per la formula TIP:** `P_PV_NOM_KW = 20` — **provvisorio**, vedi §12.
+- **Potenze per Remuneration Model 1** — **valori TODO/placeholder**, vedi §12:
   potenza di prelievo per utente in `RATED_LOAD_KW`, potenza di generazione per
   impianto nel campo `.kWp` di `pvPlants`.
 
-## 9. Dipendenze e requisiti
+## 10. Dipendenze e requisiti
 
 **Python 3.12** (venv in root): `rampdemand` 0.5.0, `pyloadprofilegenerator`, `pandas`
 3.0.x, `numpy` 2.4.x, `PyYAML`. RAMP 0.5.0 non è ancora compatibile nativamente con
@@ -330,7 +437,7 @@ quando RAMP verrà aggiornato). Vedi `requirements.txt` (freeze completo) e
 richiesti da Nucleolo e Variance Least Core). `irr_bisection.m` evita la dipendenza dalla
 Financial Toolbox per il calcolo dell'IRR in `optimizer_PV.m`.
 
-## 10. Output prodotti
+## 11. Output prodotti
 
 **Stadio Python** → `CER_LoadProfiles/outputs/csv/`: `profili_aziende.csv`,
 `profili_famiglie.csv`, `profili_tutti.csv` (input di `MAIN.m`), `profilo_CER_aggregato.csv`.
@@ -343,11 +450,16 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 - `Trd` — accuratezza delle tre approssimazioni dello Shapley rispetto al valore esatto
   (§3q, eq. 16-17 di Cremers et al.).
 - `Tcmp` — tabella di confronto tra i quindici modelli + grafico a barre raggruppate.
+- `Tfair` — i dieci **indici di equità** per ciascun metodo + mappa di calore a tre
+  pannelli (uniformità / merito / stabilità), più il registro delle ipotesi attive, la
+  distribuzione per contributo e la classifica di stabilità con la coalizione peggiore di
+  ciascun metodo (§3t, §7). Stampa anche `contendibleShare`, cioè quanta energia condivisa
+  è davvero in palio fra i metodi.
 - `Tcost` — costo annuo di approvvigionamento da rete per utente, nelle 3 modalità
-  tariffarie PUN (monoraria, bioraria, oraria variabile).
+  tariffarie PUN (monoraria, bioraria, oraria variabile), calcolato in §3a.
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
 
-## 11. Limitazioni note / TODO
+## 12. Limitazioni note / TODO
 
 - `P_PV_NOM_KW = 20` in `MAIN.m` §0 è un valore **provvisorio** (TODO nel codice): da
   confermare, seleziona lo scaglione della formula TIP.
@@ -391,7 +503,7 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 - Per l'elenco completo di bug noti e miglioramenti proposti vedi
   [AUDIT_REPORT.md](AUDIT_REPORT.md) (audit del 2026-07-10, review-only).
 
-## 12. Documentazione aggiuntiva
+## 13. Documentazione aggiuntiva
 
 | Documento | Quando consultarlo |
 |---|---|
@@ -400,14 +512,14 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
 
-## 13. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
+## 14. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
 
 Il progetto è oggi calibrato su **6 utenti**. È previsto di testare i modelli fino a
 **~100 utenti**: questa sezione elenca i punti che si romperanno o degraderanno a quella
 scala, così da affrontarli consapevolmente invece di scoprirli a metà lavoro. Nessuno di
 questi è un problema *oggi* — sono tutti conseguenze della crescita di `n`.
 
-### 13.1 Tre modelli diventano matematicamente impossibili — BLOCCANTE
+### 14.1 Tre modelli diventano matematicamente impossibili — BLOCCANTE
 
 **Shapley**, **Nucleolo** e **Nash Bargaining** passano da `cer_coalition_values.m`, che
 enumera **2^n** coalizioni. Con `n = 100` significa ~10³⁰ valori: non è un problema di
@@ -455,7 +567,7 @@ dinamiche hanno un ciclo sulle 8760 ore con al più `n` iterazioni interne, quin
 `O(H·n²)` nel caso peggiore (tutti gli utenti cappati uno alla volta): a 100 utenti
 restano nell'ordine dei secondi.
 
-### 13.2 `weighted_solidarity_cer.m` esaurisce la memoria — DA SISTEMARE
+### 14.2 `weighted_solidarity_cer.m` esaurisce la memoria — DA SISTEMARE
 
 La ricerca su griglia è vettorizzata con array 4-D `[H, n, nβ1, nβ2]`. Il consumo cresce
 linearmente in `n`:
@@ -470,7 +582,7 @@ normale. La correzione non cambia la matematica: basta **processare le combinazi
 blocchi** dimensionati su un budget di memoria, invece che tutte insieme. Sono poche
 righe, ma vanno aggiunte prima di girare a `n` grande.
 
-### 13.3 Le tabelle di configurazione a mano non reggono
+### 14.3 Le tabelle di configurazione a mano non reggono
 
 `RATED_LOAD_KW` in `MAIN.m` §0 è un `containers.Map` con **una voce per utente**: a 100
 utenti è ingestibile e fragile (una voce mancante ferma l'esecuzione). Le due impostazioni
@@ -488,7 +600,7 @@ La potenza di **generazione** non ha questo problema: è già dichiarata come ca
 della struct `pvPlants`, quindi cresce insieme agli impianti e non richiede una tabella
 parallela.
 
-### 13.4 Punti minori da tenere d'occhio
+### 14.4 Punti minori da tenere d'occhio
 
 - **Matrice di dominanza di Pareto** in `weighted_solidarity_cer.m`: è
   `nCombos × nCombos` (~13 MB con i default) e **non dipende da `n`** — resta invariata
@@ -501,5 +613,5 @@ parallela.
   comunità. Con molti impianti di taglia diversa la tariffa andrebbe valutata per
   impianto; ora che `pvPlants` porta il campo `.kWp`, il dato per farlo esiste già.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
-  `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §11) — con 100
+  `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §12) — con 100
   profili la varianza tra run diventa più visibile nei risultati aggregati.

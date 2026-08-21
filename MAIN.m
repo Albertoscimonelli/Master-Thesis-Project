@@ -223,6 +223,34 @@ fprintf('  Ricavo totale annuo: €%.2f\n', rev_tot_annual);
 
 
 %% ========================================================================
+%  3a) COSTO ENERGIA DA RETE SENZA CER (baseline)
+%
+%  Costo annuo di approvvigionamento di ciascun utente nelle tre modalita'
+%  tariffarie PUN, cioe' quanto spenderebbe NON partecipando alla CER.
+%
+%  Il calcolo sta qui e non piu' in §4 perche' e' la baseline y_noLEM
+%  dell'eq. 19 di Dynge & Cali, che serve agli indicatori di equita' della
+%  §3t. La §4 continua a presentarne la tabella: si e' spostato il conto,
+%  non il risultato.
+%  ========================================================================
+
+% Profilo prezzi orario per ciascuna modalita'
+priceByMod = cell(1, numel(Modalita));
+for m = 1:numel(Modalita)
+    TTprice       = profilo_prezzi_pun_2025(Modalita(m));
+    priceByMod{m} = TTprice.Prezzo;          % [N_HOURS x 1]
+end
+
+% Costo annuo = somma( prezzo_orario .* consumo_orario )
+costMat = zeros(nUsers, numel(Modalita));
+for u = 1:nUsers
+    for m = 1:numel(Modalita)
+        costMat(u, m) = sum(priceByMod{m} .* loadUsers(:, u));
+    end
+end
+
+
+%% ========================================================================
 %  3b) DISTRIBUZIONE DEI BENEFICI - SHAPLEY VALUE
 %
 %  Primo modello di ripartizione dei ricavi della CER. L'incentivo
@@ -881,25 +909,269 @@ plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
 
 
 %% ========================================================================
-%  4) COSTO ENERGIA DA RETE (PUN 2025)
-%  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
-%  tariffaria. I profili prezzo del 2025 condividono la griglia canonica.
+%  3t) INDICI DI VALUTAZIONE DELL'EQUITA'
+%
+%  Le sezioni §3b-§3s dicono QUANTO prende ciascuno con ciascun metodo, ma non
+%  dicono quale ripartizione sia piu' equa. Questa sezione li giudica, con dieci
+%  indicatori presi da tre articoli:
+%
+%    Dynge, Cali, "Distributive energy justice in local electricity markets:
+%    Assessing the performance of fairness indicators", Applied Energy 384
+%    (2025) 125463 - eq. 11, 12, 15, 16, 17, 18, 19.
+%
+%    Casalicchio, Manzolini, Prina, Moser, "From investment optimization to
+%    fair benefit distribution in renewable energy community modelling",
+%    Applied Energy 310 (2022) 118447 - eq. 10, 12-13, 14.
+%
+%    Volpato, Carraro, Dal Cin, Rech, "On the Different Fair Allocations of
+%    Economic Benefits for Energy Communities", Energies 17 (2024) 4788 - eq. 23.
+%
+%  Piu' il Gini e il Jain grezzi, che di quegli indici sono il nucleo (EI =
+%  1 - Gini, QoS = Jain) ed e' con quelli che ragiona la letteratura.
+%
+%  TRE DOMANDE DIVERSE. Gli indicatori non misurano la stessa cosa in modi
+%  diversi: rispondono a domande che possono dare risposte opposte.
+%    MinMax, QoS, EI, Gini, Jain   quanto e' UNIFORME la ripartizione
+%    Fairness Index                quanto e' vicina al MERITO di ciascuno
+%    Eccesso di coalizione         se REGGE, cioe' se qualche sottogruppo ha
+%                                  convenienza a uscire dalla CER
+%  L'Equal Split e' primo sulla prima domanda (EI = 1, Gini = 0) e ULTIMO sulla
+%  terza (nove coalizioni vorrebbero uscire). Guardare una colonna sola porta a
+%  conclusioni sbagliate.
+%
+%  DUE ESCLUSIONI MOTIVATE (dettagli in GUIDA §18)
+%    QoE (Dynge eq. 13-14) richiede il prezzo di mercato locale lambda_t, che
+%    in una CER a condivisione virtuale non esiste: tutti comprano dalla rete
+%    al prezzo retail e l'incentivo arriva ex post. Il paper stesso non ne
+%    propone modifiche e ne rinvia la valutazione ad altri meccanismi di
+%    prezzo (§6.2.1).
+%
+%    Price of Fairness (Volpato et al., stesso paper dell'eccesso di
+%    coalizione, eq. 21) confronta due OTTIMIZZAZIONI DI ESERCIZIO, le cui variabili
+%    decisionali sono i flussi P2G/P2P e la domanda spostabile. Qui quelle
+%    variabili non esistono - shared(t) = min(sum gen, sum load) e'
+%    deterministico, l'incentivo e' uniforme fra i membri, la domanda e'
+%    rigida - quindi il PoF sarebbe identicamente nullo per costruzione.
+%    Servirebbe aggiungere una leva operativa (load shifting o accumulo).
+%
+%  LEGGERE PRIMA I NUMERI: tre indici degenerano su questa topologia (un solo
+%  prosumer, attribuzione pro-quota, flussi fisici invarianti). Le avvertenze
+%  stanno negli header dei due moduli:
+%      help fairness_indicators_lem
+%      help fairness_index_bm
 %  ========================================================================
 
-% Profilo prezzi orario per ciascuna modalita'
-priceByMod = cell(1, numel(Modalita));
-for m = 1:numel(Modalita)
-    TTprice       = profilo_prezzi_pun_2025(Modalita(m));
-    priceByMod{m} = TTprice.Prezzo;          % [N_HOURS x 1]
+% Baseline "senza CER" (y_noLEM dell'eq. 19): costo annuo da rete in
+% MONORARIA, la stessa modalita' con cui weighted_solidarity_cer stima il
+% costo unitario dell'energia. Calcolata in §3a.
+iMonoraria = find(Modalita == "MONORARIA", 1);
+assert(~isempty(iMonoraria), 'Indici di equita'': modalita'' MONORARIA non trovata');
+costNoCER  = costMat(:, iMonoraria);
+
+% --- Indice di comunita': eterogeneita' della composizione (eq. 10) -------
+% Non dipende da come si ripartiscono i benefici: descrive CHI c'e' nella CER.
+HET = gini_heterogeneity(userNames);
+
+fprintf('\n=== Indici di valutazione dell''equita'' ===\n');
+fprintf('  %-34s: %.4f  (%d tipologie su %d membri)\n', ...
+        'Gini di eterogeneita'' (eq. 10)', HET.G, numel(HET.types), nUsers);
+
+% --- Un pacchetto di indicatori per ciascuno dei sedici metodi -----------
+nMet   = numel(metodi);
+FIND   = cell(nMet, 1);
+optInd = struct('costNoCER', costNoCER, 'monthOfHour', monthOfHour, 'quiet', true);
+for k = 1:nMet
+    optInd.name = metodi(k).nome;
+    FIND{k} = fairness_indicators_lem(metodi(k).phi, genForShare, loadForShare, optInd);
 end
 
-% Costo annuo = somma( prezzo_orario .* consumo_orario )
-costMat = zeros(nUsers, numel(Modalita));
-for u = 1:nUsers
-    for m = 1:numel(Modalita)
-        costMat(u, m) = sum(priceByMod{m} .* loadUsers(:, u));
-    end
+% Il MinMax originale misura il PRELIEVO DA RETE, che in una CER non cambia al
+% cambiare di chi prende i soldi: deve venire identico per tutti e sedici. Se
+% questo assert cade, qualcosa sta contaminando i flussi fisici con la
+% ripartizione monetaria.
+minMaxOrigAll = cellfun(@(F) F.minMaxOrig, FIND);
+assert(max(abs(minMaxOrigAll - minMaxOrigAll(1))) < 1e-12, ...
+       ['Indici di equita'': il MinMax originale varia tra i metodi, ma in una ' ...
+        'CER i flussi fisici sono invarianti rispetto alla ripartizione']);
+fprintf('  %-34s: %.4f  (uguale per tutti i metodi, vedi header sez. 3t)\n', ...
+        'MinMax originale (eq. 11)', minMaxOrigAll(1));
+fprintf('  %-34s: %d prosumer, %d consumatori (rho = %.2f)\n', ...
+        'Composizione', FIND{1}.nProsumer, FIND{1}.nConsumer, FIND{1}.rho);
+
+% Quanta energia condivisa e' davvero in palio. Nelle ore in cui l'immissione
+% copre l'intero carico residuo ognuno riceve esattamente il proprio carico e
+% nessuna chiave di ripartizione puo' cambiarlo: se questa frazione e' bassa,
+% gli indicatori ENERGETICI (MinMax_con, QoS, Jain) descrivono la comunita' e
+% non il metodo, ed e' normale che vengano quasi identici fra i sedici.
+fprintf('  %-34s: %.1f%% (%.0f kWh su %.0f) - il resto matura in ore in cui\n', ...
+        'Energia contendibile', 100*FIND{1}.contendibleShare, ...
+        FIND{1}.contendibleEnergy, FIND{1}.sharedTotal);
+fprintf('  %-34s  l''immissione copre l''intero carico e la chiave e'' ininfluente\n', '');
+
+% --- Fairness Index rispetto alla distribuzione per contributo (eq. 12-14)
+% BC_i = v(N) - v(N\{i}) e' gia' calcolato: e' MC.mcRaw della §3n.
+BM = fairness_index_bm([metodi.phi], MC.mcRaw, [metodi.nome], ...
+                       struct('playerNames', Sh.players, 'quiet', true));
+
+% --- Stabilita': eccesso di coalizione (Volpato eq. 23) ------------------
+% Unica colonna che non guarda l'uniformita' della ripartizione ne' la sua
+% aderenza al merito, ma se REGGE: per ogni sottogruppo confronta quanto
+% genererebbe uscendo dalla CER con quanto riceve restandoci.
+EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
+                      userNames, P_CER_h, struct('quiet', true));
+
+% --- Tabella di confronto -------------------------------------------------
+Tfair = table([metodi.nome].', ...
+              cellfun(@(F) F.minMaxPro, FIND), cellfun(@(F) F.minMaxCon, FIND), ...
+              cellfun(@(F) F.qosOrig,   FIND), cellfun(@(F) F.qosNew,    FIND), ...
+              cellfun(@(F) F.eiOrig,    FIND), cellfun(@(F) F.eiNew,     FIND), ...
+              cellfun(@(F) F.jain,      FIND), cellfun(@(F) F.gini,      FIND), ...
+              BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+              'VariableNames', {'Metodo', 'MinMax_pro', 'MinMax_con', ...
+                                'QoS_orig', 'QoS_new', 'EI_orig', 'EI_new', ...
+                                'Jain', 'Gini', 'FairnessIndex', 'Sigma', ...
+                                'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili'});
+fprintf('\n=== Indicatori di equita'' per metodo ===\n');
+disp(Tfair);
+
+% La colonna QuoteNulle non e' decorativa: senza, il Fairness Index si legge
+% male. L'eq. 14 ha DUE branche e la seconda restituisce un INTERO, il numero
+% di membri lasciati a zero. Un FI di 1.00 con QuoteNulle = 1 vuol dire "un
+% membro escluso", non "distanza massima dal riferimento": e' un'altra unita' di
+% misura, e va confrontato solo con gli altri metodi che hanno quote nulle.
+if any(BM.nZeroShare > 0)
+    fprintf(['  NOTA: %d metodi lasciano qualcuno a quota zero e finiscono nella\n' ...
+             '  branca INTERA dell''eq. 14 (FI = numero di esclusi). Il loro FI non\n' ...
+             '  e'' confrontabile con quello dei metodi a quote tutte positive.\n'], ...
+            sum(BM.nZeroShare > 0));
 end
+
+% --- Stabilita' della coalizione, in dettaglio ---------------------------
+fprintf('\n=== Stabilita'': eccesso di coalizione (eq. 23) ===\n');
+fprintf(['  e_S = v(S) - somma delle quote di S. POSITIVO = quel sottogruppo\n' ...
+         '  guadagnerebbe di piu'' uscendo dalla CER. Esaminate %d coalizioni proprie.\n'], ...
+        EX.nCoalitions);
+disp(sortrows(EX.table, 'EccessoMax_EUR'));
+
+fprintf('\n=== Distribuzione di riferimento per contributo (eq. 13) ===\n');
+disp(BM.tablePlayers);
+
+fprintf('\n=== Ipotesi attive (indici di equita'') ===\n');
+disp(HET.assumptions);
+disp(FIND{1}.assumptions);
+disp(BM.assumptions);
+if BM.nZeroContribution > 0
+    fprintf(['  ATTENZIONE: %d membri su %d hanno contributo marginale nullo. La\n' ...
+             '  distribuzione di riferimento e'' degenere e il Fairness Index premia\n' ...
+             '  chi concentra tutto sui membri pivotali: e'' un esito STRUTTURALE\n' ...
+             '  della topologia (un solo impianto), non un errore di calcolo.\n' ...
+             '  Vedi "COSA ASPETTARSI" in: help fairness_index_bm\n'], ...
+            BM.nZeroContribution, nUsers);
+end
+
+% --- Diagnostica: energia implicita da phi vs energia nativa del metodo ---
+% Pearson Key e Pearson-Sharing Rate ripartiscono nativamente l'ENERGIA ora
+% per ora, gli altri quattordici solo gli euro. Qui si misura quanto la regola
+% implicita (pesi costanti pari a phi) si discosti da quella nativa. NON e' un
+% assert: uno scarto grande e' informazione sul metodo - vuol dire che la sua
+% chiave oraria e' molto diversa da una chiave piatta - non un errore.
+nativi = struct('nome', {"Pearson Key", "Pearson-Sharing Rate"}, ...
+                'SH',   {PK.SH,         PSK.SH});
+fprintf('\n=== Energia condivisa: implicita da phi vs nativa del metodo ===\n');
+for k = 1:numel(nativi)
+    idx     = find([metodi.nome] == nativi(k).nome, 1);
+    implNat = sum(nativi(k).SH, 1).';
+    impl    = FIND{idx}.sharedByUser;
+    fprintf('  %-24s: scarto L1 = %.2f%% dell''energia condivisa annua\n', ...
+            nativi(k).nome, 100 * sum(abs(impl - implNat)) / sum(implNat));
+end
+
+% --- Verifiche ------------------------------------------------------------
+% Dominio: gli indicatori di Dynge sono rapporti o medie pesate di rapporti,
+% quindi stanno in [0,1]. Un valore fuori significa formula sbagliata, non
+% mercato strano.
+inDomain = @(v) all(isnan(v) | (v >= -1e-12 & v <= 1 + 1e-12));
+assert(inDomain(Tfair.MinMax_pro) && inDomain(Tfair.MinMax_con) && ...
+       inDomain(Tfair.QoS_orig)   && inDomain(Tfair.QoS_new)   && ...
+       inDomain(Tfair.EI_orig)    && inDomain(Tfair.EI_new)    && ...
+       inDomain(Tfair.Jain)       && inDomain(Tfair.Gini), ...
+       'Indici di equita'': un indicatore e'' uscito da [0,1]');
+
+% L'Equal Split distribuisce parti uguali: il Gini di un vettore uniforme e'
+% zero esatto, quindi il suo EI originale deve valere 1. E' il test piu' netto
+% su gini_index.
+iES = find([metodi.nome] == "Equal Split", 1);
+assert(abs(Tfair.EI_orig(iES) - 1) < 1e-12, ...
+       'Indici di equita'': EI originale dell''Equal Split diverso da 1');
+
+% La normalizzazione dell'eq. 10 di Cremers coincide con l'eq. 13 di
+% Casalicchio: MC.phi/v(N) E' la distribuzione di riferimento. Quindi la
+% Marginal Contribution ha FI nullo se tutti i contributi sono positivi, e
+% altrimenti cade nella branca degli interi con FI = numero di quote nulle.
+iMC = find([metodi.nome] == "Marginal Contribution", 1);
+if all(MC.mcRaw > 0)
+    assert(abs(BM.FI(iMC)) < 1e-9, ...
+           'Indici di equita'': la Marginal Contribution non ha FI = 0');
+else
+    assert(BM.FI(iMC) == nUsers - sum(BM.D(:,iMC) > 1e-9), ...
+           'Indici di equita'': branca degli interi dell''eq. 14 incoerente');
+end
+
+% L'energia implicita deve restare energia della CER: quello che si attribuisce
+% ai membri e' esattamente l'energia condivisa di comunita', ne' piu' ne' meno.
+assert(abs(sum(FIND{1}.sharedByUser) - shared_annual) < 1e-6 * max(1, shared_annual), ...
+       'Indici di equita'': l''energia attribuita non somma a quella condivisa');
+
+% Il Nucleolo MINIMIZZA per costruzione l'eccesso della coalizione piu'
+% scontenta, e lo dichiara come surplus (segno opposto: thetaMin = -e_max). Se
+% queste due grandezze non coincidono, o l'eccesso e' calcolato su una v(S)
+% diversa da quella del gioco, oppure il Nucleolo non sta risolvendo il suo
+% problema. Il Variance Least Core deve dare lo stesso valore, avendo lo stesso
+% livello di Least Core (gia' confrontato in §3e).
+iNu  = find([metodi.nome] == "Nucleolo", 1);
+iVLC = find([metodi.nome] == "Variance Least Core", 1);
+tolEx = 1e-6 * max(1, abs(EX.vGrand));
+assert(abs(EX.maxExcess(iNu) + Nu.thetaMin) < tolEx, ...
+       'Indici di equita'': eccesso massimo del Nucleolo diverso da -thetaMin');
+assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < tolEx, ...
+       'Indici di equita'': eccesso massimo del VLC diverso da -thetaLC');
+
+% ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.
+assert(EX.maxExcess(iNu) <= min(EX.maxExcess) + tolEx, ...
+       'Indici di equita'': il Nucleolo non e'' il metodo con eccesso minimo');
+
+% --- Mappa di calore ------------------------------------------------------
+% Un pannello per DOMANDA (vedi header): uniformita', merito, stabilita'. Non
+% si possono mettere sulla stessa scala perche' hanno versi diversi - e per
+% l'eccesso di coalizione il meglio non sta ne' a 0 ne' a 1, ma il piu' in
+% basso possibile, anche molto sotto zero.
+pannelli = struct( ...
+    'nome',       {'Allocazione ed equita''',                         'Disuguaglianza e distanza dal merito',            'Stabilita'' della coalizione'}, ...
+    'indicatori', {["MinMax_{pro}", "MinMax_{con}", "QoS_{orig}", "QoS_{new}", ...
+                    "EI_{orig}", "EI_{new}", "Jain"],                 ["Gini", "Fairness Index", "\sigma"],              ["Eccesso max [€]", "Coalizioni instabili"]}, ...
+    'valori',     {[Tfair.MinMax_pro, Tfair.MinMax_con, Tfair.QoS_orig, ...
+                    Tfair.QoS_new, Tfair.EI_orig, Tfair.EI_new, Tfair.Jain], ...
+                                                                      [Tfair.Gini, Tfair.FairnessIndex, Tfair.Sigma],    [Tfair.EccessoMax_EUR, Tfair.CoalizioniInstabili]}, ...
+    'bestIsOne',  {true,                                              false,                                             false}, ...
+    'etichettaVerso', {'',                                            '',                                                'piu'' basso = piu'' stabile'});
+
+% Titolo su due righe: la seconda porta gli indici di COMUNITA', che non hanno
+% una colonna nella mappa perche' non dipendono dal metodo, piu' la frazione di
+% energia contendibile - senza la quale le colonne energetiche quasi costanti
+% sembrerebbero un errore invece che il risultato che sono.
+plot_fairness_indicators([metodi.nome], pannelli, [ ...
+    "Indici di equita' distributiva dei sedici modelli di ripartizione"; ...
+    sprintf(['MinMax originale = %.2f (uguale per tutti)  |  Gini di eterogeneita'' = %.2f' ...
+             '  |  energia contendibile = %.1f%%'], ...
+            minMaxOrigAll(1), HET.G, 100*FIND{1}.contendibleShare)]);
+
+
+%% ========================================================================
+%  4) COSTO ENERGIA DA RETE (PUN 2025)
+%  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
+%  tariffaria, calcolato in §3a. I profili prezzo del 2025 condividono la
+%  griglia canonica.
+%  ========================================================================
 
 Tcost = array2table(costMat, ...
         'VariableNames', cellstr(Modalita), ...

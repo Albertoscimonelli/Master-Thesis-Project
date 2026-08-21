@@ -216,6 +216,8 @@ function S = tri_level_ep_cer(genUsers, loadUsers, userNames, P_CER, opts)
 %     .revSold        scalare  R_inj                                      [EUR]
 %     .shareEP        scalare  frazione prelevata per la poverta' energetica
 %     .shareRest      scalare  1 - shareEP
+%     .nPct .capEP    scalari  i due parametri di taratura effettivamente
+%                              usati (default o valore passato via opts)
 %     .nVulnerable    scalare  numero di membri in poverta' energetica
 %     .isVulnerable   [n x 1]  logico
 %     .lihcBool       [n x 1]  logico, indice LIHC booleano (eq. 12)
@@ -570,6 +572,11 @@ function S = tri_level_ep_cer(genUsers, loadUsers, userNames, P_CER, opts)
     S.revSold       = R_inj;
     S.shareEP       = shareEP;
     S.shareRest     = shareRest;
+    % I due parametri di taratura, restituiti perche' chi stampa il risultato
+    % non debba riscrivere i default: erano duplicati nel chiamante, e da
+    % quando arrivano dalla scheda dati quella copia andava fuori sincrono.
+    S.nPct          = opts.nPct;
+    S.capEP         = opts.capEP;
     S.nVulnerable   = nVu;
     S.isVulnerable  = isVulnerable;
     S.isHousehold   = isHousehold;

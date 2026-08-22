@@ -104,13 +104,15 @@ completo) o [CER_LoadProfiles/requirements.txt](CER_LoadProfiles/requirements.tx
 MAIN
 ```
 `MAIN.m` legge tutta la configurazione da [`CER_configuration/`](CER_configuration/)
-(§9): la scheda della comunità — `CER_5_1_0.txt`, con membri, tariffe, impianti e
-percorsi — più lo scenario economico che la scheda dichiara — `scenario_economico.txt`,
-con prezzi, costi e soglie di povertà, gli stessi per tutte le CER. I percorsi sono
+(§9): le schede delle comunità — `CER_C_P_E.txt`, con membri, tariffe, impianti e
+percorsi — più lo scenario economico che ogni scheda dichiara — `scenario_economico.txt`,
+con prezzi, costi e soglie di povertà, gli stessi per tutte le CER. Le schede non si
+scelgono a mano: `MAIN.m` le prende **tutte**, e ripete l'intera analisi una volta per
+comunità, lasciando i risultati di ciascuna nella struct `RESULTS`. I percorsi sono
 **relativi alla scheda**, quindi il progetto gira anche spostato di cartella o su
-un'altra macchina, e per analizzare un'altra comunità si cambia scheda senza toccare il
-codice. Richiede **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`) per
-Nucleolo e Variance Least Core.
+un'altra macchina, e aggiungere una comunità allo studio vuol dire mettere un file in
+quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`linprog`,
+`quadprog`, `intlinprog`) per Nucleolo e Variance Least Core.
 
 [`CER_input.txt`](CER_input.txt) è la guida commentata alla compilazione: spiega sezione
 per sezione cosa scrivere nelle due schede, e non viene letta da `MAIN.m`.
@@ -128,7 +130,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `CER_LoadProfiles/` | Pacchetto Python — generazione profili di carico (RAMP + pyLPG) |
 | `PV_Generation/` | Export orario PVsyst della produzione dell'impianto PV |
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
-| `CER_configuration/` | **Schede dati lette da `MAIN.m`** — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
+| `CER_configuration/` | **Schede dati lette da `MAIN.m`**, tutte, una per giro di ciclo — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
 | `CER_input.txt` | **Guida alla compilazione** — le stesse sezioni, spiegate riga per riga su una CER di esempio. Non viene letta da `MAIN.m` (§9) |
 | `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica. Non contiene dati |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
@@ -423,7 +425,9 @@ mantenuta come riferimento storico.
 ## 9. Le schede dati (`CER_configuration/`)
 
 Tutta la configurazione sta in **file di testo**, letti da `load_cer_input.m`. `MAIN.m`
-non contiene dati: per analizzare un'altra CER si cambia scheda, non il codice.
+non contiene dati e non sceglie nemmeno quale comunità analizzare: legge tutte le schede
+`CER_*.txt` della cartella, in ordine alfabetico, e gira una volta per ciascuna. Studiare
+una CER in più significa aggiungere una scheda, non modificare il codice.
 
 I file operativi sono due, divisi sulla domanda *questo dato cambia se cambio comunità?*
 

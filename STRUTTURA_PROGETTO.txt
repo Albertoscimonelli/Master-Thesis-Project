@@ -27,7 +27,8 @@ Project/
 |-- CER_input.txt                       GUIDA ALLA COMPILAZIONE della scheda dati (commentata,
 |                                       non letta da MAIN.m)
 |
-+-- CER_configuration/                  SCHEDE DATI OPERATIVE - quelle che MAIN.m legge davvero
++-- CER_configuration/                  SCHEDE DATI OPERATIVE - quelle che MAIN.m legge davvero,
+|                                       TUTTE: una per giro del ciclo di MAIN.m 0
 |   |-- CER_5_1_0.txt                   Scheda della comunita', una per CER studiata. Il nome sono
 |   |                                   i conteggi di [RIEPILOGO]: CER_<consumatori>_<prosumer>_<produttori puri>
 |   +-- scenario_economico.txt          Prezzi, costi e soglie di poverta' energetica: lo scenario
@@ -372,8 +373,14 @@ lavoratori (CHR02), famiglia con 1 figlio (CHR03).
  4.1  MAIN.m  (ENTRY POINT - analisi energetica ed economica)
 --------------------------------------------------------------------------------
 
-Pipeline a sezioni indipendenti:
-  0) Configurazione (percorsi, costanti, parametri economici)
+Pipeline a sezioni indipendenti, RIPETUTA PER OGNI CER:
+  0) Le CER da analizzare: elenco delle schede CER_*.txt di
+     CER_configuration/ (ordine alfabetico) e ciclo su di esse. Le sezioni
+     che seguono, dalla 0a alla 6, sono il corpo di UN giro. In testa a ogni
+     giro un clearvars: le CER hanno numero di membri diverso, e una
+     variabile sopravvissuta al giro precedente darebbe un risultato
+     sbagliato in silenzio invece di un errore.
+  0a) Configurazione (percorsi, costanti, parametri economici)
   1) Caricamento profili di carico + generazione PV; assegnazione degli
      impianti PV ai proprietari con autoconsumo (vedi Sezione 7)
   1c) Prezzo zonale orario (load_zonal_price.m) e tariffa incentivante CER
@@ -429,6 +436,11 @@ Pipeline a sezioni indipendenti:
      3a, perche' e' la baseline y_noLEM dell'eq. 19 usata dalla 3t. Qui resta
      solo la presentazione della tabella Tcost.
   5) Visualizzazione (istogrammi, profili stagionali, confronti)
+  6) Risultati della CER messi da parte in RESULTS(iCER) - scheda, nome,
+     nUsers, userNames, Tcmp, Tfair, metodi, shared_annual, rev_tot_annual,
+     CFG. Serve perche' a fine esecuzione il workspace contiene solo
+     l'ULTIMA comunita': senza, i confronti fra CER non avrebbero piu' i
+     dati su cui lavorare.
 
 --------------------------------------------------------------------------------
  4.2  cer_coalition_values.m, shapley_cer.m, nucleolus_cer.m,

@@ -24,6 +24,14 @@ Project/
 |-- setup.cfg                           Configurazione pycodestyle/flake8 (max-line-length 99)
 |-- .gitignore                          File ignorati da Git
 |-- 20250101_20251231_MGP_PrezziZonali_Nord.xlsx   Prezzo zonale orario MGP 2025 (GME, zona Nord)
+|-- CER_input.txt                       GUIDA ALLA COMPILAZIONE della scheda dati (commentata,
+|                                       non letta da MAIN.m)
+|
++-- CER_configuration/                  SCHEDE DATI OPERATIVE - quelle che MAIN.m legge davvero
+|   |-- CER_5_1_0.txt                   Scheda della comunita', una per CER studiata. Il nome sono
+|   |                                   i conteggi di [RIEPILOGO]: CER_<consumatori>_<prosumer>_<produttori puri>
+|   +-- scenario_economico.txt          Prezzi, costi e soglie di poverta' energetica: lo scenario
+|                                       in cui le CER vengono valutate, uno solo per tutte
 |
 +-- CER_LoadProfiles/                   PACCHETTO PYTHON - generazione profili di carico
 |   |-- README.md
@@ -495,7 +503,7 @@ possono enumerare. Vanno giudicati sull'ERRORE, non sull'equita'.
                             alpha/beta tra classe consumatori e classe
                             produttori/prosumer, pesato su DUE potenze
                             distinte: potenza di PRELIEVO per utente
-                            ([MEMBRI].P_prel_kW in CER_input.txt) e
+                            ([MEMBRI].P_prel_kW nella scheda della CER) e
                             potenza di GENERAZIONE per impianto
                             ([IMPIANTI].kWp). Entrambe da confermare. Dentro
                             ogni classe la quota oraria e' proporzionale
@@ -1050,13 +1058,13 @@ AGGIUNGERE FAMIGLIE:
      template pyLPG diverso
 
 ASSEGNARE PIU' IMPIANTI PV A PIU' PROPRIETARI:
-  -> Aggiungi una riga alla tabella [IMPIANTI] di CER_input.txt, e metti
+  -> Aggiungi una riga alla tabella [IMPIANTI] della scheda della CER, e metti
      il suo id nella colonna "impianto" del proprietario in [MEMBRI].
      Il loader verifica che i due riferimenti si corrispondano e che il
      ruolo del membro sia P o E.
 
 AGGIORNARE LE POTENZE (Remuneration Model 1):
-  -> Potenza di PRELIEVO: colonna P_prel_kW di [MEMBRI] in CER_input.txt,
+  -> Potenza di PRELIEVO: colonna P_prel_kW di [MEMBRI] nella scheda della CER,
      con la potenza impegnata in bolletta di ciascun utente. Aggiungere
      un utente significa aggiungere una riga: se manca, o se il nome non
      corrisponde a una colonna del CSV dei profili,
@@ -1070,9 +1078,16 @@ AGGIORNARE LE POTENZE (Remuneration Model 1):
   GUIDA_modelli_distribuzione.md §10.6).
 
 MODIFICARE QUALUNQUE ALTRO DATO DELLA COMUNITA':
-  -> CER_input.txt. Membri, categorie, tariffe, redditi, gas, quote di
-     investimento, impianti, prezzi, soglie di poverta' energetica,
+  -> CER_configuration/CER_C_P_E.txt, la scheda della CER. Membri,
+     categorie, tariffe, redditi, gas, quote di investimento, impianti,
      parametri di governance: tutto sta li', niente sta in MAIN.m.
+  -> CER_configuration/scenario_economico.txt per prezzi, costi di
+     investimento e soglie di poverta' energetica: non descrivono la
+     comunita' ma lo scenario in cui la si valuta, sono gli stessi per
+     tutte le CER e stanno percio' in un file solo, che ogni scheda
+     dichiara in [FILE].scenario_economico.
+  -> CER_input.txt non viene letto da MAIN.m: e' la guida commentata che
+     spiega sezione per sezione cosa scrivere negli altri due.
      Un campo lasciato a '?' non viene passato al metodo, che usa il
      proprio default e lo DICHIARA fra le ipotesi attive; un campo a '-'
      e' non applicabile. Vedi README.md §9.

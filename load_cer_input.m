@@ -1,6 +1,6 @@
 function CFG = load_cer_input(inputFile)
-%LOAD_CER_INPUT  Legge la scheda dati della CER (CER_input.txt) e la
-%   restituisce come struct, validata.
+%LOAD_CER_INPUT  Legge la scheda dati di una CER e la restituisce come
+%   struct, validata.
 %
 %   E' l'unico punto in cui il progetto legge la configurazione della
 %   comunita': MAIN.m non contiene piu' dati, solo il flusso di calcolo.
@@ -24,7 +24,11 @@ function CFG = load_cer_input(inputFile)
 %     esecuzione conta esattamente i '?' che contano.
 %
 %   INPUT
-%     inputFile  string  percorso della scheda (default "CER_input.txt")
+%     inputFile  string  percorso della scheda: un file di CER_configuration/,
+%                        uno per CER, chiamato CER_<C>_<P>_<E> dai conteggi
+%                        di [RIEPILOGO]. Default "CER_configuration/CER_5_1_0.txt".
+%                        CER_input.txt non e' una scheda operativa: e' la
+%                        guida commentata alla compilazione.
 %
 %   OUTPUT (struct CFG)
 %     .cer .riepilogo .file .mercato .investimento .poverta .governance
@@ -38,6 +42,8 @@ function CFG = load_cer_input(inputFile)
 %     .incognito        solo per le tabelle: .incognito.membri.reddito_EUR e'
 %                       un logico [nRighe x 1], true dove c'era un '?'
 %     .radice           cartella della scheda, base dei percorsi relativi
+%     .scenario         percorso dello scenario economico innestato, "" se la
+%                       scheda contiene gia' tutte le sezioni
 %
 %     Due granularita', per due usi diversi. In .noto il flag di una tabella
 %     e' PER COLONNA e vale true solo se NESSUNA cella e' '?': una colonna con
@@ -53,7 +59,7 @@ function CFG = load_cer_input(inputFile)
 %   Vedi anche: align_members_to_users, load_cer_data, MAIN
 
     if nargin < 1 || strlength(string(inputFile)) == 0
-        inputFile = "CER_input.txt";
+        inputFile = "CER_configuration/CER_5_1_0.txt";
     end
     inputFile = string(inputFile);
 
@@ -85,6 +91,11 @@ function CFG = load_cer_input(inputFile)
     % --- Parsing -------------------------------------------------------------
     [CFG, problemi] = parse_file(inputFile, mappaSezioni, sezioniTabellari);
     CFG.radice = string(radice);
+
+    % Prezzi, costi e soglie di poverta' non descrivono la comunita': descrivono
+    % lo scenario in cui la si valuta, e sono gli stessi per tutte. Stanno in un
+    % file a parte, che la scheda dichiara e questa riga innesta.
+    [CFG, problemi] = unisci_scenario(CFG, problemi, mappaSezioni, sezioniTabellari);
 
     % --- Validazioni ---------------------------------------------------------
     problemi = [problemi, valida_sezioni(CFG, mappaSezioni)];
@@ -215,6 +226,60 @@ function [CFG, problemi] = parse_file(inputFile, mappaSezioni, sezioniTabellari)
     % Chiude l'ultima tabella rimasta aperta a fine file
     [CFG, problemi] = chiudi_tabella(CFG, problemi, campoCorr, ...
                                      intestaz, celle, righeTab);
+end
+
+
+function [CFG, problemi] = unisci_scenario(CFG, problemi, mappaSezioni, sezioniTabellari)
+%UNISCI_SCENARIO  Legge il file dichiarato in [FILE].scenario_economico e ne
+%   innesta le sezioni in CFG, come se fossero state scritte nella scheda.
+%
+%   La chiave e' facoltativa: senza, la scheda deve bastare a se' stessa. E'
+%   cosi' che CER_input.txt, che le sezioni economiche ce le ha ancora dentro
+%   per poterle spiegare, continua a leggersi da sola.
+
+    CFG.scenario = "";
+    if ~isfield(CFG, 'file') || ~isfield(CFG.file, 'scenario_economico')
+        return;
+    end
+
+    rel = string(CFG.file.scenario_economico);
+    p   = fullfile(CFG.radice, rel);
+    if ~isfile(p)
+        problemi(end+1) = sprintf( ...
+            '[FILE].scenario_economico non trovato:\n      %s', p);
+        return;
+    end
+    CFG.scenario = string(p);
+
+    [SC, probSC] = parse_file(p, mappaSezioni, sezioniTabellari);
+    problemi = [problemi, probSC];
+
+    for campo = setdiff(string(fieldnames(SC)).', "noto")
+        % Una sezione sta in un file solo. Se compare in tutti e due non c'e'
+        % modo di sapere quale dei due comanda, e sceglierne uno in silenzio
+        % sarebbe il modo peggiore di dirlo.
+        if isfield(CFG, campo) && ~isempty(CFG.(campo))
+            problemi(end+1) = sprintf( ...
+                'sezione [%s] presente sia nella scheda sia in %s: va tenuta in uno solo dei due file', ...
+                nome_sezione(mappaSezioni, campo), rel); %#ok<AGROW>
+            continue;
+        end
+        CFG.(campo) = SC.(campo);
+        if isfield(SC.noto, campo)
+            CFG.noto.(campo) = SC.noto.(campo);
+        end
+    end
+end
+
+
+function nome = nome_sezione(mappaSezioni, campo)
+%NOME_SEZIONE  Dal nome del campo della struct al nome della sezione, per
+%   segnalare i problemi con la stessa parola che chi compila ha davanti.
+
+    nome = string(campo);
+    for s = string(fieldnames(mappaSezioni)).'
+        if string(mappaSezioni.(s)) == string(campo), nome = s; return; end
+    end
 end
 
 
@@ -595,6 +660,10 @@ function stampa_riepilogo(CFG, inputFile)
     M = CFG.membri;
     fprintf('\n=== Scheda dati CER ===\n');
     fprintf('  %-22s %s\n', 'File', inputFile);
+    if isfield(CFG, 'scenario') && strlength(CFG.scenario) > 0
+        fprintf('  %-22s %s\n', 'Scenario economico', ...
+                CFG.file.scenario_economico);
+    end
     fprintf('  %-22s %s (%s, zona %s), anno %d\n', 'Comunita''', ...
             CFG.cer.nome, valore_o_ignoto(CFG.cer.comune), ...
             CFG.cer.zona_mercato, CFG.cer.anno);

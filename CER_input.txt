@@ -1,8 +1,43 @@
 # =============================================================================
-#  CER_input.txt   Scheda dati della Comunita' Energetica Rinnovabile
+#  CER_input.txt   GUIDA ALLA COMPILAZIONE della scheda dati di una CER
 # =============================================================================
-#  Unico file di ingresso di MAIN.m: qui stanno i DATI, in MAIN.m solo il
-#  calcolo. Modificare questo foglio NON richiede di toccare il codice.
+#  QUESTO FILE NON VIENE PIU' LETTO DA MAIN.m. E' il modello commentato: dice
+#  cosa significa ogni sezione, ogni chiave e ogni colonna, e lo dice su una
+#  CER di esempio gia' compilata che si puo' leggere riga per riga.
+#
+#  I FILE CHE GIRANO stanno in CER_configuration/ - stessi dati, zero commenti -
+#  e sono due, perche' non tutto quello che serve descrive la comunita':
+#
+#    CER_C_P_E.txt           chi la abita e cosa possiede. Uno per ogni CER
+#                            studiata; il nome sono i conteggi di [RIEPILOGO]:
+#                            C consumatori, P prosumer, E produttori puri.
+#    scenario_economico.txt  prezzi, costi e soglie di poverta': lo scenario in
+#                            cui le CER vengono valutate. Uno solo, per tutte.
+#
+#  CER_5_1_0.txt e' percio' la CER di questa guida: 5 consumatori, 1 prosumer,
+#  0 produttori puri, e quei tre numeri il loader li ricontrolla sulle tabelle.
+#
+#  La scheda dichiara lo scenario in [FILE].scenario_economico, e il loader ne
+#  innesta [MERCATO], [INVESTIMENTO] e [POVERTA_ENERGETICA] come se fossero
+#  scritte dentro. Cosi' ritoccare il prezzo del gas resta una modifica sola, e
+#  due CER non possono piu' dire prezzi diversi senza che nessuno se ne accorga.
+#  Una sezione pero' sta in un file solo: se compare in tutti e due, il loader
+#  si ferma invece di scegliere in silenzio quale dei due comanda.
+#
+#  QUESTA GUIDA tiene dentro tutte e nove le sezioni, per poterle spiegare, e
+#  non dichiara nessuno scenario: si legge ancora da sola.
+#
+#  PER STUDIARE UN'ALTRA CER
+#    1. copiare un CER_C_P_E.txt di CER_configuration/ col nome della CER nuova
+#       (lo scenario non si copia: e' lo stesso, e resta uno);
+#    2. cambiarne i dati, tenendo aperta questa guida;
+#    3. aggiornare [RIEPILOGO], che altrimenti ferma l'esecuzione;
+#    4. puntarci MAIN.m:  load_cer_input("CER_configuration/<nome>.txt")
+#
+#  PERCORSI: i relativi di [FILE] partono dalla cartella della scheda, non da
+#  quella di lavoro di MATLAB. Qui stanno come sono scritti; dentro
+#  CER_configuration/ hanno un '../' davanti, perche' quella cartella e' un
+#  livello piu' in basso.
 #
 #  SINTASSI
 #    [SEZIONE]         apre una sezione
@@ -20,7 +55,7 @@
 #        quel registro: e' cosi' che si misura quanto e' completa la scheda.
 #
 #  UNITA': sempre esplicite nel nome della chiave o della colonna.
-#  Compilato il: 2026-08-21   Stato: community di default a 6 membri.
+#  Aggiornata il: 2026-08-22   Esempio: CER a 6 membri -> CER_5_1_0.txt
 # =============================================================================
 
 
@@ -60,14 +95,26 @@ impianti_totali           = 1
 [FILE]
 # Percorsi RELATIVI alla cartella di questa scheda. Niente percorsi assoluti:
 # il progetto deve girare anche spostato di cartella o su un'altra macchina.
+# Le schede di CER_configuration/ hanno percio' un '../' davanti a questi tre:
+# la loro cartella e' un livello piu' in basso.
 # =============================================================================
 profili_carico = CER_LoadProfiles/outputs/csv/profili_tutti.csv
 prezzi_zonali  = 20250101_20251231_MGP_PrezziZonali_Nord.xlsx
 cartella_pv    = PV_Generation
 
+# Quarta chiave, FACOLTATIVA, che le schede operative hanno e questa guida no:
+#
+#   scenario_economico = scenario_economico.txt
+#
+# indica il file da cui prendere [MERCATO], [INVESTIMENTO] e
+# [POVERTA_ENERGETICA]. Qui non c'e' perche' quelle tre sezioni stanno scritte
+# sotto per esteso, e dichiararlo farebbe fermare il loader per doppione.
+
 
 # =============================================================================
 [MERCATO]
+# SEZIONE DI SCENARIO: nella configurazione operativa non sta nella scheda
+# della CER, ma in CER_configuration/scenario_economico.txt.
 # Prezzi e incentivo. Sono i parametri che valorizzano l'energia.
 # =============================================================================
 prezzo_vendita_EUR_kWh = 0.110   # eccedenza immessa in rete (era P_SELL)
@@ -89,6 +136,8 @@ tip_fattore_riduzione  = ?       # fattore F della formula: definizione non
 
 # =============================================================================
 [INVESTIMENTO]
+# SEZIONE DI SCENARIO: nella configurazione operativa non sta nella scheda
+# della CER, ma in CER_configuration/scenario_economico.txt.
 # TRASPORTATI, NON ANCORA USATI. MAIN.m si ferma al flusso di cassa annuo:
 # non calcola NPV ne' IRR. Questi campi sono qui perche' la scheda descriva
 # la CER per intero e perche' il giorno in cui si aggiunge l'analisi
@@ -115,6 +164,8 @@ contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile
 
 # =============================================================================
 [POVERTA_ENERGETICA]
+# SEZIONE DI SCENARIO: nella configurazione operativa non sta nella scheda
+# della CER, ma in CER_configuration/scenario_economico.txt.
 # Soglie dell'indice LIHC (Low Income High Cost) e taratura della quota di
 # solidarieta' del metodo Tri-level EP.
 #

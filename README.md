@@ -103,12 +103,17 @@ completo) o [CER_LoadProfiles/requirements.txt](CER_LoadProfiles/requirements.tx
 % In MATLAB, dalla root del progetto:
 MAIN
 ```
-`MAIN.m` legge tutta la configurazione dalla scheda [`CER_input.txt`](CER_input.txt)
-(§9): membri, tariffe, impianti, percorsi dei file. I percorsi sono **relativi alla
-scheda**, quindi il progetto gira anche spostato di cartella o su un'altra macchina, e
-per analizzare un'altra comunità si modifica la scheda senza toccare il codice.
-Richiede **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`) per Nucleolo e
-Variance Least Core.
+`MAIN.m` legge tutta la configurazione da [`CER_configuration/`](CER_configuration/)
+(§9): la scheda della comunità — `CER_5_1_0.txt`, con membri, tariffe, impianti e
+percorsi — più lo scenario economico che la scheda dichiara — `scenario_economico.txt`,
+con prezzi, costi e soglie di povertà, gli stessi per tutte le CER. I percorsi sono
+**relativi alla scheda**, quindi il progetto gira anche spostato di cartella o su
+un'altra macchina, e per analizzare un'altra comunità si cambia scheda senza toccare il
+codice. Richiede **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`) per
+Nucleolo e Variance Least Core.
+
+[`CER_input.txt`](CER_input.txt) è la guida commentata alla compilazione: spiega sezione
+per sezione cosa scrivere nelle due schede, e non viene letta da `MAIN.m`.
 
 `optimizer_PV.m` si esegue separatamente ed è pensato per test occasionali di
 dimensionamento, non fa parte del flusso principale.
@@ -123,7 +128,8 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `CER_LoadProfiles/` | Pacchetto Python — generazione profili di carico (RAMP + pyLPG) |
 | `PV_Generation/` | Export orario PVsyst della produzione dell'impianto PV |
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
-| `CER_input.txt` | **Scheda dati della CER** — l'unico file da modificare per analizzare un'altra comunità: membri, categorie, tariffe, potenze, impianti, dati socio-economici, costi di investimento, parametri di governance (§9) |
+| `CER_configuration/` | **Schede dati lette da `MAIN.m`** — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
+| `CER_input.txt` | **Guida alla compilazione** — le stesse sezioni, spiegate riga per riga su una CER di esempio. Non viene letta da `MAIN.m` (§9) |
 | `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica. Non contiene dati |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -414,12 +420,30 @@ economico (CAPEX, OPEX, ricavi, IRR via `irr_bisection.m`, NPV) per selezionare 
 configurazione che massimizza IRR o NPV. `archive/PROVA_PV.m` è la versione precedente,
 mantenuta come riferimento storico.
 
-## 9. La scheda dati `CER_input.txt`
+## 9. Le schede dati (`CER_configuration/`)
 
-Tutta la configurazione della comunità sta in **un unico file di testo**, letto da
-`load_cer_input.m`. `MAIN.m` non contiene dati: per analizzare un'altra CER si modifica
-la scheda, non il codice. Il file è anche pensato per essere stampato come appendice di
-tesi.
+Tutta la configurazione sta in **file di testo**, letti da `load_cer_input.m`. `MAIN.m`
+non contiene dati: per analizzare un'altra CER si cambia scheda, non il codice.
+
+I file operativi sono due, divisi sulla domanda *questo dato cambia se cambio comunità?*
+
+| File | Contenuto | Quanti |
+|---|---|---|
+| `CER_configuration/CER_C_P_E.txt` | chi abita la CER e cosa possiede | uno per comunità studiata; il nome sono i conteggi di `[RIEPILOGO]`: **C** consumatori, **P** prosumer, **E** produttori puri |
+| `CER_configuration/scenario_economico.txt` | prezzi, costi e soglie di povertà: lo scenario in cui le CER vengono valutate | uno solo, per tutte |
+
+La scheda dichiara lo scenario in `[FILE].scenario_economico`, e il loader ne innesta
+`[MERCATO]`, `[INVESTIMENTO]` e `[POVERTA_ENERGETICA]` come se fossero scritte dentro:
+da valle nulla cambia, `CFG.mercato.prezzo_gas_EUR_kWh` sta dov'era. Ritoccare un prezzo
+resta così una modifica sola, e due CER non possono dire prezzi diversi senza che nessuno
+se ne accorga. Una sezione sta però in un file solo: se compare in tutti e due, il loader
+si ferma invece di scegliere in silenzio quale dei due comanda.
+
+Nessuno dei due ha commenti — la CER di esempio sta in 41 righe, lo scenario in 28 — e
+sono pensati per essere stampati come appendice di tesi.
+[`CER_input.txt`](CER_input.txt) è la **guida alla compilazione**: le stesse sezioni con
+gli stessi dati, ma spiegate riga per riga. Non viene letta da `MAIN.m`, e infatti tiene
+dentro tutte e nove le sezioni senza dichiarare nessuno scenario.
 
 **Formato:** sezioni `[NOME]`, righe `chiave = valore`, tabelle a `|` (la prima riga è
 l'intestazione), commenti con `#`.
@@ -438,16 +462,17 @@ tutte le colonne socio-economiche sono a `?`, e le 11 ipotesi del Tri-level EP r
 tutte attive; compilandole scendono a 3 — le sole tre che sono correzioni dichiarate
 (ipotesi 6, 7, 9) e non dati mancanti.
 
-**Le sezioni:**
+**Le sezioni.** Le tre marcate *scenario* stanno in `scenario_economico.txt`, le altre
+sei nella scheda della comunità.
 
 | Sezione | Contenuto |
 |---|---|
 | `[CER]` | nome, comune, zona di mercato, cabina primaria, anno, griglia oraria |
 | `[RIEPILOGO]` | conteggi e potenza installata **dichiarati**. Non è una fonte di dati: il loader li ricalcola dalle tabelle e si ferma se non tornano |
-| `[FILE]` | percorsi **relativi** alla scheda (profili di carico, prezzi zonali, cartella PV) |
-| `[MERCATO]` | prezzo di vendita, markup retail, prezzo gas, parametri della tariffa TIP |
-| `[INVESTIMENTO]` | WACC, vita utile, costi specifici CAPEX/OPEX. **Trasportati, non ancora usati**: `MAIN.m` si ferma al flusso di cassa annuo |
-| `[POVERTA_ENERGETICA]` | soglie dell'indice LIHC e taratura della quota di solidarietà |
+| `[FILE]` | percorsi **relativi** alla scheda (profili di carico, prezzi zonali, cartella PV) e la chiave `scenario_economico`, che dichiara il file dello scenario |
+| `[MERCATO]` | *scenario* — prezzo di vendita, markup retail, prezzo gas, parametri della tariffa TIP |
+| `[INVESTIMENTO]` | *scenario* — WACC, vita utile, costi specifici CAPEX/OPEX. **Trasportati, non ancora usati**: `MAIN.m` si ferma al flusso di cassa annuo |
+| `[POVERTA_ENERGETICA]` | *scenario* — soglie dell'indice LIHC e taratura della quota di solidarietà |
 | `[GOVERNANCE]` | scelte deliberate dalla CER: pesi del Cascading Tree, α della Pearson-Sharing, M e seed dell'Adaptive Sampling |
 | `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, gas, quota di investimento, mutuo, impianto posseduto |
 | `[IMPIANTI]` | **una riga per impianto**: proprietario, kWp, export PVsyst, tilt/azimut, CAPEX/OPEX |
@@ -643,7 +668,7 @@ righe, ma vanno aggiunte prima di girare a `n` grande.
 
 Era il problema del `containers.Map` `RATED_LOAD_KW`, con una voce per utente scritta
 dentro `MAIN.m`. **Non esiste più:** la potenza impegnata è una colonna di `[MEMBRI]`
-nella scheda `CER_input.txt` (§9), e una tabella di sessanta righe si compila come una di
+nella scheda della CER (§9), e una tabella di sessanta righe si compila come una di
 sei. `align_members_to_users.m` verifica la corrispondenza con le colonne del CSV e
 riporta **tutti** i disallineamenti insieme, invece di fermarsi al primo.
 

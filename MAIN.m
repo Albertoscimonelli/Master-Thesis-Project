@@ -5,7 +5,7 @@ close all;
 %  MAIN.m  -  Analisi energetica ed economica della CER
 %
 %  Pipeline:
-%    0) Configurazione        (lettura della scheda dati CER_input.txt)
+%    0) Configurazione        (lettura della scheda dati della CER)
 %    1) Caricamento dati      (profili di carico + generazione PV)
 %    2) Elaborazione CER      (richiesta totale, energia condivisa, venduta)
 %    3) Analisi economica     (ricavi mensili e annuali, tabella riepilogo)
@@ -19,19 +19,19 @@ close all;
 %  plot_*). Le sezioni restano indipendenti e facili da estendere.
 %
 %  NON contiene dati. Membri, tariffe, potenze, impianti, redditi, costi di
-%  investimento e parametri di governance stanno tutti in CER_input.txt, letta
-%  da load_cer_input.m. Per analizzare un'altra comunita' si modifica quella
-%  scheda: qui non si tocca nulla.
+%  investimento e parametri di governance stanno tutti nella scheda operativa
+%  di CER_configuration/, letta da load_cer_input.m. Per analizzare un'altra
+%  comunita' si cambia scheda: qui non si tocca nulla.
 %  ========================================================================
 
 
 %% ========================================================================
 %  0) CONFIGURAZIONE
 %
-%  Tutti i dati della comunita' stanno nella scheda CER_input.txt: membri,
-%  categorie, tariffe, potenze impegnate, impianti, redditi, costi di
-%  investimento. Qui resta solo il flusso di calcolo. Per analizzare
-%  un'altra CER si modifica la scheda, non questo file.
+%  Tutti i dati della comunita' stanno in una sola scheda: membri, categorie,
+%  tariffe, potenze impegnate, impianti, redditi, costi di investimento. Qui
+%  resta solo il flusso di calcolo. Per analizzare un'altra CER si cambia la
+%  riga qui sotto, non questo file.
 %
 %  I campi lasciati a '?' nella scheda NON vengono passati ai metodi: ognuno
 %  applica il proprio default e lo dichiara come ipotesi attiva nel registro
@@ -39,7 +39,13 @@ close all;
 %  registro, ed e' cosi' che si misura quanto e' pronta l'analisi.
 %  ========================================================================
 
-CFG = load_cer_input("CER_input.txt");
+% Un file per CER, in CER_configuration/. Il nome dice chi la abita:
+% CER_<consumatori>_<prosumer>_<produttori puri>. Prezzi, costi e soglie di
+% poverta' non stanno li' dentro: sono gli stessi per tutte le CER e la scheda
+% se li tira dietro da scenario_economico.txt. CER_input.txt e' la guida
+% commentata alla compilazione, e non viene letta da qui.
+SCHEDA = "CER_configuration/CER_5_1_0.txt";
+CFG    = load_cer_input(SCHEDA);
 
 % --- Costanti temporali --------------------------------------------------
 ANNO    = CFG.cer.anno;
@@ -49,8 +55,8 @@ N_DAYS  = N_HOURS / 24;
 % Griglia oraria canonica dell'anno (asse di riferimento per tutti i dati)
 tGrid = (datetime(ANNO,1,1,0,0,0) : hours(1) : datetime(ANNO,12,31,23,0,0)).';
 assert(numel(tGrid) == N_HOURS, ...
-       'CER_input.txt: n_ore = %d incoerente con l''anno %d, che ha %d ore.', ...
-       N_HOURS, ANNO, numel(tGrid));
+       '%s: n_ore = %d incoerente con l''anno %d, che ha %d ore.', ...
+       SCHEDA, N_HOURS, ANNO, numel(tGrid));
 
 % --- Parametri economici -------------------------------------------------
 P_SELL = CFG.mercato.prezzo_vendita_EUR_kWh;   % energia venduta in rete [€/kWh]

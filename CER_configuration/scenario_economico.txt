@@ -1,0 +1,28 @@
+[MERCATO]
+prezzo_vendita_EUR_kWh = 0.110
+markup_retail          = ?
+prezzo_gas_EUR_kWh     = 0.120
+tip_potenza_rif_kW     = ?
+tip_fattore_riduzione  = ?
+[INVESTIMENTO]
+tasso_sconto                  = 0.04
+inflazione_opex               = 0.05
+escalation_energia            = 0.03
+vita_utile_anni               = 20
+degrado_pv_pct_anno           = 0.50
+costo_moduli_EUR_kWp          = 180
+costo_inverter_EUR_kWac       = 50
+costo_bop_EUR_kWp             = 270
+quota_ingegneria              = 0.40
+costo_allacciamento_EUR_kWac  = 50
+costi_fissi_progetto_EUR      = ?
+om_variabile_EUR_MWp_anno     = 10000
+om_fisso_EUR_anno             = 5000
+contributo_conto_capitale_pct = ?
+[POVERTA_ENERGETICA]
+mediana_spesa_energetica_EUR  = ?
+soglia_poverta_EUR_percettore = ?
+quota_n_pct                   = ?
+tetto_quota_EP                = ?
+usa_profondita_poverta        = false
+applica_tetto_bolletta        = false

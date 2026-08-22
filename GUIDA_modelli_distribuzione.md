@@ -765,8 +765,8 @@ L'implementazione le tiene separate:
 
 | Grandezza | Dove è dichiarata | Perché lì |
 |---|---|---|
-| Potenza di prelievo `ratedLoadKW` [kW] | colonna `P_prel_kW` di `[MEMBRI]` in `CER_input.txt` | è una caratteristica del contratto dell'**utente** |
-| Potenza di generazione `ratedGenKW` [kWp] | colonna `kWp` di `[IMPIANTI]` in `CER_input.txt` | appartiene all'**impianto**, non alla persona |
+| Potenza di prelievo `ratedLoadKW` [kW] | colonna `P_prel_kW` di `[MEMBRI]`, nella scheda della CER | è una caratteristica del contratto dell'**utente** |
+| Potenza di generazione `ratedGenKW` [kWp] | colonna `kWp` di `[IMPIANTI]`, nella stessa scheda | appartiene all'**impianto**, non alla persona |
 
 Derivare la potenza di generazione dagli impianti (invece che da una seconda tabella per
 utente) ha tre vantaggi: è **impossibile** dichiarare potenza di generazione a chi non ha
@@ -808,7 +808,8 @@ sempre a `(alpha+beta)·B_REC(t) = B_REC(t)`.
 ### 10.5 I dati esterni richiesti
 
 Nessuna delle due potenze è derivabile dai profili orari: sono dati esterni, dichiarati
-in due tabelle distinte della scheda `CER_input.txt` e ancora **da confermare** (README
+in due tabelle distinte della scheda della CER (`CER_configuration/CER_C_P_E.txt`) e
+ancora **da confermare** (README
 §12).
 
 ```text

@@ -12,8 +12,10 @@ Uso:
 
 import argparse
 import logging
+import shutil
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -27,6 +29,37 @@ from postprocessing import (
 from ramp_runner import run_ramp
 
 logger = logging.getLogger(__name__)
+
+
+def archivia(percorso: Path, cartella_storico: Path, marca: str) -> Path:
+    """Salva una copia immutabile di un CSV nella cartella dello storico.
+
+    Il file con nome fisso resta l'ultimo generato, cosi' i percorsi gia'
+    scritti in CER_input.txt, nelle schede di CER_configuration/ e in
+    optimizer_PV.m continuano a funzionare senza modifiche. La copia
+    archiviata porta la marca temporale del run e non viene mai sovrascritta.
+
+    Args:
+        percorso: CSV appena scritto, con nome fisso.
+        cartella_storico: Cartella in cui archiviare le copie.
+        marca: Marca temporale del run, formato YYYYMMDD_HHMMSS.
+
+    Returns:
+        Percorso della copia archiviata.
+
+    Raises:
+        FileExistsError: Se esiste gia' un archivio con la stessa marca, cosa
+            che significherebbe sovrascrivere uno storico.
+    """
+    cartella_storico.mkdir(parents=True, exist_ok=True)
+    destinazione = cartella_storico / f"{percorso.stem}_{marca}{percorso.suffix}"
+    if destinazione.exists():
+        raise FileExistsError(
+            f"Archivio gia' esistente: {destinazione}. Lo storico non va "
+            f"sovrascritto: attendi un secondo e rilancia."
+        )
+    shutil.copy2(percorso, destinazione)
+    return destinazione
 
 
 def setup_logging() -> None:
@@ -162,6 +195,10 @@ def main() -> None:
     logger.info("-" * 40)
 
     files_generated: list[str] = []
+    archiviati: list[str] = []
+    marca = datetime.now().strftime("%Y%m%d_%H%M%S")
+    storico = output_folder / output_config.get("history_folder", "storico")
+    versionare = output_config.get("versioned", False)
 
     if output_config.get("individual_profiles", True):
         # I DataFrame sono gia' in kWh/ora -> non convertire W->kW, ma
@@ -176,19 +213,32 @@ def main() -> None:
             export_to_csv(df_lpg, lpg_path, convert_w_to_kw=False, add_kwh_suffix=True)
             files_generated.append(lpg_path)
 
-        if has_ramp and has_lpg:
-            # Join sui timestamp comuni (gestisce eventuali disallineamenti)
-            df_all = df_ramp.join(df_lpg, how="inner")
-            all_path = str(output_folder / "profili_tutti.csv")
-            export_to_csv(df_all, all_path, convert_w_to_kw=False, add_kwh_suffix=True)
-            files_generated.append(all_path)
+    # profili_tutti.csv: una colonna per utenza della CER. E' il file che
+    # leggono CER_input.txt, le schede di CER_configuration/ e optimizer_PV.m,
+    # quindi ha una chiave sua e resta generabile anche da solo.
+    if output_config.get("combined_profiles", True):
+        parti = [d for d, presente in ((df_ramp, has_ramp), (df_lpg, has_lpg)) if presente]
+        if parti:
+            df_all = parti[0]
+            for altra in parti[1:]:
+                # Join sui timestamp comuni (gestisce eventuali disallineamenti)
+                df_all = df_all.join(altra, how="inner")
+            all_path = output_folder / "profili_tutti.csv"
+            export_to_csv(
+                df_all, str(all_path), convert_w_to_kw=False, add_kwh_suffix=True
+            )
+            files_generated.append(str(all_path))
+            if versionare:
+                archiviati.append(str(archivia(all_path, storico, marca)))
 
     # 6. Export CSV aggregato CER (gia' in kWh/ora: colonna 'total_CER_kWh')
     if output_config.get("aggregate_total", True):
         df_aggregated = aggregate_profiles(dfs_to_aggregate)
-        agg_path = str(output_folder / "profilo_CER_aggregato.csv")
-        export_to_csv(df_aggregated, agg_path, convert_w_to_kw=False, add_kwh_suffix=False)
-        files_generated.append(agg_path)
+        agg_path = output_folder / "profilo_CER_aggregato.csv"
+        export_to_csv(df_aggregated, str(agg_path), convert_w_to_kw=False, add_kwh_suffix=False)
+        files_generated.append(str(agg_path))
+        if versionare:
+            archiviati.append(str(archivia(agg_path, storico, marca)))
 
     # 7. Riepilogo finale
     elapsed = time.time() - start_time
@@ -206,6 +256,10 @@ def main() -> None:
     logger.info("  File generati:            %d", len(files_generated))
     for f in files_generated:
         logger.info("    -> %s", f)
+    if archiviati:
+        logger.info("  Archiviati nello storico: %d", len(archiviati))
+        for f in archiviati:
+            logger.info("    -> %s", f)
     logger.info("  Tempo di esecuzione:      %.1f s", elapsed)
     logger.info("=" * 60)
 

@@ -32,7 +32,38 @@ lpg:
   house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
   energy_intensity: "Random"
 
+  # Catalogo LPG da usare, relativo alla cartella CER_LoadProfiles/.
+  # Si ricostruisce con lpg_db/build_italian_db.py: contiene orari, vacanze e
+  # festivita' italiani. Commentare questa chiave per tornare al catalogo
+  # tedesco originale di pyLPG (utile per il confronto A/B).
+  database: "lpg_db/profilegenerator.IT.db3"
+
+  # Determina festivita', alba/tramonto e radiazione solare.
+  # Alternative: Italy_Rom, Italy_Palermo.
+  geographic_location: "Italy_Mailand"
+
+  # I 4 profili disponibili sono tutti tedeschi e a risoluzione giornaliera.
+  # Lasciare vuoto usa il default interno di LPG. Conta poco con HT06 (gas),
+  # diventa rilevante con pompa di calore o condizionamento elettrico.
+  temperature_profile: null
+
 output:
   folder: "outputs/csv"
-  aggregate_total: true             # Genera anche CSV con somma totale CER
-  individual_profiles: true         # Genera CSV per ogni singolo utente
+
+  # profili_tutti.csv - una colonna per utenza della CER.
+  # E' il file letto da CER_input.txt, dalle schede di CER_configuration/ e da
+  # optimizer_PV.m, quindi il nome resta fisso e punta sempre all'ultimo run.
+  combined_profiles: true
+
+  # profili_aziende.csv e profili_famiglie.csv, separati per tecnologia.
+  individual_profiles: false
+
+  # profilo_CER_aggregato.csv - somma di tutte le utenze in una sola colonna.
+  aggregate_total: false
+
+  # Con versioned: true, ogni run salva anche una copia con marca temporale
+  # in outputs/csv/storico/, che non viene mai sovrascritta. Il file dal nome
+  # fisso continua a esistere e a puntare all'ultimo run, cosi' i percorsi
+  # MATLAB non vanno aggiornati a ogni generazione.
+  versioned: true
+  history_folder: "storico"

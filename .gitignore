@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Database LPG italiano: artefatto derivato, si ricostruisce con
+# CER_LoadProfiles/lpg_db/build_italian_db.py. Il manifesto invece si versiona.
+CER_LoadProfiles/lpg_db/*.db3
+
+# Storico dei profili generati (output.versioned nella configurazione).
+# Cresce di ~500 KB a ogni run e resta locale: i CSV dal nome fisso in
+# outputs/csv/ restano tracciati e sono quelli letti da CER_input.txt,
+# dalle schede di CER_configuration/ e da optimizer_PV.m.
+CER_LoadProfiles/outputs/**/storico/

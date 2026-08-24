@@ -16,7 +16,7 @@ penetrazione_prosumer_pct = 16.7
 potenza_installata_kWp    = 20
 impianti_totali           = 1
 [FILE]
-profili_carico     = ../CER_LoadProfiles/outputs/csv/profili_tutti.csv
+profili_carico     = ../CER_LoadProfiles/outputs/csv/storico/profili_tutti_20260824_175508.csv
 prezzi_zonali      = ../20250101_20251231_MGP_PrezziZonali_Nord.xlsx
 cartella_pv        = ../PV_Generation
 scenario_economico = scenario_economico.txt

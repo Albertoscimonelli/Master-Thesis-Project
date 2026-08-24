@@ -1,0 +1,61 @@
+# Configurazione di BASELINE per il confronto A/B.
+#
+# Identica a simulation_config.yaml tranne che per due cose:
+#   - nessuna chiave 'database': usa il catalogo LPG originale di pyLPG, con
+#     orari, vacanze e festivita' tedeschi;
+#   - output in outputs/csv_baseline/, per non sovrascrivere i profili buoni.
+#
+# Serve solo a misurare quanto pesano le migrazioni italiane. Genera i due set
+# con lo stesso seed, poi confronta:
+#
+#   python generate_load_profiles.py --config config/simulation_config.baseline.yaml
+#   python generate_load_profiles.py --config config/simulation_config.yaml
+#   python lpg_db/confronta_profili.py outputs/csv_baseline/profili_famiglie.csv \
+#                                      outputs/csv/profili_famiglie.csv
+#
+# Tenere allineate le due configurazioni: se cambi famiglie, anno o house_type
+# in simulation_config.yaml, riporta la modifica anche qui, altrimenti il
+# confronto misura la differenza sbagliata.
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+    - name: "small_industry"
+      num_users: 1
+    - name: "retail"
+      num_users: 1
+
+lpg:
+  households:
+    - label: "pensionati"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      count: 1
+    - label: "coppia_lavoratori"
+      template: "CHR02 Couple, 30 - 64 age, with work"
+      household_ref: "CHR02_Couple_30_64_age_with_work"
+      count: 1
+    - label: "famiglia_1figlio"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      count: 1
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "Random"
+
+  # database: assente di proposito -> catalogo tedesco originale
+  geographic_location: "Italy_Mailand"
+  temperature_profile: null
+
+output:
+  folder: "outputs/csv_baseline"
+  combined_profiles: true
+  individual_profiles: true    # servono anche i profili famiglie separati
+  aggregate_total: false
+  versioned: false             # la baseline e' un riferimento fisso, non uno storico

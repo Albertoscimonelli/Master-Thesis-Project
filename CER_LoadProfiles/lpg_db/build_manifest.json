@@ -1,0 +1,58 @@
+{
+  "costruito_il": "2026-08-24T15:16:39+00:00",
+  "sorgente": "C:\\Users\\scimo\\desktop\\Project\\venv\\Lib\\site-packages\\pylpg\\C1\\profilegenerator.db3",
+  "sha256_sorgente": "e782bd139b78b2def20c5f9e4b09b2ee2c1c1b84fee20ba80ab8a4f69ca1c4d9",
+  "sha256_risultato": "71dcd181aa5364cf94ff59958b79e5c5dfd235bde28dd4a273deb3363d7ab51d",
+  "migrazioni": [
+    {
+      "id": "H01",
+      "descrizione": "Rimuove dal calendario di Milano le festivita non italiane: Venerdi Santo e Lunedi di Pentecoste (festivi in Germania ma non in Italia) e le tre voci greche rimaste agganciate per errore.",
+      "righe_modificate": 5
+    },
+    {
+      "id": "H02",
+      "descrizione": "Rimuove Sa Die de Sa Sardigna (28 aprile): festivita regionale sarda, non osservata a Milano.",
+      "righe_modificate": 1
+    },
+    {
+      "id": "H03",
+      "descrizione": "Attiva su Milano le tre festivita italiane gia' presenti nel catalogo ma non agganciate: 2 giugno (25), Immacolata (26), Ferragosto (27). Calendario finale: 12 voci.",
+      "righe_modificate": 3
+    },
+    {
+      "id": "L01",
+      "descrizione": "Lavoro: sposta l'orario di ingresso dalle 08:00-10:00 alle 09:00-11:00. Il time limit 12 e' condiviso da 8 tratti di lavoro (inclusi i due Work - Teacher School) usati da circa 40 famiglie. I time limit 41, 92 e 93 sono gia' su orario italiano e non vengono toccati.",
+      "righe_modificate": 3
+    },
+    {
+      "id": "L02",
+      "descrizione": "Cena: sposta la cottura e il pasto serale di circa un'ora, dalle 18:00-21:00 tedesche alle 19:00-21:30 italiane. Il time limit 121 e' quello effettivo, imposto dal tratto Cooking Dinner for the Family via tblHHTAffordances.TimeLimitID.",
+      "righe_modificate": 8
+    },
+    {
+      "id": "L03",
+      "descrizione": "Pranzo: 12:30-14:30 nei feriali e 12:30-15:00 nel weekend. La randomizzazione scende da 60 a 45 minuti sulle finestre 119/120/122: lasciandola a 60 il pranzo continuerebbe a cadere alle 11:30 nonostante lo spostamento.",
+      "righe_modificate": 5
+    },
+    {
+      "id": "L04",
+      "descrizione": "Scuola a tempo normale. I tratti Primary school 1/2/3 durano 6 ore con partenza 07:00-09:00 e finiscono quindi fra le 13 e le 14: sono gia' italiani e non vengono toccati. Si sposta il pomeriggio libero dalle 12:00 (scuola tedesca che finisce a mezzogiorno) alle 13:30, e le sveglie scolastiche di circa un'ora mantenendone la diversita' fra famiglie.",
+      "righe_modificate": 11
+    },
+    {
+      "id": "L05",
+      "descrizione": "Bambini a letto piu' tardi: dalle 19:30-20:30 tedesche alle 21:00 italiane. Il sonno degli adulti (time limit 19, 22:00-02:00) e' gia' compatibile e non viene toccato.",
+      "righe_modificate": 5
+    },
+    {
+      "id": "L06",
+      "descrizione": "Colazione: inizio alle 07:00 invece che alle 06:00. Non si tocca il tratto Breakfast 1h: la durata e' una questione diversa dall'orario e accorciarla ridurrebbe il consumo per assunzione, non per dato.",
+      "righe_modificate": 13
+    },
+    {
+      "id": "V01",
+      "descrizione": "Vacanze italiane su tutte le 66 famiglie. Oggi 18 famiglie su 66 vanno in vacanza ad aprile e solo 10 in agosto: l'opposto della realta' italiana. Lavoratori e famiglie ad agosto; pensionati e non occupati alternati fra giugno e settembre, per mantenere diversita' di occupazione fra i membri della CER; studenti su agosto-settembre. CHR62 (casa vacanza, VacationID 3484) resta invariata.",
+      "righe_modificate": 92
+    }
+  ]
+}

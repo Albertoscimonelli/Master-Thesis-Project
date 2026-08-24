@@ -12,6 +12,7 @@ import os
 import shutil
 import stat
 import time
+import zlib
 from pathlib import Path
 from typing import Optional
 
@@ -28,11 +29,28 @@ _GENERATION_RESOLUTION_MINUTES = 1
 _PYLPG_AVAILABLE = False
 try:
     from pylpg import lpg_execution, lpgdata
-    from pylpg.lpgpythonbindings import EnergyIntensityType
+    from pylpg.lpgpythonbindings import (
+        EnergyIntensityType,
+        HouseholdData,
+        HouseholdDataSpecificationType,
+        HouseholdNameSpecification,
+    )
 
     _PYLPG_AVAILABLE = True
 except ImportError:
     pass
+
+
+def _seed_stabile(label: str, indice: int) -> int:
+    """Seed riproducibile fra esecuzioni diverse dell'interprete.
+
+    hash() sulle stringhe e' randomizzato a ogni avvio di Python (PEP 456),
+    quindi due esecuzioni dello stesso script producevano profili diversi.
+    crc32 e' deterministico, e la riproducibilita' e' il prerequisito per
+    poter attribuire una differenza fra due run a una modifica del modello
+    invece che al generatore casuale.
+    """
+    return zlib.crc32(f"{label}_{indice}".encode("utf-8")) % (2**31)
 
 
 def _clean_lpg_results() -> None:
@@ -87,44 +105,129 @@ def _get_household_ref(ref_name: str) -> object:
     return getattr(lpgdata.Households, ref_name)
 
 
+def _risolvi(classe_lpgdata, nome_attributo: Optional[str], etichetta: str):
+    """Risolve un nome di attributo in un oggetto del catalogo lpgdata.
+
+    Args:
+        classe_lpgdata: Classe di lpgdata (GeographicLocations, HouseTypes...).
+        nome_attributo: Nome dell'attributo, oppure None per non impostare nulla.
+        etichetta: Nome del parametro, usato nel messaggio d'errore.
+
+    Returns:
+        L'oggetto corrispondente, o None se nome_attributo e' None.
+
+    Raises:
+        AttributeError: Se il nome non esiste nel catalogo.
+    """
+    if nome_attributo is None:
+        return None
+    if not hasattr(classe_lpgdata, nome_attributo):
+        disponibili = [a for a in dir(classe_lpgdata) if not a.startswith("_")]
+        raise AttributeError(
+            f"{etichetta} '{nome_attributo}' non trovato in "
+            f"lpgdata.{classe_lpgdata.__name__}. Primi disponibili: "
+            f"{disponibili[:8]}..."
+        )
+    return getattr(classe_lpgdata, nome_attributo)
+
+
 def _run_single_lpg_household(
     year: int,
     household_ref_name: str,
     house_type: str,
     seed: int,
     energy_intensity: str,
+    database: Optional[str] = None,
+    geographic_location: str = "Italy_Mailand",
+    temperature_profile: Optional[str] = None,
 ) -> Optional[pd.DataFrame]:
     """Esegue pyLPG per un singolo nucleo familiare.
+
+    Replica il corpo di lpg_execution.execute_lpg_single_household() perche'
+    quella funzione non espone tre cose che ci servono:
+
+    - PathToDatabase, per usare il catalogo italiano invece di quello tedesco
+      originale dentro venv/;
+    - CalcSpec.TemperatureProfile, che pyLPG non valorizza mai;
+    - House.TargetHeatDemand / TargetCoolingDemand, che make_default_lpg_settings()
+      imposta a 0 e 10000 e che execute_lpg_single_household() non sovrascrive,
+      mettendoli in conflitto con l'HouseTypeCode scelto.
 
     Args:
         year: Anno di simulazione.
         household_ref_name: Nome attributo in lpgdata.Households.
         house_type: Nome attributo in lpgdata.HouseTypes.
         seed: Seed random per riproducibilita'.
-        energy_intensity: Tipo di intensita' energetica.
+        energy_intensity: Nome attributo in EnergyIntensityType.
+        database: Percorso del profilegenerator.db3 da usare. None = quello
+            di default dentro il pacchetto pylpg (catalogo tedesco originale).
+        geographic_location: Nome attributo in lpgdata.GeographicLocations.
+        temperature_profile: Nome attributo in lpgdata.TemperatureProfiles,
+            oppure None per lasciare il default interno di LPG.
 
     Returns:
         DataFrame con DatetimeIndex e colonne per tipo di carico, o None se fallisce.
     """
     household_ref = _get_household_ref(household_ref_name)
-    house_type_code = getattr(lpgdata.HouseTypes, house_type)
-    # Genera sempre a 1 minuto (come RAMP), il postprocessing ricampionera'
-    resolution_str = "00:01:00"
+    house_type_code = _risolvi(lpgdata.HouseTypes, house_type, "house_type")
+    geo = _risolvi(
+        lpgdata.GeographicLocations, geographic_location, "geographic_location"
+    )
+    temp = _risolvi(
+        lpgdata.TemperatureProfiles, temperature_profile, "temperature_profile"
+    )
     intensity = getattr(EnergyIntensityType, energy_intensity)
 
     _clean_lpg_results()
 
-    result = lpg_execution.execute_lpg_single_household(
-        year=year,
-        householdref=household_ref,
-        housetype=house_type_code,
-        startdate=f"{year}-01-01",
-        enddate=f"{year}-12-31",
-        geographic_location=lpgdata.GeographicLocations.Italy_Mailand,
-        random_seed=seed,
-        energy_intensity=intensity,
-        resolution=resolution_str,
+    esecutore = lpg_execution.LPGExecutor(1, False)
+    richiesta = esecutore.make_default_lpg_settings(year)
+
+    richiesta.House.HouseTypeCode = house_type_code
+    # Lascia decidere all'house type: i default 0 / 10000 di
+    # make_default_lpg_settings() descrivono una casa senza riscaldamento e
+    # con 10 MWh di raffrescamento, che non e' quella che abbiamo scelto.
+    richiesta.House.TargetHeatDemand = None
+    richiesta.House.TargetCoolingDemand = None
+    richiesta.House.Households.append(
+        HouseholdData(
+            None,
+            None,
+            HouseholdNameSpecification(household_ref),
+            "hhid",
+            "hhname",
+            None,
+            None,
+            None,
+            None,
+            HouseholdDataSpecificationType.ByHouseholdName,
+        )
     )
+
+    spec = richiesta.CalcSpec
+    spec.RandomSeed = seed
+    spec.set_StartDate(f"{year}-01-01")
+    spec.set_EndDate(f"{year}-12-31")
+    spec.EnergyIntensityType = intensity
+    spec.GeographicLocation = geo
+    spec.TemperatureProfile = temp
+    # Genera sempre a 1 minuto (come RAMP), il postprocessing ricampionera'
+    spec.ExternalTimeResolution = "00:01:00"
+
+    if database:
+        percorso_db = Path(database).expanduser().resolve()
+        if not percorso_db.exists():
+            raise FileNotFoundError(
+                f"Database LPG non trovato: {percorso_db}. Ricostruiscilo con "
+                f"CER_LoadProfiles/lpg_db/build_italian_db.py"
+            )
+        richiesta.PathToDatabase = str(percorso_db)
+
+    Path(esecutore.calculation_directory, "calcspec.json").write_text(
+        richiesta.to_json(indent=4), encoding="utf-8"
+    )
+    esecutore.execute_lpg_binaries()
+    result = esecutore.read_all_json_results_in_directory()
 
     # Pulisci subito dopo il run per evitare che il prossimo trovi cartelle
     # ReadOnly bloccate dal processo .NET appena terminato.
@@ -247,8 +350,23 @@ def run_lpg(config: dict) -> pd.DataFrame:
     households = lpg_config["households"]
     house_type = lpg_config["house_type"]
     energy_intensity = lpg_config.get("energy_intensity", "Random")
+    geographic_location = lpg_config.get("geographic_location", "Italy_Mailand")
+    temperature_profile = lpg_config.get("temperature_profile")
+
+    # Percorso relativo alla cartella CER_LoadProfiles, cosi' il progetto
+    # resta spostabile.
+    database = lpg_config.get("database")
+    if database:
+        database = str((Path(__file__).parent / database).resolve())
+        logger.info("Catalogo LPG: %s", database)
+    else:
+        logger.warning(
+            "Nessun 'database' in config.lpg: uso il catalogo originale di "
+            "pyLPG, che ha orari, vacanze e festivita' tedeschi."
+        )
 
     all_profiles: dict[str, pd.Series] = {}
+    sintetici: list[str] = []
     global_idx = 0
 
     for hh_group in households:
@@ -261,7 +379,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
         for i in range(count):
             global_idx += 1
             col_name = f"household_{global_idx}"
-            seed = hash(f"{label}_{i}") % (2**31)
+            seed = _seed_stabile(label, i)
 
             if _PYLPG_AVAILABLE:
                 logger.info(
@@ -274,6 +392,9 @@ def run_lpg(config: dict) -> pd.DataFrame:
                         house_type=house_type,
                         seed=seed,
                         energy_intensity=energy_intensity,
+                        database=database,
+                        geographic_location=geographic_location,
+                        temperature_profile=temperature_profile,
                     )
 
                     if result_df is not None and not result_df.empty:
@@ -316,9 +437,14 @@ def run_lpg(config: dict) -> pd.DataFrame:
                                 result_df = result_df.sort_index()
 
                     if result_df is not None and not result_df.empty:
-                        # Estrai solo la colonna Electricity
+                        # Estrai la colonna Electricity della famiglia (HH1).
+                        # Il match dev'essere sul prefisso esatto: "Electricity"
+                        # e' sottostringa anche di "Electricity for Heating" e
+                        # "Electricity for Car Charging", che comparirebbero con
+                        # pompa di calore o trasporto attivo.
                         elec_cols = [
-                            c for c in result_df.columns if "Electricity" in c
+                            c for c in result_df.columns
+                            if c.startswith("Electricity_HH")
                         ]
                         if elec_cols:
                             # pyLPG restituisce valori in kWh per timestep (1 min)
@@ -352,6 +478,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
             # Fallback sintetico (a 1 min, come RAMP)
             profile = _generate_synthetic_profile(label, i, year)
             all_profiles[col_name] = profile
+            sintetici.append(col_name)
             logger.info("  %s: profilo sintetico generato", col_name)
 
     if not all_profiles:
@@ -366,6 +493,20 @@ def run_lpg(config: dict) -> pd.DataFrame:
             "pyLPG non disponibile. Tutti i profili residenziali sono sintetici. "
             "Per profili realistici installa: pip install pyloadprofilegenerator "
             "e il runtime .NET 6 (su Linux: sudo apt install dotnet-runtime-6.0)"
+        )
+    elif sintetici:
+        # Il fallback e' un warning fra centinaia di righe di log ed e' facile
+        # non vederlo. Un profilo sintetico non ha nulla a che vedere con il
+        # catalogo LPG: se ne resta anche uno solo, ogni confronto A/B fra
+        # cataloghi misura il fallback invece della modifica.
+        logger.error(
+            "%d profili su %d sono SINTETICI, non generati da LPG: %s. "
+            "Le impostazioni del catalogo (database, orari, vacanze) non hanno "
+            "avuto effetto su questi. Controlla i warning qui sopra prima di "
+            "usare questi profili per un confronto.",
+            len(sintetici),
+            len(all_profiles),
+            ", ".join(sintetici),
         )
 
     logger.info(

@@ -51,8 +51,8 @@ profilesFile = "C:\Users\scimo\desktop\Project\CER_LoadProfiles\outputs\csv\prof
 % =========================================================================
 
 % --- Geometria copertura -----------------------------------------------
-L_r     = 15;   % Lunghezza copertura [m]
-W_r     = 20;    % Larghezza copertura [m]
+L_r     = 7;   % Lunghezza copertura [m]
+W_r     = 7;    % Larghezza copertura [m]
 d_edge  = 1.4;   % Margine perimetrale libero [m]
 rho_g   = 0.3;   % Albedo del suolo [-] (usato per irradianza riflessa)
 

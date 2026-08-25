@@ -79,6 +79,12 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 %     .consShare   scalare  quota totale ai consumatori puri     [EUR]
 %     .thetaLC     scalare  surplus della coalizione piu' scontenta [EUR]
 %                           (>= 0  =>  allocazione nel Core, stabile)
+%     .tolConv     scalare  tolleranza con cui la row-generation dichiara
+%                           la convergenza: i vincoli del master VLC sono
+%                           rilassati, quindi l'allocazione restituita puo'
+%                           stare fino a tolConv sotto il bordo del Least
+%                           Core. Chi verifica .phi dall'esterno deve usare
+%                           QUESTA soglia, non tolRel*v(N)          [EUR]
 %     .inCore      logico   true se thetaLC >= -tol
 %     .surplus     [n x 1]  surplus individuale sigma({i}, x)    [EUR]
 %     .iterLC      scalare  iterazioni row-generation, fase theta_LC
@@ -231,6 +237,7 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     S.prodShare  = sum(xVLC(isProsumer));
     S.consShare  = sum(xVLC(~isProsumer));
     S.thetaLC    = thetaLC;
+    S.tolConv    = tolConv;
     S.inCore     = thetaLC >= -tolAbs;
     S.surplus    = surplus;
     S.iterLC     = iterLC;

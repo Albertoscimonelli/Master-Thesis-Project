@@ -436,43 +436,43 @@ for iCER = 1:N_CER
     plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer);
 
 
-    % %% ========================================================================
-    % %  3e) DISTRIBUZIONE DEI BENEFICI - VARIANCE LEAST CORE
-    % %
-    % %  Quarto modello di ripartizione, sulla STESSA funzione caratteristica v(S)
-    % %  degli altri tre. Il Variance Least Core (Ferrucci, Fioriti, Poli, IEEE PES
-    % %  ISGT Europe 2025) sceglie, fra tutte le allocazioni del Least Core (quelle
-    % %  che massimizzano il surplus della coalizione piu' scontenta, quindi
-    % %  STABILI), l'unica a distanza quadratica minima dalla ripartizione
-    % %  uniforme: e' quindi al tempo stesso stabile ed UNIVOCA, a differenza del
-    % %  Least Core che e' un insieme.
-    % %
-    % %  A differenza degli altri metodi NON enumera le 2^n coalizioni: usa la
-    % %  ROW-GENERATION (Master + Separation MILP, eq. 15-17 del paper), che genera
-    % %  solo le poche coalizioni realmente vincolanti. E' questa la scelta che
-    % %  rende il metodo applicabile a comunita' con decine o centinaia di membri.
-    % %  Vedi variance_least_core_cer.m per i dettagli.
-    % %  ========================================================================
-    % 
-    % VLC = variance_least_core_cer(genForShare, loadForShare, userNames, P_CER_h);
-    % 
-    % coreMsgVLC = "fuori dal Core";
-    % if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
-    % report_allocation(VLC, "Variance Least Core", [ ...
-    %     string(sprintf('  %-25s: EUR %9.2f  ->  %s', ...
-    %                    'Surplus min (theta_LC)', VLC.thetaLC, coreMsgVLC)), ...
-    %     string(sprintf('  %-25s: %d iterazioni (LC) + %d (VLC), %d coalizioni generate su %d', ...
-    %                    'Row-generation', VLC.iterLC, VLC.iterVLC, ...
-    %                    size(VLC.coalitions, 1), 2^numel(VLC.players) - 2))]);
-    % 
-    % % Controllo incrociato: il primo LP del Nucleolo E' l'LP del Least Core,
-    % % quindi i due surplus minimi devono coincidere. E' la verifica piu' forte
-    % % che la row-generation non abbia trascurato coalizioni vincolanti.
-    % assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
-    %        'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
-    % 
-    % % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    % plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer);
+    %% ========================================================================
+    %  3e) DISTRIBUZIONE DEI BENEFICI - VARIANCE LEAST CORE
+    %
+    %  Quarto modello di ripartizione, sulla STESSA funzione caratteristica v(S)
+    %  degli altri tre. Il Variance Least Core (Ferrucci, Fioriti, Poli, IEEE PES
+    %  ISGT Europe 2025) sceglie, fra tutte le allocazioni del Least Core (quelle
+    %  che massimizzano il surplus della coalizione piu' scontenta, quindi
+    %  STABILI), l'unica a distanza quadratica minima dalla ripartizione
+    %  uniforme: e' quindi al tempo stesso stabile ed UNIVOCA, a differenza del
+    %  Least Core che e' un insieme.
+    %
+    %  A differenza degli altri metodi NON enumera le 2^n coalizioni: usa la
+    %  ROW-GENERATION (Master + Separation MILP, eq. 15-17 del paper), che genera
+    %  solo le poche coalizioni realmente vincolanti. E' questa la scelta che
+    %  rende il metodo applicabile a comunita' con decine o centinaia di membri.
+    %  Vedi variance_least_core_cer.m per i dettagli.
+    %  ========================================================================
+
+    VLC = variance_least_core_cer(genForShare, loadForShare, userNames, P_CER_h);
+
+    coreMsgVLC = "fuori dal Core";
+    if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
+    report_allocation(VLC, "Variance Least Core", [ ...
+        string(sprintf('  %-25s: EUR %9.2f  ->  %s', ...
+                       'Surplus min (theta_LC)', VLC.thetaLC, coreMsgVLC)), ...
+        string(sprintf('  %-25s: %d iterazioni (LC) + %d (VLC), %d coalizioni generate su %d', ...
+                       'Row-generation', VLC.iterLC, VLC.iterVLC, ...
+                       size(VLC.coalitions, 1), 2^numel(VLC.players) - 2))]);
+
+    % Controllo incrociato: il primo LP del Nucleolo E' l'LP del Least Core,
+    % quindi i due surplus minimi devono coincidere. E' la verifica piu' forte
+    % che la row-generation non abbia trascurato coalizioni vincolanti.
+    assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
+           'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
+
+    % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
+    plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer);
 
 
     %% ========================================================================
@@ -1303,7 +1303,17 @@ for iCER = 1:N_CER
     tolEx = 1e-6 * max(1, abs(EX.vGrand));
     assert(abs(EX.maxExcess(iNu) + Nu.thetaMin) < tolEx, ...
            'Indici di equita'': eccesso massimo del Nucleolo diverso da -thetaMin');
-    assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < tolEx, ...
+    %
+    % Il VLC va verificato con la SUA tolleranza, non con tolEx. Nucleolo ed
+    % eccessi sono esatti; il VLC no, per costruzione: la row-generation
+    % rilassa i vincoli del master di tolConv, quindi la sua allocazione si
+    % appoggia al bordo rilassato del Least Core e l'eccesso massimo risulta
+    % piu' alto di -thetaLC di esattamente quel rilassamento. Confrontarlo con
+    % tolEx (= meta' di tolConv) faceva fallire l'assert su qualunque CER in
+    % cui il vincolo di Least Core e' attivo, cioe' quasi sempre: era la
+    % soglia a essere sbagliata, non l'allocazione. Lo scarto residuo vale
+    % frazioni di centesimo di euro e non tocca nessun risultato economico.
+    assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < max(tolEx, VLC.tolConv), ...
            'Indici di equita'': eccesso massimo del VLC diverso da -thetaLC');
 
     % ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.

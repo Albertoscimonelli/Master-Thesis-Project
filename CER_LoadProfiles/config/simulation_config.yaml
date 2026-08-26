@@ -29,6 +29,10 @@ lpg:
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"
       count: 1
+    - label: "famiglia_3figli"
+      template: "CHR05 Family, 3 children, both with work"
+      household_ref: "CHR05_Family_3_children_both_with_work"
+      count: 1
   house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
   energy_intensity: "Random"
 
@@ -67,3 +71,9 @@ output:
   # MATLAB non vanno aggiornati a ogni generazione.
   versioned: true
   history_folder: "storico"
+
+  # Deposita in CER_configuration/ una bozza di scheda CER con [MEMBRI] gia'
+  # allineata alle colonne appena generate. Il prefisso 'bozza_' la tiene fuori
+  # dal glob CER_*.txt di MAIN.m: finche' non la si completa e rinomina, MATLAB
+  # la ignora e non puo' rompersi.
+  scheda_cer: true

@@ -86,6 +86,27 @@ def aggregate_profiles(dfs: list[pd.DataFrame]) -> pd.DataFrame:
     return result
 
 
+def nomi_colonne_esportate(df: pd.DataFrame) -> list[str]:
+    """Nomi delle colonne numeriche cosi' come finiscono nell'intestazione CSV.
+
+    E' la stessa regola applicata da export_to_csv() con add_kwh_suffix=True.
+    Sta in una funzione sua perche' la usa anche cer_config_writer.py per
+    riempire la colonna nome_csv della scheda CER: se le due regole potessero
+    divergere, la scheda dichiarerebbe utenze che il CSV non ha, e
+    align_members_to_users.m si fermerebbe.
+
+    Args:
+        df: DataFrame prima dell'export.
+
+    Returns:
+        Lista dei nomi di colonna, nell'ordine in cui compaiono nel CSV.
+    """
+    return [
+        c if c.endswith("_kWh") else f"{c}_kWh"
+        for c in df.select_dtypes(include="number").columns
+    ]
+
+
 def export_to_csv(
     df: pd.DataFrame,
     filepath: str,
@@ -119,10 +140,7 @@ def export_to_csv(
 
     if add_kwh_suffix:
         numeric_cols = df_export.select_dtypes(include="number").columns
-        rename_map = {
-            c: c if c.endswith("_kWh") else f"{c}_kWh"
-            for c in numeric_cols
-        }
+        rename_map = dict(zip(numeric_cols, nomi_colonne_esportate(df_export)))
         df_export = df_export.rename(columns=rename_map)
 
     # Formatta timestamp come ISO8601

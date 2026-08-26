@@ -46,6 +46,10 @@ lpg:
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"
       count: 1
+    - label: "famiglia_3figli"
+      template: "CHR05 Family, 3 children, both with work"
+      household_ref: "CHR05_Family_3_children_both_with_work"
+      count: 1
   house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
   energy_intensity: "Random"
 

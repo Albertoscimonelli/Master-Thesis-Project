@@ -1015,9 +1015,36 @@ for iCER = 1:N_CER
     optDeg.quiet = true;
 
     TLdeg = tri_level_ep_cer(genForShare, loadForShare, userNames, P_CER_h, optDeg);
-    assert(max(abs(TLdeg.phiFromSold - revSoldPerPlayer)) < 1e-9 * max(1, rev_sold_annual), ...
-           ['Tri-level EP: con n%% = 0 la ripartizione della vendita non coincide ' ...
-            'con quella pro-quota della sezione 3']);
+    % Il confronto per singolo membro vale SOLO con un impianto. Con piu'
+    % impianti le due grandezze rispondono a due domande diverse, entrambe
+    % legittime e citate dal paper (Campagna et al. 2024, sez. 2.2.1):
+    %   revSoldPerPlayer  la vendita resta al prosumer che l'ha prodotta,
+    %                     attribuita ora per ora ("can be kept by the prosumer
+    %                     with the installed PV plant"). E' lo stato attuale
+    %                     del progetto, quello sommato agli altri quindici.
+    %   phiFromSold       la vendita e' conferita alla CER e ridistribuita per
+    %                     QUOTA DI INVESTIMENTO ("redirected from the prosumer
+    %                     to the REC and split considering a sharing method").
+    % Il criterio 1 della sez. 2.2.2 e' esplicito: la chiave Owners "pays back
+    % who paid for the system, DISREGARDING WHERE THE SYSTEM IS LOCATED", cioe'
+    % ignora di proposito la produzione. Con un impianto solo le due chiavi
+    % coincidono per forza (ownKey e' un vettore indicatore) e il collasso e'
+    % esatto; con piu' impianti divergono per modello, non per codice - il
+    % paper lo dice nei risultati di Teglio: li' i due criteri si somigliavano
+    % "only because the installations are located on the building of the same
+    % members who invested [...] the results would be very different in a
+    % different set-up". Questa CER e' quel different set-up.
+    if height(CFG.impianti) == 1
+        assert(max(abs(TLdeg.phiFromSold - revSoldPerPlayer)) < 1e-9 * max(1, rev_sold_annual), ...
+               ['Tri-level EP: con n%% = 0 la ripartizione della vendita non coincide ' ...
+                'con quella pro-quota della sezione 3']);
+    else
+        % Cio' che resta verificabile in generale: il montepremi di vendita
+        % dev'essere ridistribuito per intero, senza crearne ne' perderne.
+        assert(abs(sum(TLdeg.phiFromSold) - rev_sold_annual) < 1e-9 * max(1, rev_sold_annual), ...
+               ['Tri-level EP: con n%% = 0 la vendita ridistribuita non somma ' ...
+                'al ricavo da vendita della sezione 3']);
+    end
 
     % --- Grafico a rete -------------------------------------------------------
     % Vendita a zero: per questo metodo e' GIA' dentro phi (vedi header), passarla

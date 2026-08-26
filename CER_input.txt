@@ -31,8 +31,24 @@
 #    1. copiare un CER_C_P_E.txt di CER_configuration/ col nome della CER nuova
 #       (lo scenario non si copia: e' lo stesso, e resta uno);
 #    2. cambiarne i dati, tenendo aperta questa guida;
-#    3. aggiornare [RIEPILOGO], che altrimenti ferma l'esecuzione;
-#    4. puntarci MAIN.m:  load_cer_input("CER_configuration/<nome>.txt")
+#    3. aggiornare [RIEPILOGO], che altrimenti ferma l'esecuzione.
+#  Non serve puntarci MAIN.m: carica da solo TUTTI i CER_*.txt che trova in
+#  CER_configuration/, uno dopo l'altro.
+#
+#  LA META' MECCANICA SI GENERA DA SOLA. Con output.scheda_cer: true in
+#  CER_LoadProfiles/config/simulation_config.yaml, ogni generazione di profili
+#  deposita qui accanto una bozza gia' compilata in tutto cio' che la pipeline
+#  sa: [MEMBRI] riga per riga (nome_csv, archetipo, categoria, n_comp letto dal
+#  catalogo LPG), [CER].anno, e i percorsi di [FILE] puntati ai profili appena
+#  prodotti. Restano a mano gli impianti PV, i dati socio-economici e
+#  l'identita' della comunita': la testata della bozza li elenca.
+#
+#  La bozza si chiama bozza_CER_C_P_E_<marca>.txt e MAIN.m la ignora, perche'
+#  cerca i soli file che iniziano per 'CER_'. Si attiva rinominandola - stessa
+#  cartella, percorsi relativi gia' giusti. E' il modo per non riscrivere a
+#  mano nome_csv a ogni cambio di configurazione: align_members_to_users.m
+#  pretende che coincidano ESATTAMENTE con le colonne di profili_tutti.csv, ed
+#  e' li' che nascevano i disallineamenti.
 #
 #  PERCORSI: i relativi di [FILE] partono dalla cartella della scheda, non da
 #  quella di lavoro di MATLAB. Qui stanno come sono scritti; dentro

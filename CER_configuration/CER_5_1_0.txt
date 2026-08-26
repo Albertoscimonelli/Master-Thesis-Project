@@ -37,5 +37,5 @@ id | nome_csv             | ruolo | categoria   | archetipo         | tariffa   
  5 | household_2_kWh      | C     | domestico   | CHR02_coppia_lav  | MONORARIA        |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
  6 | household_3_kWh      | C     | domestico   | CHR03_fam_1figlio | MONORARIA        |         3 |      3 |      ? |           ? |       ? |             ? |              0 | -
 [IMPIANTI]
-id   | proprietario         | kWp | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
-PV01 | small_industry_1_kWh |  20 | Salvaplast_Project_VD7_HourlyRes_1.CSV |    ? |      ? |           2025 |         ? |             ?
+id   | proprietario         | kWp | file_produzione | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
+PV01 | small_industry_1_kWh |  20 | PV1.CSV         |    ? |      ? |           2025 |         ? |             ?

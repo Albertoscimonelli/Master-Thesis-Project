@@ -7,7 +7,9 @@ e genera profili stocastici individuali per ogni utente configurato.
 
 import importlib
 import logging
+import random
 import sys
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +17,23 @@ import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+
+def _seed_stabile(use_case: str, indice: int) -> int:
+    """Seed riproducibile fra esecuzioni diverse dell'interprete.
+
+    Gemella di lpg_runner._seed_stabile, e per la stessa ragione: hash() sulle
+    stringhe e' randomizzato a ogni avvio di Python (PEP 456), quindi due
+    esecuzioni dello stesso script producevano profili diversi. crc32 e'
+    deterministico.
+
+    Le famiglie LPG erano gia' state messe al riparo; le aziende RAMP no, e si
+    vedeva: fra due run a un giorno di distanza, con la stessa configurazione,
+    household_1..3 restavano identiche byte per byte mentre retail_1 cambiava
+    in 8712 ore su 8759. Con profili che cambiano da soli non si puo'
+    attribuire una differenza fra due run a una modifica del modello.
+    """
+    return zlib.crc32(f"{use_case}_{indice}".encode("utf-8")) % (2**31)
 
 
 def _patch_ramp_numpy2():
@@ -203,9 +222,16 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
             col_name = f"{use_case_name}_{i + 1}"
             logger.info("  Profilo %s...", col_name)
 
-            # Seed per riproducibilita'
-            seed = hash(f"{use_case_name}_{i}") % (2**31)
+            # Seed per riproducibilita' (vedi _seed_stabile). Vanno seminati
+            # ENTRAMBI i generatori: ramp/core/core.py fa "import random" e
+            # pesca dalla libreria standard (random.uniform, randint, gauss,
+            # normalvariate, choice), mentre altrove usa np.random. Seminare
+            # solo numpy - com'era prima - lasciava scoperta la parte che
+            # decide finestre di accensione e durate, cioe' quasi tutto il
+            # profilo: i due run restavano diversi.
+            seed = _seed_stabile(use_case_name, i)
             np.random.seed(seed)
+            random.seed(seed)
 
             # Crea utente fresco per ogni istanza
             user = module.create_user()

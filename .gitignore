@@ -215,3 +215,9 @@ CER_LoadProfiles/lpg_db/*.db3
 # outputs/csv/ restano tracciati e sono quelli letti da CER_input.txt,
 # dalle schede di CER_configuration/ e da optimizer_PV.m.
 CER_LoadProfiles/outputs/**/storico/
+
+# Bozze di scheda CER generate a ogni run (output.scheda_cer nella
+# configurazione). Sono artefatti derivati e portano la marca temporale del
+# run, quindi si accumulano: si versiona la scheda solo quando la si completa
+# a mano e la si rinomina in CER_<C>_<P>_<E>.txt, che il glob di MAIN.m vede.
+CER_configuration/bozza_CER_*.txt

@@ -20,10 +20,12 @@ from pathlib import Path
 
 import yaml
 
+from cer_config_writer import scrivi_bozza_scheda
 from lpg_runner import run_lpg
 from postprocessing import (
     aggregate_profiles,
     export_to_csv,
+    nomi_colonne_esportate,
     resample_to_hourly_energy,
 )
 from ramp_runner import run_ramp
@@ -216,6 +218,12 @@ def main() -> None:
     # profili_tutti.csv: una colonna per utenza della CER. E' il file che
     # leggono CER_input.txt, le schede di CER_configuration/ e optimizer_PV.m,
     # quindi ha una chiave sua e resta generabile anche da solo.
+    #
+    # Il percorso e le colonne di quel CSV servono anche alla bozza di scheda
+    # CER (punto 6-bis): restano a None se non viene generato.
+    percorso_profili: Path | None = None
+    colonne_profili: list[str] = []
+
     if output_config.get("combined_profiles", True):
         parti = [d for d, presente in ((df_ramp, has_ramp), (df_lpg, has_lpg)) if presente]
         if parti:
@@ -228,8 +236,14 @@ def main() -> None:
                 df_all, str(all_path), convert_w_to_kw=False, add_kwh_suffix=True
             )
             files_generated.append(str(all_path))
+            percorso_profili = all_path
+            colonne_profili = nomi_colonne_esportate(df_all)
             if versionare:
-                archiviati.append(str(archivia(all_path, storico, marca)))
+                archivio = archivia(all_path, storico, marca)
+                archiviati.append(str(archivio))
+                # La scheda punta alla copia archiviata, non al nome fisso: cosi'
+                # resta legata ai profili con cui e' nata anche dopo altri run.
+                percorso_profili = archivio
 
     # 6. Export CSV aggregato CER (gia' in kWh/ora: colonna 'total_CER_kWh')
     if output_config.get("aggregate_total", True):
@@ -239,6 +253,22 @@ def main() -> None:
         files_generated.append(str(agg_path))
         if versionare:
             archiviati.append(str(archivia(agg_path, storico, marca)))
+
+    # 6-bis. Bozza di scheda CER in CER_configuration/ (facoltativa).
+    # Avvolta in try/except di proposito: e' un di piu', e non deve mai poter
+    # far fallire una generazione di profili altrimenti riuscita.
+    if output_config.get("scheda_cer", False) and percorso_profili is not None:
+        try:
+            bozza = scrivi_bozza_scheda(
+                config=config,
+                colonne=colonne_profili,
+                percorso_profili=percorso_profili,
+                base_path=base_path,
+                marca=marca,
+            )
+            files_generated.append(str(bozza))
+        except Exception as e:
+            logger.error("Bozza scheda CER non scritta: %s", e, exc_info=True)
 
     # 7. Riepilogo finale
     elapsed = time.time() - start_time

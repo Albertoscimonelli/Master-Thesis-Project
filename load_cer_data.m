@@ -140,9 +140,33 @@ function gen = load_pv_generation(pvFile, nHoursTarget)
               'Nessuna riga di dati orari trovata in:\n  %s', pvFile);
     end
 
-    parts = split(dataLines, ';');        % [N x 2] string array
-    gen   = str2double(parts(:, 2));      % [kW medio orario ~ kWh/h]
-    gen   = max(gen, 0);                  % azzera valori negativi
+    parts  = split(dataLines, ';');       % [N x 2] string array
+    valori = strtrim(parts(:, 2));
+    gen    = str2double(valori);          % [kW medio orario ~ kWh/h]
+
+    % Il file va RIFIUTATO, non corretto: un export PVsyst illeggibile e' un
+    % problema all'origine, e leggerlo a meta' produce numeri plausibili e
+    % sbagliati. Due modi di essere illeggibile, e il secondo e' il pericoloso:
+    %
+    %   NaN      valore non numerico. Senza questo controllo diventerebbe 0,
+    %            perche' max(NaN,0) vale 0: un impianto mezzo spento in silenzio.
+    %   virgola  export in localizzazione italiana. str2double NON da' NaN:
+    %            legge la virgola da separatore delle MIGLIAIA ("0,6717" ->
+    %            6717) e gonfia la produzione di quattro ordini di grandezza
+    %            senza un solo avviso. E' il caso che va intercettato qui,
+    %            perche' a valle non si distingue piu' da un impianto grande.
+    daScartare = isnan(gen) | contains(valori, ",");
+    if any(daScartare)
+        primo = dataLines(find(daScartare, 1));
+        error('load_pv_generation:parse', ...
+              ['%d righe con valore non leggibile come decimale in:\n  %s\n' ...
+               '  prima occorrenza: "%s"\n' ...
+               '  se il file usa la virgola decimale, riesportarlo da PVsyst ' ...
+               'con il punto.'], ...
+              sum(daScartare), pvFile, primo);
+    end
+
+    gen = max(gen, 0);                    % azzera valori negativi
 
     % Allinea alla lunghezza attesa
     nH = numel(gen);

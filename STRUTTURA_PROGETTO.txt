@@ -159,9 +159,41 @@ Project/
 |                                       pannelli (1 = piu' equo / 0 = piu' equo). Il colore normalizza
 |                                       per COLONNA: mostra la graduatoria dentro ciascun indicatore,
 |                                       il valore assoluto e' il numero scritto sulla cella
+|-- plot_allocation_heatmap.m           Mappa quote metodi x membri in % di v(N). Scala UNICA e non
+|                                       per colonna (opposto di plot_fairness_indicators): qui tutte
+|                                       le celle sono la stessa grandezza. Mostra i gruppi di metodi
+|                                       che si comportano uguale, che il grafico a barre non regge
+|                                       piu' con sedici metodi (larghezza 0.8/16 = 0.05 tick)
+|-- plot_merit_deviation.m              Mappa divergente centrata a zero di BM.deviation: apre lo
+|                                       scalare Fairness Index e mostra CHI e' premiato e chi
+|                                       penalizzato rispetto al contributo marginale BC_i
+|-- plot_fairness_tradeoff.m            Piano uniformita' (EI) x stabilita' (eccesso massimo) con i
+|                                       sedici metodi come punti e la frontiera di Pareto: rende
+|                                       geometrico il fatto che le tre domande della 4.3 possano dare
+|                                       risposte opposte
 |-- plot_cer_energy.m                   Grafici mensili: energia condivisa e ricavi
 |-- plot_pv_vs_demand.m                 Grafico annuale PV vs richiesta comunita'
 |-- plot_load_profiles.m                Profili di consumo in 4 giorni tipo
+|-- plot_hourly_map.m                   Mappa oraria 24x365: condivisa, venduta e maschera delle ore
+|                                       SATURE, quelle in cui l'immissione copre l'intero carico e
+|                                       nessuna chiave puo' cambiare nulla (contendibleShare)
+|-- plot_duration_curves.m              Curve di durata di immissione, carico residuo, condivisa e
+|                                       venduta: quanta immissione eccede il carico e finisce venduta
+|                                       invece che incentivata
+|-- plot_incentive_price.m              TIP_h vs prezzo zonale: giorno medio, spezzata dell'eq. 3.1
+|                                       con sopra le 8760 ore, e confronto fra TIP media e TIP
+|                                       effettivamente incassata (pesata sull'energia condivisa)
+|-- plot_cer_comparison.m               Confronto FRA LE CER, chiamato dopo il ciclo di MAIN.m sulla
+|                                       struct RESULTS. Solo grandezze di comunita' e normalizzate:
+|                                       le CER hanno numero di membri diverso
+|-- plot_gini_3d.m                      Superficie 3D del Gini: modelli in larghezza, comunita' in
+|                                       profondita', indice in altezza. Il Gini come funzione di DUE
+|                                       variabili, per vedere l'interazione fra i due effetti
+|-- save_figures.m                      Salva tutte le figure aperte in PDF vettoriale + PNG, una per
+|                                       file, col nome preso dalla proprieta' Name della figura
+|-- spread_labels.m                     Etichette distanziate in verticale con linea di richiamo al
+|                                       punto: condiviso da plot_fairness_tradeoff e
+|                                       plot_cer_comparison, dove sedici nomi si accalcano
 +-- archive/
     |-- PROVA_PV.m                      [LEGACY] versione precedente dell'ottimizzatore PV
     +-- merge_pv_owner.m                [SUPERATO] fondeva il nodo "PV" col proprietario;
@@ -238,7 +270,14 @@ piu' un parametro configurabile (vedi Sezione 6 per i dettagli storici).
                                        |      +-- §3b Shapley value  --+
                                        |      +-- §3c Nucleolo        +-- cer_coalition_values.m
                                        |      +-- §4 costo energia da rete (PUN 2025)
-                                       |      +-- §5 grafici
+                                       |      +-- §5 grafici energetici
+                                       |      +-- §6 risultati in RESULTS + export figure
+                                       |      |    (una cartella per scheda)
+                                       |      +-- §7 confronto FRA LE CER, fuori dal ciclo
+                                       |           (l'unico punto che vede RESULTS intera)
+                                       |
+                                       |    quali figure si producono: struct FIG, §0b,
+                                       |    prima del ciclo perche' serve anche alla §7
                                        |
                                        +--> optimizer_PV.m (indipendente)
                                               dimensionamento impianto: tilt, N inverter,
@@ -878,10 +917,128 @@ nessun cambiamento funzionale.
                                 colorbar. I NaN restano trasparenti e marcati
                                 "n/d": non applicabile e zero sono cose
                                 diverse.
+  plot_allocation_heatmap.m    Mappa quote metodi x membri, in % di v(N).
+                                Affianca il grafico a barre invece di
+                                sostituirlo: quello tiene gli EURO e impila la
+                                vendita di eccedenza, questa tiene le QUOTE ed
+                                e' l'unica delle due che regga sedici metodi.
+                                Scala UNICA per tutta la mappa, non per
+                                colonna: qui tutte le celle sono la stessa
+                                grandezza, e normalizzare per colonna
+                                direbbe il falso. E' la scelta OPPOSTA a
+                                plot_fairness_indicators, e per il motivo
+                                opposto.
+  plot_merit_deviation.m       Mappa divergente centrata a zero dello
+                                scostamento dalla distribuzione per contributo
+                                marginale (BM.deviation, gia' calcolato da
+                                fairness_index_bm). Il Fairness Index dice
+                                QUANTO un metodo se ne discosta; questa dice
+                                da CHE PARTE, membro per membro. Scala
+                                simmetrica su +-max|dev|, perche' qui lo zero
+                                e' un valore privilegiato e i due versi devono
+                                pesare uguale.
+  plot_fairness_tradeoff.m     I sedici metodi come punti su un piano
+                                uniformita' (EI) x stabilita' (eccesso
+                                massimo), con la frontiera di Pareto
+                                evidenziata e la soglia x = 0 (a sinistra
+                                l'allocazione sta nel Core). Non esiste un
+                                metodo migliore su due criteri in conflitto:
+                                esistono i non dominati, e la scelta fra loro
+                                e' di governance. Area del punto proporzionale
+                                al numero di coalizioni instabili.
   plot_cer_energy.m            Grafici mensili: energia condivisa e ricavi.
   plot_pv_vs_demand.m          Andamento annuale PV vs richiesta comunita'.
   plot_load_profiles.m         Profili di consumo in 4 giorni tipo (uno per
                                 stagione), separando commerciali/residenziali.
+  plot_hourly_map.m            Tre mappe 24x365 (ora del giorno x giorno
+                                dell'anno): condivisa, venduta, e maschera a
+                                tre stati - nessuna condivisione /
+                                contendibile / SATURA. Il terzo pannello e' il
+                                punto: nelle ore sature l'immissione copre
+                                l'intero carico residuo, ognuno riceve
+                                esattamente il proprio consumo e nessuna
+                                chiave puo' cambiarlo. La maschera si
+                                costruisce in MAIN.m 5) con la stessa
+                                espressione di fairness_indicators_lem, e un
+                                assert verifica che le due coincidano.
+  plot_duration_curves.m       Immissione, carico residuo, condivisa e venduta
+                                ordinate in senso decrescente. Ogni grandezza
+                                e' ordinata per conto proprio, quindi le curve
+                                si confrontano come DISTRIBUZIONI e non si
+                                leggono come un bilancio ora per ora (per
+                                quello c'e' plot_hourly_map); le aree restano
+                                pero' esatte. Dice per quante ore l'immissione
+                                eccede il carico e quanta energia ci cade
+                                dentro: la lettura di dimensionamento.
+  plot_incentive_price.m       Il TIP_h orario: giorno medio con prezzo
+                                zonale ed energia condivisa, spezzata
+                                dell'eq. 3.1 con sopra le 8760 ore (mostra su
+                                quale tratto - tetto, pendenza, pavimento - e'
+                                caduto l'anno), e medie mensili. Il numero che
+                                decide: mean(TIP_h) contro la media PESATA
+                                sull'energia condivisa. Se la seconda supera
+                                la prima, la CER condivide nelle ore in cui
+                                l'incentivo vale di piu'.
+                                ATTENZIONE alle unita': Pz_h arriva in
+                                EUR/MWh, P_CER_h in EUR/kWh.
+  plot_cer_comparison.m        Confronto fra le comunita' analizzate, chiamato
+                                nella 7) di MAIN.m - fuori dal ciclo, dove
+                                RESULTS le ha tutte. Quattro pannelli:
+                                bilancio energetico, montepremi in palio
+                                (v(N)) contro vendita, slope chart della quota
+                                ai prosumer metodo per metodo, ed escursione
+                                degli indici fra i sedici metodi.
+                                Si confrontano SOLO grandezze di comunita' e
+                                normalizzate: le CER hanno numero di membri
+                                diverso e "il terzo utente" non e' la stessa
+                                persona in due schede.
+  plot_gini_3d.m               Superficie del Gini su tre assi: i modelli in
+                                larghezza, le comunita' in profondita',
+                                l'indice in altezza. Una superficie SOLA, non
+                                una per comunita': il Gini e' una funzione di
+                                due variabili, e cio' che si vuole vedere e'
+                                se la pendenza lungo un asse cambia muovendosi
+                                lungo l'altro - l'interazione fra i due
+                                effetti, che ne' la tabella ne' un grafico per
+                                metodo mostrano.
+                                CON DUE SCHEDE E' ANCORA UN NASTRO: due soli
+                                nodi in profondita'. Corretto, ma il rilievo
+                                si forma dalla terza comunita' in poi, e non
+                                serve toccare il codice - basta aggiungere una
+                                scheda in CER_configuration/.
+                                ENTRAMBI GLI ASSI ORIZZONTALI SONO CATEGORIALI:
+                                fra Shapley e Nucleolo non esiste un metodo
+                                intermedio, fra due comunita' non esiste una
+                                comunita' intermedia. I dati sono i NODI,
+                                marcati apposta; la superficie fra un nodo e
+                                l'altro e' un raccordo grafico, non un valore
+                                calcolato. Anche l'ordine dei modelli sull'asse
+                                e' convenzionale (quello della tabella di
+                                confronto, tenuto identico fra le comunita'):
+                                cambiandolo cambia la forma, non il dato.
+                                L'asse Z sta sul dominio pieno [0,1] dell'indice
+                                e non sui valori osservati - ritagliarlo
+                                esagererebbe differenze che sulla scala del
+                                Gini sono modeste; il COLORE, che e' una
+                                graduatoria e non una misura, si normalizza
+                                invece sui valori osservati.
+                                E' il Gini dei RISPARMI (il nucleo dell'EI
+                                originale, EI = 1 - Gini), non quello di
+                                eterogeneita' della composizione della
+                                comunita' (gini_heterogeneity.m).
+  save_figures.m               Salva tutte le figure aperte, una per file, in
+                                PDF vettoriale (per la tesi) + PNG. Il nome
+                                del file viene dalla proprieta' Name della
+                                figura, gia' presente e univoca in tutti i
+                                plot_*: cosi' nessuna funzione di disegno deve
+                                restituire un handle, e aggiungere un grafico
+                                nuovo non richiede di ricordarsi di salvarlo.
+  spread_labels.m              Etichette accanto a dei punti, distanziate in
+                                verticale quando si sovrappongono e collegate
+                                al proprio punto da una linea di richiamo.
+                                L'ordine verticale non cambia: se un metodo
+                                sta sopra un altro nel grafico, la sua
+                                etichetta resta sopra.
 
 --------------------------------------------------------------------------------
  4.5  load_zonal_price.m, compute_cer_incentive.m  (tariffa CER oraria)

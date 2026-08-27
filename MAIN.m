@@ -64,7 +64,42 @@ fprintf('  %s\n', SCHEDE);
 % fra CER non avrebbero piu' i dati su cui lavorare.
 RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'Tcmp', {}, 'Tfair', {}, 'metodi', {}, ...
-                 'shared_annual', {}, 'rev_tot_annual', {}, 'CFG', {});
+                 'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
+                 'rev_tot_annual', {}, 'contendibleShare', {}, ...
+                 'isProsumer', {}, 'CFG', {});
+
+
+%% ========================================================================
+%  0b) QUALI FIGURE PRODURRE, E DOVE FINISCONO
+%
+%  Non e' un dato della comunita' ma una preferenza di presentazione, e sta
+%  qui - PRIMA del ciclo - per due motivi. Il primo e' che serve anche alla
+%  §7, che gira dopo il ciclo e non vedrebbe una variabile nata dentro. Il
+%  secondo e' che ogni giro produce una ventina di figure: con piu' schede si
+%  arriva a qualche decina di finestre aperte, che non e' un modo di lavorare.
+%
+%  I grafici di DETTAGLIO (uno per metodo: i sedici grafici a rete piu' la
+%  barra dello Shapley) sono OPT-IN, perche' da soli sono diciassette figure e
+%  dicono per un metodo alla volta quello che il confronto d'insieme della §3s
+%  dice per tutti insieme. Si accendono quando serve guardare un metodo, non
+%  per abitudine.
+%
+%  Con .esporta le figure finiscono su file (PDF vettoriale per la tesi + PNG),
+%  una cartella per scheda; con .chiudi le finestre si chiudono dopo il
+%  salvataggio, cosi' il giro successivo parte pulito.
+%  ========================================================================
+
+FIG = struct( ...
+    'profili',      true,  ...   % profili di consumo, 4 giorni tipo
+    'energia',      true,  ...   % mensili, PV vs domanda, mappa oraria, durata, TIP_h
+    'dettaglio',    false, ...   % 17 grafici di dettaglio, uno per metodo (opt-in)
+    'metodi',       true,  ...   % confronto delle quote fra i sedici metodi
+    'equita',       true,  ...   % indici, scostamento dal merito, trade-off
+    'confrontoCER', true,  ...   % confronto fra comunita' (§7, dopo il ciclo)
+    'esporta',      true,  ...   % salva le figure su file
+    'chiudi',       true,  ...   % chiude le finestre dopo il salvataggio
+    'cartella',     "outputs/figures");
+
 
 % --- Un giro per comunita' -----------------------------------------------
 %  clearvars qui non e' prudenza generica. Le CER hanno numero di membri
@@ -77,7 +112,7 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
 %  l'errore in chiaro, invece di nasconderlo in un riepilogo di fine batch.
 for iCER = 1:N_CER
 
-    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS
+    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG
 
     SCHEDA = SCHEDE(iCER);
 
@@ -151,8 +186,8 @@ for iCER = 1:N_CER
     Modalita = ["MONORARIA", "BIORARIA", "ORARIO_VARIABILE"];
 
     % --- Flag di visualizzazione ---------------------------------------------
-    % Preferenza di presentazione, non un dato della comunita': resta qui.
-    SHOW_PROFILE_PLOTS = true;   % grafici profili di consumo (4 giorni tipo)
+    % Stanno nella struct FIG della §0b, che sopravvive al clearvars: servono
+    % anche alla §7, dopo il ciclo, e valgono per tutte le comunita'.
 
     % Nomi dei mesi (per tabelle e grafici)
     meseNomi = ["Gennaio";"Febbraio";"Marzo";"Aprile";"Maggio";"Giugno"; ...
@@ -378,19 +413,25 @@ for iCER = 1:N_CER
     % Ogni colonna e' un utente e si divide in due colori: la quota CER (Shapley)
     % e il ricavo dalla vendita diretta dell'eccedenza sul mercato, che non passa
     % dal gioco cooperativo e spetta ai soli prosumer.
-    figure('Name', 'Distribuzione Shapley', 'Color', 'w');
-    hBar = bar([Sh.phi, revSoldPerPlayer], 'stacked');
-    hBar(1).FaceColor = method_color("Shapley");
-    hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
-    grid on; box on;
-    xticks(1:numel(Sh.players));
-    xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
-    ylabel('Ricavo [€/anno]');
-    legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
-    title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
+    %
+    % Sta sotto FIG.dettaglio con i grafici a rete, ed e' la stessa ragione: e'
+    % il dettaglio di UN metodo, e quello che dice per lo Shapley il confronto
+    % della §3s lo dice per tutti e sedici insieme.
+    if FIG.dettaglio
+        figure('Name', 'Distribuzione Shapley', 'Color', 'w');
+        hBar = bar([Sh.phi, revSoldPerPlayer], 'stacked');
+        hBar(1).FaceColor = method_color("Shapley");
+        hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
+        grid on; box on;
+        xticks(1:numel(Sh.players));
+        xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
+        ylabel('Ricavo [€/anno]');
+        legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
+        title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
+    end
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(Sh.players, Sh.phi, "Shapley", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(Sh.players, Sh.phi, "Shapley", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -413,7 +454,7 @@ for iCER = 1:N_CER
         sprintf('  %-25s: EUR %9.2f  ->  %s', 'Surplus min (theta)', Nu.thetaMin, coreMsg));
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -433,7 +474,7 @@ for iCER = 1:N_CER
     report_allocation(NB, "Nash Bargaining");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -472,7 +513,7 @@ for iCER = 1:N_CER
            'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -489,7 +530,7 @@ for iCER = 1:N_CER
     report_allocation(ES, "Equal Split");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(ES.players, ES.phi, "Equal Split", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(ES.players, ES.phi, "Equal Split", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -506,7 +547,7 @@ for iCER = 1:N_CER
     report_allocation(PC, "Proportional to Consumption");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(PC.players, PC.phi, "Proportional to Consumption", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(PC.players, PC.phi, "Proportional to Consumption", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -546,7 +587,7 @@ for iCER = 1:N_CER
                 sum(RM1.ratedGenKW(RM1.producerEligible))));
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(RM1.players, RM1.phi, "Remuneration Model 1", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(RM1.players, RM1.phi, "Remuneration Model 1", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -582,7 +623,7 @@ for iCER = 1:N_CER
                        CT.pools.feedInGeneral, CT.pools.prosumersOnly, foldMsg))]);
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(CT.players, CT.phi, "Cascading Tree", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(CT.players, CT.phi, "Cascading Tree", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -614,7 +655,7 @@ for iCER = 1:N_CER
                        'Indice di Gini', WS.giniIndex, WS.nParetoPoints))]);
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(WS.players, WS.phi, "Weighted Solidarity", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(WS.players, WS.phi, "Weighted Solidarity", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -649,7 +690,7 @@ for iCER = 1:N_CER
            'Pearson Key: energia condivisa ripartita incoerente con il bilancio CER');
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(PK.players, PK.phi, "Pearson Key", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(PK.players, PK.phi, "Pearson Key", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -688,7 +729,7 @@ for iCER = 1:N_CER
            'Pearson-Sharing Rate: energia condivisa ripartita incoerente con il bilancio CER');
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(PSK.players, PSK.phi, "Pearson-Sharing Rate", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(PSK.players, PSK.phi, "Pearson-Sharing Rate", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -730,7 +771,7 @@ for iCER = 1:N_CER
                        min(SU.etaMean), max(SU.etaMean)))]);
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(SU.players, SU.phi, "Similarity-Utilization", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(SU.players, SU.phi, "Similarity-Utilization", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -763,7 +804,7 @@ for iCER = 1:N_CER
                        'Giocatori superflui', MC.nullPlayers, numel(MC.players)))]);
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(MC.players, MC.phi, "Marginal Contribution", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(MC.players, MC.phi, "Marginal Contribution", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -812,7 +853,7 @@ for iCER = 1:N_CER
            'Stratified Expected Value: ultimo strato diverso dal contributo marginale');
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(SEV.players, SEV.phi, "Stratified Expected Value", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(SEV.players, SEV.phi, "Stratified Expected Value", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -848,7 +889,7 @@ for iCER = 1:N_CER
                        'Fattore di normalizz.', AS.normFactor))]);
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    plot_benefit_network(AS.players, AS.phi, "Adaptive Sampling Shapley", revSoldPerPlayer);
+    if FIG.dettaglio, plot_benefit_network(AS.players, AS.phi, "Adaptive Sampling Shapley", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -1049,7 +1090,7 @@ for iCER = 1:N_CER
     % --- Grafico a rete -------------------------------------------------------
     % Vendita a zero: per questo metodo e' GIA' dentro phi (vedi header), passarla
     % di nuovo la conterebbe due volte.
-    plot_benefit_network(TL.players, TL.phi, "Tri-level EP", zeros(nUsers, 1));
+    if FIG.dettaglio, plot_benefit_network(TL.players, TL.phi, "Tri-level EP", zeros(nUsers, 1)); end
 
 
     %% ========================================================================
@@ -1098,9 +1139,21 @@ for iCER = 1:N_CER
                   PK.phi,    PSK.phi,   SU.phi, ...
                   MC.phi,    SEV.phi,   AS.phi,  TL.phiFromShared});
 
-    plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
-        sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
-                Nu.vGrand, Nu.thetaMin));
+    % --- Due grafici, due domande diverse ------------------------------------
+    % Il grafico a barre tiene gli EURO e impila la vendita di eccedenza, che
+    % sta fuori dal gioco cooperativo: risponde a "quanto incassa ciascuno".
+    % La mappa tiene le QUOTE in percentuale di v(N): risponde a "che FORMA ha
+    % questa ripartizione", ed e' l'unica delle due che regga sedici metodi -
+    % con sedici barre per giocatore ciascuna e' larga 0.05 tick.
+    if FIG.metodi
+        plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
+            sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
+                    Nu.vGrand, Nu.thetaMin));
+
+        plot_allocation_heatmap(metodi, Sh.players, Sh.vGrand, ...
+            sprintf('Quote di ripartizione dei %d modelli  -  %s', ...
+                    numel(metodi), CFG.cer.nome));
+    end
 
 
     %% ========================================================================
@@ -1366,11 +1419,28 @@ for iCER = 1:N_CER
     % una colonna nella mappa perche' non dipendono dal metodo, piu' la frazione di
     % energia contendibile - senza la quale le colonne energetiche quasi costanti
     % sembrerebbero un errore invece che il risultato che sono.
-    plot_fairness_indicators([metodi.nome], pannelli, [ ...
-        "Indici di equita' distributiva dei sedici modelli di ripartizione"; ...
-        sprintf(['MinMax originale = %.2f (uguale per tutti)  |  Gini di eterogeneita'' = %.2f' ...
-                 '  |  energia contendibile = %.1f%%'], ...
-                minMaxOrigAll(1), HET.G, 100*FIND{1}.contendibleShare)]);
+    if FIG.equita
+        plot_fairness_indicators([metodi.nome], pannelli, [ ...
+            "Indici di equita' distributiva dei sedici modelli di ripartizione"; ...
+            sprintf(['MinMax originale = %.2f (uguale per tutti)  |  Gini di eterogeneita'' = %.2f' ...
+                     '  |  energia contendibile = %.1f%%'], ...
+                    minMaxOrigAll(1), HET.G, 100*FIND{1}.contendibleShare)]);
+
+        % --- Il Fairness Index, aperto per membro ----------------------------
+        % La mappa qui sopra del Fairness Index tiene solo lo scalare: dice
+        % QUANTO un metodo si discosta dal merito, non da che parte. BM.deviation
+        % e' gia' calcolato e porta il segno membro per membro.
+        plot_merit_deviation(BM, Sh.players, [metodi.nome]);
+
+        % --- La sintesi: uniformita' contro stabilita' ------------------------
+        % Le tre domande della §3t possono dare risposte opposte, e nella mappa
+        % di calore stanno in pannelli separati con scale normalizzate per
+        % colonna: il rapporto fra loro va ricostruito a mente. Sul piano si
+        % vede, e con esso quali metodi sono scelte difendibili e quali sono
+        % dominati da un altro su entrambi i criteri.
+        plot_fairness_tradeoff(Tfair, Sh.vGrand, ...
+            sprintf('Uniformita'' contro stabilita''  -  %s', CFG.cer.nome));
+    end
 
 
     %% ========================================================================
@@ -1400,14 +1470,44 @@ for iCER = 1:N_CER
 
     %% ========================================================================
     %  5) VISUALIZZAZIONE
+    %
+    %  Le tre figure "d'insieme" (mensili, PV vs domanda, profili tipo) sono
+    %  quelle storiche. Le tre nuove guardano la stessa energia da tre angoli
+    %  che gli aggregati mensili e le medie giornaliere non possono dare:
+    %  l'ORA in cui la CER condivide, la DURATA delle grandezze in gioco, e il
+    %  PREZZO a cui quell'energia viene incentivata.
     %  ========================================================================
 
-    plot_cer_energy(meseNomi, shared_monthly, shared_annual, ...
-                    rev_shared_monthly, rev_sold_monthly, rev_tot_annual);
+    if FIG.energia
+        plot_cer_energy(meseNomi, shared_monthly, shared_annual, ...
+                        rev_shared_monthly, rev_sold_monthly, rev_tot_annual);
 
-    plot_pv_vs_demand(gen_24x365, demand_24x365, shared_24x365, N_DAYS);
+        plot_pv_vs_demand(gen_24x365, demand_24x365, shared_24x365, N_DAYS);
 
-    if SHOW_PROFILE_PLOTS
+        % --- Ore sature: quelle in cui la chiave di ripartizione non conta ---
+        % Stessa espressione di fairness_indicators_lem, ed e' il punto: se le
+        % due divergessero, la mappa direbbe una cosa e il numero stampato in
+        % §3t un'altra. L'assert lega la figura a quel numero invece di
+        % lasciarle libere di scollarsi in silenzio.
+        oreSature = shared > 0 & genPVSurplus >= loadTotalForShare;
+        assert(sum(oreSature) == FIND{1}.nSaturatedHours, ...
+               ['Mappa oraria: la maschera di saturazione non coincide con quella ' ...
+                'degli indici di equita'' (§3t)']);
+
+        % Tre stati per ora: 0 nessuna condivisione, 1 contendibile, 2 satura.
+        statoOra = zeros(N_HOURS, 1);
+        statoOra(shared > 0)  = 1;
+        statoOra(oreSature)   = 2;
+
+        plot_hourly_map(shared_24x365, sold_24x365, reshape(statoOra, 24, N_DAYS), ...
+                        FIND{1}.contendibleShare, ANNO);
+
+        plot_duration_curves(genPVSurplus, loadTotalForShare, shared, sold);
+
+        plot_incentive_price(tGrid, Pz_h, P_CER_h, shared, meseNomi);
+    end
+
+    if FIG.profili
         plot_load_profiles(tGrid, loadUsers, userNames, ANNO);
     end
 
@@ -1429,9 +1529,63 @@ for iCER = 1:N_CER
     RESULTS(iCER).Tfair          = Tfair;
     RESULTS(iCER).metodi         = metodi;
     RESULTS(iCER).shared_annual  = shared_annual;
+    RESULTS(iCER).sold_annual    = sold_annual;
     RESULTS(iCER).rev_tot_annual = rev_tot_annual;
     RESULTS(iCER).CFG            = CFG;
 
+    % Serviti dal confronto fra CER della §7, e non ricavabili da quello che
+    % c'e' gia': v(N) e' il montepremi in palio (il resto del ricavo e'
+    % vendita, che sta fuori dal gioco), la frazione contendibile dice quanto
+    % la scelta del metodo conti davvero, e isProsumer e' l'unico modo di
+    % sommare le quote per categoria quando i membri cambiano da una CER
+    % all'altra.
+    RESULTS(iCER).vGrand           = Sh.vGrand;
+    RESULTS(iCER).contendibleShare = FIND{1}.contendibleShare;
+    RESULTS(iCER).isProsumer       = FIND{1}.isProsumer;
+
+    % --- Le figure di questa CER su file -------------------------------------
+    % Una cartella per scheda, cosi' i nomi delle figure non collidono fra
+    % comunita'. Chiudere le finestre e' anche cio' che fa partire pulito il
+    % giro successivo: MAIN.m fa close all una volta sola, in testa.
+    if FIG.esporta
+        [~, nomeScheda] = fileparts(SCHEDA);
+        fprintf('\n=== Figure di %s ===\n', nomeScheda);
+        save_figures(fullfile(FIG.cartella, nomeScheda), ...
+                     struct('chiudi', FIG.chiudi));
+    end
+
+end
+
+
+%% ========================================================================
+%  7) CONFRONTO FRA LE COMUNITA' ANALIZZATE
+%
+%  Dentro il ciclo una CER non puo' vedere le altre: il clearvars di ogni giro
+%  azzera tutto, ed e' voluto. Qui invece RESULTS le ha tutte, e si puo'
+%  finalmente chiedere cosa cambi al cambiare della comunita' - quanto pesa un
+%  prosumer in piu' sul bilancio, sul montepremi in palio e sulle quote che
+%  ciascun modello assegna.
+%
+%  Si confrontano solo grandezze di comunita' e grandezze NORMALIZZATE: le CER
+%  hanno un numero di membri diverso, e "il terzo utente" non e' la stessa
+%  persona in due schede diverse.
+%  ========================================================================
+
+if FIG.confrontoCER && N_CER > 1
+    plot_cer_comparison(RESULTS);
+
+    % Il Gini su tre assi: comunita' x metodo x indice. Il pannello (d) del
+    % grafico qui sopra riassume in un numero per CER quanto la scelta del
+    % metodo sposti il Gini; questo tiene tutte le coppie e mostra anche QUALE
+    % metodo faccia cosa, e se l'ordine fra i metodi regga al cambio di
+    % comunita'.
+    plot_gini_3d(RESULTS);
+
+    if FIG.esporta
+        fprintf('\n=== Figure di confronto fra CER ===\n');
+        save_figures(fullfile(FIG.cartella, "confronto"), ...
+                     struct('chiudi', FIG.chiudi));
+    end
 end
 
 fprintf('\n\n=== Analizzate %d CER. I risultati sono in RESULTS. ===\n', N_CER);

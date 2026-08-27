@@ -221,3 +221,8 @@ CER_LoadProfiles/outputs/**/storico/
 # run, quindi si accumulano: si versiona la scheda solo quando la si completa
 # a mano e la si rinomina in CER_<C>_<P>_<E>.txt, che il glob di MAIN.m vede.
 CER_configuration/bozza_CER_*.txt
+
+# Figure prodotte da MAIN.m (FIG.esporta nella §0b). Sono artefatti derivati:
+# si rigenerano a ogni esecuzione, pesano parecchio in PNG e cambiano a ogni
+# ritocco grafico, quindi versionarle riempirebbe la storia di rumore binario.
+outputs/figures/

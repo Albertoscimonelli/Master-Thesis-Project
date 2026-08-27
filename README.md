@@ -155,7 +155,14 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
 | `cer_shared_value.m` | Helper condiviso dalle tre approssimazioni: `v` di **una** coalizione dai profili aggregati, `O(H)` invece di `O(H·2ⁿ)` |
 | `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e quindici i modelli |
+| `plot_allocation_heatmap.m` | Mappa quote **metodi × membri** in % di `v(N)`: il confronto a barre non regge sedici metodi (§11.1) |
+| `plot_merit_deviation.m` | Chi è premiato e chi penalizzato rispetto al contributo marginale — apre lo scalare `FI` per membro (§11.1) |
+| `plot_fairness_tradeoff.m` | **Uniformità × stabilità** dei sedici metodi su un piano, con frontiera di Pareto (§11.1) |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
+| `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m` | Grafici energetici **orari**: mappa 24×365 con le ore sature, curve di durata, TIP_h vs prezzo zonale (§11.1) |
+| `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
+| `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
+| `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
 | `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §8) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
@@ -534,6 +541,59 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 - Il riepilogo della scheda dati con l'elenco dei campi ancora a `?` (§9), stampato per
   primo da `load_cer_input`.
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
+
+### 11.1 Le figure: quali si producono, e dove finiscono
+
+`MAIN.m` §0b contiene la struct `FIG`, l'unico punto da cui si decide **cosa disegnare**.
+Non è un dato della comunità ma una preferenza di presentazione, e sta prima del ciclo
+perché serve anche alla §7, che gira dopo:
+
+| Campo | Cosa accende |
+|---|---|
+| `.energia` | mensili, PV vs domanda + **mappa oraria**, **curve di durata**, **TIP_h vs prezzo zonale** |
+| `.profili` | profili di consumo, 4 giorni tipo (era `SHOW_PROFILE_PLOTS`) |
+| `.metodi` | confronto a barre + **mappa quote metodi × membri** |
+| `.equita` | indici di equità + **scostamento dal merito** + **trade-off uniformità × stabilità** |
+| `.dettaglio` | i 17 grafici di **un metodo alla volta** (16 reti + barra Shapley) — **`false` di default** |
+| `.confrontoCER` | il **confronto fra CER** della §7, dopo il ciclo |
+| `.esporta`, `.chiudi`, `.cartella` | salvataggio su file, chiusura finestre, cartella di destinazione |
+
+`.dettaglio` è opt-in perché da solo vale 17 figure per comunità, e dice per un metodo
+alla volta quello che il confronto d'insieme dice per tutti insieme.
+
+Con `.esporta` ogni figura finisce in `outputs/figures/<scheda>/` (più
+`outputs/figures/confronto/` per la §7) in **PDF vettoriale** — per la tesi, il testo
+resta testo — e in **PNG**. Il nome del file viene dalla proprietà `Name` della figura,
+quindi la cartella si legge senza aprire le immagini. `outputs/figures/` è in
+`.gitignore`: si rigenera a ogni esecuzione.
+
+**Le otto figure nuove**, e a quale risultato servono:
+
+| Figura | Risultato che rende visibile |
+|---|---|
+| **Mappa oraria 24×365** | dove cadono nell'anno le ore **sature** — quelle in cui l'immissione copre l'intero carico e nessuna chiave può cambiare nulla. È la premessa per leggere la §7: sulla community di default solo il **10%** dell'energia è contendibile fra i metodi |
+| **Curve di durata** | quanta immissione eccede il carico e finisce **venduta invece che incentivata** (69,7% sui dati attuali) — la lettura di dimensionamento |
+| **TIP_h vs prezzo zonale** | la spezzata dell'eq. 3.1 con sopra le 8760 ore, e il confronto fra TIP **media** e TIP **effettivamente incassata**: se la seconda è maggiore, la CER condivide nelle ore in cui l'incentivo vale di più |
+| **Mappa quote metodi × membri** | i **gruppi di metodi che si comportano uguale**, che il grafico a barre non mostra più: con sedici metodi ogni barra è larga `0.8/16 = 0.05` tick |
+| **Scostamento dal merito** | apre lo scalare `FI` per membro: non *quanto* un metodo si discosta dal contributo marginale, ma **chi** premia e chi penalizza |
+| **Trade-off uniformità × stabilità** | la sintesi della §7.0 — le tre domande danno risposte opposte — resa geometrica, con la **frontiera di Pareto** che separa le scelte difendibili da quelle dominate |
+| **Confronto fra CER** | usa `RESULTS`, che prima veniva riempito e mai letto. Come ciascun metodo reagisce a un prosumer in più, e quanto la scelta del metodo conta davvero in ciascuna comunità |
+| **Superficie 3D del Gini** | il Gini come **funzione di due variabili** — quale modello, quale comunità: si vede se la pendenza lungo un asse cambia muovendosi lungo l'altro, cioè l'**interazione** fra i due effetti, che né la tabella né un grafico per metodo mostrano |
+
+> ⚠ **La superficie 3D vuole più di due comunità per dire tutto.** Con due schede ha due
+> soli nodi in profondità: è un nastro piegato lungo i modelli, corretto ma non ancora un
+> rilievo. Il senso pieno arriva dalla terza scheda in poi, e non richiede di toccare il
+> codice — basta aggiungere un file in `CER_configuration/`.
+>
+> Due scelte da conoscere prima di leggerla: **entrambi gli assi orizzontali sono
+> categoriali** (fra Shapley e Nucleolo non esiste un metodo intermedio, fra due comunità
+> non esiste una comunità intermedia), quindi i dati sono i **nodi** — marcati apposta — e
+> la superficie fra un nodo e l'altro è un raccordo grafico, non un valore calcolato.
+> L'**asse Z sta sul dominio pieno `[0,1]`** dell'indice, non sui valori osservati: il
+> rilievo occupa quindi poca altezza, ed è voluto — ritagliare l'asse sui dati farebbe
+> sembrare enormi differenze che sulla scala del Gini sono modeste. Il sottotitolo riporta
+> il range osservato, e il **colore** (che è una graduatoria, non una misura) si normalizza
+> invece su quello.
 
 ## 12. Limitazioni note / TODO
 

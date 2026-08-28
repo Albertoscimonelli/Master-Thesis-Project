@@ -21,6 +21,17 @@ function elenco = save_figures(cartella, opts)
 %     testo) e PNG per guardarle in fretta o incollarle in una mail. Costano
 %     poco entrambi e servono in momenti diversi.
 %
+%   NON INTERROMPE MAI L'ANALISI
+%     In sessione interattiva le figure sono finestre vere, e l'utente puo'
+%     chiuderne una mentre il calcolo prosegue: l'elenco raccolto qui sopra
+%     diventa allora una fotografia con dentro un handle morto. Ogni figura e'
+%     percio' rivalidata prima dell'export e l'export sta in un try: una
+%     figura che non si riesce a salvare produce un warning e viene contata
+%     fra le saltate, non un errore che risale a MAIN. La gerarchia e' quella:
+%     i risultati del calcolo valgono, il salvataggio di un'immagine e' un
+%     servizio, e perdere minuti di analisi perche' una finestra e' stata
+%     chiusa sarebbe il baratto sbagliato.
+%
 %   INPUT
 %     cartella  string  cartella di destinazione, creata se non esiste
 %     opts      struct (opzionale)
@@ -30,7 +41,8 @@ function elenco = save_figures(cartella, opts)
 %                 .quiet    logico  non stampare il riepilogo (def. false)
 %
 %   OUTPUT
-%     elenco    [k x 1] string  percorsi dei file PDF scritti
+%     elenco    [k x 1] string  percorsi dei file PDF effettivamente scritti
+%                              (le figure saltate non compaiono)
 
     if nargin < 2 || isempty(opts), opts = struct(); end
     if ~isfield(opts, 'chiudi'),      opts.chiudi      = false; end
@@ -54,10 +66,33 @@ function elenco = save_figures(cartella, opts)
         return
     end
 
-    elenco = strings(numel(figs), 1);
-    usati  = strings(0, 1);          % nomi gia' assegnati, per i duplicati
+    % Coda grafica svuotata PRIMA di cominciare: in sessione interattiva una
+    % finestra chiusa a mano lascia un evento in coda, e l'handle resta
+    % apparentemente vivo finche' quell'evento non viene processato. Senza
+    % questo, la validita' verificata sotto sarebbe quella di un istante fa.
+    drawnow;
+
+    elenco   = strings(numel(figs), 1);
+    usati    = strings(0, 1);        % nomi gia' assegnati, per i duplicati
+    nSalvate = 0;
+    nSaltate = 0;
 
     for k = 1:numel(figs)
+        % --- Una figura morta non e' un motivo per fermare l'analisi ---------
+        % L'elenco e' una fotografia scattata all'inizio: fra quello scatto e
+        % qui una finestra puo' essere stata chiusa - a mano, in sessione
+        % interattiva, dove le figure sono finestre vere che l'utente puo'
+        % chiudere mentre il calcolo prosegue. Prima questo caso arrivava fino
+        % a exportgraphics, che sollevava un errore, e l'errore usciva da
+        % save_figures abortendo MAIN: si perdeva l'intera analisi - minuti di
+        % calcolo, le CER successive mai eseguite - per una figura chiusa. La
+        % gerarchia giusta e' l'opposto: i RISULTATI valgono, il salvataggio di
+        % un'immagine e' un servizio, e se salta si segnala e si va avanti.
+        if ~isvalid(figs(k))
+            nSaltate = nSaltate + 1;
+            continue
+        end
+
         nome = local_sanitize(figs(k).Name, k);
 
         % Due figure con lo stesso Name si sovrascriverebbero in silenzio.
@@ -68,17 +103,42 @@ function elenco = save_figures(cartella, opts)
         usati(end+1) = nome; %#ok<AGROW>
 
         base = fullfile(cartella, nome);
-        exportgraphics(figs(k), base + ".pdf", 'ContentType', 'vector');
-        exportgraphics(figs(k), base + ".png", 'Resolution', opts.risoluzione);
-        elenco(k) = base + ".pdf";
+
+        % Il try copre anche il caso in cui la figura muoia DURANTE l'export:
+        % il controllo di validita' qui sopra e' una fotografia pure lui, e
+        % exportgraphics passa dal renderer, dove la finestra puo' sparire a
+        % meta' strada.
+        try
+            exportgraphics(figs(k), base + ".pdf", 'ContentType', 'vector');
+            exportgraphics(figs(k), base + ".png", 'Resolution', opts.risoluzione);
+            elenco(k) = base + ".pdf";
+            nSalvate  = nSalvate + 1;
+        catch ME
+            nSaltate = nSaltate + 1;
+            warning('save_figures:exportFallito', ...
+                    'Figura "%s" non salvata (%s): %s', nome, ME.identifier, ME.message);
+        end
     end
 
+    elenco = elenco(strlength(elenco) > 0);
+
     if opts.chiudi
-        close(figs);
+        % Anche qui solo le vive: close() su un handle gia' morto e' un errore,
+        % e sarebbe assurdo far fallire la chiusura perche' qualcosa era gia'
+        % chiuso - il risultato voluto e' proprio quello.
+        vive = figs(isvalid(figs));
+        if ~isempty(vive)
+            close(vive);
+        end
     end
 
     if ~opts.quiet
-        fprintf('  %d figure salvate in %s\n', numel(figs), cartella);
+        if nSaltate > 0
+            fprintf('  %d figure salvate in %s  (%d saltate: finestre chiuse o export fallito)\n', ...
+                    nSalvate, cartella, nSaltate);
+        else
+            fprintf('  %d figure salvate in %s\n', nSalvate, cartella);
+        end
     end
 end
 

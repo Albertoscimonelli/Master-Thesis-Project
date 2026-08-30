@@ -66,7 +66,8 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'Tcmp', {}, 'Tfair', {}, 'metodi', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
-                 'isProsumer', {}, 'CFG', {});
+                 'isProsumer', {}, 'tempo_analisi_s', {}, ...
+                 'tempo_figure_s', {}, 'CFG', {});
 
 
 %% ========================================================================
@@ -101,18 +102,31 @@ FIG = struct( ...
     'cartella',     "outputs/figures");
 
 
+% --- Cronometro dell'intera esecuzione ------------------------------------
+%  tic con un identificatore esplicito, non il tic/toc globale: quello e' uno
+%  solo per tutto MATLAB, e qualunque funzione chiamata piu' sotto che lo usi
+%  per conto proprio azzererebbe questo senza che nessuno se ne accorga. Con
+%  l'identificatore i due cronometri non si vedono.
+T_TOT = tic;
+
+
 % --- Un giro per comunita' -----------------------------------------------
 %  clearvars qui non e' prudenza generica. Le CER hanno numero di membri
 %  diverso, quindi quasi ogni vettore di questo file cambia lunghezza da un
 %  giro all'altro: una variabile sopravvissuta alla CER precedente non darebbe
 %  errore, darebbe un risultato sbagliato in silenzio. Sopravvivono solo le
-%  variabili del ciclo, elencate qui.
+%  variabili del ciclo, elencate qui - T_TOT compreso, altrimenti il cronometro
+%  verrebbe azzerato dal primo giro.
 %
 %  Nessun try/catch: se una scheda e' rotta l'esecuzione si ferma li', con
 %  l'errore in chiaro, invece di nasconderlo in un riepilogo di fine batch.
 for iCER = 1:N_CER
 
-    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG
+    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG T_TOT
+
+    % Cronometro di QUESTA comunita'. Sta dopo il clearvars, quindi nasce e
+    % muore dentro il giro: quello che serve dopo finisce in RESULTS (§6).
+    T_CER = tic;
 
     SCHEDA = SCHEDE(iCER);
 
@@ -1543,6 +1557,14 @@ for iCER = 1:N_CER
     RESULTS(iCER).contendibleShare = FIND{1}.contendibleShare;
     RESULTS(iCER).isProsumer       = FIND{1}.isProsumer;
 
+    % Il tempo dell'ANALISI, letto prima di salvare le figure: sono due lavori
+    % di natura diversa e conviene tenerli separati. Il calcolo e' quello che
+    % non si puo' evitare; l'export delle figure e' un servizio, si spegne con
+    % un flag, ed e' spesso il piu' lento dei due - un PDF vettoriale con
+    % migliaia di punti costa piu' di un'intera ripartizione. Sommarli darebbe
+    % un numero solo, da cui non si capisce cosa valga la pena di togliere.
+    tempoAnalisi = toc(T_CER);
+
     % --- Le figure di questa CER su file -------------------------------------
     % Una cartella per scheda, cosi' i nomi delle figure non collidono fra
     % comunita'. Chiudere le finestre e' anche cio' che fa partire pulito il
@@ -1553,6 +1575,14 @@ for iCER = 1:N_CER
         save_figures(fullfile(FIG.cartella, nomeScheda), ...
                      struct('chiudi', FIG.chiudi));
     end
+
+    RESULTS(iCER).tempo_analisi_s = tempoAnalisi;
+    RESULTS(iCER).tempo_figure_s  = toc(T_CER) - tempoAnalisi;
+
+    fprintf('\n=== Tempi di %s ===\n', CFG.cer.nome);
+    fprintf('  %-25s: %s\n', 'Analisi',  format_duration(RESULTS(iCER).tempo_analisi_s));
+    fprintf('  %-25s: %s\n', 'Figure',   format_duration(RESULTS(iCER).tempo_figure_s));
+    fprintf('  %-25s: %s\n', 'Totale CER', format_duration(toc(T_CER)));
 
 end
 
@@ -1586,6 +1616,48 @@ if FIG.confrontoCER && N_CER > 1
         save_figures(fullfile(FIG.cartella, "confronto"), ...
                      struct('chiudi', FIG.chiudi));
     end
+
 end
 
-fprintf('\n\n=== Analizzate %d CER. I risultati sono in RESULTS. ===\n', N_CER);
+%% ========================================================================
+%  8) TEMPO DI ESECUZIONE
+%
+%  Il conto si chiude qui, e si chiude DAVVERO: la somma dei tempi per
+%  comunita' piu' il confronto della §7 deve dare il totale, senza un residuo
+%  non spiegato. E' anche il modo di accorgersi se qualcosa sta costando dove
+%  non ce lo si aspetta.
+%
+%  Analisi e figure restano separate perche' si governano in modo diverso: il
+%  calcolo e' quello che serve, l'export delle figure si spegne con FIG.esporta
+%  e i grafici di dettaglio con FIG.dettaglio. Sapere quale delle due voci pesa
+%  e' l'unico modo per decidere cosa togliere quando l'esecuzione e' lenta.
+%  ========================================================================
+
+tempoAnalisiTot = sum([RESULTS.tempo_analisi_s]);
+tempoFigureTot  = sum([RESULTS.tempo_figure_s]);
+tempoTotale     = toc(T_TOT);
+
+% Quello che resta e' la §7 (confronto fra CER e relativo export): non
+% appartiene a nessuna comunita' e non ha un cronometro proprio, ma va
+% dichiarato lo stesso, altrimenti il totale non tornerebbe e non si capirebbe
+% perche'.
+tempoConfronto = tempoTotale - tempoAnalisiTot - tempoFigureTot;
+
+fprintf('\n\n=== Tempo di esecuzione ===\n');
+for c = 1:N_CER
+    [~, nomeScheda] = fileparts(RESULTS(c).scheda);
+    fprintf('  %-22s  analisi %10s   figure %10s\n', nomeScheda, ...
+            format_duration(RESULTS(c).tempo_analisi_s), ...
+            format_duration(RESULTS(c).tempo_figure_s));
+end
+% Solo ASCII nelle stringhe STAMPATE: il paragrafo e l'euro esistono nei
+% commenti di questo file, ma passando dallo stdout di MATLAB in modalita'
+% batch escono corrotti, e un riepilogo di tempi illeggibile e' peggio che uno
+% senza simboli.
+fprintf('  %-22s  %s\n', '-- somma analisi',   format_duration(tempoAnalisiTot));
+fprintf('  %-22s  %s\n', '-- somma figure',    format_duration(tempoFigureTot));
+fprintf('  %-22s  %s\n', '-- confronto CER',   format_duration(tempoConfronto));
+fprintf('  %-22s  %s\n', 'TOTALE',             format_duration(tempoTotale));
+
+fprintf('\n=== Analizzate %d CER in %s. I risultati sono in RESULTS. ===\n', ...
+        N_CER, format_duration(tempoTotale));

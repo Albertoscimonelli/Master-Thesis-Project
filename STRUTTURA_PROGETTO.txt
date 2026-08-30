@@ -194,6 +194,8 @@ Project/
 |-- spread_labels.m                     Etichette distanziate in verticale con linea di richiamo al
 |                                       punto: condiviso da plot_fairness_tradeoff e
 |                                       plot_cer_comparison, dove sedici nomi si accalcano
+|-- format_duration.m                   Una durata in secondi resa nell'unita' che si legge meglio
+|                                       (s / min / h), per il riepilogo dei tempi della sez. 8
 +-- archive/
     |-- PROVA_PV.m                      [LEGACY] versione precedente dell'ottimizzatore PV
     +-- merge_pv_owner.m                [SUPERATO] fondeva il nodo "PV" col proprietario;
@@ -274,7 +276,9 @@ piu' un parametro configurabile (vedi Sezione 6 per i dettagli storici).
                                        |      +-- §6 risultati in RESULTS + export figure
                                        |      |    (una cartella per scheda)
                                        |      +-- §7 confronto FRA LE CER, fuori dal ciclo
-                                       |           (l'unico punto che vede RESULTS intera)
+                                       |      |    (l'unico punto che vede RESULTS intera)
+                                       |      +-- §8 riepilogo dei tempi: analisi e figure
+                                       |           separate, una riga per comunita'
                                        |
                                        |    quali figure si producono: struct FIG, §0b,
                                        |    prima del ciclo perche' serve anche alla §7

@@ -163,6 +163,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
+| `format_duration.m` | Una durata in secondi resa in secondi/minuti/ore, per il riepilogo dei tempi (§11.2) |
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
 | `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §8) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
@@ -594,6 +595,35 @@ quindi la cartella si legge senza aprire le immagini. `outputs/figures/` è in
 > sembrare enormi differenze che sulla scala del Gini sono modeste. Il sottotitolo riporta
 > il range osservato, e il **colore** (che è una graduatoria, non una misura) si normalizza
 > invece su quello.
+
+### 11.2 Tempo di esecuzione
+
+`MAIN.m` §8 chiude con il riepilogo dei tempi, una riga per comunità più i totali:
+
+```
+=== Tempo di esecuzione ===
+  CER_0_7_0               analisi     25.2 s   figure     29.3 s
+  ...
+  -- somma analisi        2 min 40 s
+  -- somma figure         3 min 06 s
+  -- confronto CER        5.4 s
+  TOTALE                  5 min 51 s
+```
+
+**Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
+quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
+alleggerisce con `FIG.dettaglio` (§11.1). Sapere quale delle due voci pesa è l'unico modo
+per decidere cosa togliere quando l'esecuzione è lenta — e sulle sette schede attuali
+**le figure costano più dell'analisi** (3 min contro 2 min 40 s), soprattutto per i PDF
+vettoriali con molti punti.
+
+Il conto chiude senza residui: somma delle comunità + confronto = totale. La riga
+"confronto CER" è la §7, che non appartiene a nessuna comunità. I tempi per comunità
+restano anche in `RESULTS`, nei campi `tempo_analisi_s` e `tempo_figure_s`.
+
+Il cronometro usa `tic` con identificatore esplicito (`T_TOT`, `T_CER`), non il `tic/toc`
+globale: quello è unico per tutto MATLAB, e qualunque funzione chiamata più a valle che lo
+usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 12. Limitazioni note / TODO
 

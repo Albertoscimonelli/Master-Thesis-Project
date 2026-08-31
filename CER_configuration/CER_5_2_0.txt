@@ -13,7 +13,7 @@ consumatori               = 5
 prosumer                  = 2
 produttori_puri           = 0
 penetrazione_prosumer_pct = 28.6
-potenza_installata_kWp    = 32
+potenza_installata_kWp    = 88
 impianti_totali           = 2
 [FILE]
 profili_carico     = ../CER_LoadProfiles/outputs/csv/storico/profili_tutti_20260825_163345.csv
@@ -39,5 +39,5 @@ id | nome_csv             | ruolo | categoria   | archetipo               | tari
  7 | household_4_kWh      | P     | domestico   | CHR05_famiglia_3figli   | MONORARIA        |         3 |      5 |      ? |           ? |       ? |         13000 |              0 | PV02
 [IMPIANTI]
 id   | proprietario         | kWp | file_produzione     | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
-PV01 | small_industry_1_kWh |  20 | PV1.CSV             |    ? |      ? |           2025 |         ? |             ?
+PV01 | small_industry_1_kWh |  76 | PV1.CSV             |    ? |      ? |           2025 |         ? |             ?
 PV02 | household_4_kWh      |  12 | PV2.CSV             |    ? |      ? |           2025 |         ? |             ?

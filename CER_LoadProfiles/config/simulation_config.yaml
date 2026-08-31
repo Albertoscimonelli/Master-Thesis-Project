@@ -46,10 +46,16 @@ lpg:
   # Alternative: Italy_Rom, Italy_Palermo.
   geographic_location: "Italy_Mailand"
 
-  # I 4 profili disponibili sono tutti tedeschi e a risoluzione giornaliera.
-  # Lasciare vuoto usa il default interno di LPG. Conta poco con HT06 (gas),
-  # diventa rilevante con pompa di calore o condizionamento elettrico.
-  temperature_profile: null
+  # Profilo di temperatura. Accetta sia un nome di attributo di
+  # lpgdata.TemperatureProfiles (i 4 profili tedeschi di serie) sia il nome di
+  # un profilo aggiunto dalle migrazioni, cercato nel database qui sopra.
+  # Quello italiano viene dalla colonna T2m del TMY PVGIS, la stessa fonte che
+  # optimizer_PV.m usa per la radiazione: LPG e calcolo FV condividono cosi' il
+  # riferimento climatico. Lasciare vuoto usa il default interno di LPG.
+  # Con HT06 (riscaldamento a gas, niente raffrescamento) l'effetto sul carico
+  # elettrico e' piccolo; diventa determinante con pompa di calore o
+  # condizionamento elettrico.
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
 
 output:
   folder: "outputs/csv"

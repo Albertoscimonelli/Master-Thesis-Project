@@ -20,11 +20,13 @@ Non modificare mai il .db3 a mano: la prossima build cancellerebbe tutto.
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import shutil
 import sqlite3
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -61,6 +63,78 @@ def _finestra(voce: int, inizio: str, fine: str, rand: int | None = None) -> str
         campi.append(f"RandomizeTimeAmount = {rand}")
     return f"UPDATE tblTimeLimitEntries SET {', '.join(campi)} WHERE ID = {voce};"
 
+
+
+# Profilo di temperatura italiano: sorgente, identita' e anno convenzionale.
+# Il GUID e' FISSO e non generato a caso, altrimenti ogni build produrrebbe un
+# database diverso a parita' di sorgente.
+TMY_MILANO = QUI / "dati" / "tmy_45.464_9.190_2005_2023.csv"
+TEMP_NOME = "Milano, Italia - PVGIS TMY 2005-2023"
+TEMP_GUID = "5e1c9a34-7b28-4c61-9f03-6ad82b5e7c19"
+# I profili di serie portano l'anno del dato (Amburgo 2007, Berlino 1996...) e
+# funzionano per qualunque anno di simulazione: LPG li mappa sul giorno di
+# calendario. Un TMY non ha un anno proprio, quindi se ne usa uno convenzionale
+# allineato all'anno simulato. Il TMY copre 365 giorni: simulando un anno
+# bisestile mancherebbe il 29 febbraio e LPG riempirebbe con il valore
+# precedente, come fa per ogni profilo a risoluzione piu' grossa.
+TEMP_ANNO = 2025
+
+
+def _sql_temperatura_milano() -> list[str]:
+    """Genera l'INSERT del profilo di temperatura dalle medie giornaliere del TMY.
+
+    Legge la colonna T2m del file PVGIS gia' usato da optimizer_PV.m per la
+    radiazione: cosi' LPG e il calcolo fotovoltaico condividono la stessa fonte
+    climatica, invece dei tre riferimenti scollegati di prima.
+
+    Returns:
+        Lista di istruzioni SQL: una INSERT per il profilo, una per ogni giorno.
+
+    Raises:
+        SystemExit: Se il file TMY non e' presente.
+    """
+    if not TMY_MILANO.exists():
+        sys.exit(
+            f"File TMY non trovato: {TMY_MILANO}\n"
+            "Serve alla migrazione T01 (profilo di temperatura italiano).\n"
+            "E' la colonna T2m dello stesso file PVGIS usato da optimizer_PV.m."
+        )
+
+    # Somma e conteggio per giorno dell'anno, scartando le righe di metadati
+    # che PVGIS scrive in coda al file.
+    somme: dict[str, float] = {}
+    conteggi: dict[str, int] = {}
+    with open(TMY_MILANO, newline="", encoding="utf-8-sig") as f:
+        for riga in csv.DictReader(f, delimiter=";"):
+            istante = (riga.get("time(UTC)") or "").strip()
+            if len(istante) != 13 or ":" not in istante:
+                continue
+            giorno = istante[4:8]                      # MMGG
+            somme[giorno] = somme.get(giorno, 0.0) + float(riga["T2m"])
+            conteggi[giorno] = conteggi.get(giorno, 0) + 1
+
+    if not somme:
+        sys.exit(f"Nessuna riga oraria valida in {TMY_MILANO.name}.")
+
+    istruzioni = [
+        "INSERT INTO tblTemperatureProfiles (Name, Description, Guid) VALUES ("
+        f"'{TEMP_NOME}', "
+        f"'Medie giornaliere della colonna T2m di {TMY_MILANO.name} "
+        f"(PVGIS TMY, stessa fonte usata da optimizer_PV.m per la radiazione).', "
+        f"'{TEMP_GUID}');"
+    ]
+    for giorno in sorted(somme):
+        media = somme[giorno] / conteggi[giorno]
+        data = f"{TEMP_ANNO}-{giorno[:2]}-{giorno[2:]} 00:00:00"
+        # Il GUID di ogni misura e' derivato dal giorno, non casuale: due build
+        # dalla stessa sorgente devono dare lo stesso database.
+        guid = str(uuid.uuid5(uuid.UUID(TEMP_GUID), giorno))
+        istruzioni.append(
+            "INSERT INTO tblTemperatures (Date, Temperatur, TempProfileID, Guid) "
+            f"SELECT '{data}', {media:.2f}, ID, '{guid}' "
+            f"FROM tblTemperatureProfiles WHERE Guid = '{TEMP_GUID}';"
+        )
+    return istruzioni
 
 # ---------------------------------------------------------------------------
 # MIGRAZIONI
@@ -259,6 +333,17 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "  Name LIKE '%Student%' OR Name LIKE '%Philosophy%' "
             "  OR Name LIKE '%Flatshar%');",
         ],
+    ),
+    (
+        "T01",
+        "Profilo di temperatura italiano: medie giornaliere di Milano dal "
+        "TMY PVGIS, la stessa fonte che optimizer_PV.m usa per la "
+        "radiazione. Prima il modello aveva tre riferimenti climatici "
+        "scollegati: nessuna temperatura (default interno tedesco), "
+        "radiazione LPG di Milano 2016 e TMY 2005-2023 per il "
+        "fotovoltaico. Ora LPG e calcolo FV condividono la sorgente. Il "
+        "profilo va poi selezionato con lpg.temperature_profile.",
+        _sql_temperatura_milano(),
     ),
 ]
 

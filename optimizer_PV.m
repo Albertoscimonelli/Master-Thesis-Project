@@ -172,8 +172,8 @@ else
     tilt_roof = NaN;  % Non usato con MOUNT=0
 
     % Geometria copertura (piano orizzontale)
-    L_r    = 40;     % Lunghezza copertura [m]
-    W_r    = 20;     % Larghezza copertura [m]
+    L_r    = 35;     % Lunghezza copertura [m]
+    W_r    = 30;     % Larghezza copertura [m]
     d_edge = 1.4;    % Margine perimetrale libero [m]
 
     % Inverter di stringa commerciale

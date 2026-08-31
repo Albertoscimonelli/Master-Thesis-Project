@@ -91,14 +91,14 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
 %  ========================================================================
 
 FIG = struct( ...
-    'profili',      true,  ...   % profili di consumo, 4 giorni tipo
-    'energia',      true,  ...   % mensili, PV vs domanda, mappa oraria, durata, TIP_h
+    'profili',      false,  ...   % profili di consumo, 4 giorni tipo
+    'energia',      false,  ...   % mensili, PV vs domanda, mappa oraria, durata, TIP_h
     'dettaglio',    false, ...   % 17 grafici di dettaglio, uno per metodo (opt-in)
-    'metodi',       true,  ...   % confronto delle quote fra i sedici metodi
-    'equita',       true,  ...   % indici, scostamento dal merito, trade-off
+    'metodi',       false,  ...   % confronto delle quote fra i sedici metodi
+    'equita',       false,  ...   % indici, scostamento dal merito, trade-off
     'confrontoCER', true,  ...   % confronto fra comunita' (§7, dopo il ciclo)
     'esporta',      true,  ...   % salva le figure su file
-    'chiudi',       true,  ...   % chiude le finestre dopo il salvataggio
+    'chiudi',       false,  ...   % chiude le finestre dopo il salvataggio
     'cartella',     "outputs/figures");
 
 
@@ -1236,9 +1236,24 @@ for iCER = 1:N_CER
     % dal nome utente: due membri possono avere nomi simili e categorie diverse.
     HET = gini_heterogeneity(userNames, struct('memberTypes', M.categoria));
 
+    % --- Indice di comunita': eterogeneita' di FORMA --------------------------
+    % L'indice qui sopra conta le ETICHETTE, questo confronta i RITMI. Serve
+    % perche' Shapley, Nucleolo e VLC si distinguono da una ripartizione
+    % volumetrica solo se i membri consumano in momenti diversi: se le forme
+    % fossero tutte uguali il confronto fra meccanismi non mostrerebbe nulla.
+    % Carichi LORDI, come per l'indice categoriale: descrive chi c'e' nella CER,
+    % non l'esito della condivisione. Il registro delle ipotesi (scelta della
+    % metrica) resta in SHP.assumptions.
+    SHP = shape_heterogeneity(loadUsers, userNames, ...
+                              struct('memberTypes', M.categoria, 'quiet', true));
+
     fprintf('\n=== Indici di valutazione dell''equita'' ===\n');
     fprintf('  %-34s: %.4f  (%d tipologie su %d membri)\n', ...
             'Gini di eterogeneita'' (eq. 10)', HET.G, numel(HET.types), nUsers);
+    fprintf('  %-34s: %.4f  (0 = stessi ritmi, 2 = mai sovrapposti)\n', ...
+            'Eterogeneita'' di forma (L1)', SHP.L1);
+    fprintf('  %-34s: %.4f dentro tipologia, %.4f fra tipologie\n', ...
+            '  ripartita', SHP.dentroTipologia, SHP.traTipologie);
 
     % --- Un pacchetto di indicatori per ciascuno dei sedici metodi -----------
     nMet   = numel(metodi);

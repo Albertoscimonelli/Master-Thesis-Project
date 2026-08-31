@@ -10,6 +10,7 @@ import calendar
 import logging
 import os
 import shutil
+import sqlite3
 import stat
 import time
 import zlib
@@ -34,6 +35,8 @@ try:
         HouseholdData,
         HouseholdDataSpecificationType,
         HouseholdNameSpecification,
+        JsonReference,
+        StrGuid,
     )
 
     _PYLPG_AVAILABLE = True
@@ -131,6 +134,55 @@ def _risolvi(classe_lpgdata, nome_attributo: Optional[str], etichetta: str):
     return getattr(classe_lpgdata, nome_attributo)
 
 
+def _risolvi_temperatura(nome: Optional[str], database: Optional[str]):
+    """Risolve il profilo di temperatura, anche se non e' nei binding Python.
+
+    lpgdata.TemperatureProfiles e' generato dal catalogo ORIGINALE, quindi non
+    contiene i profili aggiunti dalle nostre migrazioni. Invece di rigenerare
+    lpgdata.py dentro venv/ (file non versionato, che si perde a ogni
+    reinstallazione di pyLPG) si cerca il profilo per nome nel database
+    configurato e si costruisce il JsonReference a mano: e' solo Name + Guid.
+
+    Args:
+        nome: Nome dell'attributo in lpgdata.TemperatureProfiles oppure valore
+            del campo Name in tblTemperatureProfiles. None per non impostarlo.
+        database: Percorso del .db3 in uso, o None per il catalogo di default.
+
+    Returns:
+        JsonReference al profilo, o None se nome e' None.
+
+    Raises:
+        LookupError: Se il profilo non esiste ne' fra i binding ne' nel database.
+    """
+    if nome is None:
+        return None
+    if hasattr(lpgdata.TemperatureProfiles, nome):
+        return getattr(lpgdata.TemperatureProfiles, nome)
+
+    # sqlite3.connect() CREA il file se non esiste: si interroga il database
+    # solo dopo aver verificato che ci sia, per non lasciare in giro .db3 vuoti.
+    esiste = bool(database) and Path(database).is_file()
+    if esiste:
+        with sqlite3.connect(database) as conn:
+            riga = conn.execute(
+                "SELECT Name, Guid FROM tblTemperatureProfiles WHERE Name = ?",
+                (nome,),
+            ).fetchone()
+        if riga:
+            logger.info("Profilo di temperatura dal catalogo: %s", riga[0])
+            return JsonReference(riga[0], StrGuid(riga[1]))
+
+    disponibili = [a for a in dir(lpgdata.TemperatureProfiles) if not a.startswith("_")]
+    if esiste:
+        with sqlite3.connect(database) as conn:
+            disponibili += [
+                r[0] for r in conn.execute("SELECT Name FROM tblTemperatureProfiles")
+            ]
+    raise LookupError(
+        f"temperature_profile '{nome}' non trovato. Disponibili: {disponibili}"
+    )
+
+
 def _run_single_lpg_household(
     year: int,
     household_ref_name: str,
@@ -173,9 +225,7 @@ def _run_single_lpg_household(
     geo = _risolvi(
         lpgdata.GeographicLocations, geographic_location, "geographic_location"
     )
-    temp = _risolvi(
-        lpgdata.TemperatureProfiles, temperature_profile, "temperature_profile"
-    )
+    temp = _risolvi_temperatura(temperature_profile, database)
     intensity = getattr(EnergyIntensityType, energy_intensity)
 
     _clean_lpg_results()

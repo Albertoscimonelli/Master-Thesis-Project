@@ -247,3 +247,13 @@ CER_configuration/*
 PV_Generation/*
 !PV_Generation/PV1.CSV
 !PV_Generation/PV2.CSV
+
+# Bibliografia: PDF degli articoli, ~159 MB. Non e' codice e non va nella
+# cronologia: una volta dentro ci resta per sempre.
+Paper/
+
+# Run di controllo per i confronti A/B (es. generazione senza profilo di
+# temperatura). Dati derivati, si rigenerano con la configurazione
+# corrispondente in CER_LoadProfiles/config/.
+CER_LoadProfiles/outputs/csv_senza_temp/
+CER_LoadProfiles/outputs/csv_baseline/

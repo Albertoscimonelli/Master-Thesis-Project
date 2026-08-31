@@ -226,3 +226,24 @@ CER_configuration/bozza_CER_*.txt
 # si rigenerano a ogni esecuzione, pesano parecchio in PNG e cambiano a ogni
 # ritocco grafico, quindi versionarle riempirebbe la storia di rumore binario.
 outputs/figures/
+
+# Schede CER e produzione PV: si versiona solo il SET MINIMO che tiene il
+# progetto eseguibile da un clone pulito, non tutte quelle di lavoro. Le schede
+# si moltiplicano mentre si esplora (una per composizione della comunita') e i
+# CSV PVsyst si rigenerano a ogni ridimensionamento dell'impianto: tracciarle
+# tutte riempirebbe la storia di rumore senza aggiungere informazione.
+#
+# Il set minimo e' CER_5_2_0.txt piu' lo scenario, e i due CSV che quella
+# scheda dichiara in [IMPIANTI]. Cambiando la scheda di riferimento vanno
+# cambiati anche i CSV riammessi qui sotto, altrimenti MAIN.m si ferma sul
+# file di produzione mancante.
+#
+# NOTA: '/*' e non '/'. Con la barra sola git non entra nella cartella e le
+# righe di riammissione qui sotto non verrebbero nemmeno lette.
+CER_configuration/*
+!CER_configuration/scenario_economico.txt
+!CER_configuration/CER_5_2_0.txt
+
+PV_Generation/*
+!PV_Generation/PV1.CSV
+!PV_Generation/PV2.CSV

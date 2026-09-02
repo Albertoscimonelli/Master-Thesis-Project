@@ -206,6 +206,45 @@ di questa misura sono diventate le piu' importanti.
 
 ---
 
+## D03 (lampadine): non necessaria, migrazione saltata
+
+Il §4.3 di `CONTESTO_VALIDAZIONE_ARERA.md` segnalava fra le anomalie del
+catalogo una lampadina a incandescenza da 60 W (263 kWh/anno, fuori commercio
+UE dal 2012). La verifica dice che il problema non esiste piu'.
+
+Ogni categoria di illuminazione contiene gia' l'alternativa efficiente, ed
+`EnergySaving` sceglie la meno assorbente:
+
+```
+Light               LED 3W (13 kWh/a)   alternative: 11W, 60W (263 kWh/a), 200W
+Kitchen Light       20W                 alternative: 60, 100, 150, 200, 300W
+Living Room Light   20W                 alternative: 60, 100, 200W
+Bedroom / Cellar    20W                 alternative: 60, 200W
+Bathroom Mirror     LED 10W             alternative: 30W CFL, 100W conventional
+Garage              LED 50W             alternativa: 500W
+Desk Light          2W
+```
+
+L'incandescenza era pescata solo da `energy_intensity: "Random"`. Dal passo 2,
+che ha attivato `EnergySaving`, non viene piu' scelta.
+
+**Scelta di modellazione dichiarata.** Si assume illuminazione interamente a
+basso consumo. ISTAT (Consumi energetici 2021, Tavola 16, Lombardia) misura
+che il 76,5% delle lampadine installate era a risparmio energetico e il 23,5%
+tradizionale, ma il dato ha cinque anni e la sostituzione e' proseguita:
+assumere il 100% sovrastima l'efficienza di una quota ormai marginale, con
+impatto trascurabile sul profilo.
+
+**Limite della verifica.** E' un'inferenza, non un'osservazione diretta: non e'
+stato letto quale lampadina viene scelta a ogni run, perche' l'output per
+singolo dispositivo non e' attivo e attivarlo perturberebbe la sequenza
+casuale (le `CalcOptions` cambiano il risultato di circa l'1%). Il
+comportamento di `EnergySaving` e' pero' accertato in due casi verificati
+direttamente: il circolatore (Grundfos 25 W scelto contro il Wilo 80 W) e il
+frigorifero.
+
+---
+
 ## Difetti noti e non ancora corretti
 
 | difetto | evidenza | dove si corregge |

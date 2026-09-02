@@ -529,6 +529,93 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "UPDATE tblHouseTypes SET CoolingYearlyTotal = 1400 WHERE ID = 10;",
         ],
     ),
+    (
+        "L09",
+        "Bucato e lavastoviglie su cancelli propri, con orario italiano. "
+        "Oggi 'do laundry at 30 C', 'run the dishwasher' e 'run the dryer' "
+        "passano tutte e tre dal time limit 6, che apre alle 08:00 con "
+        "randomizzazione di 15 minuti: le tre macchine partono praticamente "
+        "insieme all'apertura del cancello. "
+        "Il time limit 6 NON e' pero' il cancello del bucato: lo condividono "
+        "12 attivita', fra cui cuocere una torta, pulire i vetri, il robot "
+        "aspirapolvere e andare in piscina. Spostarlo muoverebbe tutte quelle. "
+        "Si creano quindi due time limit nuovi e vi si ripuntano le sole "
+        "attivita' interessate, senza toccare alcun oggetto condiviso: il 6 "
+        "resta com'e' per le altre nove attivita', e l'81 resta per le lezioni "
+        "di equitazione che lo condividevano con il bucato a 60 C. "
+        "Orari da ETHOS.ActivityAssure (HETUS), giorno feriale, Italia. "
+        "Bucato: la moda e' alle 17:00 per le donne occupate a tempo pieno, "
+        "con il 37,9% della massa fra le 12 e le 18 e il 43,5% fra le 18 e le "
+        "24; per le pensionate la moda e' alle 10:10 con il 47,6% entro "
+        "mezzogiorno. Un solo cancello deve servire entrambi i profili, quindi "
+        "finestra 10:00-21:30 con randomizzazione ampia. "
+        "Lavastoviglie: segue i pasti. Picco alle 20:50 per le occupate a "
+        "tempo pieno (60,7% della massa fra le 18 e le 24) e alle 13:40 per le "
+        "pensionate. Finestra 13:00-22:30. "
+        "Da notare, contro l'ipotesi di partenza: il dato NON dice che in "
+        "Italia il bucato si faccia la sera. Dice pomeriggio e sera per chi "
+        "lavora, mattina per chi non lavora. E la fascia 08-10 pesa il 5,3% "
+        "in Italia e il 4,7% in Germania: il picco delle 08:00 non lo "
+        "giustifica nemmeno il comportamento tedesco, e' un effetto del "
+        "cancello. "
+        "La randomizzazione ampia (120 e 90 minuti contro i 15 attuali) serve "
+        "a disaccoppiare le macchine fra loro e fra i giorni: e' il parametro "
+        "che decide quanto le attivita' si addensano sull'apertura. L03 lo usa "
+        "nello stesso modo, in verso opposto. "
+        "Il dryer condizionato alla temperatura (attivita' 446, time limit "
+        "106) non viene toccato: ha voci gerarchiche legate da ParentEntryID e "
+        "la sua finestra arriva gia' alle 22:00.",
+        [
+            "INSERT INTO tblTimeLimits (ID, Name, Guid) VALUES "
+            "(150, 'Bucato italiano: ogni giorno 10:00-21:30', "
+            "'3f7a1d68-2c94-4e5b-b1a7-0d6e8c25f4a1');",
+            "INSERT INTO tblTimeLimits (ID, Name, Guid) VALUES "
+            "(151, 'Lavastoviglie italiana: ogni giorno 13:00-22:30', "
+            "'8b2e5c07-91d3-4a6f-8e14-72fb0a9d3c56');",
+            # Voci ricalcate su quella del time limit 6 (voce 77), cambiando
+            # solo orari e randomizzazione: stessi flag settimanali, stessi
+            # limiti di temperatura, nessun genitore e nessuna gerarchia.
+            "INSERT INTO tblTimeLimitEntries ("
+            "  ID, StartTime, EndTime, RepeaterType, dailyDayCount,"
+            "  WeeklyWeekCount, WeeklyMonday, WeeklyTuesday, WeeklyWednesday,"
+            "  WeeklyThursday, WeeklyFriday, WeeklySaturday, WeeklySunday,"
+            "  MonthlyMonthCount, MonthlyDay, YearlyDay, YearlyMonth,"
+            "  MinTemperature, MaxTemperature, NeedsLight, NeedsDarkness,"
+            "  StartWeek, TimeLimitID, AnyAll, DateRangeStart, DateRangeEnd,"
+            "  DateProfileID, MaxDateProfileValue, MinDateProfileValue,"
+            "  DuringVacation, DuringNotVacation, DuringVacationLongerThan,"
+            "  DuringVacationShorterThan, VacationDurationLimit, DuringHoliday,"
+            "  RandomizeTimeAmount, DateProfileMinVariation,"
+            "  DateProfileMaxVariation, Guid) VALUES ("
+            "  401, '1900-01-01 10:00:00', '1900-01-01 21:30:00', 0, 1,"
+            "  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -100.0, 100.0, 1, 0,"
+            "  1, 150, 1, '2014-12-01 00:00:00', '2014-12-01 00:00:00',"
+            "  0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 120, 0.0, 0.0,"
+            "  'c4d9e2b1-5a83-4f07-9e6d-18b3a7c05e92');",
+            "INSERT INTO tblTimeLimitEntries ("
+            "  ID, StartTime, EndTime, RepeaterType, dailyDayCount,"
+            "  WeeklyWeekCount, WeeklyMonday, WeeklyTuesday, WeeklyWednesday,"
+            "  WeeklyThursday, WeeklyFriday, WeeklySaturday, WeeklySunday,"
+            "  MonthlyMonthCount, MonthlyDay, YearlyDay, YearlyMonth,"
+            "  MinTemperature, MaxTemperature, NeedsLight, NeedsDarkness,"
+            "  StartWeek, TimeLimitID, AnyAll, DateRangeStart, DateRangeEnd,"
+            "  DateProfileID, MaxDateProfileValue, MinDateProfileValue,"
+            "  DuringVacation, DuringNotVacation, DuringVacationLongerThan,"
+            "  DuringVacationShorterThan, VacationDurationLimit, DuringHoliday,"
+            "  RandomizeTimeAmount, DateProfileMinVariation,"
+            "  DateProfileMaxVariation, Guid) VALUES ("
+            "  402, '1900-01-01 13:00:00', '1900-01-01 22:30:00', 0, 1,"
+            "  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -100.0, 100.0, 1, 0,"
+            "  1, 151, 1, '2014-12-01 00:00:00', '2014-12-01 00:00:00',"
+            "  0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 90, 0.0, 0.0,"
+            "  'a1f6b394-7d20-4c58-b9e3-6047f2a8dc15');",
+            # 442 bucato 30 C, 444 asciugatrice, 445 bucato 60 C
+            "UPDATE tblAffordances SET TimeLimitID = 150 "
+            "WHERE ID IN (442, 444, 445);",
+            # 443 lavastoviglie
+            "UPDATE tblAffordances SET TimeLimitID = 151 WHERE ID = 443;",
+        ],
+    ),
 ]
 
 

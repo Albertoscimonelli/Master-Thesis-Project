@@ -68,6 +68,14 @@ output:
   # profili_aziende.csv e profili_famiglie.csv, separati per tecnologia.
   individual_profiles: false
 
+  # profili_famiglie_dettaglio.csv - scompone ogni famiglia nelle due meta' del
+  # contatore: _famiglia_kWh (elettrodomestici, Electricity_HH1), _casa_kWh
+  # (pompa di circolazione e condizionatore, Electricity_House) e _POD_kWh, la
+  # somma, che e' quello che i CSV principali riportano. Serve solo alla
+  # diagnostica: dice se uno scarto rispetto ad ARERA viene dagli
+  # elettrodomestici o dagli impianti di casa. Nessun file a valle lo legge.
+  dettaglio_domestici: true
+
   # profilo_CER_aggregato.csv - somma di tutte le utenze in una sola colonna.
   aggregate_total: false
 

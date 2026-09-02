@@ -345,6 +345,37 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
         "profilo va poi selezionato con lpg.temperature_profile.",
         _sql_temperatura_milano(),
     ),
+    (
+        "HT02",
+        "Un solo circolatore per HT06 e HT07, non due. Ogni house type monta "
+        "il gruppo di azioni 214 ('run Circulation pump') DUE volte, con due "
+        "cancelli diversi: uno su TL 53 (tutti i giorni 06:00-22:00, quindi "
+        "tutto l'anno) e uno su TL 3 ('Below 15 C', 00:00-20:00). D'inverno "
+        "girano insieme. Misurato sui profili generati: la componente "
+        "Electricity_House vale 898 kWh/anno quando il sorteggio pesca il "
+        "Wilo-Star da 80 W e 281 quando pesca il Grundfos da 25 W, cioe' in "
+        "entrambi i casi 2,2 volte il consumo annuo che il catalogo stesso "
+        "dichiara per una singola unita' (409 e 128 kWh). La pompa resta "
+        "accesa 7.784 ore l'anno su 8.760. "
+        "In un appartamento italiano con caldaia istantanea a gas (che e' "
+        "quello che HT06 descrive) il circolatore e' uno solo e serve il "
+        "circuito di riscaldamento: non c'e' un anello di ricircolo "
+        "sanitario che giustifichi la seconda unita' accesa tutto l'anno. "
+        "Si elimina quindi l'istanza su TL 53 e si tiene quella su TL 3, che "
+        "e' la pompa del riscaldamento. "
+        "Riferimento sul valore atteso: ISTAT, Consumi energetici delle "
+        "famiglie 2021, Tavola 7, Lombardia: il riscaldamento resta acceso "
+        "10,06 h al giorno nei mesi freddi. Un circolatore moderno da 25 W a "
+        "quel regime consuma circa 45 kWh/anno, uno vecchio da 80 W circa "
+        "145: l'ordine di grandezza corretto e' quello, non 898. "
+        "Si agisce per ID di riga e solo su HT06 e HT07, i due house type "
+        "usati dal progetto: gli altri 20 restano com'erano.",
+        [
+            # riga 153 = HT06 su TL 53; riga 162 = HT07 su TL 53.
+            # Le istanze su TL 3 (righe 154 e 161) restano.
+            "DELETE FROM tblHouseTypeDevices WHERE ID IN (153, 162);",
+        ],
+    ),
 ]
 
 

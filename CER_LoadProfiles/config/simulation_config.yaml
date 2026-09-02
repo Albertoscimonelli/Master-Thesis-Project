@@ -17,9 +17,22 @@ ramp:
 
 lpg:
   households:
+    # Il condizionamento non e' universale: in Lombardia ce l'ha il 55,6% delle
+    # famiglie (ISTAT, Dotazioni energetiche 2024, Tavola 3; Italia 56,0%,
+    # Nord-ovest 48,0%). Darlo a tutte o a nessuna sbaglia in entrambi i casi,
+    # e la media ARERA con cui ci confrontiamo lo contiene gia' per quella
+    # quota. Con quattro nuclei il valore rappresentabile piu' vicino e' 2 su 4.
+    #
+    # Quali due: uno per coppia di archetipi, cosi' il condizionatore non
+    # risulta correlato al tipo di famiglia. Se lo dessimo alle due famiglie
+    # con figli, l'analisi di eterogeneita' di forma attribuirebbe alla
+    # composizione familiare cio' che e' dotazione impiantistica. ISTAT non
+    # pubblica la diffusione per tipo di nucleo, quindi non esiste un criterio
+    # migliore fondato sui dati: questa e' una scelta dichiarata.
     - label: "pensionati"
       template: "CHR54 Retired Couple, no work"
       household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 1
     - label: "coppia_lavoratori"
       template: "CHR02 Couple, 30 - 64 age, with work"
@@ -28,6 +41,7 @@ lpg:
     - label: "famiglia_1figlio"
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 1
     - label: "famiglia_3figli"
       template: "CHR05 Family, 3 children, both with work"

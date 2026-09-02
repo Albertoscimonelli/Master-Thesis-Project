@@ -36,6 +36,52 @@ Tre conseguenze operative:
 
 ---
 
+## Correzione: il bersaglio di livello e' stato letto male fino al passo D01
+
+**Errore mio, non del piano, e riguarda tutte le colonne "scarto" riportate
+nei commit dal passo 1 al passo 6.**
+
+La media ARERA di 1.662 kWh/anno per la classe 1,5-3 kW **contiene gia' il
+condizionamento**, perche' il 55,6% dei clienti lombardi ce l'ha (ISTAT,
+Dotazioni energetiche 2024, Tavola 3). Sono circa 233 kWh per famiglia media.
+
+Fino al passo D01 la configurazione usava **HT06 per tutte e quattro le
+famiglie**, e HT06 ha `CoolingYearlyTotal = 0`: nessuna famiglia simulata
+aveva il condizionatore. Confrontare una famiglia senza condizionatore contro
+una media che lo contiene sottostima lo scarto.
+
+I bersagli corretti, scomponendo la media ARERA:
+
+| | senza condizionatore | media (come ARERA) | con condizionatore |
+|---|---:|---:|---:|
+| classe 1,5-3 kW | ~1.429 | 1.662 | ~1.848 |
+| classe 3-4,5 kW | ~2.220 | 2.582 | ~2.871 |
+
+Riletti cosi', i livelli dopo D01:
+
+| famiglia | kWh | riportato (vs media) | corretto (vs senza cond.) |
+|---|---:|---:|---:|
+| household_1 | 2.060 | 1,24x | **1,44x** |
+| household_2 | 1.749 | 1,05x | **1,22x** |
+| household_3 | 2.671 | 1,03x | **1,20x** |
+| household_4 | 2.926 | 1,13x | **1,32x** |
+
+Il modello era **piu' lontano** di quanto riportato. Il "1,05x" di
+household_2 era un confronto mal posto.
+
+**Come si chiude.** Dal passo HT01 in poi due famiglie su quattro hanno il
+condizionatore (2/4 = 50%, il valore rappresentabile piu' vicino al 55,6%
+reale con quattro nuclei), quindi l'aggregato torna confrontabile con la media
+ARERA senza dover correggere il bersaglio a mano. Da HT01 in avanti la colonna
+"scarto" di `valida_domestici.py` e' di nuovo leggibile come sta scritta.
+
+**Da fare nel report:** ricalcolare le tabelle dei passi 1-6 contro il
+bersaglio "senza condizionatore", oppure dichiarare esplicitamente che quelle
+righe confrontano un modello senza condizionamento con una media che lo
+include.
+
+---
+
 ## Quadro d'insieme dei passi eseguiti
 
 Configurazione: HT06, Milano, anno 2025, seed fissi. Riferimento: ARERA Milano

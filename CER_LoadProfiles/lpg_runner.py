@@ -474,6 +474,14 @@ def run_lpg(config: dict) -> pd.DataFrame:
         household_ref = hh_group["household_ref"]
         count = hh_group["count"]
 
+        # House type per famiglia, con ricaduta sulla chiave globale. Serve a
+        # rappresentare una dotazione che non e' universale: in Lombardia il
+        # 55,6% delle famiglie ha un impianto di raffrescamento (ISTAT,
+        # Dotazioni energetiche 2024, Tavola 3), quindi darlo a tutte o a
+        # nessuna e' sbagliato in entrambi i casi. Senza questa chiave il
+        # comportamento e' identico a prima.
+        house_type_hh = hh_group.get("house_type", house_type)
+
         logger.info("Generazione %dx '%s'...", count, label)
 
         for i in range(count):
@@ -489,7 +497,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
                     result_df = _run_single_lpg_household(
                         year=year,
                         household_ref_name=household_ref,
-                        house_type=house_type,
+                        house_type=house_type_hh,
                         seed=seed,
                         energy_intensity=energy_intensity,
                         database=database,

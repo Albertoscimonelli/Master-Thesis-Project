@@ -494,6 +494,41 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "  WHERE DeviceID IN (277, 278, 279, 280, 281, 478));",
         ],
     ),
+    (
+        "HT01",
+        "Raffrescamento di HT07 dimensionato sul dato lombardo: da 5.000 a "
+        "1.400 kWh termici. Con COP 3 sono 1.663 kWh elettrici prima e 466 "
+        "dopo, e finiscono interi sul contatore della famiglia. "
+        "Il valore di partenza non e' un dato italiano ne' viene adattato al "
+        "clima: a differenza del riscaldamento, che ha AdjustYearlyEnergy = 1 "
+        "e ReferenceDegreeDays = 4000 e quindi viene riscalato sui gradi "
+        "giorno della localita', il raffrescamento ha "
+        "AdjustYearlyCoolingHours = 0. I 5.000 kWh restano 5.000 a Milano "
+        "come a Palermo. L'asimmetria resta e va dichiarata come limite del "
+        "modello: qui si corregge il livello, non il meccanismo. "
+        "Il valore di arrivo si ricava da due misure indipendenti che "
+        "concordano. Primo: dal dato ARERA, il condizionamento vale circa 233 "
+        "kWh elettrici per famiglia media di Milano; ISTAT Dotazioni "
+        "energetiche 2024, Tavola 3, da la Lombardia al 55,6% di famiglie "
+        "dotate, quindi 233 / 0,556 = 419 kWh per famiglia che ce l'ha. "
+        "Secondo: l'intervallo reale italiano per un condizionatore "
+        "domestico e' 400-700 kWh elettrici l'anno. I 466 kWh che risultano da "
+        "1.400 kWh termici cadono in entrambi. "
+        "Contesto d'uso, da ISTAT Consumi energetici 2021, Lombardia: fra le "
+        "famiglie dotate solo il 28,8% lo usa tutti i giorni o quasi e il "
+        "22,1% quasi mai (Tavola 14); l'impianto resta acceso in media 6,48 "
+        "ore al giorno nei mesi caldi, di cui 1,04 la mattina, 3,13 il "
+        "pomeriggio e 2,31 la notte (Tavola 15). Quest'ultima ripartizione e' "
+        "il controllo sulla FORMA da fare dopo la rigenerazione: le 2,31 ore "
+        "notturne pesano sulla fascia F3, che e' il difetto piu' grande che "
+        "resta. "
+        "La diffusione del 55,6% non si rappresenta riscalando l'impianto di "
+        "tutti ma dando HT07 solo ad alcune famiglie: si fa nella "
+        "configurazione, con la chiave house_type per famiglia.",
+        [
+            "UPDATE tblHouseTypes SET CoolingYearlyTotal = 1400 WHERE ID = 10;",
+        ],
+    ),
 ]
 
 

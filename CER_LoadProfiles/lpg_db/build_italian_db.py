@@ -616,6 +616,44 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "UPDATE tblAffordances SET TimeLimitID = 151 WHERE ID = 443;",
         ],
     ),
+    (
+        "L08",
+        "Cena alle 20, non alle 18:30. L02 aveva gia' spostato i cancelli della "
+        "sera, ma non abbastanza: la misura sui profili generati mostra il "
+        "picco della giornata alle ore 18, mentre ARERA Milano lo ha alle 20 "
+        "e ETHOS.ActivityAssure misura il picco italiano dell'attivita' 'eat' "
+        "alle 20:20. "
+        "Numeri di ActivityAssure, giorno feriale: picco della cena alle 20:20 "
+        "con ampiezza 42,0% per le donne occupate a tempo pieno e 39,4% per "
+        "gli uomini, contro le 19:20 e le 18:30 in Germania con ampiezza "
+        "16,4% e 16,3%; per le pensionate alle 19:50. Sull'attivita' 'cook' "
+        "la massa fra le 18 e le 22 vale il 60,7% in Italia contro il 39,2% "
+        "in Germania. La cena italiana e' piu' tarda e molto piu' concentrata. "
+        "Poiche' cucinare precede il mangiare di mezz'ora abbondante, il "
+        "cancello della cottura va aperto verso le 19:30. "
+        "Si spostano due cancelli: "
+        "TL 121 'Dinner Time', che e' il vero cancello della cena con 29 usi "
+        "via tratti, tutti attivita' di cottura (pasta, minestra, pizza, "
+        "avanzi, uova), da 19:00-21:30 a 19:30-22:00; "
+        "TL 66, la sera condivisa fra 'cook together in the evening', teatro e "
+        "concerti, da 18:30-22:00 a 19:30-22:30. Lo spostamento e' coerente "
+        "anche per le due attivita' non alimentari: in Italia teatri e "
+        "concerti iniziano fra le 20:30 e le 21, non alle 18:30. "
+        "NON si tocca TL 40, che pure contiene un'attivita' di cottura "
+        "('cook for the family after 16:30'): condivide il cancello con lo "
+        "yoga e con il bagno dei bambini, e la sua finestra attuale "
+        "(19:00-20:30) e' gia' accettabile. Spostarlo sposterebbe anche "
+        "quelle, e il bagno dei bambini confina con la messa a letto delle "
+        "21:00 fissata da L05. "
+        "La randomizzazione passa da 15 a 45 minuti su entrambi, come L03 ha "
+        "gia' fatto sui cancelli del pranzo: con 15 minuti le attivita' si "
+        "addensano sull'apertura e il picco risulta piu' stretto di quello "
+        "reale. E' lo stesso meccanismo diagnosticato su L09 per il bucato.",
+        [
+            _finestra(353, "19:30", "22:00", 45),  # TL 121, era 19:00-21:30
+            _finestra(227, "19:30", "22:30", 45),  # TL 66,  era 18:30-22:00
+        ],
+    ),
 ]
 
 

@@ -245,6 +245,42 @@ frigorifero.
 
 ---
 
+## L07 (pranzo): orari gia' corretti da L03, migrazione saltata
+
+Il piano prevedeva di spostare il pranzo feriale, ritenendo che `L03` avesse
+toccato solo il fine settimana. La verifica dice che i cancelli del pranzo sono
+gia' tutti su orario italiano:
+
+```
+TL 119  "Lunch Time (11:30-13:00)"        contiene 12:30-14:30  rand 45  (43 tratti)
+TL  91  pranzo famiglia, ogni giorno      contiene 12:30-14:30  rand 15
+TL  89  pranzo weekend                    contiene 12:30-15:00  rand 20
+TL 120  pranzo domenica                   contiene 12:30-15:00  rand 45
+TL 122  pranzo weekend                    contiene 12:30-15:00  rand 45
+```
+
+I nomi dichiarano ancora gli orari tedeschi ma il contenuto e' italiano: e' la
+trappola dei nomi che mentono, gia' segnalata nel documento di contesto.
+
+La misura conferma: le ore 12-15 valgono il **15,4%** della giornata contro il
+**17,2%** di ARERA. Leggermente scarico, ma la forma c'e'.
+
+**Cosa resta, e perche' non si fa qui.** AVQ 2024 Lombardia dice che per il
+59,4% il pranzo e' il pasto principale e che il 64,6% lo consuma in casa nei
+giorni feriali. Il divario residuo e' quindi di **ampiezza**, non di orario, e
+l'ampiezza non dipende da un cancello: dipende da quante famiglie possiedono il
+tratto che abilita l'attivita' "cucina il pranzo". Correggerla significa
+toccare `tblHouseholdTraits`, cioe' la composizione dei nuclei, che e'
+sensibilmente piu' invasivo delle migrazioni sui time limit e con esito meno
+prevedibile.
+
+**Resta aperto per il report**: verificare quante delle quattro famiglie hanno
+il tratto del pranzo cucinato e se l'aggregato ragionevole nasconda profili
+individuali sbagliati. Conta per la domanda di ricerca, perche' Shapley,
+Nucleolo e VLC vivono sulle forme individuali, non sull'aggregato.
+
+---
+
 ## Difetti noti e non ancora corretti
 
 | difetto | evidenza | dove si corregge |

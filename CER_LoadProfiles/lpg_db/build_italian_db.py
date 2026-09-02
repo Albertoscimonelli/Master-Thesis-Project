@@ -376,6 +376,50 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "DELETE FROM tblHouseTypeDevices WHERE ID IN (153, 162);",
         ],
     ),
+    (
+        "D02",
+        "Frigorifero di taglia realistica. Il gruppo di azioni 184 offre sette "
+        "frigo-congelatori alternativi e con energy_intensity EnergySaving il "
+        "motore sceglie il 'Siemens Kl 20 LA 65 (A+)', che nei profili "
+        "generati consuma 82,9 kWh/anno. Nessun combinato reale consuma cosi' "
+        "poco: un A+ ne consuma 150-200 e un combinato 250-350. "
+        "La conseguenza si vede sulla forma, non solo sul livello. Il "
+        "frigorifero e' il principale carico continuo di una casa, quindi "
+        "sottodimensionarlo svuota le ore notturne: nei profili misurati le "
+        "ore 00-05 valgono lo 0,9-1,5% della giornata contro il 2,4-3,6% di "
+        "ARERA Milano, ed e' la causa principale del deficit sulla fascia F3 "
+        "(28,4% contro 38,6%). "
+        "Cinque dei sette dispositivi sono guidati da un profilo di carico "
+        "misurato e dichiarano YearlyEnergyUse = 0, quindi il loro consumo "
+        "non e' leggibile dal catalogo e la scelta di EnergySaving fra loro "
+        "non e' prevedibile. Si restringe il gruppo ai due che dichiarano un "
+        "consumo verificabile, entrambi Liebherr combinati da 229 kWh/anno "
+        "(azioni 340 e 341): EnergySaving prendera' il meno assorbente dei "
+        "due in modo deterministico, e il valore atteso e' noto in anticipo. "
+        "Non si tocca alcun profilo di carico: i profili sono misurati e "
+        "alterarli cambierebbe la natura del modello. Si agisce solo su quali "
+        "alternative restano disponibili nella selezione. "
+        "Riferimento sulla dotazione: ISTAT, Consumi energetici delle "
+        "famiglie 2021, Tavola 18, Lombardia: il 99,4% delle famiglie ha un "
+        "frigorifero e il 22,0% ha anche un congelatore separato, quindi il "
+        "combinato e' l'apparecchio di riferimento.",
+        [
+            # Azioni 339, 392, 393, 394 e 426 = i cinque frigo a profilo
+            # misurato del gruppo 184. Restano 340 e 341 (Liebherr CBNPes 3956
+            # e Liebherr CBP 4056-20A), che dichiarano 229 kWh/anno.
+            #
+            # Prima le 20 righe figlie, poi le 5 azioni: l'ordine conta,
+            # perche' tblDeviceActionDevices punta a tblDeviceActions e righe
+            # orfane fanno rifiutare il catalogo al motore con
+            # DataIntegrityException, che lo script di build non intercetta
+            # (PRAGMA integrity_check verifica la struttura SQLite, non la
+            # coerenza semantica del modello). Totale atteso: 25 righe.
+            "DELETE FROM tblDeviceActionDevices "
+            "WHERE DeviceActionID IN (339, 392, 393, 394, 426);",
+            "DELETE FROM tblDeviceActions "
+            "WHERE ID IN (339, 392, 393, 394, 426);",
+        ],
+    ),
 ]
 
 

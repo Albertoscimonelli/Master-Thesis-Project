@@ -1,8 +1,8 @@
 {
-  "costruito_il": "2026-09-02T14:32:35+00:00",
+  "costruito_il": "2026-09-02T14:47:15+00:00",
   "sorgente": "C:\\Users\\scimo\\desktop\\Project\\venv\\Lib\\site-packages\\pylpg\\C1\\profilegenerator.db3",
   "sha256_sorgente": "e782bd139b78b2def20c5f9e4b09b2ee2c1c1b84fee20ba80ab8a4f69ca1c4d9",
-  "sha256_risultato": "98e534d9ddfa149f4b97dad013a1c2aa69ac4f4cdee6c1fd3a1d91fb7131b69e",
+  "sha256_risultato": "dcc8114566e23313ae1fcdb02d82f9f5270957ddb6b45d9fba84facd11a1b3b9",
   "migrazioni": [
     {
       "id": "H01",
@@ -63,6 +63,11 @@
       "id": "HT02",
       "descrizione": "Un solo circolatore per HT06 e HT07, non due. Ogni house type monta il gruppo di azioni 214 ('run Circulation pump') DUE volte, con due cancelli diversi: uno su TL 53 (tutti i giorni 06:00-22:00, quindi tutto l'anno) e uno su TL 3 ('Below 15 C', 00:00-20:00). D'inverno girano insieme. Misurato sui profili generati: la componente Electricity_House vale 898 kWh/anno quando il sorteggio pesca il Wilo-Star da 80 W e 281 quando pesca il Grundfos da 25 W, cioe' in entrambi i casi 2,2 volte il consumo annuo che il catalogo stesso dichiara per una singola unita' (409 e 128 kWh). La pompa resta accesa 7.784 ore l'anno su 8.760. In un appartamento italiano con caldaia istantanea a gas (che e' quello che HT06 descrive) il circolatore e' uno solo e serve il circuito di riscaldamento: non c'e' un anello di ricircolo sanitario che giustifichi la seconda unita' accesa tutto l'anno. Si elimina quindi l'istanza su TL 53 e si tiene quella su TL 3, che e' la pompa del riscaldamento. Riferimento sul valore atteso: ISTAT, Consumi energetici delle famiglie 2021, Tavola 7, Lombardia: il riscaldamento resta acceso 10,06 h al giorno nei mesi freddi. Un circolatore moderno da 25 W a quel regime consuma circa 45 kWh/anno, uno vecchio da 80 W circa 145: l'ordine di grandezza corretto e' quello, non 898. Si agisce per ID di riga e solo su HT06 e HT07, i due house type usati dal progetto: gli altri 20 restano com'erano.",
       "righe_modificate": 2
+    },
+    {
+      "id": "D02",
+      "descrizione": "Frigorifero di taglia realistica. Il gruppo di azioni 184 offre sette frigo-congelatori alternativi e con energy_intensity EnergySaving il motore sceglie il 'Siemens Kl 20 LA 65 (A+)', che nei profili generati consuma 82,9 kWh/anno. Nessun combinato reale consuma cosi' poco: un A+ ne consuma 150-200 e un combinato 250-350. La conseguenza si vede sulla forma, non solo sul livello. Il frigorifero e' il principale carico continuo di una casa, quindi sottodimensionarlo svuota le ore notturne: nei profili misurati le ore 00-05 valgono lo 0,9-1,5% della giornata contro il 2,4-3,6% di ARERA Milano, ed e' la causa principale del deficit sulla fascia F3 (28,4% contro 38,6%). Cinque dei sette dispositivi sono guidati da un profilo di carico misurato e dichiarano YearlyEnergyUse = 0, quindi il loro consumo non e' leggibile dal catalogo e la scelta di EnergySaving fra loro non e' prevedibile. Si restringe il gruppo ai due che dichiarano un consumo verificabile, entrambi Liebherr combinati da 229 kWh/anno (azioni 340 e 341): EnergySaving prendera' il meno assorbente dei due in modo deterministico, e il valore atteso e' noto in anticipo. Non si tocca alcun profilo di carico: i profili sono misurati e alterarli cambierebbe la natura del modello. Si agisce solo su quali alternative restano disponibili nella selezione. Riferimento sulla dotazione: ISTAT, Consumi energetici delle famiglie 2021, Tavola 18, Lombardia: il 99,4% delle famiglie ha un frigorifero e il 22,0% ha anche un congelatore separato, quindi il combinato e' l'apparecchio di riferimento.",
+      "righe_modificate": 25
     }
   ]
 }

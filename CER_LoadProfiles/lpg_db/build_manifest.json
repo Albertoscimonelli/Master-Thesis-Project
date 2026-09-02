@@ -1,8 +1,8 @@
 {
-  "costruito_il": "2026-09-02T14:47:15+00:00",
+  "costruito_il": "2026-09-02T15:09:20+00:00",
   "sorgente": "C:\\Users\\scimo\\desktop\\Project\\venv\\Lib\\site-packages\\pylpg\\C1\\profilegenerator.db3",
   "sha256_sorgente": "e782bd139b78b2def20c5f9e4b09b2ee2c1c1b84fee20ba80ab8a4f69ca1c4d9",
-  "sha256_risultato": "dcc8114566e23313ae1fcdb02d82f9f5270957ddb6b45d9fba84facd11a1b3b9",
+  "sha256_risultato": "3eeb8a6f3b75ad4ec479833e562252c0c90f3be9abf35cf92f774a9bf7a76bf2",
   "migrazioni": [
     {
       "id": "H01",
@@ -68,6 +68,11 @@
       "id": "D02",
       "descrizione": "Frigorifero di taglia realistica. Il gruppo di azioni 184 offre sette frigo-congelatori alternativi e con energy_intensity EnergySaving il motore sceglie il 'Siemens Kl 20 LA 65 (A+)', che nei profili generati consuma 82,9 kWh/anno. Nessun combinato reale consuma cosi' poco: un A+ ne consuma 150-200 e un combinato 250-350. La conseguenza si vede sulla forma, non solo sul livello. Il frigorifero e' il principale carico continuo di una casa, quindi sottodimensionarlo svuota le ore notturne: nei profili misurati le ore 00-05 valgono lo 0,9-1,5% della giornata contro il 2,4-3,6% di ARERA Milano, ed e' la causa principale del deficit sulla fascia F3 (28,4% contro 38,6%). Cinque dei sette dispositivi sono guidati da un profilo di carico misurato e dichiarano YearlyEnergyUse = 0, quindi il loro consumo non e' leggibile dal catalogo e la scelta di EnergySaving fra loro non e' prevedibile. Si restringe il gruppo ai due che dichiarano un consumo verificabile, entrambi Liebherr combinati da 229 kWh/anno (azioni 340 e 341): EnergySaving prendera' il meno assorbente dei due in modo deterministico, e il valore atteso e' noto in anticipo. Non si tocca alcun profilo di carico: i profili sono misurati e alterarli cambierebbe la natura del modello. Si agisce solo su quali alternative restano disponibili nella selezione. Riferimento sulla dotazione: ISTAT, Consumi energetici delle famiglie 2021, Tavola 18, Lombardia: il 99,4% delle famiglie ha un frigorifero e il 22,0% ha anche un congelatore separato, quindi il combinato e' l'apparecchio di riferimento.",
       "righe_modificate": 25
+    },
+    {
+      "id": "L11",
+      "descrizione": "Rettifica di L01: riporta l'ingresso in ufficio alle 08:00. L01 aveva spostato il time limit 12 da 08:00-10:00 a 09:00-11:00, assumendo che in Italia si entri al lavoro piu' tardi che in Germania. La misura dice il contrario. ISTAT AVQ 2024, Lombardia, sui soli occupati (n=1.146, dati pesati): l'orario di uscita da casa per lavoro ha p25 07:00, mediana 07:30 e p75 08:00; il tempo di spostamento ha mediana 15 minuti. Il lavoratore mediano arriva quindi verso le 07:45 e il 75% entro le 08:15. Perche' un cancello alle 09:00 fosse corretto, gli impiegati d'ufficio dovrebbero stare tutti nell'ultimo quartile. I dodici tratti che passano da questo time limit si chiamano tutti 'Work - Office N, XXh, from 08:00': il nome del tratto dichiara l'orario nominale, e dopo L01 non corrispondeva piu' al cancello. Il valore tedesco originale, 08:00, era gia' corretto per l'Italia: si ripristina quello. E' il caso in cui l'italianizzazione ha peggiorato un parametro che andava bene, ed e' la ragione per cui le migrazioni gia' applicate vanno verificate contro i dati e non date per buone. Non si toccano gli altri due time limit di L01: il 14 gestisce i turni mattutini (tratti 'from 06:00') e a 07:00-09:00 e' coerente con il p25 degli occupati; il 7 non e' usato da alcun tratto. L'identificativo e' L11 e non V02 come indicato nel piano: il prefisso V e' gia' usato per le vacanze, e L07-L10 restano liberi per pranzo, cena, bucato e coda serale.",
+      "righe_modificate": 1
     }
   ]
 }

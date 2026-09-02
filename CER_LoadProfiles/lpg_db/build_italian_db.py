@@ -420,6 +420,36 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             "WHERE ID IN (339, 392, 393, 394, 426);",
         ],
     ),
+    (
+        "L11",
+        "Rettifica di L01: riporta l'ingresso in ufficio alle 08:00. L01 aveva "
+        "spostato il time limit 12 da 08:00-10:00 a 09:00-11:00, assumendo che "
+        "in Italia si entri al lavoro piu' tardi che in Germania. La misura "
+        "dice il contrario. "
+        "ISTAT AVQ 2024, Lombardia, sui soli occupati (n=1.146, dati pesati): "
+        "l'orario di uscita da casa per lavoro ha p25 07:00, mediana 07:30 e "
+        "p75 08:00; il tempo di spostamento ha mediana 15 minuti. Il "
+        "lavoratore mediano arriva quindi verso le 07:45 e il 75% entro le "
+        "08:15. Perche' un cancello alle 09:00 fosse corretto, gli impiegati "
+        "d'ufficio dovrebbero stare tutti nell'ultimo quartile. "
+        "I dodici tratti che passano da questo time limit si chiamano tutti "
+        "'Work - Office N, XXh, from 08:00': il nome del tratto dichiara "
+        "l'orario nominale, e dopo L01 non corrispondeva piu' al cancello. "
+        "Il valore tedesco originale, 08:00, era gia' corretto per l'Italia: "
+        "si ripristina quello. E' il caso in cui l'italianizzazione ha "
+        "peggiorato un parametro che andava bene, ed e' la ragione per cui le "
+        "migrazioni gia' applicate vanno verificate contro i dati e non date "
+        "per buone. "
+        "Non si toccano gli altri due time limit di L01: il 14 gestisce i "
+        "turni mattutini (tratti 'from 06:00') e a 07:00-09:00 e' coerente con "
+        "il p25 degli occupati; il 7 non e' usato da alcun tratto. "
+        "L'identificativo e' L11 e non V02 come indicato nel piano: il "
+        "prefisso V e' gia' usato per le vacanze, e L07-L10 restano liberi "
+        "per pranzo, cena, bucato e coda serale.",
+        [
+            _finestra(86, "08:00", "10:00"),  # TL 12, era 09:00-11:00 dopo L01
+        ],
+    ),
 ]
 
 

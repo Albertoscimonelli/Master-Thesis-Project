@@ -1,8 +1,8 @@
 {
-  "costruito_il": "2026-09-02T20:01:27+00:00",
+  "costruito_il": "2026-09-02T20:30:49+00:00",
   "sorgente": "C:\\Users\\scimo\\desktop\\Project\\venv\\Lib\\site-packages\\pylpg\\C1\\profilegenerator.db3",
   "sha256_sorgente": "e782bd139b78b2def20c5f9e4b09b2ee2c1c1b84fee20ba80ab8a4f69ca1c4d9",
-  "sha256_risultato": "3361a25779bfb5345e097f4835a6822534e08fbd8c3f9bb7e03f8ab4a2eb9a46",
+  "sha256_risultato": "b0e82dbff35265cdf7f51aaf87ffe479591eb1595e563d41c363058c4cabe3b9",
   "migrazioni": [
     {
       "id": "H01",
@@ -92,6 +92,11 @@
     {
       "id": "L08",
       "descrizione": "Cena alle 20, non alle 18:30. L02 aveva gia' spostato i cancelli della sera, ma non abbastanza: la misura sui profili generati mostra il picco della giornata alle ore 18, mentre ARERA Milano lo ha alle 20 e ETHOS.ActivityAssure misura il picco italiano dell'attivita' 'eat' alle 20:20. Numeri di ActivityAssure, giorno feriale: picco della cena alle 20:20 con ampiezza 42,0% per le donne occupate a tempo pieno e 39,4% per gli uomini, contro le 19:20 e le 18:30 in Germania con ampiezza 16,4% e 16,3%; per le pensionate alle 19:50. Sull'attivita' 'cook' la massa fra le 18 e le 22 vale il 60,7% in Italia contro il 39,2% in Germania. La cena italiana e' piu' tarda e molto piu' concentrata. Poiche' cucinare precede il mangiare di mezz'ora abbondante, il cancello della cottura va aperto verso le 19:30. Si spostano due cancelli: TL 121 'Dinner Time', che e' il vero cancello della cena con 29 usi via tratti, tutti attivita' di cottura (pasta, minestra, pizza, avanzi, uova), da 19:00-21:30 a 19:30-22:00; TL 66, la sera condivisa fra 'cook together in the evening', teatro e concerti, da 18:30-22:00 a 19:30-22:30. Lo spostamento e' coerente anche per le due attivita' non alimentari: in Italia teatri e concerti iniziano fra le 20:30 e le 21, non alle 18:30. NON si tocca TL 40, che pure contiene un'attivita' di cottura ('cook for the family after 16:30'): condivide il cancello con lo yoga e con il bagno dei bambini, e la sua finestra attuale (19:00-20:30) e' gia' accettabile. Spostarlo sposterebbe anche quelle, e il bagno dei bambini confina con la messa a letto delle 21:00 fissata da L05. La randomizzazione passa da 15 a 45 minuti su entrambi, come L03 ha gia' fatto sui cancelli del pranzo: con 15 minuti le attivita' si addensano sull'apertura e il picco risulta piu' stretto di quello reale. E' lo stesso meccanismo diagnosticato su L09 per il bucato.",
+      "righe_modificate": 2
+    },
+    {
+      "id": "L10",
+      "descrizione": "Coda serale italiana: si va a letto piu' tardi e la televisione e' in prima serata, non alle 18. E' l'ultimo difetto di forma rimasto: le ore 22-23 valgono il 5,9% della giornata nei profili generati contro il 10,1% di ARERA Milano, cioe' poco piu' della meta'. Due interventi, entrambi su una sola voce ciascuno. PRIMO, il sonno degli adulti. Il time limit 19 governa tredici attivita' di sonno e apre alle 22:00 con randomizzazione di 15 minuti: gli adulti vanno a letto praticamente tutti alle 22, e da li' in poi resta acceso solo il carico di base. ETHOS.ActivityAssure misura in Italia il superamento del 50% di persone addormentate alle 23:10 per gli occupati a tempo pieno, contro le 22:40-23:00 della Germania; e alle 22:00 la presenza in attivita' a basso consumo (televisione e computer) vale il 35,6% in Italia contro il 25,4% tedesco. AVQ 2024 Lombardia da 2,0 ore di televisione al giorno di mediana. La finestra passa quindi da 22:00 a 22:45 e la randomizzazione da 15 a 45 minuti. Il time limit 19 ha voci gerarchiche: la 101 e' il contenitore (AnyAll = 0) e le figlie 133 e 134 coprono rispettivamente 22:00-23:59 e 00:00-02:00. Si tocca SOLO la voce 133, cioe' il ramo serale: il contenitore e il ramo dopo mezzanotte restano invariati, perche' un aggiornamento di gruppo romperebbe la logica AND/OR. SECONDO, la prima serata televisiva. L'attivita' 'watch TV series on weekdays 18:00' ha un cancello dedicato, il time limit 51, largo un quarto d'ora e fissato alle 18:00. E' un orario tedesco: in Italia la prima serata comincia fra le 20:40 e le 21:30. Si sposta a 21:00-21:15. L'attivita' e' una sola e il cancello e' suo, quindi l'intervento non ha effetti collaterali. Il contributo in potenza e' piccolo, ma sposta carico dalle ore 18, che sono in eccesso, alle 21, che sono in difetto: entrambe le direzioni sono corrette. Non si tocca il time limit 7 (08:00-21:00), che pure contiene il binge di serie TV: lo condivide con due attivita' di corsa.",
       "righe_modificate": 2
     }
   ]

@@ -654,6 +654,44 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             _finestra(227, "19:30", "22:30", 45),  # TL 66,  era 18:30-22:00
         ],
     ),
+    (
+        "L10",
+        "Coda serale italiana: si va a letto piu' tardi e la televisione e' in "
+        "prima serata, non alle 18. E' l'ultimo difetto di forma rimasto: le "
+        "ore 22-23 valgono il 5,9% della giornata nei profili generati contro "
+        "il 10,1% di ARERA Milano, cioe' poco piu' della meta'. "
+        "Due interventi, entrambi su una sola voce ciascuno. "
+        "PRIMO, il sonno degli adulti. Il time limit 19 governa tredici "
+        "attivita' di sonno e apre alle 22:00 con randomizzazione di 15 "
+        "minuti: gli adulti vanno a letto praticamente tutti alle 22, e da li' "
+        "in poi resta acceso solo il carico di base. ETHOS.ActivityAssure "
+        "misura in Italia il superamento del 50% di persone addormentate alle "
+        "23:10 per gli occupati a tempo pieno, contro le 22:40-23:00 della "
+        "Germania; e alle 22:00 la presenza in attivita' a basso consumo "
+        "(televisione e computer) vale il 35,6% in Italia contro il 25,4% "
+        "tedesco. AVQ 2024 Lombardia da 2,0 ore di televisione al giorno di "
+        "mediana. La finestra passa quindi da 22:00 a 22:45 e la "
+        "randomizzazione da 15 a 45 minuti. "
+        "Il time limit 19 ha voci gerarchiche: la 101 e' il contenitore "
+        "(AnyAll = 0) e le figlie 133 e 134 coprono rispettivamente "
+        "22:00-23:59 e 00:00-02:00. Si tocca SOLO la voce 133, cioe' il ramo "
+        "serale: il contenitore e il ramo dopo mezzanotte restano invariati, "
+        "perche' un aggiornamento di gruppo romperebbe la logica AND/OR. "
+        "SECONDO, la prima serata televisiva. L'attivita' 'watch TV series on "
+        "weekdays 18:00' ha un cancello dedicato, il time limit 51, largo un "
+        "quarto d'ora e fissato alle 18:00. E' un orario tedesco: in Italia la "
+        "prima serata comincia fra le 20:40 e le 21:30. Si sposta a "
+        "21:00-21:15. L'attivita' e' una sola e il cancello e' suo, quindi "
+        "l'intervento non ha effetti collaterali. Il contributo in potenza e' "
+        "piccolo, ma sposta carico dalle ore 18, che sono in eccesso, alle 21, "
+        "che sono in difetto: entrambe le direzioni sono corrette. "
+        "Non si tocca il time limit 7 (08:00-21:00), che pure contiene il "
+        "binge di serie TV: lo condivide con due attivita' di corsa.",
+        [
+            _finestra(133, "22:45", "23:59", 45),  # TL 19, ramo serale
+            _finestra(164, "21:00", "21:15"),      # TL 51, era 18:00-18:15
+        ],
+    ),
 ]
 
 

@@ -583,13 +583,28 @@ def run_lpg(config: dict) -> pd.DataFrame:
                                 "famiglia": famiglia,
                                 "casa": casa,
                             }
+                            # Il gas non entra nel profilo elettrico, ma serve
+                            # al controllo di coerenza della migrazione D01:
+                            # spostando il piano cottura da elettrico a gas, il
+                            # calo di elettricita' deve corrispondere al gas che
+                            # compare. I fuochi si accendono le stesse volte, su
+                            # un altro vettore. Va letto qui perche' i file JSON
+                            # vengono cancellati due secondi dopo il run.
+                            gas_cols = [
+                                c for c in result_df.columns
+                                if c.startswith("Gas_HH")
+                            ]
+                            gas_kwh = (
+                                result_df[gas_cols[0]].sum() if gas_cols else 0.0
+                            )
                             logger.info(
                                 "  %s: OK (%d campioni, POD = famiglia %.0f kWh "
-                                "+ casa %.0f kWh)",
+                                "+ casa %.0f kWh | gas famiglia %.0f kWh)",
                                 col_name,
                                 len(result_df),
                                 famiglia.sum() / 60000.0,
                                 casa.sum() / 60000.0,
+                                gas_kwh,
                             )
                             # Breve pausa per permettere a OneDrive di rilasciare i lock
                             time.sleep(2)

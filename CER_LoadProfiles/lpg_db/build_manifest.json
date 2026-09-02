@@ -1,8 +1,8 @@
 {
-  "costruito_il": "2026-09-02T15:09:20+00:00",
+  "costruito_il": "2026-09-02T15:34:02+00:00",
   "sorgente": "C:\\Users\\scimo\\desktop\\Project\\venv\\Lib\\site-packages\\pylpg\\C1\\profilegenerator.db3",
   "sha256_sorgente": "e782bd139b78b2def20c5f9e4b09b2ee2c1c1b84fee20ba80ab8a4f69ca1c4d9",
-  "sha256_risultato": "3eeb8a6f3b75ad4ec479833e562252c0c90f3be9abf35cf92f774a9bf7a76bf2",
+  "sha256_risultato": "1240abee529ddc46d571fea036bddc37d37b16bfb84f9686b5681afc529d37c2",
   "migrazioni": [
     {
       "id": "H01",
@@ -73,6 +73,11 @@
       "id": "L11",
       "descrizione": "Rettifica di L01: riporta l'ingresso in ufficio alle 08:00. L01 aveva spostato il time limit 12 da 08:00-10:00 a 09:00-11:00, assumendo che in Italia si entri al lavoro piu' tardi che in Germania. La misura dice il contrario. ISTAT AVQ 2024, Lombardia, sui soli occupati (n=1.146, dati pesati): l'orario di uscita da casa per lavoro ha p25 07:00, mediana 07:30 e p75 08:00; il tempo di spostamento ha mediana 15 minuti. Il lavoratore mediano arriva quindi verso le 07:45 e il 75% entro le 08:15. Perche' un cancello alle 09:00 fosse corretto, gli impiegati d'ufficio dovrebbero stare tutti nell'ultimo quartile. I dodici tratti che passano da questo time limit si chiamano tutti 'Work - Office N, XXh, from 08:00': il nome del tratto dichiara l'orario nominale, e dopo L01 non corrispondeva piu' al cancello. Il valore tedesco originale, 08:00, era gia' corretto per l'Italia: si ripristina quello. E' il caso in cui l'italianizzazione ha peggiorato un parametro che andava bene, ed e' la ragione per cui le migrazioni gia' applicate vanno verificate contro i dati e non date per buone. Non si toccano gli altri due time limit di L01: il 14 gestisce i turni mattutini (tratti 'from 06:00') e a 07:00-09:00 e' coerente con il p25 degli occupati; il 7 non e' usato da alcun tratto. L'identificativo e' L11 e non V02 come indicato nel piano: il prefisso V e' gia' usato per le vacanze, e L07-L10 restano liberi per pranzo, cena, bucato e coda serale.",
       "righe_modificate": 1
+    },
+    {
+      "id": "D01",
+      "descrizione": "Piano cottura a gas, forno elettrico. In LPG la cottura e' interamente elettrica: il gas esiste solo come trasformatore di casa (caldaia, scaldabagno) e nessun dispositivo domestico ha un vettore diverso dall'elettricita'. In Italia il piano cottura e' quasi sempre a gas e il suo consumo finisce in bolletta gas, non sul contatore elettrico che la CER misura. ISTAT, Consumi energetici delle famiglie 2021, Tavola 19, Lombardia, per 100 famiglie dotate: piano cottura a metano 85,9% e a GPL 3,6%, quindi 89,5% a gas, contro il 10,5% elettrico; forno elettrico 83,9% contro il 15,2% a metano. Sono due apparecchi con vettori opposti, e vanno trattati separatamente. Si spostano a gas i sei fuochi del piano cottura (categorie 180-183, 'Kitchen stove hind/front left/right'). NON si toccano: i forni (categorie 95, 96, 117 - dispositivi 69, 70, 71, 72), che restano elettrici come l'83,9% dei forni lombardi e che compaiono nella composizione dei picchi annui di potenza; il piano a induzione (categoria 113), che e' elettrico per definizione e rappresenta bene il 10,5% di piani elettrici misurato da ISTAT; i piccoli elettrodomestici di cottura (cuociuova, cuociriso, vaporiera). Il vettore di un dispositivo sta in DUE tabelle e cambiarne una sola fa rifiutare il catalogo al motore: si aggiornano sia tblRealDeviceLoadType (6 righe, una per fuoco) sia tblDeviceActionDevices (24 righe). Totale atteso 30. Restano invariate le righe Apparent, Reactive e Inner Device Heat Gains: le prime due sono grandezze elettriche derivate che il progetto non legge, la terza descrive l'apporto termico in ambiente, che un fuoco a gas produce esattamente come uno elettrico. Controllo di coerenza da fare dopo la rigenerazione: il calo di elettricita' domestica deve corrispondere al gas che compare in Sum.Gas.HH1.json. I fuochi si accendono le stesse volte, su un altro vettore: se le due quantita' non coincidono la migrazione ha riscalato qualcosa invece di spostarlo.",
+      "righe_modificate": 30
     }
   ]
 }

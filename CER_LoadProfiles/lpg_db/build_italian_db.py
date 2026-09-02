@@ -450,6 +450,50 @@ MIGRAZIONI: list[tuple[str, str, list[str]]] = [
             _finestra(86, "08:00", "10:00"),  # TL 12, era 09:00-11:00 dopo L01
         ],
     ),
+    (
+        "D01",
+        "Piano cottura a gas, forno elettrico. In LPG la cottura e' interamente "
+        "elettrica: il gas esiste solo come trasformatore di casa (caldaia, "
+        "scaldabagno) e nessun dispositivo domestico ha un vettore diverso "
+        "dall'elettricita'. In Italia il piano cottura e' quasi sempre a gas e "
+        "il suo consumo finisce in bolletta gas, non sul contatore elettrico "
+        "che la CER misura. "
+        "ISTAT, Consumi energetici delle famiglie 2021, Tavola 19, Lombardia, "
+        "per 100 famiglie dotate: piano cottura a metano 85,9% e a GPL 3,6%, "
+        "quindi 89,5% a gas, contro il 10,5% elettrico; forno elettrico 83,9% "
+        "contro il 15,2% a metano. Sono due apparecchi con vettori opposti, e "
+        "vanno trattati separatamente. "
+        "Si spostano a gas i sei fuochi del piano cottura (categorie 180-183, "
+        "'Kitchen stove hind/front left/right'). NON si toccano: i forni "
+        "(categorie 95, 96, 117 - dispositivi 69, 70, 71, 72), che restano "
+        "elettrici come l'83,9% dei forni lombardi e che compaiono nella "
+        "composizione dei picchi annui di potenza; il piano a induzione "
+        "(categoria 113), che e' elettrico per definizione e rappresenta bene "
+        "il 10,5% di piani elettrici misurato da ISTAT; i piccoli "
+        "elettrodomestici di cottura (cuociuova, cuociriso, vaporiera). "
+        "Il vettore di un dispositivo sta in DUE tabelle e cambiarne una sola "
+        "fa rifiutare il catalogo al motore: si aggiornano sia "
+        "tblRealDeviceLoadType (6 righe, una per fuoco) sia "
+        "tblDeviceActionDevices (24 righe). Totale atteso 30. "
+        "Restano invariate le righe Apparent, Reactive e Inner Device Heat "
+        "Gains: le prime due sono grandezze elettriche derivate che il "
+        "progetto non legge, la terza descrive l'apporto termico in ambiente, "
+        "che un fuoco a gas produce esattamente come uno elettrico. "
+        "Controllo di coerenza da fare dopo la rigenerazione: il calo di "
+        "elettricita' domestica deve corrispondere al gas che compare in "
+        "Sum.Gas.HH1.json. I fuochi si accendono le stesse volte, su un altro "
+        "vettore: se le due quantita' non coincidono la migrazione ha "
+        "riscalato qualcosa invece di spostarlo.",
+        [
+            "UPDATE tblRealDeviceLoadType SET LoadTypeID = 2 "
+            "WHERE LoadTypeID = 1 "
+            "AND RealDeviceID IN (277, 278, 279, 280, 281, 478);",
+            "UPDATE tblDeviceActionDevices SET LoadTypeID = 2 "
+            "WHERE LoadTypeID = 1 AND DeviceActionID IN ("
+            "  SELECT ID FROM tblDeviceActions "
+            "  WHERE DeviceID IN (277, 278, 279, 280, 281, 478));",
+        ],
+    ),
 ]
 
 

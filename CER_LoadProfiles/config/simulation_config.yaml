@@ -34,7 +34,21 @@ lpg:
       household_ref: "CHR05_Family_3_children_both_with_work"
       count: 1
   house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
-  energy_intensity: "Random"
+
+  # "Random" pesca a caso fra le alternative di ogni categoria di dispositivo,
+  # che coprono una forbice enorme: la stessa categoria contiene una lampada da
+  # cucina da 300 W e una da 20 W, e un circolatore Wilo da 80 W accanto a un
+  # Grundfos da 25 W. Il risultato non e' una famiglia media, e' una famiglia
+  # sorteggiata, e le differenze fra i quattro nuclei finiscono per misurare il
+  # sorteggio invece della composizione familiare.
+  #
+  # "EnergySaving" sceglie in modo deterministico l'alternativa piu' efficiente.
+  # E' la leva singola piu' forte sul livello: sulla famiglia con un figlio il
+  # consumo scende del 39%.
+  #
+  # Nota: sposta il livello, non la forma. La distanza L1 dalla forma mensile
+  # ARERA passa da 0,196 a 0,185.
+  energy_intensity: "EnergySaving"
 
   # Catalogo LPG da usare, relativo alla cartella CER_LoadProfiles/.
   # Si ricostruisce con lpg_db/build_italian_db.py: contiene orari, vacanze e

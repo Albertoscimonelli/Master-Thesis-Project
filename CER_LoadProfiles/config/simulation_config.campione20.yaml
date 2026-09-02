@@ -43,10 +43,18 @@ lpg:
   # famiglie diverse: cambiano le scelte dei dispositivi e le traiettorie
   # stocastiche, non la composizione del nucleo. E' esattamente la varianza
   # entro categoria che quattro famiglie non possono mostrare.
+  # L'assegnazione del condizionatore ricalca quella della configurazione
+  # principale: HT07 a pensionati e famiglia_1figlio, HT06 agli altri due.
+  # Sono 10 famiglie su 20, cioe' il 50%, contro il 55,6% reale in Lombardia
+  # (ISTAT, Dotazioni energetiche 2024, Tavola 3). Il campione deve
+  # rispecchiare il modello che si sta validando: senza questa riga tutte e 20
+  # sarebbero senza raffrescamento e il confronto misurerebbe anche quella
+  # differenza invece della sola numerosita'.
   households:
     - label: "pensionati"
       template: "CHR54 Retired Couple, no work"
       household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 5
     - label: "coppia_lavoratori"
       template: "CHR02 Couple, 30 - 64 age, with work"
@@ -55,6 +63,7 @@ lpg:
     - label: "famiglia_1figlio"
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 5
     - label: "famiglia_3figli"
       template: "CHR05 Family, 3 children, both with work"

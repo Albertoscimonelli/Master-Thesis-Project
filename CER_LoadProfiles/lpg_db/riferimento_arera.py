@@ -224,6 +224,9 @@ def _scrivi_cache(destinazione: Path, df: pd.DataFrame,
     )
 
 
+_memoria: dict[tuple, pd.DataFrame] = {}
+
+
 def orari(provincia: str, anni: tuple[int, ...] = (2024, 2025),
           verboso: bool = True) -> pd.DataFrame:
     """Tutte le curve orarie ARERA di una provincia, in forma lunga.
@@ -236,7 +239,16 @@ def orari(provincia: str, anni: tuple[int, ...] = (2024, 2025),
     Returns:
         DataFrame con colonne anno, classe, residenza, periodo, giorno, ora, kwh.
         'periodo' vale 'anno' oppure il mese a due cifre; 'ora' va da 0 a 23.
+
+    Nota: il risultato resta in memoria per la durata del processo. La cache su
+    disco evita di rileggere gli xlsx, ma un chiamante che interroga il
+    riferimento migliaia di volte (curva_numerosita.py estrae 400 sottoinsiemi
+    per ciascuna dimensione) rileggerebbe comunque il CSV a ogni giro.
     """
+    chiave = (provincia, anni)
+    if chiave in _memoria:
+        return _memoria[chiave]
+
     pezzi = []
     for anno in anni:
         destinazione = CACHE / f"orari_{provincia}_{anno}.csv"
@@ -265,7 +277,9 @@ def orari(provincia: str, anni: tuple[int, ...] = (2024, 2025),
         d["anno"] = anno
         _scrivi_cache(destinazione, d, sorgenti)
         pezzi.append(d)
-    return pd.concat(pezzi, ignore_index=True)
+    risultato = pd.concat(pezzi, ignore_index=True)
+    _memoria[chiave] = risultato
+    return risultato
 
 
 def mensili(provincia: str, anni: tuple[int, ...] = (2024, 2025),

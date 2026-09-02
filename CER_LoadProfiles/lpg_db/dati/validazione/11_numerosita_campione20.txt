@@ -1,0 +1,48 @@
+# Fase 3: separazione fra errore di numerosita' e errore di modello
+# Campione di 20 famiglie (5 semi x 4 archetipi), configurazione identica
+# a quella principale, 10 su 20 con condizionatore.
+
+
+VARIANZA ENTRO ARCHETIPO - il campione e' davvero un campione?
+
+             cloni  TVD medio fra cloni  TVD max fra cloni  scarto totale annuo %
+archetipo                                                                        
+household_1      5               0.0256             0.0322                 0.6446
+household_2      5               0.0405             0.0510                 0.7446
+household_3      5               0.0269             0.0344                 1.2407
+household_4      5               0.0250             0.0293                 1.2733
+
+  Distanza media fra cloni dello stesso archetipo: 0.0295
+  Rumore della fonte ARERA fra due anni:            0.0063
+
+ERRORE DI NUMEROSITA' CONTRO ERRORE DI MODELLO
+profili_tutti.csv - ARERA Milano, Residente, anni 2024 e 2025, giorno feriale
+
+    estrazioni  TVD medio  TVD min  TVD max  dev.std
+N                                                   
+2          190     0.1826   0.0966   0.2475   0.0526
+4          400     0.1567   0.0968   0.2450   0.0395
+6          400     0.1543   0.0985   0.2404   0.0319
+8          400     0.1514   0.1117   0.2271   0.0259
+10         400     0.1470   0.1108   0.2307   0.0231
+12         400     0.1473   0.1150   0.2221   0.0190
+16         400     0.1423   0.1239   0.1776   0.0119
+20           1     0.1412   0.1412   0.1412   0.0000
+
+Estrapolazione  TVD(N) = a + b/sqrt(N)
+  a (errore irriducibile, modello) = 0.1219
+  b (errore di campionamento)      = 0.0813
+  residuo massimo del fit          = 0.0058
+
+  Con quattro famiglie il TVD medio vale 0.1567.
+  La parte attribuibile al MODELLO e' 78% di quel valore;
+  il resto e' numerosita' del campione e non si corregge
+  toccando il catalogo.
+
+  Rumore della fonte (ARERA 2024 contro 2025), come riferimento:
+    classe 1.5-3    TVD feriale 0.0063
+    classe 3-4.5    TVD feriale 0.0107
+
+La forma 1/sqrt(N) vale per medie di variabili indipendenti. Le
+famiglie qui condividono i time limit del catalogo e provengono da
+quattro soli archetipi: l'estrapolazione e' una stima, non una misura.

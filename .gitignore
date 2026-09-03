@@ -266,3 +266,18 @@ Paper/
 # corrispondente in CER_LoadProfiles/config/.
 CER_LoadProfiles/outputs/csv_senza_temp/
 CER_LoadProfiles/outputs/csv_baseline/
+
+# Campioni allargati della validazione: 20 famiglie ciascuno, ~4,5 MB a run.
+# Stessa regola dei run di controllo sopra - sono dati derivati e si
+# rigenerano con la configurazione omonima. La generazione e' riproducibile:
+# i seed vengono da _seed_stabile() (crc32, non hash()), quindi un run ripetuto
+# a parita' di catalogo produce gli stessi profili. Quello che si versiona sono
+# la configurazione che li descrive e i numeri misurati nel report.
+CER_LoadProfiles/outputs/csv_campione20/
+CER_LoadProfiles/outputs/csv_lombardia20/
+CER_LoadProfiles/outputs/csv_milano20/
+
+# Scomposizione del POD nelle due meta' del contatore (output.dettaglio_domestici).
+# Viene riscritta a ogni run e nessun file a valle la legge: e' diagnostica,
+# serve a capire se uno scarto viene dagli elettrodomestici o dagli impianti.
+CER_LoadProfiles/outputs/csv/profili_famiglie_dettaglio.csv

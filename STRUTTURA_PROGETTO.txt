@@ -43,7 +43,15 @@ Project/
 |   |-- postprocessing.py               Modulo aggregazione oraria ed export CSV
 |   |
 |   +-- config/
-|   |   +-- simulation_config.yaml      File di configurazione YAML
+|   |   |-- simulation_config.yaml      Configurazione principale (4 famiglie)
+|   |   |-- simulation_config.baseline.yaml     Run di controllo (senza temperatura)
+|   |   |-- simulation_config.campione20.yaml   4 archetipi x 5 semi: misura
+|   |   |                                       l'errore di numerosita'
+|   |   |-- simulation_config.lombardia20.yaml  SOCIETA' LOMBARDA - 20 famiglie,
+|   |   |                                       20 template diversi, composizione
+|   |   |                                       da ISTAT AVQ + censimento
+|   |   +-- simulation_config.milano20.yaml     SOCIETA' MILANESE - idem, ma
+|   |                                           post-stratificata sul comune
 |   +-- ramp_inputs/
 |   |   +-- use_cases/
 |   |       |-- office.py               Use case: ufficio medio
@@ -51,6 +59,17 @@ Project/
 |   |       +-- retail.py               Use case: negozio al dettaglio
 |   +-- lpg_inputs/
 |   |   +-- household_definitions.py    Catalogo famiglie pyLPG di riferimento
+|   +-- lpg_db/                         CATALOGO ITALIANO E VALIDAZIONE (§3.10)
+|   |   |-- build_italian_db.py         Costruttore: 19 migrazioni sul .db3 tedesco
+|   |   |-- build_manifest.json         Evidenza della build (versionato)
+|   |   |-- riferimento_arera.py        Bersaglio della validazione
+|   |   |-- riferimento_istat.py        Fonti di calibrazione
+|   |   |-- tipologie_famiglie.py       Composizione delle famiglie da ISTAT
+|   |   |-- confronta_profili.py        Utilita' condivise (curve medie)
+|   |   |-- valida_domestici.py         Confronto contro ARERA
+|   |   |-- curva_numerosita.py         Numerosita' contro modello; eterogeneita'
+|   |   |-- confronta_societa.py        Confronto fra due composizioni
+|   |   +-- dati/                       Cache ARERA (versionata) e rapporti
 |   +-- outputs/csv/
 |       |-- profili_aziende.csv         Profili individuali aziende (kWh/h)
 |       |-- profili_famiglie.csv        Profili individuali famiglie (kWh/h)
@@ -406,6 +425,110 @@ per il dettaglio orario di ciascun carico.
 File di riferimento (non importato dal codice, la config e' nel YAML) con
 il catalogo dei template pyLPG usati: pensionati (CHR54), coppia
 lavoratori (CHR02), famiglia con 1 figlio (CHR03).
+
+--------------------------------------------------------------------------------
+ 3.10  lpg_db/  (CATALOGO ITALIANO E VALIDAZIONE)
+--------------------------------------------------------------------------------
+
+SCOPO: rendere italiano il catalogo tedesco di LoadProfileGenerator, e
+       misurare quanto i profili che ne escono assomiglino al dato italiano
+       reale. E' la parte che risponde all'obiezione "perche' profili
+       costruiti su dati tedeschi dovrebbero rappresentare famiglie
+       italiane?".
+
+REGOLA DI NON CIRCOLARITA' - da tenere presente leggendo i moduli:
+  ISTAT entra come INPUT (calibrazione: orari, dotazione, composizione);
+  ARERA giudica come VALIDAZIONE INDIPENDENTE (energia al contatore).
+  Calibrare e validare sulla stessa fonte non sarebbe validazione.
+
+  build_italian_db.py       COSTRUTTORE DEL CATALOGO. Copia il .db3 originale
+                            di pylpg e vi applica 19 migrazioni SQL (583
+                            righe): festivita' italiane, orari dei pasti e del
+                            lavoro, vacanze ad agosto, temperatura di Milano,
+                            piano cottura a gas, frigorifero, circolatore,
+                            raffrescamento. Ogni migrazione porta in codice la
+                            fonte che la giustifica.
+                            Verifica lo SHA-256 del sorgente tedesco e si
+                            ferma se e' cambiato; la ricostruzione e'
+                            deterministica (stesso SHA a parita' di sorgente).
+                            Il .db3 prodotto NON e' versionato: si ricostruisce.
+
+  build_manifest.json       Evidenza revisionabile della build: per ogni
+                            migrazione, id, descrizione e righe modificate,
+                            piu' gli SHA-256 di sorgente e risultato.
+                            QUESTO si versiona.
+
+  profilegenerator.IT.db3   Catalogo italiano prodotto. Ignorato da git.
+
+  --- FONTI DI RIFERIMENTO (generano i numeri, non li contengono) ---
+
+  riferimento_arera.py      BERSAGLIO DELLA VALIDAZIONE. Estrae dai file
+                            provinciali ARERA le curve orarie e i livelli
+                            annui per classe di potenza, con cache invalidata
+                            per SHA-256 dei sorgenti. Espone anche
+                            rumore_fonte(), la variabilita' della fonte fra
+                            due anni consecutivi, usata come soglia.
+                            La cache in dati/riferimento_arera/ E' VERSIONATA
+                            in deroga alla regola sui derivati: i sorgenti
+                            sono ~250 MB fuori dal repository.
+
+  riferimento_istat.py      CALIBRAZIONE. Rigenera ogni numero ISTAT citato
+                            nelle migrazioni: microdati AVQ 2024 (orari,
+                            abitudini), Consumi energetici 2021 e Dotazioni
+                            2024 (tavole), profili ETHOS.ActivityAssure.
+                            Nessuna cifra e' scritta a mano nel report.
+
+  tipologie_famiglie.py     COMPOSIZIONE DELLE FAMIGLIE. Ricostruisce da AVQ
+                            2024 la composizione completa dei nuclei lombardi
+                            (l'indagine intervista tutti i componenti) e la
+                            post-stratifica sui marginali del censimento per
+                            sezione, per scendere al singolo comune.
+                            Produce le quote per tipologia e l'allocazione su
+                            N famiglie. E' la fonte dei due file di societa'.
+
+  --- MISURA ---
+
+  confronta_profili.py      Utilita' condivise: carica(), curve_medie() (le 9
+                            curve stagione x tipo di giorno), profildifferenz.
+                            Usato da tutti i moduli sotto.
+
+  valida_domestici.py       CONFRONTO CONTRO ARERA, per famiglia e aggregato:
+                            livello annuo, TVD della forma oraria per tipo di
+                            giorno, fasce F1/F2/F3. Con --config legge classe
+                            di potenza ed etichetta dalla configurazione che
+                            ha generato i profili.
+
+  curva_numerosita.py       SCOMPOSIZIONE DELL'ERRORE. Estrae sottoinsiemi
+                            casuali di dimensione crescente e adatta
+                            TVD(N) = a + b/sqrt(N): b/sqrt(N) e' errore di
+                            campionamento, a e' l'errore che resterebbe con un
+                            campione infinito, cioe' il modello.
+                            Misura anche l'eterogeneita' di forma fra le
+                            famiglie, che e' la premessa da cui dipende che i
+                            metodi di ripartizione si distinguano fra loro.
+
+  confronta_societa.py      Confronto fra due composizioni familiari generate
+                            con configurazioni diverse (lombarda / milanese):
+                            livello, forma, fasce, eterogeneita', e la
+                            distanza fra le due.
+
+  dati/                     Cache ARERA versionata (riferimento_arera/) e
+                            rapporti passo per passo (validazione/, dodici
+                            file numerati piu' NOTE_per_report.md).
+
+TRE TRAPPOLE - il codice di uscita 0 non basta a dire che un run e' andato bene:
+  1. run_lpg() cattura ogni errore pyLPG e sostituisce un profilo SINTETICO;
+     il processo esce con 0 e i CSV vengono scritti. Controllare sempre il
+     logger.error finale che elenca le colonne sintetiche.
+  2. Un run puo' "riuscire" producendo zero file, se il motore rifiuta il
+     catalogo con DataIntegrityException.
+  3. read_all_json_results_in_directory() restituisce i risultati del run
+     PRECEDENTE senza errore, se il run corrente muore.
+  PRAGMA integrity_check verifica la struttura SQLite, non la coerenza
+  semantica del catalogo: ogni migrazione richiede uno smoke run manuale.
+
+DOCUMENTAZIONE: REPORT_VALIDAZIONE_LPG.md e' il documento di riferimento.
+  Il §13 e' il registro modifica-per-modifica con la fonte di ciascuna.
 
 
 ================================================================================

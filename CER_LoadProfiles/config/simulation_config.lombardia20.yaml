@@ -1,0 +1,254 @@
+# SOCIETA' LOMBARDA - venti famiglie, venti composizioni diverse.
+#
+# PERCHE'. Fino alla Fase 3 la CER era fatta di quattro archetipi ripetuti:
+# due coppie e due famiglie con figli, nessuna persona sola. La misura della
+# Fase 4 ha mostrato che l'identita' dell'archetipo domina il seme di 7,6
+# volte, e che il mix degli archetipi vale piu' di qualunque altra leva
+# rimasta: riponderando le stesse quattro curve la distanza da ARERA scende da
+# 0,140 a 0,098. Il parametro che conta non e' quante famiglie si generano, e'
+# QUALI.
+#
+# Questo file definisce la composizione lombarda; il gemello
+# simulation_config.milano20.yaml definisce quella milanese. I due file
+# differiscono SOLO per le venti famiglie: anno, meteo, quota di
+# raffrescamento, house type di base ed energy intensity sono identici, cosi'
+# il confronto isola la composizione e non altro.
+#
+# DA DOVE VENGONO I NUMERI.
+#   ISTAT, Aspetti della vita quotidiana 2024, microdati, Lombardia: 1.831
+#   famiglie, 4.139 individui. L'indagine intervista TUTTI i componenti di
+#   ogni famiglia (copertura verificata: 100%), quindi la composizione dei
+#   nuclei si ricostruisce per intero - eta' (ETAMi) e condizione
+#   professionale (CONDMi) di ciascun membro. I pesi COEFIN restituiscono 4,56
+#   milioni di famiglie contro le 4,57 del censimento: la ricostruzione regge.
+#
+#   ISTAT, Censimento permanente della popolazione 2021 (rilascio 2023), dati
+#   per sezione, file R03_Lombardia_2023_sezioni.xlsx, aggregato a livello
+#   regionale: famiglie per numero di componenti (PF3-PF8) e popolazione per
+#   classe di eta' (P27-P29 per il 65 e oltre).
+#
+#   ISTAT, Dotazioni energetiche delle famiglie 2024, Tavola 3: il 55,6% delle
+#   famiglie lombarde ha un impianto di raffrescamento.
+#
+# TIPOLOGIE MISURATE (quota di famiglie lombarde):
+#     tutti gli adulti occupati              36,8%
+#     un adulto in casa di giorno            26,6%
+#     solo anziani non occupati              26,3%
+#     nessun occupato, non solo anziani      10,3%
+#     --------------------------------------------
+#     almeno un adulto in casa nei feriali   63,2%
+#   famiglie con figli minori 21,7%; 65+ 23,4% della popolazione.
+#   Il modello precedente assumeva 25% in casa e 50% con figli.
+#
+# COMPOSIZIONE PER NUMERO DI COMPONENTI (censimento, Lombardia):
+#     1 comp. 38,6%   2 comp. 27,9%   3 comp. 16,9%   4 comp. 12,4%   5+ 4,3%
+#   che su venti famiglie fa 8 / 6 / 3 / 2 / 1.
+#
+# L'allocazione e' gerarchica - prima le classi di dimensione, poi le tipologie
+# entro ciascuna - e la calcola tipologie_famiglie.py, che rigenera anche tutte
+# le quote citate qui sopra. Ripartire direttamente le venti celle non
+# conserverebbe il marginale delle dimensioni, che e' il dato censuario
+# misurato su 4,57 milioni di famiglie, e lo sacrificherebbe a celle
+# campionarie molto piu' incerte: darebbe 7 unipersonali invece di 8.
+#
+# NOTA. Per la Lombardia si usano i pesi AVQ ORIGINALI, non ricalibrati:
+# l'indagine e' gia' rappresentativa della regione e riproduce da sola i
+# marginali censuari (65+ 23,4% contro 23,5%, occupati 43,9% contro 44,4%).
+# La post-stratificazione serve solo per scendere al comune, come nel file
+# milanese.
+#
+# SCELTA DEI TEMPLATE. Venti template DIVERSI su 66 disponibili, uno per
+# famiglia, scelti per riempire le celle (dimensione x tipo) misurate sopra.
+# Non e' un vezzo: cinque semi dello stesso archetipo distano fra loro 0,0295
+# sulla forma, cinque archetipi diversi 0,2239. La diversita' che serve sta
+# nella composizione del nucleo, non nel seme.
+#
+# RESIDUO DICHIARATO. L'allocazione intera a venti famiglie porta le famiglie
+# con minori al 25% contro il 21,7% atteso: e' l'arrotondamento delle celle,
+# non una scelta. Con quaranta famiglie il residuo si dimezzerebbe.
+#
+# CLASSE DI POTENZA. La chiave classe_potenza non e' letta dalla pipeline:
+# serve all'analisi a valle per scegliere la curva ARERA di confronto. La
+# regola e' quella gia' usata nella configurazione principale - fino a due
+# componenti 1,5-3 kW, da tre in su 3-4,5 kW - e resta un'assunzione
+# dichiarata, perche' il numero di clienti ARERA per classe e provincia non
+# esiste nelle fonti aperte.
+#
+# ATTENZIONE prima di analizzare: curva_numerosita.py assegna la classe di
+# potenza assumendo quattro archetipi da cinque copie (classe_di(), riga 81).
+# Con venti gruppi da uno quella regola non vale piu' e va fatta leggere da
+# classe_potenza, altrimenti il riferimento ARERA composito e' sbagliato.
+#
+# Uso:
+#   python generate_load_profiles.py --config config/simulation_config.lombardia20.yaml
+# Tempo: circa 2 minuti per famiglia, quindi 40-45 minuti.
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+# RAMP resta al minimo: serve solo perche' la pipeline richiede almeno una
+# sorgente, e la sua colonna viene ignorata nel confronto con ARERA.
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+
+lpg:
+  # Il raffrescamento va a 11 famiglie su 20, cioe' il 55%, contro il 55,6%
+  # misurato da ISTAT. E' distribuito su tutte le tipologie e non concentrato
+  # su una: darlo solo alle famiglie con figli, per esempio, confonderebbe
+  # l'effetto della composizione con quello della dotazione.
+  households:
+
+    # --- una persona, 8 famiglie (38,6% del totale) ------------------------
+    # Di queste, 4 sono anziani soli non occupati: e' la cella piu' grande
+    # dell'intera distribuzione lombarda (17,0% di tutte le famiglie) e nel
+    # modello precedente era completamente assente.
+    - label: "L01_uomo_over65_solo"
+      template: "CHR23 Single man over 65 years"
+      household_ref: "CHR23_Single_man_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L02_donna_over65_sola"
+      template: "CHR24 Single woman over 65 years"
+      household_ref: "CHR24_Single_woman_over_65_years"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L03_pensionato_solo"
+      template: "CHR30 Single, Retired Man"
+      household_ref: "CHR30_Single_Retired_Man"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L04_pensionata_sola"
+      template: "CHR31 Single, Retired Woman"
+      household_ref: "CHR31_Single_Retired_Woman"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L05_donna_senza_lavoro"
+      template: "CHR36 Single woman, 30 - 64 years, without work"
+      household_ref: "CHR36_Single_woman_30_64_years_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L06_giovane_che_lavora"
+      template: "CHR07 Single with work"
+      household_ref: "CHR07_Single_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L07_donna_42_che_lavora"
+      template: "CHR35 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR35_Single_woman_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L08_uomo_48_che_lavora"
+      template: "CHR37 Single man, 30 - 64 years, with work"
+      household_ref: "CHR37_Single_man_30_64_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+
+    # --- due persone, 6 famiglie (27,9%) -----------------------------------
+    - label: "L09_coppia_pensionati"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L10_coppia_over65"
+      template: "CHR16 Couple over 65 years"
+      household_ref: "CHR16_Couple_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L11_coppia_uno_a_casa"
+      template: "CHR04 Couple, 30 - 64 years, 1 at work, 1 at home"
+      household_ref: "CHR04_Couple_30_64_years_1_at_work_1_at_home"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L12_coppia_senza_lavoro"
+      template: "CHR40 Couple, 30 - 64 years, without work"
+      household_ref: "CHR40_Couple_30_64_years_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L13_coppia_lavoratori"
+      template: "CHR39 Couple, 30 - 64 years, with work"
+      household_ref: "CHR39_Couple_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    # Il turnista e' l'unico nucleo che consuma di notte per ragioni di orario
+    # e non di dotazione: e' la forma piu' lontana da tutte le altre, ed e'
+    # esattamente la diversita' che al campione precedente mancava.
+    - label: "L14_coppia_turnisti"
+      template: "CHR21 Couple, 30 - 64 years, shift worker"
+      household_ref: "CHR21_Couple_30_64_years_shift_worker"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+
+    # --- tre persone, 3 famiglie (16,9%) -----------------------------------
+    # La convivenza con un anziano tiene la casa occupata di giorno pur
+    # essendo il nucleo una coppia di lavoratori: e' il caso che spiega perche'
+    # la quota "un adulto in casa" (26,6%) sia molto piu' alta di quanto
+    # suggerirebbe il solo tasso di occupazione.
+    - label: "L15_coppia_lavoratori_con_anziano"
+      template: "CHR14 3 adults: Couple, 30- 64 years, both at work + Senior at home"
+      household_ref: "CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L16_famiglia_bimbo_piccolo"
+      template: "CHR60 Family, 1 toddler, one at work, one at home"
+      household_ref: "CHR60_Family_1_toddler_one_at_work_one_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L17_famiglia_1figlio"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      classe_potenza: "3-4.5"
+      count: 1
+
+    # --- quattro persone, 2 famiglie (12,4%) -------------------------------
+    - label: "L18_famiglia_2figli_uno_lavora"
+      template: "CHR53 2 Parents, 1 Working, 2 Children"
+      household_ref: "CHR53_2_Parents_1_Working_2_Children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L19_famiglia_2figli_entrambi_lavorano"
+      template: "CHR27 Family both at work, 2 children"
+      household_ref: "CHR27_Family_both_at_work_2_children"
+      classe_potenza: "3-4.5"
+      count: 1
+
+    # --- cinque persone, 1 famiglia (4,3%) ---------------------------------
+    # Unico nucleo con lavoro da casa. Nel Nord-Ovest il 20,7% degli occupati
+    # lavorava da casa nel 2023 (ISTAT) e il modello non lo rappresentava
+    # affatto: HETUS 2010, da cui vengono le forme infragiornaliere, e'
+    # anteriore al fenomeno. Una famiglia su venti e' una presenza prudente.
+    - label: "L20_famiglia_3figli_lavoro_da_casa"
+      template: "CHR20 one at work, one work home, 3 children"
+      household_ref: "CHR20_one_at_work_one_work_home_3_children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "EnergySaving"
+  database: "lpg_db/profilegenerator.IT.db3"
+  geographic_location: "Italy_Mailand"
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
+
+output:
+  folder: "outputs/csv_lombardia20"
+  combined_profiles: true
+  individual_profiles: false
+  dettaglio_domestici: true
+  aggregate_total: false
+  versioned: false
+  scheda_cer: false

@@ -49,6 +49,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 from confronta_profili import STAGIONI, carica, curve_medie
 import riferimento_arera as ra
@@ -77,6 +78,42 @@ CLASSI_PREDEFINITE = {
     "household_3": "3-4.5",
     "household_4": "3-4.5",
 }
+
+
+def composizione_da_config(percorso: Path) -> dict[str, dict]:
+    """Mappa household_N -> etichetta, template e classe di potenza.
+
+    Il generatore numera le colonne nell'ordine in cui i gruppi compaiono in
+    lpg.households, espandendo ciascuno per il suo count: household_1 e' la
+    prima famiglia del primo gruppo. Si ricostruisce qui la stessa numerazione.
+
+    Serve ogni volta che le famiglie non sono le quattro della configurazione
+    principale: con venti composizioni diverse, dedurre la classe di potenza
+    dal nome della colonna non e' possibile.
+
+    Raises:
+        SystemExit: se un gruppo non dichiara classe_potenza, perche' senza
+            quella la curva ARERA di confronto sarebbe scelta arbitrariamente.
+    """
+    with open(percorso, encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    composizione = {}
+    indice = 0
+    for gruppo in config["lpg"]["households"]:
+        if "classe_potenza" not in gruppo:
+            sys.exit(f"Il gruppo '{gruppo.get('label', '?')}' di {percorso.name} "
+                     "non dichiara classe_potenza: aggiungerla prima di "
+                     "analizzare, altrimenti la curva ARERA di confronto e' "
+                     "scelta a caso.")
+        for _ in range(gruppo["count"]):
+            indice += 1
+            composizione[f"household_{indice}"] = {
+                "label": gruppo["label"],
+                "template": gruppo["template"],
+                "classe": gruppo["classe_potenza"],
+            }
+    return composizione
 
 ADIACENTI = {
     "0-1.5": "1.5-3",
@@ -227,6 +264,11 @@ def main() -> None:
     parser.add_argument("--anni", type=int, nargs="+", default=[2024, 2025])
     parser.add_argument("--colonne", nargs="*", default=None,
                         help="coppie colonna:classe, es. household_1:1.5-3")
+    parser.add_argument("--config", type=Path, default=None,
+                        help="configurazione che ha generato i profili: da li' "
+                             "si leggono classe di potenza ed etichetta di ogni "
+                             "famiglia. Necessaria quando le famiglie non sono "
+                             "le quattro della configurazione principale.")
     parser.add_argument("--includi-festivi", action="store_true",
                         help="non escludere i festivi nazionali dai feriali")
     args = parser.parse_args()
@@ -237,6 +279,7 @@ def main() -> None:
     anni = tuple(args.anni)
     df = carica(args.profili)
 
+    etichette: dict[str, str] = {}
     if args.colonne:
         assegnazione = {}
         for voce in args.colonne:
@@ -244,9 +287,23 @@ def main() -> None:
                 sys.exit(f"Formato atteso colonna:classe, ricevuto '{voce}'")
             colonna, classe = voce.split(":", 1)
             assegnazione[colonna] = classe
+    elif args.config is not None:
+        if not args.config.exists():
+            sys.exit(f"Configurazione non trovata: {args.config}")
+        composizione = composizione_da_config(args.config)
+        assegnazione = {c: v["classe"] for c, v in composizione.items()
+                        if c in df.columns or f"{c}_kWh" in df.columns}
+        etichette = {c: v["label"] for c, v in composizione.items()}
+        if not assegnazione:
+            sys.exit("Nessuna colonna della configurazione compare nel CSV: "
+                     "i due file non corrispondono.")
     else:
         assegnazione = {c: k for c, k in CLASSI_PREDEFINITE.items()
                         if c in df.columns or f"{c}_kWh" in df.columns}
+        if len([c for c in df.columns if c.startswith("household_")]) > len(assegnazione):
+            print("\nAVVISO: il file contiene piu' famiglie di quante ne "
+                  "descriva\nl'assegnazione predefinita. Le eccedenti non "
+                  "vengono validate.\nPassare --config per analizzarle tutte.\n")
 
     if not assegnazione:
         sys.exit("Nessuna colonna domestica riconosciuta. Usare --colonne.")
@@ -275,6 +332,7 @@ def main() -> None:
         atteso = ra.livello_annuo(args.provincia, classe, args.residenza,
                                   anni).mean()
         t = esito["tvd"]
+        colonna = etichette.get(colonna, colonna)[:22]
         print(f"{colonna:22} {classe:10} {esito['kwh']:>10,.0f} {atteso:>10,.0f} "
               f"{esito['kwh'] / atteso:>7.2f}x   "
               f"{t.get('Giorno feriale', float('nan')):>9.3f} "

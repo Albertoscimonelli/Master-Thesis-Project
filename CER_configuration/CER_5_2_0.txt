@@ -16,7 +16,7 @@ penetrazione_prosumer_pct = 28.6
 potenza_installata_kWp    = 88
 impianti_totali           = 2
 [FILE]
-profili_carico     = ../CER_LoadProfiles/outputs/csv/storico/profili_tutti_20260825_163345.csv
+profili_carico     = ../CER_LoadProfiles/outputs/csv/storico/profili_tutti_20260902_223920.csv
 prezzi_zonali      = ../20250101_20251231_MGP_PrezziZonali_Nord.xlsx
 cartella_pv        = ../PV_Generation
 scenario_economico = scenario_economico.txt
@@ -41,3 +41,4 @@ id | nome_csv             | ruolo | categoria   | archetipo               | tari
 id   | proprietario         | kWp | file_produzione     | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
 PV01 | small_industry_1_kWh |  76 | PV1.CSV             |    ? |      ? |           2025 |         ? |             ?
 PV02 | household_4_kWh      |  12 | PV2.CSV             |    ? |      ? |           2025 |         ? |             ?
+

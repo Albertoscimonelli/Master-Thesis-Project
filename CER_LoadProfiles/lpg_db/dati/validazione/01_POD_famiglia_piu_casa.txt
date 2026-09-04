@@ -1,0 +1,36 @@
+# Fase 1: POD = Electricity_HH1 + Electricity_House
+# Configurazione invariata (HT06 + Random): l'unica differenza rispetto a
+# 00_baseline e' la definizione della grandezza esportata.
+# Componenti in outputs/csv/profili_famiglie_dettaglio.csv
+
+
+VALIDAZIONE DOMESTICI - profili_tutti.csv
+riferimento ARERA Milano, Residente, anni 2024 e 2025
+
+colonna                classe       kWh/anno     atteso   scarto    TVD fer.    sab.    dom.
+------------------------------------------------------------------------------------------------
+household_1            1.5-3           3,660      1,662    2.20x       0.199   0.174   0.200
+household_2            1.5-3           3,287      1,662    1.98x       0.345   0.305   0.273
+household_3            3-4.5           5,836      2,582    2.26x       0.281   0.258   0.224
+household_4            3-4.5           6,003      2,582    2.32x       0.289   0.246   0.240
+------------------------------------------------------------------------------------------------
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte fra i due anni ARERA
+classe      TVD fer.    sab.    dom.  L1 mens.  livello
+1.5-3         0.0063  0.0075  0.0033    0.0693    -0.7%
+3-4.5         0.0107  0.0059  0.0055    0.0812    -2.3%
+
+FASCE ORARIE (% del consumo annuo)
+  aggregato dei domestici   F1 31.09  F2 40.37  F3 28.54
+  ARERA classe 1.5-3        F1 31.11  F2 30.29  F3 38.60
+  ARERA classe 3-4.5        F1 31.68  F2 31.14  F3 37.18
+
+FORMA ORARIA FERIALE, % del giorno (aggregato contro ARERA)
+  ora      0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23
+  LPG   0.92 0.87 0.87 0.89 1.25 1.50 3.62 7.8810.40 9.00 4.19 2.48 2.77 2.91 3.04 2.89 2.81 3.60 6.20 9.5710.64 6.81 3.59 1.28
+  1.5-3 3.64 2.98 2.63 2.46 2.40 2.51 2.99 3.78 3.96 3.92 3.85 3.98 4.30 4.42 4.32 4.18 4.19 4.56 5.32 6.43 6.67 6.36 5.57 4.56
+  picco LPG ore 20, picco ARERA ore 20
+
+Le curve ARERA orarie coprono i soli clienti trattati orari; la classe
+di potenza di ciascuna famiglia e' un'assunzione dichiarata, non un dato.
+Se la forma non combacia si corregge il catalogo, mai l'output.

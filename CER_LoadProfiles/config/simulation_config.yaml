@@ -17,9 +17,22 @@ ramp:
 
 lpg:
   households:
+    # Il condizionamento non e' universale: in Lombardia ce l'ha il 55,6% delle
+    # famiglie (ISTAT, Dotazioni energetiche 2024, Tavola 3; Italia 56,0%,
+    # Nord-ovest 48,0%). Darlo a tutte o a nessuna sbaglia in entrambi i casi,
+    # e la media ARERA con cui ci confrontiamo lo contiene gia' per quella
+    # quota. Con quattro nuclei il valore rappresentabile piu' vicino e' 2 su 4.
+    #
+    # Quali due: uno per coppia di archetipi, cosi' il condizionatore non
+    # risulta correlato al tipo di famiglia. Se lo dessimo alle due famiglie
+    # con figli, l'analisi di eterogeneita' di forma attribuirebbe alla
+    # composizione familiare cio' che e' dotazione impiantistica. ISTAT non
+    # pubblica la diffusione per tipo di nucleo, quindi non esiste un criterio
+    # migliore fondato sui dati: questa e' una scelta dichiarata.
     - label: "pensionati"
       template: "CHR54 Retired Couple, no work"
       household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 1
     - label: "coppia_lavoratori"
       template: "CHR02 Couple, 30 - 64 age, with work"
@@ -28,13 +41,28 @@ lpg:
     - label: "famiglia_1figlio"
       template: "CHR03 Family, 1 child, both at work"
       household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
       count: 1
     - label: "famiglia_3figli"
       template: "CHR05 Family, 3 children, both with work"
       household_ref: "CHR05_Family_3_children_both_with_work"
       count: 1
   house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
-  energy_intensity: "Random"
+
+  # "Random" pesca a caso fra le alternative di ogni categoria di dispositivo,
+  # che coprono una forbice enorme: la stessa categoria contiene una lampada da
+  # cucina da 300 W e una da 20 W, e un circolatore Wilo da 80 W accanto a un
+  # Grundfos da 25 W. Il risultato non e' una famiglia media, e' una famiglia
+  # sorteggiata, e le differenze fra i quattro nuclei finiscono per misurare il
+  # sorteggio invece della composizione familiare.
+  #
+  # "EnergySaving" sceglie in modo deterministico l'alternativa piu' efficiente.
+  # E' la leva singola piu' forte sul livello: sulla famiglia con un figlio il
+  # consumo scende del 39%.
+  #
+  # Nota: sposta il livello, non la forma. La distanza L1 dalla forma mensile
+  # ARERA passa da 0,196 a 0,185.
+  energy_intensity: "EnergySaving"
 
   # Catalogo LPG da usare, relativo alla cartella CER_LoadProfiles/.
   # Si ricostruisce con lpg_db/build_italian_db.py: contiene orari, vacanze e
@@ -67,6 +95,14 @@ output:
 
   # profili_aziende.csv e profili_famiglie.csv, separati per tecnologia.
   individual_profiles: false
+
+  # profili_famiglie_dettaglio.csv - scompone ogni famiglia nelle due meta' del
+  # contatore: _famiglia_kWh (elettrodomestici, Electricity_HH1), _casa_kWh
+  # (pompa di circolazione e condizionatore, Electricity_House) e _POD_kWh, la
+  # somma, che e' quello che i CSV principali riportano. Serve solo alla
+  # diagnostica: dice se uno scarto rispetto ad ARERA viene dagli
+  # elettrodomestici o dagli impianti di casa. Nessun file a valle lo legge.
+  dettaglio_domestici: true
 
   # profilo_CER_aggregato.csv - somma di tutte le utenze in una sola colonna.
   aggregate_total: false

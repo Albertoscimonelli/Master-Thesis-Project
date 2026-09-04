@@ -1,0 +1,266 @@
+# SOCIETA' MILANESE - venti famiglie, venti composizioni diverse.
+#
+# Gemello di simulation_config.lombardia20.yaml. I due file differiscono SOLO
+# per la composizione delle venti famiglie: anno, meteo, quota di
+# raffrescamento, house type di base ed energy intensity sono identici, cosi'
+# il confronto isola la composizione e non altro.
+#
+# PERCHE' DUE SOCIETA' E NON UNA. Milano non e' la Lombardia in piccolo. Il
+# censimento per sezione del solo comune (6.059 sezioni) da' il 55,6% di
+# famiglie unipersonali contro il 38,6% regionale: e' la differenza piu' grande
+# che si trovi fra due popolazioni italiane vicine, e agisce proprio sulla
+# variabile che la Fase 4 ha indicato come dominante. Se la CER si colloca in
+# citta' vale questo file; se si colloca in provincia vale l'altro. Generarli
+# entrambi permette di misurare quanto la scelta pesa sui risultati della CER,
+# invece di assumerla.
+#
+# DA DOVE VENGONO I NUMERI.
+#   ISTAT, Aspetti della vita quotidiana 2024, microdati: 1.831 famiglie
+#   lombarde, tutti i componenti intervistati (copertura verificata: 100%),
+#   quindi eta' (ETAMi) e condizione professionale (CONDMi) di ciascun membro.
+#   I microdati pubblici si fermano alla REGIONE: non esiste il dettaglio
+#   provinciale (verificate tutte le 737 variabili; METRO e STCOM sono domande
+#   del questionario, non classificatori territoriali).
+#
+#   ISTAT, Censimento permanente della popolazione 2021 (rilascio 2023), dati
+#   per sezione, R03_Lombardia_2023_sezioni.xlsx, filtrato sul comune di
+#   Milano: 6.059 sezioni, 743.276 famiglie, 1.371.499 residenti. Da' le
+#   famiglie per numero di componenti (PF3-PF8), la popolazione per classe di
+#   eta' (P27-P29 per il 65 e oltre) e gli occupati 15-64 (P101).
+#
+#   ISTAT, Dotazioni energetiche delle famiglie 2024, Tavola 3: 55,6% delle
+#   famiglie lombarde con impianto di raffrescamento. Il dato non esiste a
+#   livello comunale, quindi si usa quello regionale in entrambi i file - il
+#   che e' anche la scelta giusta per il confronto, perche' tiene fissa la
+#   dotazione mentre varia la composizione.
+#
+# COME SI OTTIENE MILANO DA UNA FONTE REGIONALE. Post-stratificazione: si
+# riponderano le famiglie AVQ finche' riproducono DUE marginali del censimento
+# milanese, la distribuzione per numero di componenti e la quota di
+# popolazione 65+ (IPF, convergenza esatta su entrambi).
+#
+#   Verifica indipendente: il tasso di occupazione che ne risulta e' 47,2%
+#   contro il 46,8% del censimento, e NON era un vincolo della calibrazione.
+#
+#   Calibrare sulla sola dimensione familiare non basta e sarebbe stato
+#   sbagliato: dava 27,6% di 65+ contro il 22,2% reale, perche' le unipersonali
+#   milanesi sono molto piu' giovani di quelle regionali.
+#
+# TIPOLOGIE MISURATE (quota di famiglie milanesi, fra parentesi la Lombardia):
+#     tutti gli adulti occupati              43,9%   (36,8%)
+#     solo anziani non occupati              25,9%   (26,3%)
+#     un adulto in casa di giorno            18,5%   (26,6%)
+#     nessun occupato, non solo anziani      11,6%   (10,3%)
+#     ------------------------------------------------------
+#     almeno un adulto in casa nei feriali   56,1%   (63,2%)
+#   famiglie con figli minori 15,7% (21,7%); 65+ 22,2% (23,4%).
+#   Il modello precedente assumeva 25% in casa e 50% con figli.
+#
+# COMPOSIZIONE PER NUMERO DI COMPONENTI (censimento, comune di Milano):
+#     1 comp. 55,6%   2 comp. 21,3%   3 comp. 11,9%   4 comp. 8,4%   5+ 2,9%
+#   che su venti famiglie fa 11 / 4 / 2 / 2 / 1.
+#
+# L'allocazione e' gerarchica - prima le classi di dimensione, poi le tipologie
+# entro ciascuna - e la calcola tipologie_famiglie.py, che rigenera anche tutte
+# le quote citate qui sopra. Ripartire direttamente le venti celle non
+# conserverebbe il marginale delle dimensioni, che e' il dato censuario
+# misurato su 743.276 famiglie, e lo sacrificherebbe a celle campionarie molto
+# piu' incerte.
+#
+# RESIDUO DICHIARATO. Le famiglie con figli minori risultano il 25% contro il
+# 15,7% atteso. Non e' una scelta: il marginale censuario assegna una famiglia
+# alla classe 5+, e nel catalogo LPG ogni template da cinque o piu' componenti
+# ha figli. A venti unita' il residuo non e' eliminabile; con quaranta si
+# dimezzerebbe.
+#
+# CLASSE DI POTENZA. La chiave classe_potenza non e' letta dalla pipeline:
+# serve all'analisi a valle per scegliere la curva ARERA di confronto. Regola
+# invariata rispetto alla configurazione principale - fino a due componenti
+# 1,5-3 kW, da tre in su 3-4,5 kW - e resta un'assunzione dichiarata, perche'
+# il numero di clienti ARERA per classe e provincia non esiste nelle fonti
+# aperte.
+#
+# ATTENZIONE prima di analizzare: curva_numerosita.py assegna la classe di
+# potenza assumendo quattro archetipi da cinque copie (classe_di(), riga 81).
+# Con venti gruppi da uno quella regola non vale piu' e va fatta leggere da
+# classe_potenza, altrimenti il riferimento ARERA composito e' sbagliato.
+#
+# Uso:
+#   python generate_load_profiles.py --config config/simulation_config.milano20.yaml
+# Tempo: circa 2 minuti per famiglia, quindi 40-45 minuti.
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+# RAMP resta al minimo: serve solo perche' la pipeline richiede almeno una
+# sorgente, e la sua colonna viene ignorata nel confronto con ARERA.
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+
+lpg:
+  # Il raffrescamento va a 11 famiglie su 20 come nel file lombardo, cioe' il
+  # 55% contro il 55,6% misurato da ISTAT, ed e' distribuito su tutte le
+  # tipologie. Tenerlo identico nei due file e' cio' che rende il confronto
+  # attribuibile alla sola composizione.
+  households:
+
+    # --- una persona, 11 famiglie (55,6% del totale) -----------------------
+    # E' la differenza che definisce Milano. Nel modello precedente le
+    # unipersonali erano ZERO; qui sono piu' della meta', e si dividono in due
+    # gruppi che hanno forme opposte: quattro anziani soli, sempre in casa, e
+    # sei persone sole che lavorano, quasi mai in casa di giorno. Sono i due
+    # estremi della matrice di forma, e stanno nello stesso quartiere.
+    - label: "M01_uomo_over65_solo"
+      template: "CHR23 Single man over 65 years"
+      household_ref: "CHR23_Single_man_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M02_donna_over65_sola"
+      template: "CHR24 Single woman over 65 years"
+      household_ref: "CHR24_Single_woman_over_65_years"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M03_pensionato_solo"
+      template: "CHR30 Single, Retired Man"
+      household_ref: "CHR30_Single_Retired_Man"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M04_pensionata_sola"
+      template: "CHR31 Single, Retired Woman"
+      household_ref: "CHR31_Single_Retired_Woman"
+      classe_potenza: "1.5-3"
+      count: 1
+    # Gli studenti fuori sede sono una presenza strutturale a Milano e in AVQ
+    # ricadono fra gli inattivi: hanno orari propri, ne' da occupato ne' da
+    # pensionato.
+    - label: "M05_studentessa_sola"
+      template: "CHR11 Student, Female, Philosophy"
+      household_ref: "CHR11_Student_Female_Philosophy"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M06_giovane_che_lavora"
+      template: "CHR07 Single with work"
+      household_ref: "CHR07_Single_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M07_donna_34_che_lavora"
+      template: "CHR09 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR09_Single_woman_30_64_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    # Il turnista solo: unica forma con consumo notturno dovuto
+    # all'orario e non alla dotazione.
+    - label: "M08_uomo_40_turnista"
+      template: "CHR10 Single man, 30 - 64 age, shift worker"
+      household_ref: "CHR10_Single_man_30_64_age_shift_worker"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M09_studente_lavoratore"
+      template: "CHR13 Student with Work"
+      household_ref: "CHR13_Student_with_Work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M10_donna_28_che_lavora"
+      template: "CHR25 Single woman under 30 years with work"
+      household_ref: "CHR25_Single_woman_under_30_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M11_uomo_26_che_lavora"
+      template: "CHR29 Single man under 30 years with work"
+      household_ref: "CHR29_Single_man_under_30_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+
+    # --- due persone, 4 famiglie (21,3%) -----------------------------------
+    # Le coppie milanesi sono piu' giovani di quelle regionali: la
+    # calibrazione sull'eta' sposta peso dalle coppie mature a quelle under
+    # 30, ed e' per questo che qui compaiono i CHR32-34 invece dei CHR39-40
+    # usati nel file lombardo.
+    - label: "M12_coppia_over65"
+      template: "CHR51 Couple over 65 years II"
+      household_ref: "CHR51_Couple_over_65_years_II"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M13_coppia_giovane_uno_a_casa"
+      template: "CHR34 Couple under 30 years, one at work, one at home"
+      household_ref: "CHR34_Couple_under_30_years_one_at_work_one_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M14_coppia_giovane_senza_lavoro"
+      template: "CHR32 Couple under 30 years without work"
+      household_ref: "CHR32_Couple_under_30_years_without_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "M15_coppia_giovane_lavoratori"
+      template: "CHR33 Couple under 30 years with work"
+      household_ref: "CHR33_Couple_under_30_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+
+    # --- tre persone, 2 famiglie (11,9%) -----------------------------------
+    - label: "M16_famiglia_1figlio_uno_a_casa"
+      template: "CHR45 Family with 1 child, 1 at work, 1 at home"
+      household_ref: "CHR45_Family_with_1_child_1_at_work_1_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    # Monogenitore che lavora: a Milano e' una tipologia di peso, e nel
+    # modello precedente non esisteva affatto.
+    - label: "M17_madre_sola_2figli_che_lavora"
+      template: "CHR08 Single woman, 2 children, with work"
+      household_ref: "CHR08_Single_woman_2_children_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+
+    # --- quattro persone, 2 famiglie (8,4%) --------------------------------
+    - label: "M18_famiglia_2figli_uno_lavora"
+      template: "CHR44 Family with 2 children, 1 at work, 1 at home"
+      household_ref: "CHR44_Family_with_2_children_1_at_work_1_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "M19_famiglia_2figli_entrambi_lavorano"
+      template: "CHR27 Family both at work, 2 children"
+      household_ref: "CHR27_Family_both_at_work_2_children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+
+    # --- cinque o piu' persone, 1 famiglia (2,9%) --------------------------
+    # Il marginale censuario assegna una famiglia a questa classe. Nel
+    # catalogo ogni template da cinque o piu' componenti ha figli, quindi
+    # e' questa voce a portare le famiglie con minori al 25% contro il
+    # 15,7% atteso: il residuo dichiarato in testa al file.
+    - label: "M20_multigenerazionale"
+      template: "CHR15 Multigenerational Home: working couple, 2 children, 2 seniors"
+      household_ref: "CHR15_Multigenerational_Home_working_couple_2_children_2_seniors"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "EnergySaving"
+  database: "lpg_db/profilegenerator.IT.db3"
+  geographic_location: "Italy_Mailand"
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
+
+output:
+  folder: "outputs/csv_milano20"
+  combined_profiles: true
+  individual_profiles: false
+  dettaglio_domestici: true
+  aggregate_total: false
+  versioned: false
+  scheda_cer: false

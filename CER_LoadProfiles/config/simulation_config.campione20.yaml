@@ -1,0 +1,89 @@
+# Campione allargato: 20 famiglie invece di 4, per un solo scopo diagnostico.
+#
+# PERCHE'. La validazione confronta l'aggregato delle famiglie generate da LPG
+# con la curva ARERA di Milano, che e' la media di decine di migliaia di
+# clienti. Una media di popolazione e' liscia per costruzione; quattro famiglie
+# no. Parte dello scarto residuo non e' quindi un difetto del catalogo, e'
+# la differenza fra un campione di quattro e una media di popolazione.
+#
+# Questo file serve a misurare quella parte. Generando 20 famiglie (5 semi per
+# ciascuno dei quattro archetipi) si puo' calcolare la distanza dalla curva
+# ARERA per sottoinsiemi di 4, 8, 12, 16 e 20 utenze e vedere quanto scende al
+# crescere della numerosita'. Cio' che resta a 20 e' attribuibile al modello;
+# la differenza fra 4 e 20 e' numerosita'.
+#
+# Serve a fissare una soglia di accettazione onesta: senza questa misura si
+# rischia di inseguire con le migrazioni uno scarto che nessuna correzione del
+# catalogo puo' eliminare.
+#
+# NON tocca la pipeline principale: scrive in outputs/csv_campione20/, non
+# genera la scheda CER e non sovrascrive profili_tutti.csv.
+#
+# Uso:
+#   python generate_load_profiles.py --config config/simulation_config.campione20.yaml
+# Tempo: circa 2 minuti per famiglia, quindi 40-45 minuti.
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+# RAMP resta al minimo: serve solo perche' la pipeline richiede almeno una
+# sorgente, e le sue tre colonne vengono ignorate nel confronto.
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+
+lpg:
+  # Stessi quattro archetipi della configurazione principale, ma cinque
+  # ripetizioni ciascuno. I semi vengono da _seed_stabile(label, i) con i che
+  # varia da 0 a 4, quindi le cinque copie di uno stesso archetipo sono
+  # famiglie diverse: cambiano le scelte dei dispositivi e le traiettorie
+  # stocastiche, non la composizione del nucleo. E' esattamente la varianza
+  # entro categoria che quattro famiglie non possono mostrare.
+  # L'assegnazione del condizionatore ricalca quella della configurazione
+  # principale: HT07 a pensionati e famiglia_1figlio, HT06 agli altri due.
+  # Sono 10 famiglie su 20, cioe' il 50%, contro il 55,6% reale in Lombardia
+  # (ISTAT, Dotazioni energetiche 2024, Tavola 3). Il campione deve
+  # rispecchiare il modello che si sta validando: senza questa riga tutte e 20
+  # sarebbero senza raffrescamento e il confronto misurerebbe anche quella
+  # differenza invece della sola numerosita'.
+  households:
+    - label: "pensionati"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      count: 5
+    - label: "coppia_lavoratori"
+      template: "CHR02 Couple, 30 - 64 age, with work"
+      household_ref: "CHR02_Couple_30_64_age_with_work"
+      count: 5
+    - label: "famiglia_1figlio"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      count: 5
+    - label: "famiglia_3figli"
+      template: "CHR05 Family, 3 children, both with work"
+      household_ref: "CHR05_Family_3_children_both_with_work"
+      count: 5
+
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "EnergySaving"
+  database: "lpg_db/profilegenerator.IT.db3"
+  geographic_location: "Italy_Mailand"
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
+
+output:
+  folder: "outputs/csv_campione20"
+  combined_profiles: true
+  individual_profiles: false
+  aggregate_total: false
+  dettaglio_domestici: false
+
+  # Niente storico e niente scheda CER: e' una misura diagnostica una tantum,
+  # non una generazione di produzione.
+  versioned: false
+  scheda_cer: false

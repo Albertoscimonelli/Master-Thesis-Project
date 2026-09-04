@@ -210,6 +210,15 @@ __marimo__/
 # CER_LoadProfiles/lpg_db/build_italian_db.py. Il manifesto invece si versiona.
 CER_LoadProfiles/lpg_db/*.db3
 
+# DEROGA CONSAPEVOLE alla regola "i derivati non si versionano":
+# CER_LoadProfiles/lpg_db/dati/riferimento_arera/ SI VERSIONA.
+# Sono 2 MB di curve estratte dai file provinciali ARERA con
+# riferimento_arera.py. I sorgenti sono circa 250 MB di xlsx che stanno fuori
+# dal repository, quindi senza questa cache la validazione dei profili
+# domestici non sarebbe rieseguibile da chi clona il progetto. I file .json
+# accanto a ciascun CSV portano lo SHA-256 dei sorgenti da cui derivano, cosi'
+# resta verificabile su quali dati sono stati calcolati i risultati in tesi.
+
 # Storico dei profili generati (output.versioned nella configurazione).
 # Cresce di ~500 KB a ogni run e resta locale: i CSV dal nome fisso in
 # outputs/csv/ restano tracciati e sono quelli letti da CER_input.txt,
@@ -257,3 +266,18 @@ Paper/
 # corrispondente in CER_LoadProfiles/config/.
 CER_LoadProfiles/outputs/csv_senza_temp/
 CER_LoadProfiles/outputs/csv_baseline/
+
+# Campioni allargati della validazione: 20 famiglie ciascuno, ~4,5 MB a run.
+# Stessa regola dei run di controllo sopra - sono dati derivati e si
+# rigenerano con la configurazione omonima. La generazione e' riproducibile:
+# i seed vengono da _seed_stabile() (crc32, non hash()), quindi un run ripetuto
+# a parita' di catalogo produce gli stessi profili. Quello che si versiona sono
+# la configurazione che li descrive e i numeri misurati nel report.
+CER_LoadProfiles/outputs/csv_campione20/
+CER_LoadProfiles/outputs/csv_lombardia20/
+CER_LoadProfiles/outputs/csv_milano20/
+
+# Scomposizione del POD nelle due meta' del contatore (output.dettaglio_domestici).
+# Viene riscritta a ogni run e nessun file a valle la legge: e' diagnostica,
+# serve a capire se uno scarto viene dagli elettrodomestici o dagli impianti.
+CER_LoadProfiles/outputs/csv/profili_famiglie_dettaglio.csv

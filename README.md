@@ -128,6 +128,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | Percorso | Contenuto |
 |---|---|
 | `CER_LoadProfiles/` | Pacchetto Python — generazione profili di carico (RAMP + pyLPG) |
+| `CER_LoadProfiles/lpg_db/` | **Italianizzazione del catalogo LPG e validazione dei profili domestici.** `build_italian_db.py` applica 19 migrazioni al `.db3` tedesco (festività, orari, vettori, dotazione); `riferimento_arera.py` costruisce il bersaglio, `riferimento_istat.py` e `tipologie_famiglie.py` le calibrazioni, `valida_domestici.py` / `curva_numerosita.py` / `confronta_societa.py` la misura. Vedi [REPORT_VALIDAZIONE_LPG.md](REPORT_VALIDAZIONE_LPG.md) |
 | `PV_Generation/` | Export orario PVsyst della produzione dell'impianto PV |
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
 | `CER_configuration/` | **Schede dati lette da `MAIN.m`**, tutte, una per giro di ciclo — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
@@ -687,6 +688,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei quindici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
+| [REPORT_VALIDAZIONE_LPG.md](REPORT_VALIDAZIONE_LPG.md) | **Serve sapere perché i profili domestici, costruiti su un catalogo tedesco, rappresentano famiglie italiane.** Metodo e risultati della validazione contro ARERA (§1-§12); il **§13 è il registro modifica per modifica**, con la fonte che giustifica ciascuna — è la sezione da citare in tesi |
+| [REPORT_VALIDAZIONE_FASE2.md](REPORT_VALIDAZIONE_FASE2.md) | Serve il registro di dettaglio passo per passo della Fase 2; come sintesi è sostituito dal documento sopra |
 
 ## 14. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
 

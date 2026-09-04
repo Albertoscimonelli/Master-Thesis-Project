@@ -383,16 +383,61 @@ def _generate_synthetic_profile(
     return pd.Series(potenza, index=timestamps)
 
 
+def _scrivi_dettaglio(
+    config: dict, componenti: dict[str, dict[str, pd.Series]]
+) -> None:
+    """Salva la scomposizione del POD nelle sue due meta', se richiesta.
+
+    Il file ha tre colonne per famiglia: la componente degli elettrodomestici,
+    quella degli impianti di casa e la loro somma, cioe' quello che misura il
+    contatore. Serve a capire da dove viene uno scarto rispetto ad ARERA:
+    un eccesso sulla componente casa e' un problema di dimensionamento degli
+    impianti, uno sulla componente famiglia e' un problema di dotazione o di
+    orari.
+
+    Lo scrive run_lpg() invece di generate_load_profiles.py perche' la
+    scomposizione esiste solo qui: a valle sopravvive la sola somma. La
+    funzione e' spenta di default e non tocca nulla del flusso principale.
+    """
+    if not config.get("output", {}).get("dettaglio_domestici"):
+        return
+    if not componenti:
+        logger.warning(
+            "dettaglio_domestici richiesto ma nessuna scomposizione "
+            "disponibile: i profili sono sintetici o pyLPG non ha risposto."
+        )
+        return
+
+    from postprocessing import export_to_csv, resample_to_hourly_energy
+
+    colonne = {}
+    for etichetta, parti in componenti.items():
+        colonne[f"{etichetta}_famiglia"] = parti["famiglia"]
+        colonne[f"{etichetta}_casa"] = parti["casa"]
+        colonne[f"{etichetta}_POD"] = parti["famiglia"] + parti["casa"]
+
+    orario = resample_to_hourly_energy(pd.DataFrame(colonne))
+    cartella = Path(__file__).parent / config["output"]["folder"]
+    percorso = cartella / "profili_famiglie_dettaglio.csv"
+    export_to_csv(orario, str(percorso), convert_w_to_kw=False, add_kwh_suffix=True)
+
+
 def run_lpg(config: dict) -> pd.DataFrame:
     """Genera profili di carico per tutte le utenze residenziali.
 
     Usa pyLPG se disponibile, altrimenti genera profili sintetici di fallback.
 
+    Ogni colonna e' il prelievo del POD, cioe' la somma di Electricity_HH1
+    (elettrodomestici della famiglia) e Electricity_House (pompa di
+    circolazione del riscaldamento e, con gli house type che lo prevedono,
+    condizionatore). E' la grandezza che misura il contatore e l'unica
+    confrontabile con il prelievo ARERA.
+
     Args:
         config: Dizionario di configurazione completo dal YAML.
 
     Returns:
-        DataFrame con DatetimeIndex e una colonna per famiglia in Watt.
+        DataFrame con DatetimeIndex e una colonna per famiglia, in Watt.
     """
     lpg_config = config["lpg"]
     sim_config = config["simulation"]
@@ -416,6 +461,11 @@ def run_lpg(config: dict) -> pd.DataFrame:
         )
 
     all_profiles: dict[str, pd.Series] = {}
+    # Le due meta' del contatore, tenute da parte per il file di dettaglio:
+    # servono a diagnosticare se uno scarto viene dagli elettrodomestici o
+    # dagli impianti di casa. Restano vuote per i profili sintetici, che non
+    # hanno questa scomposizione.
+    componenti: dict[str, dict[str, pd.Series]] = {}
     sintetici: list[str] = []
     global_idx = 0
 
@@ -423,6 +473,14 @@ def run_lpg(config: dict) -> pd.DataFrame:
         label = hh_group["label"]
         household_ref = hh_group["household_ref"]
         count = hh_group["count"]
+
+        # House type per famiglia, con ricaduta sulla chiave globale. Serve a
+        # rappresentare una dotazione che non e' universale: in Lombardia il
+        # 55,6% delle famiglie ha un impianto di raffrescamento (ISTAT,
+        # Dotazioni energetiche 2024, Tavola 3), quindi darlo a tutte o a
+        # nessuna e' sbagliato in entrambi i casi. Senza questa chiave il
+        # comportamento e' identico a prima.
+        house_type_hh = hh_group.get("house_type", house_type)
 
         logger.info("Generazione %dx '%s'...", count, label)
 
@@ -439,7 +497,7 @@ def run_lpg(config: dict) -> pd.DataFrame:
                     result_df = _run_single_lpg_household(
                         year=year,
                         household_ref_name=household_ref,
-                        house_type=house_type,
+                        house_type=house_type_hh,
                         seed=seed,
                         energy_intensity=energy_intensity,
                         database=database,
@@ -499,8 +557,63 @@ def run_lpg(config: dict) -> pd.DataFrame:
                         if elec_cols:
                             # pyLPG restituisce valori in kWh per timestep (1 min)
                             # Converti in Watt: W = kWh * 1000 / (1/60) = kWh * 60000
-                            all_profiles[col_name] = result_df[elec_cols[0]] * 60000.0
-                            logger.info("  %s: OK (%d campioni)", col_name, len(result_df))
+                            famiglia = result_df[elec_cols[0]] * 60000.0
+
+                            # Electricity_House e' l'altra meta' del contatore:
+                            # pompa di circolazione del riscaldamento e, con gli
+                            # house type che lo prevedono, condizionatore. Il POD
+                            # misura la somma delle due, quindi e' la somma che va
+                            # confrontata con il prelievo ARERA e usata nel
+                            # bilancio della CER.
+                            #
+                            # Limite noto: HT06 e HT07 modellano un impianto
+                            # autonomo. Per il 27,1% delle abitazioni lombarde,
+                            # che ha riscaldamento centralizzato (ISTAT AVQ 2024,
+                            # variabile TRISC), la pompa non sta sul contatore
+                            # della singola famiglia.
+                            casa_cols = [
+                                c for c in result_df.columns
+                                if c == "Electricity_House"
+                            ]
+                            if casa_cols:
+                                casa = result_df[casa_cols[0]] * 60000.0
+                            else:
+                                casa = pd.Series(0.0, index=result_df.index)
+                                logger.info(
+                                    "  %s: nessuna colonna Electricity_House, "
+                                    "il POD coincide con la sola componente famiglia",
+                                    col_name,
+                                )
+
+                            all_profiles[col_name] = famiglia + casa
+                            etichetta = label if count == 1 else f"{label}_{i + 1}"
+                            componenti[etichetta] = {
+                                "famiglia": famiglia,
+                                "casa": casa,
+                            }
+                            # Il gas non entra nel profilo elettrico, ma serve
+                            # al controllo di coerenza della migrazione D01:
+                            # spostando il piano cottura da elettrico a gas, il
+                            # calo di elettricita' deve corrispondere al gas che
+                            # compare. I fuochi si accendono le stesse volte, su
+                            # un altro vettore. Va letto qui perche' i file JSON
+                            # vengono cancellati due secondi dopo il run.
+                            gas_cols = [
+                                c for c in result_df.columns
+                                if c.startswith("Gas_HH")
+                            ]
+                            gas_kwh = (
+                                result_df[gas_cols[0]].sum() if gas_cols else 0.0
+                            )
+                            logger.info(
+                                "  %s: OK (%d campioni, POD = famiglia %.0f kWh "
+                                "+ casa %.0f kWh | gas famiglia %.0f kWh)",
+                                col_name,
+                                len(result_df),
+                                famiglia.sum() / 60000.0,
+                                casa.sum() / 60000.0,
+                                gas_kwh,
+                            )
                             # Breve pausa per permettere a OneDrive di rilasciare i lock
                             time.sleep(2)
                             continue
@@ -537,6 +650,8 @@ def run_lpg(config: dict) -> pd.DataFrame:
 
     df = pd.DataFrame(all_profiles)
     df.index.name = "timestamp"
+
+    _scrivi_dettaglio(config, componenti)
 
     if not _PYLPG_AVAILABLE:
         logger.warning(

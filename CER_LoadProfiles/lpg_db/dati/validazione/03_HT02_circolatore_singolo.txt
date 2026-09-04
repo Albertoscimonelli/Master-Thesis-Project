@@ -1,0 +1,35 @@
+# Passo 3: migrazione HT02 - un solo circolatore per HT06 e HT07
+# Componente casa: 281 -> 125 kWh/anno, uniforme sulle quattro famiglie.
+# Banda attesa da ISTAT Tavola 7 (10,06 h/giorno): 45-145 kWh/anno.
+
+
+VALIDAZIONE DOMESTICI - profili_tutti.csv
+riferimento ARERA Milano, Residente, anni 2024 e 2025
+
+colonna                classe       kWh/anno     atteso   scarto    TVD fer.    sab.    dom.
+------------------------------------------------------------------------------------------------
+household_1            1.5-3           2,463      1,662    1.48x       0.264   0.249   0.256
+household_2            1.5-3           2,068      1,662    1.24x       0.328   0.347   0.338
+household_3            3-4.5           3,268      2,582    1.27x       0.330   0.296   0.231
+household_4            3-4.5           3,596      2,582    1.39x       0.339   0.282   0.266
+------------------------------------------------------------------------------------------------
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte fra i due anni ARERA
+classe      TVD fer.    sab.    dom.  L1 mens.  livello
+1.5-3         0.0063  0.0075  0.0033    0.0693    -0.7%
+3-4.5         0.0107  0.0059  0.0055    0.0812    -2.3%
+
+FASCE ORARIE (% del consumo annuo)
+  aggregato dei domestici   F1 31.04  F2 40.56  F3 28.41
+  ARERA classe 1.5-3        F1 31.11  F2 30.29  F3 38.60
+  ARERA classe 3-4.5        F1 31.68  F2 31.14  F3 37.18
+
+FORMA ORARIA FERIALE, % del giorno (aggregato contro ARERA)
+  ora      0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23
+  LPG   0.89 0.88 0.88 0.94 1.30 1.49 3.14 8.7110.92 9.74 3.64 2.39 2.69 2.92 3.20 3.17 2.79 3.57 6.1810.1610.87 5.87 2.59 1.07
+  1.5-3 3.64 2.98 2.63 2.46 2.40 2.51 2.99 3.78 3.96 3.92 3.85 3.98 4.30 4.42 4.32 4.18 4.19 4.56 5.32 6.43 6.67 6.36 5.57 4.56
+  picco LPG ore 08, picco ARERA ore 20
+
+Le curve ARERA orarie coprono i soli clienti trattati orari; la classe
+di potenza di ciascuna famiglia e' un'assunzione dichiarata, non un dato.
+Se la forma non combacia si corregge il catalogo, mai l'output.

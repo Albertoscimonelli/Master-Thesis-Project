@@ -4,6 +4,8 @@ pandas>=3.0.0,<4.0.0
 numpy>=2.0.0,<3.0.0
 pyyaml>=6.0
 matplotlib>=3.7.0
+pypdf>=6.0            # lettura dei PDF di benchmark ENEA usati per calibrare
+                      # gli use case non domestici (scuole, PA)
 
 # NOTA: pandas>=3.0 e numpy>=2.0 richiedono le patch di compatibilita'
 # applicate automaticamente da ramp_runner.py (RAMP 0.5.0 non le supporta

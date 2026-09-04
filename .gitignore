@@ -219,6 +219,16 @@ CER_LoadProfiles/lpg_db/*.db3
 # accanto a ciascun CSV portano lo SHA-256 dei sorgenti da cui derivano, cosi'
 # resta verificabile su quali dati sono stati calcolati i risultati in tesi.
 
+# DEROGA CONSAPEVOLE, gemella di quella sopra:
+# CER_LoadProfiles/ramp_db/dati/riferimento_arera_nd/ SI VERSIONA.
+# Sono le righe di una provincia estratte dai sette CSV provinciali ARERA sui
+# prelievi NON domestici, che pesano circa 660 MB e stanno fuori dal
+# repository. Senza questa cache la validazione dei profili aziendali non
+# sarebbe rieseguibile da chi clona il progetto. Ogni CSV ha accanto un .json
+# con lo SHA-256 del sorgente da cui deriva, quindi resta verificabile su quali
+# dati sono stati calcolati i risultati. Pesa circa 1,7 MB per banda di
+# potenza, e le bande servono solo per gli archetipi effettivamente usati.
+
 # Storico dei profili generati (output.versioned nella configurazione).
 # Cresce di ~500 KB a ogni run e resta locale: i CSV dal nome fisso in
 # outputs/csv/ restano tracciati e sono quelli letti da CER_input.txt,

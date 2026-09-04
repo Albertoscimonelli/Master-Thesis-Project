@@ -201,7 +201,6 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
     from ramp.core.core import UseCase
 
     ramp_config = config["ramp"]
-    sim_config = config["simulation"]
     date_start = ramp_config["date_start"]
     date_end = ramp_config["date_end"]
 
@@ -256,14 +255,28 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
         logger.warning("Nessun profilo RAMP generato.")
         return pd.DataFrame()
 
-    # Costruisci DatetimeIndex a 1 minuto
+    # Costruisci DatetimeIndex a 1 minuto.
+    #
+    # L'indice e' volutamente SENZA fuso orario, come quello di lpg_runner.
+    # RAMP produce un numero fisso di campioni - giorni x 1440 minuti - che e'
+    # tempo solare, non tempo di orologio. Localizzarlo su Europe/Rome faceva
+    # collassare i 60 minuti del cambio d'ora di marzo su un'ora inesistente e
+    # sovrapponeva le due ore di ottobre: a valle il filtro sui duplicati ne
+    # scartava una e il profilo annuo restava di 8759 ore invece di 8760.
+    # Il join con i profili LPG, che sono sempre stati senza fuso, propagava
+    # poi la perdita a profili_tutti.csv, e MAIN.m interpolava l'ora mancante.
+    #
+    # La convenzione dei profili di questo progetto e' l'ora locale italiana
+    # senza discontinuita': 8760 righe, una per ora di calendario. E' anche la
+    # convenzione con cui vanno confrontati i profili standard GSE, che il
+    # cambio d'ora lo portano dentro (una riga mancante a marzo e una doppia a
+    # ottobre) e vanno quindi riallineati in lettura, non qui.
     first_profile = next(iter(all_profiles.values()))
     n_steps = len(first_profile)
     timestamps = pd.date_range(
         start=date_start,
         periods=n_steps,
         freq="1min",
-        tz=sim_config.get("timezone"),
     )
 
     df = pd.DataFrame(all_profiles, index=timestamps)

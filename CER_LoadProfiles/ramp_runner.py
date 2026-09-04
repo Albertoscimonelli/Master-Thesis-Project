@@ -206,7 +206,25 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
 
     all_profiles: dict[str, np.ndarray] = {}
 
-    for uc_config in ramp_config["use_cases"]:
+    # Archetipi spenti nel catalogo. Si registrano e si annunciano: un
+    # archetipo assente per svista e' indistinguibile da uno assente per
+    # scelta, se nessuno lo scrive.
+    spenti = [u["name"] for u in ramp_config["use_cases"]
+              if not u.get("attivo", True)]
+    if spenti:
+        logger.info("Archetipi non domestici spenti (attivo: false): %s",
+                    ", ".join(spenti))
+
+    attivi = [u for u in ramp_config["use_cases"] if u.get("attivo", True)]
+    if not attivi:
+        raise ValueError(
+            "Nessun archetipo non domestico attivo: tutte le voci di "
+            "ramp.use_cases hanno 'attivo: false'. Accenderne almeno una, "
+            "oppure togliere del tutto la sezione 'ramp' se la CER non ha "
+            "membri non domestici."
+        )
+
+    for uc_config in attivi:
         use_case_name = uc_config["name"]
         num_users = uc_config["num_users"]
 

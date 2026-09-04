@@ -1,0 +1,48 @@
+
+VALIDAZIONE NON DOMESTICI - profili_aziende.csv
+livello e stagionalita': ARERA Milano 2025
+forma oraria: GSE PAUM (prelievo puro, altri usi, monorario)
+
+archetipo        ATECO    kWh/anno    atteso  scarto  L1 mens TVD ora
+------------------------------------------------------------------------------
+office           82.11      10,957     6,840   1.60x   0.1003  0.4496
+small_industry   25.99      61,692    63,345   0.97x   0.1628  0.3130
+retail           47.11      13,631    21,317   0.64x   0.1405  0.2881
+
+==============================================================================
+DOVE STANNO I DIFETTI
+==============================================================================
+
+archetipo                agosto   domenica   notte 01-05  picco/P_imp
+                  modello/ARERA    % annuo      mod./GSE             
+------------------------------------------------------------------------------
+office              7.9/6.5           0.0    0.0/14.7          0.77
+small_industry      8.5/3.5          13.7    1.5/14.7          0.42
+retail              8.6/8.9          14.5    5.2/14.7          0.28
+
+Riferimenti: la domenica vale 1/7 = 14,3% dell'anno per un'attivita' aperta
+sette giorni su sette; le ore 01-05 valgono 14.7% della giornata nel profilo GSE.
+
+FASCE ORARIE (% del consumo annuo)
+  office           F1 92.97  F2  2.64  F3  4.39
+  small_industry   F1 57.76  F2 21.22  F3 21.02
+  retail           F1 56.55  F2 18.97  F3 24.48
+
+==============================================================================
+SOGLIE SURROGATE - non c'e' rumore di fonte utilizzabile
+==============================================================================
+
+Forma oraria. Il GSE non ha revisionato PAUM fra il 2024 e il 2025:
+TVD 0.0000 in tutti i mesi. Non e' una soglia, e' assenza di revisione.
+Come metro alternativo, la stessa curva cambia fra i mesi di 0.0330
+in media e 0.0819 al massimo (mesi 1 e 4).
+
+Forma mensile. Manca il secondo anno; al suo posto, quanto distano fra loro
+classi sorelle della stessa divisione ATECO:
+  office           sorelle L1 medio 0.0559, modello 0.1003  -> sopra la soglia
+  small_industry   sorelle L1 medio 0.0648, modello 0.1628  -> sopra la soglia
+  retail           sorelle L1 medio 0.1744, modello 0.1405  -> SOTTO la soglia
+
+Lettura: se lo scarto del modello e' dell'ordine della dispersione fra classi
+sorelle, non e' distinguibile dall'arbitrarieta' della classe scelta come
+bersaglio, e non va riportato come validazione.

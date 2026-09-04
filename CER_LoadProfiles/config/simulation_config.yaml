@@ -7,13 +7,69 @@ simulation:
 ramp:
   date_start: "2025-01-01"
   date_end: "2025-12-31"
+
+  # CATALOGO DELLE TIPOLOGIE NON DOMESTICHE.
+  #
+  # Ci sono tutte, sempre: la chiave 'attivo' decide quali vengono simulate e
+  # quindi quali colonne finiscono nei CSV. Comporre una CER e' scegliere in
+  # questo elenco, non riscrivere il file.
+  #
+  # Spegnere un archetipo NON altera gli altri: le colonne prendono il nome
+  # dall'archetipo (office_1, retail_1) e il seme viene da quel nome, non dalla
+  # posizione nell'elenco. Riaccendendolo si riottiene lo stesso identico
+  # profilo. 'attivo' assente vale true, cosi' le configurazioni piu' vecchie
+  # continuano a funzionare senza modifiche.
+  #
+  # ATTENZIONE A VALLE: spegnere un archetipo fa sparire una colonna, e
+  # align_members_to_users.m pretende che i nome_csv delle schede coincidano
+  # esattamente con le colonne di profili_tutti.csv. Dopo aver cambiato gli
+  # interruttori va rigenerata la scheda CER.
+  #
+  # I METADATI 'ateco' E 'banda' non servono alla generazione: servono alla
+  # VALIDAZIONE, per scegliere il bersaglio ARERA contro cui misurare il
+  # profilo (ramp_db/valida_non_domestici.py). Restano attaccati all'archetipo
+  # anche quando e' spento, cosi' il catalogo resta autodescrittivo.
+  #
+  # La classe ATECO e' un'ASSUNZIONE DICHIARATA, non un dato: il file ARERA non
+  # dice a quale classe appartenga una data utenza. Va scelta per cio' che
+  # l'archetipo E', mai per quale bersaglio avvicina di piu' il modello - che
+  # sarebbe tarare sul validatore. La sensibilita' a questa scelta si misura
+  # con rumore_classe(), confrontando classi sorelle della stessa divisione.
+  #
+  # La banda discende dalla potenza impegnata dichiarata qui sotto, che diventa
+  # cosi' l'unica fonte di verita' (prima era duplicata in cer_config_writer.py).
   use_cases:
     - name: "office"
+      attivo: true
       num_users: 1
+      potenza_impegnata_kW: 10
+      banda: "6-10"
+      ateco: "82.11"      # Servizi integrati di supporto per le funzioni
+                          # d'ufficio. E' la classe che descrive un ufficio in
+                          # quanto tale, senza specializzarlo per settore.
+                          # Sorelle per la sensibilita': 69.20, 70.22, 62.01.
+
     - name: "small_industry"
+      attivo: true
       num_users: 1
+      potenza_impegnata_kW: 50
+      banda: ">16.5"
+      ateco: "25.99"      # Fabbricazione di altri prodotti in metallo n.c.a.
+                          # L'archetipo e' un'officina generica - tre CNC, un
+                          # compressore, illuminazione industriale - e "n.c.a."
+                          # e' il catch-all della divisione 25, non una
+                          # lavorazione specifica.
+                          # Sorelle: 25.50, 25.11, 25.94.
+
     - name: "retail"
+      attivo: true
       num_users: 1
+      potenza_impegnata_kW: 15
+      banda: ">10"
+      ateco: "47.11"      # Commercio al dettaglio non specializzato con
+                          # prevalenza di prodotti alimentari: l'archetipo ha
+                          # due banchi frigo, quindi e' alimentare.
+                          # Sorelle: 47.19, 47.21, 47.25.
 
 lpg:
   households:

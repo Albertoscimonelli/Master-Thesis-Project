@@ -87,9 +87,18 @@ FILE_BANDA: dict[str, str] = {
 
 VALORE = "Prelievo medio mensile"
 
-# I file sono cp1252 - con utf-8 le sezioni diventano 'ATTIVIT?' - ma portano
-# un BOM UTF-8 in testa, che finisce nel nome della prima colonna.
-ENCODING = "cp1252"
+# I file sono UTF-8 con BOM: iniziano con EF BB BF e le lettere accentate sono
+# sequenze a due byte (C3 80 per 'A' maiuscola accentata). 'utf-8-sig' e'
+# quindi l'encoding giusto, e toglie anche il BOM dal nome della prima colonna.
+#
+# Verificare l'encoding sui BYTE, non su come il terminale rende il testo: una
+# console cp1252 mostra 'ATTIVIT?' anche quando la stringa in memoria e'
+# corretta, e leggendo quel punto interrogativo si conclude - sbagliando - che
+# serva cp1252. Con cp1252 la stessa sequenza diventa 'ATTIVITA~+', mojibake
+# che passa inosservato perche' i codici ATECO sono ASCII e i numeri pure:
+# a sporcarsi sono solo le descrizioni, cioe' l'unica parte che un rapporto di
+# validazione mostra a chi legge.
+ENCODING = "utf-8-sig"
 
 _cache: dict[tuple[str, str], pd.DataFrame] = {}
 
@@ -140,7 +149,12 @@ def carica(provincia: str, banda: str, verboso: bool = True) -> pd.DataFrame:
             # keep_default_na=False: le celle ATECO vuote sono la categoria
             # "non attribuito", non dati mancanti. Senza questo tornerebbero
             # come NaN e la categoria diventerebbe irraggiungibile.
-            d = pd.read_csv(destinazione, keep_default_na=False,
+            # encoding esplicito: su Windows pandas ricadrebbe sulla codifica
+            # di sistema (cp1252) e rileggerebbe 'ATTIVITA'' come 'ATTIVITA~'.
+            # I codici ATECO sono ASCII e non ne risentono, ma le descrizioni
+            # finirebbero corrotte nei rapporti di validazione.
+            d = pd.read_csv(destinazione, encoding="utf-8",
+                            keep_default_na=False,
                             dtype={"sezione": str, "divisione": str,
                                    "gruppo": str, "classe": str})
             d["mese"] = pd.to_numeric(d["mese"])
@@ -155,7 +169,7 @@ def carica(provincia: str, banda: str, verboso: bool = True) -> pd.DataFrame:
     pezzi = []
     for blocco in pd.read_csv(sorgente, sep=";", encoding=ENCODING,
                               chunksize=300_000, dtype=str):
-        blocco.columns = [c.replace("﻿", "").strip() for c in blocco.columns]
+        blocco.columns = [c.strip() for c in blocco.columns]
         pezzi.append(blocco[blocco["Provincia"] == provincia])
 
     d = pd.concat(pezzi, ignore_index=True)
@@ -172,7 +186,7 @@ def carica(provincia: str, banda: str, verboso: bool = True) -> pd.DataFrame:
         "kwh": pd.to_numeric(d[VALORE].str.replace(",", ".", regex=False)),
     })
 
-    d.to_csv(destinazione, index=False)
+    d.to_csv(destinazione, index=False, encoding="utf-8")
     manifesto.write_text(json.dumps({
         "sorgente": str(sorgente), "sha256": _impronta(sorgente),
         "provincia": provincia, "banda": banda, "righe": len(d),

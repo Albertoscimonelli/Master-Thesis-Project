@@ -151,6 +151,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `fairness_index_bm.m` | **Fairness Index** di Casalicchio et al. 2022: distanza di ciascun metodo dalla distribuzione per contributo `v(N) − v(N∖{i})` (§7) |
 | `coalition_excess.m` | **Eccesso di coalizione** di Volpato et al. 2024 (eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — l'unico indicatore di **stabilità** (§7) |
 | `premium_excess_threshold.m` | **Soglia di energia incentivabile** 55%/45% e destinazione della tariffa premio eccedentaria (DM MASE 414/2023, Regole Operative GSE): non misura l'equità, dice quali ripartizioni sono **ammissibili** (§7.4) |
+| `cer_reduction_factor.m` | **Fattore F** di decurtazione della tariffa premio per contributo in conto capitale, e maschera dei membri **esenti** — persone fisiche ed enti (§7.5) |
 | `gini_index.m`, `jain_index.m` | I due nuclei degli indicatori sopra (`EI = 1 − Gini`, `QoS = Jain`), esposti a sé stanti e condivisi anche da `weighted_solidarity_cer.m` |
 | `gini_heterogeneity.m` | Gini di **eterogeneità** della composizione della comunità (Casalicchio eq. 10) — non è un Gini di reddito |
 | `plot_fairness_indicators.m` | Mappa di calore metodi × indicatori di equità (§7) |
@@ -517,6 +518,73 @@ un controllo da togliere: cambia con i dati, non con il codice.
 Il risultato per comunità sta in `RESULTS(i).soglia`, con `.isBinding`, `.quotaEccedente`,
 `.importoEccedente` e la tabella per metodo (`.table`).
 
+### 7.5 Il fattore di riduzione F, e chi ne è esente
+
+**La regola.** Con un contributo in conto capitale la tariffa premio è decurtata:
+`TIP = TIP_lorda · (1 − F)`, dove `F` varia linearmente fra `0` (nessun contributo) e
+`0,50` (contributo pari al **40%** dell'investimento) — Regole Operative GSE del
+16 luglio 2025, Appendice B §3. Quindi `F = 0,50 · pct/40`. Oltre il 40% la tariffa non è
+cumulabile affatto (§1.2.1.6): lì `cer_reduction_factor.m` si ferma con un errore invece
+di troncare in silenzio.
+
+**L'esenzione, e la voce che sfugge.** F *non si applica* all'energia afferente a punti di
+prelievo di enti territoriali, enti religiosi, enti del terzo settore e di protezione
+ambientale, **e persone fisiche** (§2.2.2.1.2).
+
+> ⚠️ Le **persone fisiche** non erano nell'Allegato 1 del DM 414/2023: le ha aggiunte il
+> **DM 127 del 16 maggio 2025** (Premessa delle Regole Operative, p. 5). Chi cita il solo
+> 414/2023 legge la lista *pre-127* e lascia fuori la categoria più numerosa di una CER
+> residenziale — qui **4 membri su 7**.
+
+**Il campo che lo esprime.** Il dominio di `[MEMBRI].categoria` si è allargato a
+`terzo_settore | religioso | ambientale`. È additivo — nessuna scheda esistente cambia — e
+serve perché una tipologia di *consumo* non sa esprimere una forma *giuridica*: un ente del
+terzo settore consuma come un terziario, e contarlo come impresa costerebbe il 50% della
+tariffa. Esenti: `domestico` (persone fisiche), `PA` (enti territoriali), `terzo_settore`,
+`religioso`, `ambientale`.
+
+**Perché F entra dentro `v(S)` e non nella tariffa.** F dipende da *chi* consuma l'energia
+condivisa, quindi cambia da coalizione a coalizione. Sulle schede attuali la quota esente
+va da **0%** (coalizioni di sole imprese) a **100%** (di sole famiglie), contro l'1-20%
+della comunità intera. Usare la quota di comunità dentro `v(S)` sottostimerebbe le
+coalizioni ricche di esenti e farebbe sembrare la CER **più stabile di quanto sia** —
+un bias proprio sull'indicatore del §7.3. Perciò:
+
+- `compute_cer_incentive.m` produce la tariffa **lorda** (`F = 0`), che è poi la tariffa
+  dei membri esenti;
+- la decurtazione entra in `cer_shared_value.m`, con la quota esente **della coalizione**;
+- i metodi che spartiscono solo `v(N)` ricevono la **tariffa efficace di comunità**.
+
+Le due strade danno lo stesso `v(N)` per costruzione, ed è verificato da un `assert` in
+`MAIN.m` §3b — senza, un F applicato due volte si vedrebbe solo come uno scarto
+inspiegabile fra metodi.
+
+**Cosa succede davvero** (`CER_6_1_0`, gli stessi profili, solo il contributo cambia):
+
+| Conto capitale | `F` | `v(N)` | Quota domestici | in % di `v(N)` |
+|---:|---:|---:|---:|---:|
+| 0% | 0,000 | €2039,54 | €200,06 | 9,8% |
+| 20% | 0,250 | €1632,28 | €202,02 | 12,4% |
+| 40% | 0,500 | €1225,02 | €203,99 | **16,7%** |
+
+Il montepremi crolla del 40%, ma la quota in euro dei domestici **non si muove** (€200 →
+€204): l'esenzione li protegge, e la loro fetta relativa passa da 9,8% a 16,7%. È
+l'effetto che la norma cerca, e si vede **solo** con il trattamento per coalizione — con
+una quota di comunità scenderebbero in proporzione come tutti.
+
+**Un limite introdotto, dichiarato.** Con `F > 0` il Separation Problem del Variance Least
+Core smette di essere un MILP: il valore della coalizione contiene
+`s_t · loadNonEsente(z)/load(z)`, un **rapporto** fra combinazioni lineari delle binarie.
+Linearizzarlo è un lavoro di modellazione a sé. Finché non è fatto, con `F > 0` la
+separazione ripiega sull'**enumerazione** di tutte le coalizioni: il risultato è esatto —
+anzi, è la separazione esatta per definizione, e `theta_LC` continua a coincidere con il
+surplus minimo del Nucleolo — ma il metodo perde la scalabilità che è il suo tratto
+distintivo e ricade nel limite di §14.1. Con `F = 0` non cambia nulla.
+
+**Regressione.** Con `contributo_conto_capitale_pct = ?` si ha `F = 0` e l'output è
+**identico riga per riga** a prima dell'introduzione del fattore: le uniche differenze
+sono le nuove righe diagnostiche della §1c.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -727,16 +795,22 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
-- `tip_fattore_riduzione` (fattore F della formula TIP) **non è ancora implementato**, e
-  finché la scheda lo lascia a `?` nessuna riduzione viene applicata. La regola però
-  **ora è nota**: Regole Operative GSE del 16 luglio 2025, Appendice B §3 — `F` varia
-  linearmente fra `0` (nessun contributo in conto capitale) e `0,50` (contributo pari al
-  40% dell'investimento), e **non si applica** all'energia condivisa afferente a punti di
-  prelievo di enti territoriali, enti religiosi, enti del terzo settore e di protezione
-  ambientale, e persone fisiche (§2.2.2.1.2). Serve quindi lo stesso split
-  impresa / non-impresa già usato dal controllo di soglia (§7.4), applicato però
-  *dentro* il calcolo della tariffa e non a valle: è la seconda metà del lavoro
-  aperto su `[INVESTIMENTO].contributo_conto_capitale_pct`.
+- **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
+  `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
+  capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano
+  finanziario della CER è deciso — è lo stesso che sceglie la soglia del §7.4.
+- **Con `F > 0` il Variance Least Core perde la scalabilità.** Il suo Separation Problem
+  non è più un MILP (il termine di esenzione è un rapporto fra combinazioni lineari delle
+  binarie) e il metodo ripiega sull'enumerazione: esatto, ma con lo stesso limite di
+  Shapley e Nucleolo (§14.1). Rimuoverlo richiede di linearizzare il rapporto con
+  variabili ausiliarie — modellazione, non implementazione.
+- **La quota esente dell'energia condivisa è attribuita ai punti di prelievo
+  *pro-rata sul carico residuo* orario.** Il decreto prescrive «un'ulteriore ripartizione»
+  senza fissarne la chiave; il pro-rata è quella neutra, ma è un'ipotesi e va detta se il
+  risultato finisce in tesi. La regola di priorità del §2.2.2.1.2 (energia degli enti
+  allocata prima agli impianti col contributo) qui è **vacua**, perché il conto capitale è
+  dichiarato per la comunità e non per singolo impianto: o tutti gli impianti sono
+  decurtati o nessuno.
 - **Il controllo di soglia (§7.4) ragiona su un solo insieme di impianti.** La norma ne
   prevede due (sola tariffa premio / cumulo con conto capitale) e somma le eccedenze;
   qui l'insieme è uno perché il modello applica **una sola TIP** a tutta l'energia
@@ -814,6 +888,12 @@ enumera **2^n** coalizioni. Con `n = 100` significa ~10³⁰ valori: non è un p
 lentezza, è irrealizzabile su qualsiasi hardware. `shapley_cer.m` emette già un warning
 sopra i 20 giocatori; oltre quella soglia `MAIN.m` §3b fallirebbe in allocazione di
 memoria.
+
+> **Con `F > 0` diventano quattro.** Il Variance Least Core sfugge a questo limite grazie
+> alla row-generation, ma solo finché il suo Separation Problem è un MILP — e con il
+> fattore di riduzione non lo è più (§7.5). In quel caso ripiega sull'enumerazione e
+> si aggiunge alla lista, con un errore esplicito sopra i 20 giocatori. È il primo punto
+> da sistemare se si vorrà usare il conto capitale su comunità grandi.
 
 **Per lo Shapley la via d'uscita è già in repo (metodi 13-15, §6).** Le tre
 approssimazioni di Cremers et al. sono state introdotte esattamente per questo: valutano

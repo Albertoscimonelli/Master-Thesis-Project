@@ -186,12 +186,15 @@ for iCER = 1:N_CER
         P_PV_NOM_KW = sum(CFG.impianti.kWp, 'omitnan');
     end
 
-    % Il fattore di riduzione F non e' ancora definito per intero: finche' nella
-    % scheda vale '?', nessuna riduzione viene applicata.
+    % Il fattore di riduzione F si DERIVA dal contributo in conto capitale
+    % (§1c, cer_reduction_factor.m). Qui si legge solo l'eventuale valore
+    % imposto a mano nella scheda, che ha la precedenza sulla derivazione:
+    % serve per riprodurre un conguaglio GSE gia' emesso senza dover ricostruire
+    % l'intensita' del contributo che l'ha generato. NaN = non imposto.
     if CFG.noto.mercato.tip_fattore_riduzione
-        F_RIDUZIONE = CFG.mercato.tip_fattore_riduzione;
+        F_IMPOSTO = CFG.mercato.tip_fattore_riduzione;
     else
-        F_RIDUZIONE = 0;
+        F_IMPOSTO = NaN;
     end
 
     % --- Modalita tariffarie PUN ---------------------------------------------
@@ -250,18 +253,73 @@ for iCER = 1:N_CER
     %  Il prezzo zonale orario (mercato del giorno prima, MGP) alimenta la
     %  formula 3.1 della tariffa incentivante premio: al posto di un incentivo
     %  CER costante si ottiene un vettore orario P_CER_h, coerente con la griglia
-    %  oraria canonica tGrid. Vedi compute_cer_incentive.m per i dettagli e per
-    %  il TODO sul fattore di riduzione F.
+    %  oraria canonica tGrid. Vedi compute_cer_incentive.m per i dettagli.
+    %
+    %  FATTORE F: UNA TARIFFA SOLA NON BASTA PIU'
+    %    Con un contributo in conto capitale la tariffa e' decurtata di (1-F),
+    %    ma NON sull'energia afferente ai punti di prelievo esenti - persone
+    %    fisiche ed enti (cer_reduction_factor.m). La tariffa smette quindi di
+    %    essere una grandezza sola e diventa due:
+    %
+    %      P_CER_lordo  tariffa piena, quella che spetta ai membri ESENTI
+    %      P_CER_h      tariffa EFFICACE di comunita', cioe' la lorda pesata
+    %                   ora per ora sulla quota esente del carico residuo
+    %
+    %    P_CER_h e' quella che vale per il RICAVO (§3) e per i metodi che si
+    %    limitano a spartire v(N). I metodi che valutano anche le SOTTO-
+    %    coalizioni ricevono invece la lorda piu' la maschera di esenzione,
+    %    perche' ogni coalizione ha la propria quota esente: vedi
+    %    cer_shared_value.m. Le due strade danno lo stesso v(N) per
+    %    costruzione, ed e' verificato da un assert in §3b.
     %  ========================================================================
 
     zonalPriceFile = fullfile(CFG.radice, CFG.file.prezzi_zonali);
-    Pz_h    = load_zonal_price(zonalPriceFile, tGrid);
-    P_CER_h = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, F_RIDUZIONE);
+    Pz_h           = load_zonal_price(zonalPriceFile, tGrid);
+    P_CER_lordo    = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, 0);
+
+    % --- Fattore F e membri esenti ------------------------------------------
+    [F_RIDUZIONE, esenteF, infoF] = cer_reduction_factor( ...
+        CFG.investimento.contributo_conto_capitale_pct, M.categoria);
+
+    if ~isnan(F_IMPOSTO)
+        F_RIDUZIONE = F_IMPOSTO;   % la scheda impone F: vince sulla derivazione
+    end
+
+    % Quota esente del carico residuo di COMUNITA', ora per ora. Nelle ore a
+    % carico nullo non c'e' energia condivisa da attribuire e la quota resta 0:
+    % moltiplica comunque uno zero.
+    wEsN     = zeros(N_HOURS, 1);
+    okLoad   = loadTotalForShare > 0;
+    wEsN(okLoad) = sum(loadForShare(okLoad, esenteF), 2) ./ loadTotalForShare(okLoad);
+
+    P_CER_h = P_CER_lordo .* (1 - F_RIDUZIONE * (1 - wEsN));
+
+    % Le sole opzioni di gioco: chi le riceve valuta v(S) con la quota esente
+    % della coalizione, chi non le riceve lavora gia' sulla tariffa efficace.
+    optF = struct('esente', esenteF, 'F', F_RIDUZIONE);
 
     fprintf('\n=== Tariffa incentivante CER (TIP_h) ===\n');
     fprintf('  Prezzo zonale medio: %7.2f EUR/MWh\n', mean(Pz_h));
-    fprintf('  TIP_h media:         %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
-            mean(P_CER_h)*1000, mean(P_CER_h));
+    fprintf('  TIP lorda media:     %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
+            mean(P_CER_lordo)*1000, mean(P_CER_lordo));
+    if F_RIDUZIONE > 0
+        fprintf('  Fattore F:           %7.3f', F_RIDUZIONE);
+        if ~isnan(F_IMPOSTO)
+            fprintf('   (imposto in scheda)\n');
+        else
+            fprintf('   (conto capitale al %.1f%% dell''investimento)\n', infoF.pct);
+        end
+        fprintf('  Membri esenti da F:  %d su %d  (%s)\n', ...
+                sum(esenteF), nUsers, strjoin(userNames(esenteF), ', '));
+        fprintf('  Quota esente del carico residuo: %.1f%% (media pesata sul condiviso)\n', ...
+                100 * sum(min(genPVSurplus, loadTotalForShare) .* wEsN) ...
+                    / max(eps, sum(min(genPVSurplus, loadTotalForShare))));
+        fprintf('  TIP efficace media:  %7.2f EUR/MWh  (%+.1f%% sulla lorda)\n', ...
+                mean(P_CER_h)*1000, 100*(mean(P_CER_h)/mean(P_CER_lordo) - 1));
+    else
+        fprintf('  Fattore F:           %7.3f   (nessun contributo in conto capitale)\n', ...
+                F_RIDUZIONE);
+    end
     fprintf('  TIP_h min / max:     %7.2f / %7.2f EUR/MWh\n', ...
             min(P_CER_h)*1000, max(P_CER_h)*1000);
 
@@ -415,7 +473,20 @@ for iCER = 1:N_CER
     %  non e' energia condivisibile con la CER e va esclusa dal gioco.
     %  ========================================================================
 
-    Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_h);
+    Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+
+    % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
+    % tariffa lorda con esenzione applicata coalizione per coalizione (quella
+    % che percorrono Shapley, Nucleolo, Nash, VLC e le tre approssimazioni) e
+    % tariffa efficace di comunita' (quella che ricevono gli altri metodi e il
+    % ricavo della §3). Se divergono, il fattore F si sta applicando due volte
+    % da una parte o sparendo dall'altra - ed e' un errore che senza questo
+    % assert si vedrebbe solo come uno scarto inspiegabile fra i metodi.
+    vGrandEff = sum(min(sum(genForShare, 2), sum(loadForShare, 2)) .* P_CER_h);
+    assert(abs(Sh.vGrand - vGrandEff) <= 1e-6 * max(1, abs(vGrandEff)), ...
+           ['v(N) incoerente fra le due strade del fattore F: EUR %.6f con la ' ...
+            'tariffa lorda piu'' esenzione per coalizione, EUR %.6f con la ' ...
+            'tariffa efficace di comunita''.'], Sh.vGrand, vGrandEff);
     report_allocation(Sh, "Shapley");
 
     % Coerenza con l'analisi economica: il valore distribuito coincide con il
@@ -460,7 +531,7 @@ for iCER = 1:N_CER
     %  quindi STABILE (nessuna sotto-coalizione conviene).
     %  ========================================================================
 
-    Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_h);
+    Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
 
     coreMsg = "fuori dal Core";
     if Nu.inCore, coreMsg = "nel Core (stabile)"; end
@@ -484,7 +555,7 @@ for iCER = 1:N_CER
     %  nash_bargaining_cer.m per i dettagli e i riferimenti.
     %  ========================================================================
 
-    NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_h);
+    NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
     report_allocation(NB, "Nash Bargaining");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
@@ -509,7 +580,8 @@ for iCER = 1:N_CER
     %  Vedi variance_least_core_cer.m per i dettagli.
     %  ========================================================================
 
-    VLC = variance_least_core_cer(genForShare, loadForShare, userNames, P_CER_h);
+    VLC = variance_least_core_cer(genForShare, loadForShare, userNames, ...
+                                  P_CER_lordo, optF);
 
     coreMsgVLC = "fuori dal Core";
     if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
@@ -810,7 +882,8 @@ for iCER = 1:N_CER
     %  degenere quando un consumatore e' superfluo (MC = 0 -> quota nulla).
     %  ========================================================================
 
-    MC = marginal_contribution_cer(genForShare, loadForShare, userNames, P_CER_h);
+    MC = marginal_contribution_cer(genForShare, loadForShare, userNames, ...
+                                   P_CER_lordo, optF);
     report_allocation(MC, "Marginal Contribution", [ ...
         string(sprintf('  %-25s: %.4f  (v(N) / somma dei contributi grezzi)', ...
                        'Fattore di normalizz.', MC.normFactor)), ...
@@ -844,8 +917,10 @@ for iCER = 1:N_CER
     % coalizione e l'approssimazione non ha spazio per sbagliare -- la stima sia
     % esatta. E' cio' che distingue un errore di IMPLEMENTAZIONE da un limite di
     % MODELLO, e con 6 giocatori costa 192 valutazioni di v: si tiene acceso.
-    SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, P_CER_h, ...
-                                        struct('validateStrata', true));
+    optSEV = optF;
+    optSEV.validateStrata = true;
+    SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, ...
+                                        P_CER_lordo, optSEV);
 
     interior   = 2:(nUsers-1);                       % strati intermedi (1..n-2)
     relBiasMax = 100 * max(SEV.strataBias(:, interior) ./ ...
@@ -893,9 +968,10 @@ for iCER = 1:N_CER
     % e non nascosto in un default.
     optAS = opts_from_config(CFG.governance, CFG.noto.governance, [ ...
         "as_campioni", "M"
-        "as_seed",     "seed"]);
+        "as_seed",     "seed"], optF);
 
-    AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, P_CER_h, optAS);
+    AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, ...
+                                       P_CER_lordo, optAS);
     report_allocation(AS, "Adaptive Sampling Shapley", [ ...
         string(sprintf('  %-25s: M = %d campioni/giocatore, seed = %d (metodo STOCASTICO)', ...
                        'Campionamento', AS.M, AS.seed)), ...
@@ -1296,8 +1372,13 @@ for iCER = 1:N_CER
     % Unica colonna che non guarda l'uniformita' della ripartizione ne' la sua
     % aderenza al merito, ma se REGGE: per ogni sottogruppo confronta quanto
     % genererebbe uscendo dalla CER con quanto riceve restandoci.
+    % La stessa tariffa lorda e la stessa esenzione dei metodi: se qui si
+    % passasse la tariffa efficace, le quote e i v(S) starebbero su due giochi
+    % diversi e l'eccesso di coalizione non vorrebbe dire nulla.
+    optEX = optF;
+    optEX.quiet = true;
     EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
-                          userNames, P_CER_h, struct('quiet', true));
+                          userNames, P_CER_lordo, optEX);
 
     % --- Tabella di confronto -------------------------------------------------
     Tfair = table([metodi.nome].', ...

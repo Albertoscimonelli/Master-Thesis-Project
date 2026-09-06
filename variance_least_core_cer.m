@@ -98,6 +98,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     if ~isfield(opts, 'maxIter'),       opts.maxIter       = 500;   end
     if ~isfield(opts, 'verbose'),       opts.verbose       = false; end
     if ~isfield(opts, 'validateDense'), opts.validateDense = false; end
+    if ~isfield(opts, 'esente'),        opts.esente        = [];    end
+    if ~isfield(opts, 'F'),             opts.F             = 0;     end
 
     n = size(loadUsers, 2);              % un giocatore per utente
 
@@ -117,7 +119,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     end
 
     players = string(userNames(:).');
-    vGrand  = coalition_value(true(1, n), genUsers, loadUsers, P_CER);
+    vGrand  = coalition_value(true(1, n), genUsers, loadUsers, P_CER, ...
+                              opts.esente, opts.F);
 
     if vGrand <= 0
         error('variance_least_core_cer:degenerate', ...
@@ -132,7 +135,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     % --- Pre-calcoli per il Separation Problem ------------------------------
     % Le ore senza generazione hanno s_t = 0 per costruzione: si escludono
     % dal MILP, dimezzando circa il numero di variabili e vincoli.
-    sep = build_separation(genUsers, loadUsers, P_CER, n);
+    sep = build_separation(genUsers, loadUsers, P_CER, n, ...
+                           userNames, opts.esente, opts.F);
 
     % --- Gamma iniziale: le coalizioni singoletto ---------------------------
     % Punto di partenza economico e sufficiente: garantisce che il master sia
@@ -140,7 +144,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     Gamma  = logical(eye(n));
     vGamma = zeros(n, 1);
     for i = 1:n
-        vGamma(i) = coalition_value(Gamma(i, :), genUsers, loadUsers, P_CER);
+        vGamma(i) = coalition_value(Gamma(i, :), genUsers, loadUsers, P_CER, ...
+                                    opts.esente, opts.F);
     end
 
     lpOpts = optimoptions('linprog',  'Display', 'none');
@@ -216,7 +221,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 
     % --- Validazione opzionale contro l'enumerazione esaustiva --------------
     if opts.validateDense
-        validate_dense(xVLC, thetaLC, genUsers, loadUsers, userNames, P_CER, n, tolAbs);
+        validate_dense(xVLC, thetaLC, genUsers, loadUsers, userNames, P_CER, n, ...
+                       tolAbs, opts.esente, opts.F);
     end
 
     % --- Surplus individuale sigma({i}, x) ----------------------------------
@@ -224,7 +230,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     for i = 1:n
         sel        = false(1, n);
         sel(i)     = true;
-        surplus(i) = xVLC(i) - coalition_value(sel, genUsers, loadUsers, P_CER);
+        surplus(i) = xVLC(i) - coalition_value(sel, genUsers, loadUsers, P_CER, ...
+                                               opts.esente, opts.F);
     end
 
     % --- Output -------------------------------------------------------------
@@ -301,21 +308,29 @@ function x = solve_master_vlc(Gamma, vGamma, vGrand, n, thetaLC, relax, qpOpts, 
 end
 
 
-function val = coalition_value(sel, genUsers, loadUsers, P_CER)
+function val = coalition_value(sel, genUsers, loadUsers, P_CER, esente, F)
 %COALITION_VALUE  v(K) valutata su richiesta per la sola coalizione K.
 %   Stessa formula di cer_coalition_values, ma senza enumerare le 2^n
 %   coalizioni: costo O(H*|K|) invece di O(H*2^n). P_CER e' gia' [H x 1]
 %   (normalizzato all'ingresso della funzione principale).
 %
 %   sel  [1 x n] logico sui giocatori (un giocatore per utente).
+%
+%   Con F > 0 la quota esente e' quella DI K, non della comunita': la formula
+%   sta in cer_shared_value.m, qui si preparano solo gli aggregati.
 
     genK  = sum(genUsers(:,  sel), 2);
     loadK = sum(loadUsers(:, sel), 2);
-    val   = sum(min(genK, loadK) .* P_CER);
+    if nargin < 6 || isempty(F) || F == 0
+        val = sum(min(genK, loadK) .* P_CER);
+        return
+    end
+    loadEsK = sum(loadUsers(:, sel(:) & logical(esente(:))), 2);
+    val     = cer_shared_value(genK, loadK, P_CER, loadEsK, F);
 end
 
 
-function sep = build_separation(genUsers, loadUsers, P_CER, n)
+function sep = build_separation(genUsers, loadUsers, P_CER, n, userNames, esente, F)
 %BUILD_SEPARATION  Prepara le matrici FISSE del Separation Problem (eq. 17),
 %   che non dipendono dall'allocazione x e vanno costruite una sola volta.
 %
@@ -325,8 +340,45 @@ function sep = build_separation(genUsers, loadUsers, P_CER, n)
 %
 %   Con un giocatore per utente entrambi i lati del min() sono somme sulle
 %   binarie: nessun giocatore "PV" privilegiato che abiliti la condivisione.
+%
+%   CON F > 0 IL MILP NON VALE PIU', E SI RIPIEGA SULL'ENUMERAZIONE
+%     Il fattore di riduzione non si applica all'energia dei punti di prelievo
+%     esenti, quindi il valore della coalizione contiene il termine
+%
+%         s_t * loadNonEsente(z) / load(z)
+%
+%     che e' un RAPPORTO fra due combinazioni lineari delle binarie z: non e'
+%     lineare, e il Separation Problem smette di essere un MILP. Linearizzarlo
+%     e' un lavoro di modellazione a se' (variabili ausiliarie per il
+%     rapporto), non un dettaglio implementativo.
+%
+%     Finche' quel lavoro non e' fatto, con F > 0 si enumerano tutte le 2^n
+%     coalizioni una volta sola e la separazione diventa un argmin su una
+%     matrice gia' pronta. Il risultato e' ESATTO - anzi, e' la separazione
+%     esatta per definizione - ma il metodo perde la scalabilita' che e' il
+%     suo tratto distintivo, e ricade nello stesso limite di Shapley,
+%     Nucleolo ed eccesso di coalizione (README par. 14.1). Senza contributo
+%     in conto capitale (F = 0, il caso di oggi) non cambia nulla.
 
-    genTot  = sum(genUsers, 2);
+    if nargin >= 7 && ~isempty(F) && F ~= 0
+        if n > 20
+            error('variance_least_core_cer:denseTooBig', ...
+                  ['Con F > 0 la separazione ricade sull''enumerazione di 2^%d ' ...
+                   'coalizioni. Serve la linearizzazione del Separation Problem ' ...
+                   'prima di usare il metodo a questa scala.'], n);
+        end
+        [vAll, ~, A_all] = cer_coalition_values(genUsers, loadUsers, userNames, ...
+                                                P_CER, esente, F);
+        isProper      = true(numel(vAll), 1);
+        isProper(1)   = false;      % coalizione vuota
+        isProper(end) = false;      % grande coalizione
+        sep = struct('dense', true, 'n', n, ...
+                     'v', vAll(isProper), 'A', A_all(isProper, :));
+        return
+    end
+
+    sep.dense = false;
+    genTot    = sum(genUsers, 2);
     keep    = genTot > 0;                % ore utili
     gKeep   = genTot(keep);
     genK    = genUsers(keep, :);
@@ -384,6 +436,17 @@ function [sigmaMin, sel, vK] = solve_separation(sep, x, tolAbs)
 
     n = sep.n;
 
+    % Ramo esatto per enumerazione: con F > 0 il MILP non e' piu' valido (vedi
+    % build_separation). Le coalizioni proprie sono gia' tutte in sep.A con i
+    % rispettivi v: la separazione e' un argmin, non un problema da risolvere.
+    if sep.dense
+        sigmaAll        = sep.A * x(:) - sep.v;
+        [sigmaMin, idx] = min(sigmaAll);
+        sel             = sep.A(idx, :) == 1;
+        vK              = sep.v(idx);
+        return
+    end
+
     % Obiettivo: x'z - sum_t P_CER(t) * s_t
     f = [x(:); -sep.P_CER];
 
@@ -434,7 +497,7 @@ function [Gamma, vGamma, isDup] = add_coalition(Gamma, vGamma, sel, vK, viol, to
 end
 
 
-function validate_dense(x, thetaLC, genUsers, loadUsers, userNames, P_CER, n, tolAbs)
+function validate_dense(x, thetaLC, genUsers, loadUsers, userNames, P_CER, n, tolAbs, esente, F)
 %VALIDATE_DENSE  Controllo di correttezza per giochi piccoli: enumera TUTTE
 %   le coalizioni con cer_coalition_values e verifica che il surplus minimo
 %   reale coincida con il theta_LC trovato dalla row-generation, cioe' che la
@@ -446,7 +509,7 @@ function validate_dense(x, thetaLC, genUsers, loadUsers, userNames, P_CER, n, to
         return;
     end
 
-    [v, ~, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
+    [v, ~, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER, esente, F);
     isProper      = true(numel(v), 1);
     isProper(1)   = false;
     isProper(end) = false;

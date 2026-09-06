@@ -146,8 +146,14 @@ tip_potenza_rif_kW     = ?       # potenza che seleziona lo scaglione
                                  # TP_base/CAP della TIP: <=200 | <=600 | >600
                                  # Fallback: la potenza installata totale di
                                  # [IMPIANTI], che si aggiorna da sola.
-tip_fattore_riduzione  = ?       # fattore F della formula: definizione non
-                                 # ancora nota per intero. Fallback: F = 0.
+tip_fattore_riduzione  = ?       # fattore F della formula. NON serve
+                                 # compilarlo: F si deriva da
+                                 # [INVESTIMENTO].contributo_conto_capitale_pct
+                                 # (F = 0,50 * pct/40). Metterlo qui SCAVALCA
+                                 # la derivazione, e serve a un caso solo:
+                                 # riprodurre un conguaglio GSE gia' emesso
+                                 # senza dover ricostruire l'intensita' del
+                                 # contributo che l'ha generato.
 
 
 # =============================================================================
@@ -177,13 +183,19 @@ om_variabile_EUR_MWp_anno    = 10000
 om_fisso_EUR_anno            = 5000
 contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile.
                                        # NON e' solo un dato di investimento:
-                                       # decide anche quale soglia di energia
-                                       # incentivabile si applica in MAIN.m 3u
-                                       # (DM 414/2023, Allegato 1 par. 4) --
-                                       # 45% se > 0, 55% se assente. A '?' si
-                                       # ripiega su tip_fattore_riduzione (F),
-                                       # che per l'Allegato 1 par. 3 e' > 0
-                                       # solo in presenza di conto capitale.
+                                       # e' il campo da cui dipendono DUE
+                                       # meccanismi del Decreto CACER.
+                                       # (a) Il fattore F che decurta la
+                                       #     tariffa premio (MAIN.m 1c):
+                                       #     F = 0,50 * pct/40, quindi 0 senza
+                                       #     contributo e 0,50 al 40%. Oltre il
+                                       #     40% la tariffa non e' cumulabile e
+                                       #     il loader si ferma.
+                                       # (b) La soglia di energia incentivabile
+                                       #     (MAIN.m 3u): 45% se > 0, 55% se
+                                       #     assente.
+                                       # A '?' entrambi ripiegano sul valore
+                                       # base (F = 0, soglia 55%).
 
 
 # =============================================================================
@@ -247,7 +259,20 @@ as_seed           = 42     # unico metodo stocastico del progetto: il seed
 # ruolo       C = consumatore | P = prosumer (consuma e possiede impianto)
 #                             | E = produttore puro (solo impianto)
 # categoria   domestico | terziario | commerciale | industriale | PA
-#             Usata come tipologia nell'indice di eterogeneita' della CER.
+#             | terzo_settore | religioso | ambientale
+#             Due usi, non uno. (a) tipologia nell'indice di eterogeneita'
+#             della CER. (b) ESENZIONE dal fattore F di decurtazione della
+#             tariffa premio: il Decreto CACER non applica F all'energia dei
+#             punti di prelievo di persone fisiche, enti territoriali, enti
+#             religiosi, del terzo settore e di protezione ambientale.
+#             Sono percio' esenti: domestico (persone fisiche), PA (enti
+#             territoriali), terzo_settore, religioso, ambientale.
+#             Non lo sono: terziario, commerciale, industriale.
+#             Le ultime tre voci esistono proprio per questo: una tipologia
+#             di CONSUMO non sa esprimere una forma GIURIDICA, e un ente del
+#             terzo settore consuma come un terziario. Contarlo come impresa
+#             sarebbe un errore che vale il 50% della tariffa.
+#             Dettagli e riferimenti in cer_reduction_factor.m.
 # archetipo   profilo di generazione del carico (template LPG o caso RAMP)
 # tariffa     MONORARIA | BIORARIA | ORARIO_VARIABILE
 #             La spesa annua NON si dichiara: si calcola incrociando questa

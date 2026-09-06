@@ -69,6 +69,11 @@ function E = coalition_excess(phiMat, methodNames, genUsers, loadUsers, userName
 %                    .tol    soglia sopra cui un eccesso conta come positivo
 %                            (def. 1e-9 * max(1, |v(N)|))
 %                    .maxPlayers  limite di sicurezza sull'enumerazione (def. 20)
+%                    .F      fattore di riduzione per contributo in conto
+%                            capitale (def. 0); .esente [n x 1] logico, membri
+%                            esenti. Devono coincidere con quelli passati ai
+%                            metodi, altrimenti v(S) e le quote starebbero su
+%                            due giochi diversi e l'eccesso sarebbe privo di senso
 %                    .quiet  non stampare il riepilogo (def. false)
 %
 %   OUTPUT (struct E)
@@ -107,6 +112,8 @@ function E = coalition_excess(phiMat, methodNames, genUsers, loadUsers, userName
     end
 
     if ~isfield(opts, 'maxPlayers'), opts.maxPlayers = 20;    end
+    if ~isfield(opts, 'esente'),     opts.esente     = [];    end
+    if ~isfield(opts, 'F'),          opts.F          = 0;     end
     if ~isfield(opts, 'quiet'),      opts.quiet      = false; end
 
     if n > opts.maxPlayers
@@ -131,7 +138,8 @@ function E = coalition_excess(phiMat, methodNames, genUsers, loadUsers, userName
                   2^n, 2^n, n);
         end
     else
-        [v, ~, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
+        [v, ~, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, ...
+                                             P_CER, opts.esente, opts.F);
     end
 
     vGrand = v(end);

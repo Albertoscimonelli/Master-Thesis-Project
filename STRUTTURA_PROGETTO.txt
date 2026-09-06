@@ -157,7 +157,18 @@ Project/
 |-- allocate_shared_energy.m            [helper chiavi dinamiche] ripartizione oraria dell'energia
 |                                       condivisa con cap al consumo (algoritmo iterativo di Fig. 2)
 |-- load_zonal_price.m                  Prezzo zonale orario MGP, allineato alla griglia oraria
-|-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1)
+|-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1).
+|                                       MAIN.m la chiama con F = 0: la tariffa che
+|                                       restituisce e' quella LORDA, cioe' quella dei
+|                                       membri esenti. La decurtazione entra nel gioco
+|-- cer_reduction_factor.m              Fattore F di decurtazione per contributo in conto
+|                                       capitale (F = 0,50 * pct/40, Regole Operative GSE
+|                                       Appendice B par. 3) e maschera dei membri ESENTI.
+|                                       Esenti: domestico (persone fisiche), PA (enti
+|                                       territoriali), terzo_settore, religioso,
+|                                       ambientale. Le PERSONE FISICHE le ha aggiunte il
+|                                       DM 127/2025: chi cita il solo DM 414/2023 legge
+|                                       la lista pre-127 e perde 4 membri su 7
 |-- irr_bisection.m                     IRR via bisezione (senza Financial Toolbox)
 |-- profilo_prezzi_pun_2025.m           Profilo orario prezzi PUN 2025 (3 modalita' tariffarie)
 |-- optimizer_PV.m                      Dimensionamento/ottimizzazione impianto PV (IRR/NPV)
@@ -819,6 +830,30 @@ richiesta con cer_shared_value. Nessun toolbox richiesto.
                             riproducibile - ma cambiando seed i numeri
                             cambiano, ed e' la critica che il paper stesso
                             gli muove.
+  cer_reduction_factor.m    Fattore F e maschera di esenzione (Decreto CACER
+                            Allegato 1 par. 3, come modificato dal DM 127 del
+                            16 maggio 2025; Regole Operative GSE 16/07/2025
+                            par. 2.2.2.1.2 e Appendice B par. 3).
+                            F = 0,50 * pct/40, quindi 0 senza contributo in
+                            conto capitale e 0,50 al 40% dell'investimento.
+                            Oltre il 40% ERRORE, non troncamento: la tariffa
+                            non e' piu' cumulabile (par. 1.2.1.6) e F non e'
+                            definito.
+                            ESENTI dal fattore: domestico (= persone fisiche),
+                            PA (= enti territoriali), terzo_settore,
+                            religioso, ambientale. Le tre voci finali sono
+                            state aggiunte al dominio di [MEMBRI].categoria
+                            proprio per questa regola: una tipologia di
+                            CONSUMO non sa esprimere una forma GIURIDICA.
+                            ATTENZIONE ALLA FONTE: le persone fisiche NON
+                            erano nell'Allegato 1 del DM 414/2023, le ha
+                            aggiunte il DM 127 del 16 maggio 2025. La lista
+                            pre-127 lascia fuori la categoria piu' numerosa
+                            di una CER residenziale.
+                            La regola di priorita' del par. 2.2.2.1.2
+                            (energia degli enti allocata prima agli impianti
+                            col contributo) qui e' VACUA: il conto capitale e'
+                            dichiarato per la comunita', non per impianto.
   cer_shared_value.m        [helper] v = sum_t min(gen(t), load(t)) * P_CER(t)
                             su UNA coalizione, a partire dai profili gia'
                             aggregati dal chiamante. Prende aggregati e non
@@ -1237,10 +1272,20 @@ nessun cambiamento funzionale.
                             correzione zonale FC_zonale, fattore di riduzione
                             F). Usata in MAIN.m §1c per ottenere P_CER_h, che
                             sostituisce l'incentivo costante come input di
-                            tutti e 4 i modelli di ripartizione.
-                            NOTA: F e' per ora fissato a 0 (TODO in MAIN.m) -
-                            la definizione completa del fattore di riduzione
-                            non e' ancora disponibile.
+                            tutti i modelli di ripartizione.
+                            FATTORE F: la regola c'e' (cer_reduction_factor.m)
+                            ma NON si applica qui. F non e' una proprieta'
+                            della tariffa: non colpisce l'energia dei punti di
+                            prelievo esenti, quindi il suo effetto dipende da
+                            CHI consuma e cambia da coalizione a coalizione.
+                            MAIN.m chiama percio' questa funzione con F = 0 e
+                            ne ricava la tariffa LORDA - quella dei membri
+                            esenti - mentre la decurtazione entra dentro la
+                            funzione caratteristica (cer_shared_value.m), con
+                            la quota esente DELLA COALIZIONE.
+                            L'argomento F resta perche' la formula 3.1 lo
+                            prevede e perche' senza membri esenti le due
+                            strade coincidono.
 
 --------------------------------------------------------------------------------
  4.6  profilo_prezzi_pun_2025.m

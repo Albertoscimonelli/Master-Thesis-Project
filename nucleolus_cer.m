@@ -1,4 +1,4 @@
-function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER)
+function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER, opts)
 %NUCLEOLUS_CER  Ripartizione dei ricavi CER tramite il Nucleolo del gioco
 %   cooperativo (Fioriti et al., Appl. Energy 2021, eq. 7).
 %
@@ -28,6 +28,12 @@ function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER)
 %     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x n]   nomi degli utenti                      (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%     opts      struct opzionale:
+%                 .F      scalare  fattore di riduzione per contributo in
+%                         conto capitale (def. 0 = nessuna decurtazione)
+%                 .esente [n x 1] logico, membri esenti da F. La quota esente
+%                         entra in v(S) COALIZIONE PER COALIZIONE, non con la
+%                         media di comunita': vedi cer_shared_value.m
 %
 %   OUTPUT (struct S)
 %     .players    [1 x n]  nomi dei giocatori (= userNames)
@@ -41,7 +47,12 @@ function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER)
 %     .inCore     logico   true se thetaMin >= -tol
 %     .table      table    riepilogo (giocatore, quota, percentuale)
 
-    [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
+    if nargin < 5 || isempty(opts), opts = struct(); end
+    if ~isfield(opts, 'esente'), opts.esente = []; end
+    if ~isfield(opts, 'F'),      opts.F      = 0;  end
+
+    [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, ...
+                                               P_CER, opts.esente, opts.F);
     n      = numel(players);
     nSub   = numel(v);
     vGrand = v(end);

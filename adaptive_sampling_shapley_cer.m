@@ -69,6 +69,10 @@ function S = adaptive_sampling_shapley_cer(genUsers, loadUsers, userNames, P_CER
 %     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x n]   nomi degli utenti                       (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%                 .F      scalare  fattore di riduzione per contributo in conto
+%                         capitale (def. 0); .esente [n x 1] logico, membri
+%                         esenti. La quota esente entra in v(S) COALIZIONE PER
+%                         COALIZIONE: vedi cer_shared_value.m
 %     opts      struct    opzionale, campi tutti facoltativi:
 %                 .M      numero di campioni per giocatore (def. 1000, come
 %                         nel paper: va tenuto M >> n)
@@ -130,10 +134,21 @@ function S = adaptive_sampling_shapley_cer(genUsers, loadUsers, userNames, P_CER
     % sessione, e a parita' di seed l'esecuzione e' riproducibile.
     rs = RandStream('mt19937ar', 'Seed', opts.seed);
 
+    % --- Fattore F ed esenzione ---------------------------------------------
+    if ~isfield(opts, 'esente'), opts.esente = []; end
+    if ~isfield(opts, 'F'),      opts.F      = 0;  end
+    if isempty(opts.esente)
+        esente = false(n, 1);
+    else
+        esente = logical(opts.esente(:));
+    end
+    Fred = opts.F;
+
     % --- Grande coalizione --------------------------------------------------
     genComm  = sum(genUsers,  2);
     loadComm = sum(loadUsers, 2);
-    vGrand   = cer_shared_value(genComm, loadComm, P_CER);
+    loadEsC  = sum(loadUsers(:, esente), 2);
+    vGrand   = cer_shared_value(genComm, loadComm, P_CER, loadEsC, Fred);
 
     % --- Sigmoide eps(m) (eq. C.2), precalcolata per tutti i campioni -------
     % eps(0) = 1 (esplorazione uniforme), eps(M) ~ 0.06 (sfruttamento).
@@ -157,12 +172,14 @@ function S = adaptive_sampling_shapley_cer(genUsers, loadUsers, userNames, P_CER
         % Strato 0: coalizione vuota. v({i}) - v({}) = v({i}), nullo con
         % profili netti (eccedenza e carico sono complementari) ma calcolato
         % comunque, per non dipendere da quell'ipotesi.
-        muStrata(i, 1) = cer_shared_value(genUsers(:, i), loadUsers(:, i), P_CER);
+        muStrata(i, 1) = cer_shared_value(genUsers(:, i), loadUsers(:, i), P_CER, ...
+                                          loadUsers(:, i) * esente(i), Fred);
         hits(i, 1)     = 1;
 
         % Strato n-1: tutti gli altri. E' il contributo marginale MC_i (eq. 9).
         vWithout       = cer_shared_value(genComm  - genUsers(:,  i), ...
-                                          loadComm - loadUsers(:, i), P_CER);
+                                          loadComm - loadUsers(:, i), P_CER, ...
+                                          loadEsC - loadUsers(:, i) * esente(i), Fred);
         muStrata(i, n) = vGrand - vWithout;
         hits(i, n)     = 1;
 
@@ -195,12 +212,14 @@ function S = adaptive_sampling_shapley_cer(genUsers, loadUsers, userNames, P_CER
 
             % Coalizione casuale di j giocatori fra gli altri n-1
             sel   = others(randperm(rs, n - 1, j));
-            genS  = sum(genUsers(:,  sel), 2);
-            loadS = sum(loadUsers(:, sel), 2);
+            genS   = sum(genUsers(:,  sel), 2);
+            loadS  = sum(loadUsers(:, sel), 2);
+            loadEs = sum(loadUsers(:, sel(esente(sel))), 2);
 
             mc = cer_shared_value(genS + genUsers(:,  i), ...
-                                  loadS + loadUsers(:, i), P_CER) ...
-               - cer_shared_value(genS, loadS, P_CER);
+                                  loadS + loadUsers(:, i), P_CER, ...
+                                  loadEs + loadUsers(:, i) * esente(i), Fred) ...
+               - cer_shared_value(genS, loadS, P_CER, loadEs, Fred);
 
             % Aggiornamento in linea di media e varianza (eq. C.3-C.6, Welford)
             delta            = mc - muStrata(i, col);

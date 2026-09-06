@@ -1,4 +1,4 @@
-function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER)
+function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER, opts)
 %MARGINAL_CONTRIBUTION_CER  Ripartizione dell'incentivo CER con il metodo
 %   "last marginal contribution" di Cremers, Robu, Zhang, Andoni, Norbu,
 %   Flynn, "Efficient methods for approximating the Shapley value for asset
@@ -56,6 +56,12 @@ function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER)
 %     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x n]   nomi degli utenti                       (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%     opts      struct opzionale:
+%                 .F      scalare  fattore di riduzione per contributo in
+%                         conto capitale (def. 0 = nessuna decurtazione)
+%                 .esente [n x 1] logico, membri esenti da F. La quota esente
+%                         entra in v(S) COALIZIONE PER COALIZIONE: vedi
+%                         cer_shared_value.m
 %
 %   OUTPUT (struct S) - stessi campi degli altri metodi *_cer, per
 %   compatibilita' con report_allocation.m e i grafici
@@ -89,10 +95,26 @@ function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER)
         P_CER = P_CER(:);
     end
 
+    if nargin < 5 || isempty(opts), opts = struct(); end
+
+    % --- Fattore F ed esenzione ---------------------------------------------
+    % Il carico dei soli membri esenti va aggregato una volta e poi scalato
+    % come gli altri aggregati: togliere l'utente i vuol dire toglierlo anche
+    % da qui, ma solo se i era esente.
+    if ~isfield(opts, 'esente'), opts.esente = []; end
+    if ~isfield(opts, 'F'),      opts.F      = 0;  end
+    if isempty(opts.esente)
+        esente = false(n, 1);
+    else
+        esente = logical(opts.esente(:));
+    end
+    Fred = opts.F;
+
     % --- Grande coalizione --------------------------------------------------
     genComm  = sum(genUsers,  2);
     loadComm = sum(loadUsers, 2);
-    vGrand   = cer_shared_value(genComm, loadComm, P_CER);
+    loadEsC  = sum(loadUsers(:, esente), 2);
+    vGrand   = cer_shared_value(genComm, loadComm, P_CER, loadEsC, Fred);
 
     % --- Contributi marginali "ultimi" (eq. 9) ------------------------------
     % v(N\{i}) si ottiene togliendo la colonna dell'utente dagli AGGREGATI
@@ -100,7 +122,8 @@ function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER)
     mc = zeros(n, 1);
     for i = 1:n
         vWithout = cer_shared_value(genComm  - genUsers(:,  i), ...
-                                    loadComm - loadUsers(:, i), P_CER);
+                                    loadComm - loadUsers(:, i), P_CER, ...
+                                    loadEsC - loadUsers(:, i) * esente(i), Fred);
         mc(i) = vGrand - vWithout;
     end
 

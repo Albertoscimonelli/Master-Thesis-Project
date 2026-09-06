@@ -175,7 +175,15 @@ costi_fissi_progetto_EUR     = ?       # 50000 in optimizer_PV, ma e' una
                                        # taglia industriale: da ritarare
 om_variabile_EUR_MWp_anno    = 10000
 om_fisso_EUR_anno            = 5000
-contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile
+contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile.
+                                       # NON e' solo un dato di investimento:
+                                       # decide anche quale soglia di energia
+                                       # incentivabile si applica in MAIN.m 3u
+                                       # (DM 414/2023, Allegato 1 par. 4) --
+                                       # 45% se > 0, 55% se assente. A '?' si
+                                       # ripiega su tip_fattore_riduzione (F),
+                                       # che per l'Allegato 1 par. 3 e' > 0
+                                       # solo in presenza di conto capitale.
 
 
 # =============================================================================

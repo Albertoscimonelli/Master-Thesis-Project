@@ -63,7 +63,7 @@ fprintf('  %s\n', SCHEDE);
 % esecuzione il workspace contiene solo l'ULTIMA comunita': senza, i confronti
 % fra CER non avrebbero piu' i dati su cui lavorare.
 RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
-                 'Tcmp', {}, 'Tfair', {}, 'metodi', {}, ...
+                 'Tcmp', {}, 'Tfair', {}, 'metodi', {}, 'soglia', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
                  'isProsumer', {}, 'tempo_analisi_s', {}, ...
@@ -1473,6 +1473,60 @@ for iCER = 1:N_CER
 
 
     %% ========================================================================
+    %  3u) AMMISSIBILITA' REGOLATORIA - SOGLIA DI ENERGIA INCENTIVABILE
+    %
+    %  La §3t giudica i sedici metodi sull'equita'; questa li giudica sulla
+    %  NORMA. Il Decreto CACER (DM MASE 7 dicembre 2023 n. 414, art. 3 comma 2
+    %  lett. g e Allegato 1 par. 3-4; Regole Operative GSE del 16 luglio 2025,
+    %  par. 2.2.2.1.3 e Appendice B par. 4) fissa un valore soglia dell'energia
+    %  condivisa incentivabile, espresso in percentuale dell'energia immessa in
+    %  rete: 55% con la sola tariffa premio, 45% in caso di cumulo con un
+    %  contributo in conto capitale. L'importo di premio che eccede quella
+    %  soglia NON puo' essere destinato ai membri che sono imprese: spetta ai
+    %  soli consumatori diversi dalle imprese, o a finalita' sociali con
+    %  ricadute sui territori dove stanno gli impianti.
+    %
+    %  E' un controllo POST-HOC, e sta FUORI dai metodi per un motivo preciso:
+    %  la norma non dice come ripartire, dice dove non puo' finire una parte del
+    %  gia' ripartito. Entrare nei sedici metodi li renderebbe non piu'
+    %  confrontabili con i rispettivi paper, che e' il punto del confronto della
+    %  §3s. E' anche l'ordine in cui la norma stessa opera: il GSE verifica il
+    %  superamento della soglia A CONGUAGLIO, su base annuale, sull'esito della
+    %  ripartizione.
+    %
+    %  DUE ESITI DIVERSI, DA NON CONFONDERE. Se la quota incentivata sta sotto
+    %  la soglia il vincolo e' NON BINDING, l'eccedenza e' nulla e nessun metodo
+    %  puo' violarlo: e' un fatto della configurazione energetica, non dei
+    %  meccanismi. Solo se e' BINDING ha senso chiedersi quale metodo assegni
+    %  alle imprese piu' del consentito.
+    %  ========================================================================
+
+    % Energia immessa in rete: e' l'eccedenza dopo l'autoconsumo del
+    % proprietario, cioe' esattamente cio' che il modello condivide o vende
+    % (§2). Non e' la produzione lorda, che comprende anche il dietro-contatore.
+    E_immessa_annual = shared_annual + sold_annual;
+
+    % QUALE DELLE DUE SOGLIE. Il discrimine e' il cumulo con un contributo in
+    % conto capitale, che la scheda gia' dichiara: [INVESTIMENTO].
+    % contributo_conto_capitale_pct. Non serve una chiave nuova, e quel campo -
+    % finora letto e validato ma mai usato - comincia da qui ad alimentare un
+    % calcolo. Se e' a '?' si ripiega sul fattore F: l'Allegato 1 par. 3 lo fa
+    % variare linearmente CON l'intensita' del contributo (0 senza contributo,
+    % 0,50 al 40% di copertura), quindi F > 0 implica contributo presente. Se
+    % nessuno dei due e' noto resta il regime base, soglia al 55%.
+    if CFG.noto.investimento.contributo_conto_capitale_pct
+        contoCapitale = CFG.investimento.contributo_conto_capitale_pct > 0;
+    else
+        contoCapitale = F_RIDUZIONE > 0;
+    end
+
+    SOG = premium_excess_threshold([metodi.phi], [metodi.nome], M.categoria, ...
+                                   shared_annual, E_immessa_annual, ...
+                                   struct('contoCapitale', contoCapitale, ...
+                                          'playerNames',   Sh.players));
+
+
+    %% ========================================================================
     %  4) COSTO ENERGIA DA RETE (PUN 2025)
     %  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
     %  tariffaria, calcolato in §3a. I profili prezzo del 2025 condividono la
@@ -1557,6 +1611,7 @@ for iCER = 1:N_CER
     RESULTS(iCER).Tcmp           = Tcmp;
     RESULTS(iCER).Tfair          = Tfair;
     RESULTS(iCER).metodi         = metodi;
+    RESULTS(iCER).soglia         = SOG;
     RESULTS(iCER).shared_annual  = shared_annual;
     RESULTS(iCER).sold_annual    = sold_annual;
     RESULTS(iCER).rev_tot_annual = rev_tot_annual;

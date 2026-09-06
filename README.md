@@ -150,6 +150,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `fairness_indicators_lem.m` | I sette indicatori di equità distributiva di Dynge & Cali 2025 — MinMax, QoS, EI (originali e riformulati) su **una** ripartizione (§7) |
 | `fairness_index_bm.m` | **Fairness Index** di Casalicchio et al. 2022: distanza di ciascun metodo dalla distribuzione per contributo `v(N) − v(N∖{i})` (§7) |
 | `coalition_excess.m` | **Eccesso di coalizione** di Volpato et al. 2024 (eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — l'unico indicatore di **stabilità** (§7) |
+| `premium_excess_threshold.m` | **Soglia di energia incentivabile** 55%/45% e destinazione della tariffa premio eccedentaria (DM MASE 414/2023, Regole Operative GSE): non misura l'equità, dice quali ripartizioni sono **ammissibili** (§7.4) |
 | `gini_index.m`, `jain_index.m` | I due nuclei degli indicatori sopra (`EI = 1 − Gini`, `QoS = Jain`), esposti a sé stanti e condivisi anche da `weighted_solidarity_cer.m` |
 | `gini_heterogeneity.m` | Gini di **eterogeneità** della composizione della comunità (Casalicchio eq. 10) — non è un Gini di reddito |
 | `plot_fairness_indicators.m` | Mappa di calore metodi × indicatori di equità (§7) |
@@ -367,6 +368,10 @@ uscire). Il **Nucleolo** fa l'opposto: `EI = 0.45`, il peggiore del lotto, ma è
 insieme al Variance Least Core a garantire che nessuno voglia andarsene. Guardare una
 colonna sola porta a conclusioni sbagliate.
 
+Esiste poi una **quarta domanda, di natura diversa**, che non sta in questa tabella perché
+non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 — un
+metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+
 ### 7.1 Due indicatori esclusi, e perché
 
 - **QoE** (Dynge eq. 13-14) richiede il prezzo di mercato locale `λ_t`. In una CER a
@@ -421,6 +426,96 @@ Inoltre `fairness_index_bm.m` ha un auto-test analitico (`opts.validateSelf`, at
 default): la Tab. 7 del paper **non** è riproducibile — i `Dᵢ` per membro stanno solo in un
 grafico — quindi si verifica la formula su casi costruiti a penna, contributi negativi
 inclusi.
+
+Stessa convenzione in `premium_excess_threshold.m` (§7.4), e lì serve per una ragione
+precisa: la formula dell'eccedenza ha **due letture plausibili** e solo una è quella del
+GSE. Un refuso che scivolasse sull'altra darebbe numeri credibili e sbagliati (83,33 €
+invece di 50,00 € sul caso di riferimento), senza che nessun `assert` a valle se ne
+accorga. L'auto-test blocca proprio quello, più il regime 45%/55%, il riconoscimento
+della violazione e la classificazione impresa / non-impresa.
+
+### 7.4 Ammissibilità regolatoria: la soglia di energia incentivabile
+
+Il §7 giudica i sedici metodi sull'**equità**; `MAIN.m` §3u li giudica sulla **norma**.
+Sono due domande diverse: un metodo può essere il più equo dei sedici e restare
+inammissibile, o viceversa.
+
+**La regola.** Il Decreto CACER (DM MASE 7 dicembre 2023 n. 414, art. 3 c. 2 lett. g e
+Allegato 1 §§3-4; Regole Operative GSE del 16 luglio 2025, §2.2.2.1.3 e Appendice B §4)
+fissa un valore soglia dell'energia condivisa incentivabile, espresso in **percentuale
+dell'energia immessa in rete**:
+
+| Regime | Soglia |
+|---|---|
+| accesso alla sola tariffa premio | **55%** |
+| cumulo della tariffa premio con contributo in conto capitale | **45%** |
+
+L'importo di premio che eccede la soglia **non può essere destinato ai membri che sono
+imprese**: spetta ai soli consumatori diversi dalle imprese, o a finalità sociali con
+ricadute sui territori dove stanno gli impianti.
+
+```
+%E_ACI,ecc = max[0; (E_ACI / E_immessa · 100)% − valore soglia]
+C_ACI,ecc  = %E_ACI,ecc · C_ACI
+```
+
+Attenzione alla seconda riga: l'eccedenza economica è il prodotto **letterale** fra la
+differenza in *punti percentuali* e l'importo totale del premio — non la quota
+proporzionale di premio associata all'energia in eccesso, che varrebbe
+`(quota − soglia)/quota · C_ACI`. Con `quota = 60%` e `soglia = 55%` l'eccedenza vale il
+**5%** di `C_ACI`, non l'8,3%. Si implementa la formula del GSE alla lettera, perché è
+quella che il GSE applica a conguaglio.
+
+**Perché è post-hoc, e non dentro i metodi.** La norma non dice *come* ripartire: dice
+dove non può finire una parte del già ripartito. Entrare nei sedici metodi li renderebbe
+non più confrontabili con i rispettivi paper — che è il punto del confronto del §6. È
+anche l'ordine in cui la norma stessa opera: il GSE verifica il superamento della soglia
+**a conguaglio, su base annuale**, sull'esito della ripartizione.
+
+**Due esiti, da non confondere.** Se la quota incentivata sta sotto la soglia il vincolo è
+**non binding**, l'eccedenza è nulla e *nessun* metodo può violarlo: è un fatto della
+configurazione energetica, non dei meccanismi. Solo se è **binding** ha senso chiedersi
+quale metodo assegni alle imprese più del consentito (tetto: `(1 − %E_ACI,ecc) · C_ACI`).
+
+**Sulle sette CER attuali il vincolo non morde, e con ampio margine.** Il rapporto
+`E_ACI/E_immessa` va dal 5,3% (`CER_0_7_0`) al 24,3% (`CER_6_1_0`), cioè da 49,7 a 30,7
+punti *sotto* la soglia del 55% — e resterebbe non binding anche nel regime al 45%:
+
+| Scheda | E condivisa [kWh] | E immessa [kWh] | Quota | Distanza dalla soglia |
+|---|---:|---:|---:|---:|
+| `CER_0_7_0` | 14 414 | 272 842 | 5,3% | −49,7 pt |
+| `CER_1_6_0` | 15 286 | 255 178 | 6,0% | −49,0 pt |
+| `CER_2_5_0` | 13 454 | 182 854 | 7,4% | −47,6 pt |
+| `CER_3_4_0` | 13 064 | 164 433 | 7,9% | −47,1 pt |
+| `CER_4_3_0` | 18 056 | 100 834 | 17,9% | −37,1 pt |
+| `CER_5_2_0` | 17 314 |  83 186 | 20,8% | −34,2 pt |
+| `CER_6_1_0` | 15 870 |  65 362 | 24,3% | −30,7 pt |
+
+La monotonia non è casuale: più prosumer ci sono, più potenza è installata, più energia
+finisce immessa senza trovare carico residuo da coprire — e il rapporto crolla. È lo
+stesso meccanismo che tiene bassa la frazione di energia contendibile (§7.2). **Il vincolo
+di destinazione dell'eccedenza è quindi, su questa topologia, strutturalmente
+irrilevante**: perché diventi vincolante servirebbe una CER molto più sbilanciata verso i
+consumatori puri di quanto lo sia `CER_6_1_0`. È un risultato da riportare come tale, non
+un controllo da togliere: cambia con i dati, non con il codice.
+
+**Due ipotesi dichiarate.**
+
+1. **Chi è "impresa".** La norma esenta i punti di prelievo di enti territoriali e autorità
+   locali, enti religiosi, enti del terzo settore e di protezione ambientale, e *persone
+   fisiche*. Sul dominio di `[MEMBRI].categoria` la mappatura è `domestico` → persona
+   fisica e `PA` → ente territoriale (**non** imprese), `terziario | commerciale |
+   industriale` → **imprese**. È un'ipotesi, non un dato: la categoria del progetto è una
+   *tipologia di consumo*, non una forma giuridica, e un ente del terzo settore
+   ricadrebbe sotto `terziario` e verrebbe contato come impresa a torto. Si sovrascrive
+   con `opts.categorieImpresa`.
+2. **Quale delle due soglie.** La decide `[INVESTIMENTO].contributo_conto_capitale_pct`,
+   che finora era letto e validato ma mai usato. A `?` si ripiega su
+   `tip_fattore_riduzione` (`F > 0` implica conto capitale, Allegato 1 §3); se nessuno
+   dei due è noto resta il regime base al 55%, che è quello attuale.
+
+Il risultato per comunità sta in `RESULTS(i).soglia`, con `.isBinding`, `.quotaEccedente`,
+`.importoEccedente` e la tabella per metodo (`.table`).
 
 ## 8. Dimensionamento impianto PV (standalone)
 
@@ -632,8 +727,22 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
-- `tip_fattore_riduzione` (fattore F della formula TIP) **non è ancora definito per
-  intero**: finché la scheda lo lascia a `?`, nessuna riduzione viene applicata.
+- `tip_fattore_riduzione` (fattore F della formula TIP) **non è ancora implementato**, e
+  finché la scheda lo lascia a `?` nessuna riduzione viene applicata. La regola però
+  **ora è nota**: Regole Operative GSE del 16 luglio 2025, Appendice B §3 — `F` varia
+  linearmente fra `0` (nessun contributo in conto capitale) e `0,50` (contributo pari al
+  40% dell'investimento), e **non si applica** all'energia condivisa afferente a punti di
+  prelievo di enti territoriali, enti religiosi, enti del terzo settore e di protezione
+  ambientale, e persone fisiche (§2.2.2.1.2). Serve quindi lo stesso split
+  impresa / non-impresa già usato dal controllo di soglia (§7.4), applicato però
+  *dentro* il calcolo della tariffa e non a valle: è la seconda metà del lavoro
+  aperto su `[INVESTIMENTO].contributo_conto_capitale_pct`.
+- **Il controllo di soglia (§7.4) ragiona su un solo insieme di impianti.** La norma ne
+  prevede due (sola tariffa premio / cumulo con conto capitale) e somma le eccedenze;
+  qui l'insieme è uno perché il modello applica **una sola TIP** a tutta l'energia
+  condivisa e la scheda dichiara il conto capitale per la *comunità*, non per singolo
+  impianto. Con quel dato per impianto la generalizzazione è una chiamata in più a
+  `premium_excess_threshold` e la somma delle due `.importoEccedente`.
 - Lo scaglione della tariffa TIP usa la **potenza installata totale**. Con impianti di
   taglia molto diversa andrebbe valutato per impianto; ora che `[IMPIANTI]` porta il kWp
   di ciascuno, il dato per farlo esiste già (§14.4).

@@ -669,6 +669,64 @@ distintivo e ricade nel limite di §14.1. Con `F = 0` non cambia nulla.
 **identico riga per riga** a prima dell'introduzione del fattore: le uniche differenze
 sono le nuove righe diagnostiche della §1c.
 
+### 7.6 Quanto gli indicatori concordano, e quanto la graduatoria dipende dalla comunità
+
+Le §7.0–7.5 dicono **quali** indicatori esistono e cosa misurano. Questa sezione risponde
+alle due domande che vengono dopo, e che il §2.6 della tesi pone esplicitamente: *quanto
+indicatori diversi concordino nel giudicare gli stessi metodi*, e *quanto la graduatoria
+dipenda dalla composizione della comunità*. Le calcola `MAIN.m` §7b — **dopo** il ciclo,
+perché servono tutte le comunità insieme — e le scrive in `outputs/tables/confronto/`
+(§11.0).
+
+**L'accordo si misura col τ-b di Kendall**, scritto a mano perché il progetto non dipende
+dallo Statistics Toolbox. Prima di calcolarlo bisogna **orientare** gli indicatori, ed è il
+passaggio più facile da sbagliare: EI, Jain, QoS e MinMax vanno verso 1, mentre Gini,
+Fairness Index, σ ed EccessoMax vanno verso il basso. Senza orientarli, τ fra EI e Gini
+verrebbe −1 mentre la verità è +1. L'orientamento è quindi **dato e non codice** — sta in
+una tabella letterale, esce in `orientamenti.csv`, e una colonna nuova di `Tfair` senza un
+verso dichiarato fa **fallire** la funzione invece di farle indovinare.
+
+C'è un'ancora esatta che verifica tutto l'impianto in un colpo solo: `fairness_indicators_lem`
+calcola `eiOrig = 1 - gini` sullo **stesso** vettore di risparmi, quindi dopo un orientamento
+corretto `τ(EI_orig, Gini)` deve valere **esattamente +1** su ogni configurazione. È un
+`assert` in §7b, e verifica insieme la tabella dei versi, la regola dei pareggi e
+l'implementazione del τ.
+
+**Il risultato: la §7.0 non è un aneddoto, ed è modulata dalla composizione.** L'accordo fra
+uniformità e stabilità — le due domande che il §7.0 dice opposte — è negativo su sei
+comunità su sette, e **si fa più negativo al calare dei prosumer**:
+
+| CER | prosumer | `τ(EI_orig, EccessoMax_EUR)` |
+|---|:---:|---:|
+| `CER_0_7_0` | 7/7 | −0.08 |
+| `CER_1_6_0` | 6/7 | **+0.16** |
+| `CER_2_5_0` | 5/7 | −0.29 |
+| `CER_4_3_0` | 3/7 | −0.19 |
+| `CER_5_2_0` | 2/7 | −0.38 |
+| `CER_6_1_0` | **1/7** | **−0.60** |
+
+Con sette prosumer i due criteri sono quasi indipendenti; con uno solo si oppongono
+nettamente. E all'85.7% l'accordo **cambia segno**: la divergenza raccontata a parole nel
+§7.0 non è una costante della CER, è una funzione della sua composizione.
+
+**Le inversioni di graduatoria** seguono i metodi a coppie lungo l'asse di penetrazione
+(14.3% → 100%) e registrano ogni cambio di segno. Su **2160 serie** — 18 indicatori × 120
+coppie di metodi:
+
+- **1132 si invertono almeno una volta**, cioè il **52%**;
+- 1943 cambi di segno in totale;
+- **715 coppie sono invertite fra i due estremi** dell'asse, il 33%.
+
+Detto altrimenti: su questa famiglia di comunità, per **una coppia di metodi su due** la
+risposta alla domanda "quale dei due è più equo" **cambia** al variare della penetrazione
+prosumer. Il che è, di per sé, la risposta alla terza clausola della domanda di ricerca.
+
+> **Quello che questi numeri non dicono.** L'asse variato è **uno solo**: tutte e sette le
+> schede hanno 7 membri e la stessa ripartizione per categoria. Il §2.6 promette di variare
+> anche **il numero di membri** e **la composizione per categoria**, e quei due assi non sono
+> ancora coperti — non per un limite del codice, che è agnostico rispetto alla scheda, ma
+> perché le schede non esistono. Vedi §12.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -810,6 +868,34 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
   primo da `load_cer_input`.
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
 
+### 11.0 Le tabelle su file: `outputs/tables/`
+
+Fino alla §7b la pipeline MATLAB **non salvava un solo numero**: niente `save`, niente
+`writetable` in tutto il repository. `RESULTS` viveva nel workspace e moriva alla chiusura
+di MATLAB, e ogni cifra citata in tesi andava riletta a schermo da un'esecuzione completa.
+La §7b rompe quella convenzione, con l'interruttore `CSV` della §0b — **separato** da
+quello delle figure, perché le figure sono un servizio e queste tabelle sono un risultato.
+
+| File | Cosa contiene |
+|---|---|
+| `accordo_indicatori.csv` | il **τ-b di Kendall** fra ogni coppia di indicatori, una configurazione alla volta, con il conteggio di coppie concordi e discordi e se ciascuno dei due discrimini |
+| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari |
+| `inversioni_sommario.csv` | una riga per serie: quante inversioni, e se la graduatoria sia **invertita fra i due estremi** dell'asse — che non è deducibile dal conteggio, perché un numero pari di inversioni riporta all'ordine di partenza |
+| `orientamenti.csv` | **da che parte sta il meglio**, indicatore per indicatore, con il motivo e se il verso sia normativo. È il primo file da aprire quando un risultato non torna |
+
+Questi CSV **si versionano**, a differenza delle figure: sono ASCII, pesano poche decine di
+KB e si leggono in diff. `save_tables` arrotonda **in scrittura e solo lì** — due decimali
+fissi sugli euro, sei **cifre significative** sul resto, con uno zero vero sotto `1e-12` —
+perché la precisione di default di `writetable` produrrebbe churn a `1e-16` a ogni
+riesecuzione, indistinguibile in un diff da un cambiamento vero.
+
+Le cifre significative non sono un vezzo: coi decimali fissi un divario di `3e-8` diventa
+`0.000000`, e sono proprio quelli i divari delle inversioni su `MinMax_con`, `QoS` e `Jain`
+— i tre indicatori che il §7.2 dichiara quasi costanti. Chi legge vedrebbe *"un'inversione
+con divario zero"* e concluderebbe che il codice conta il rumore, mentre il divario c'è ed è
+solo piccolo. Sono 3 righe su 1943, ma sono esattamente quelle su cui si verificherebbe la
+correttezza del metodo.
+
 ### 11.1 Le figure: quali si producono, e dove finiscono
 
 `MAIN.m` §0b contiene la struct `FIG`, l'unico punto da cui si decide **cosa disegnare**.
@@ -898,6 +984,21 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
+- **L'asse di composizione variato è uno solo.** Tutte e sette le schede hanno **7 membri**
+  e la stessa ripartizione per categoria (1 terziario, 1 industriale, 1 commerciale, 4
+  domestici): varia solo chi possiede l'impianto, dal 14.3% al 100% di penetrazione. Le
+  inversioni della §7.6 misurano quindi la dipendenza dalla **penetrazione prosumer** e da
+  nient'altro. Servono schede che varino anche il **numero di membri** e la **composizione
+  per categoria**. Non è un limite del codice — aggiungere una comunità significa aggiungere
+  un file in `CER_configuration/`, e `cer_config_writer.py` ne redige la bozza — ma delle
+  configurazioni disponibili, e serve il corrispondente set di profili dallo stadio Python.
+  È la voce più pesante di questa lista, perché è quella che la domanda di ricerca chiede
+  esplicitamente.
+- **`CER_6_1_0` non ha `quota_inv_EUR`**: sei membri su sette sono a `?`, quindi quella
+  comunità non produce VAN e la colonna `VAN_min_EUR` della §7.6 vale `NaN` lì. Le altre sei
+  ce l'hanno, e la colonna resta utile: `compute_indicator_agreement` dichiara la comunità
+  non discriminante per quell'indicatore invece di cancellare la colonna dappertutto.
+  Compilando quelle sei celle la copertura diventa piena.
 - **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
   `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
   capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano

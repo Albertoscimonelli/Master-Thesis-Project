@@ -236,6 +236,15 @@ CER_configuration/bozza_CER_*.txt
 # ritocco grafico, quindi versionarle riempirebbe la storia di rumore binario.
 outputs/figures/
 
+# outputs/tables/ NON e' ignorato, ed e' una scelta, non una dimenticanza.
+# Le due ragioni per cui si escludono le figure - peso binario e churn a ogni
+# ritocco grafico - non valgono per un CSV ASCII da poche decine di KB, che si
+# legge in diff riga per riga. Quei file sono l'evidenza numerica che il
+# capitolo cita: l'accordo fra indicatori, le inversioni di graduatoria e la
+# tabella dei versi con cui sono stati calcolati. Un diff su di essi e'
+# esattamente la tracciabilita' che serve quando un risultato cambia, e
+# save_tables arrotonda in scrittura proprio perche' il diff resti leggibile.
+
 # Schede CER e produzione PV: si versiona solo il SET MINIMO che tiene il
 # progetto eseguibile da un clone pulito, non tutte quelle di lavoro. Le schede
 # si moltiplicano mentre si esplora (una per composizione della comunita') e i

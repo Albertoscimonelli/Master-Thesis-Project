@@ -68,7 +68,7 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
                  'isProsumer', {}, 'forza', {}, 'forzaLorda', {}, ...
-                 'tempo_analisi_s', {}, ...
+                 'penetrazione', {}, 'NPV', {}, 'tempo_analisi_s', {}, ...
                  'tempo_figure_s', {}, 'CFG', {});
 
 
@@ -110,6 +110,17 @@ FIG = struct( ...
     'chiudi',       false,  ...   % chiude le finestre dopo il salvataggio
     'cartella',     "outputs/figures");
 
+% --- Le tabelle di risultato su file --------------------------------------
+%  Interruttore SEPARATO da quello delle figure, e non per simmetria: le figure
+%  sono un servizio, queste tabelle sono un risultato. Con .esporta delle figure
+%  spento - che e' lo stato attuale - un export gestito dallo stesso flag non
+%  girerebbe mai, e i CSV che rispondono alla domanda di ricerca non esisterebbero.
+%  A differenza delle figure questi file si VERSIONANO: sono ASCII, pesano poco e
+%  si leggono in diff. Le ragioni per esteso in: help save_tables
+CSV = struct( ...
+    'esporta',  true, ...
+    'cartella', "outputs/tables");
+
 
 % --- Cronometro dell'intera esecuzione ------------------------------------
 %  tic con un identificatore esplicito, non il tic/toc globale: quello e' uno
@@ -131,7 +142,7 @@ T_TOT = tic;
 %  l'errore in chiaro, invece di nasconderlo in un riepilogo di fine batch.
 for iCER = 1:N_CER
 
-    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG T_TOT
+    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG CSV T_TOT
 
     % Cronometro di QUESTA comunita'. Sta dopo il clearvars, quindi nasce e
     % muore dentro il giro: quello che serve dopo finisce in RESULTS (§6).
@@ -2013,6 +2024,26 @@ for iCER = 1:N_CER
     RESULTS(iCER).forza      = FZ;
     RESULTS(iCER).forzaLorda = FZl;
 
+    % --- L'asse di composizione, e il terzo criterio della domanda -----------
+    % La penetrazione si prende dalla SCHEDA e non dal nome del file: il nome e'
+    % un'etichetta, mentre questo campo e' validato riga per riga contro la
+    % tabella dei membri da valida_riepilogo (tolleranza 0.5 punti). E' anche
+    % l'unico modo di ordinare le comunita' senza dipendere dall'ordinamento
+    % LESSICOGRAFICO delle schede della §0, che con schede a una cifra mette le
+    % comunita' in ordine di penetrazione DECRESCENTE.
+    RESULTS(iCER).penetrazione = CFG.riepilogo.penetrazione_prosumer_pct;
+
+    % Il VAN di TUTTI e sedici i metodi, non solo quello di riferimento che
+    % finisce in Tfin. Senza, la "sostenibilita' economica della partecipazione"
+    % - il terzo criterio della domanda di ricerca - non e' confrontabile fra
+    % metodi: si vedeva una volta a schermo come Tvan e spariva. Vuoto quando la
+    % scheda non compila quota_inv_EUR, che e' il caso in cui Tfin e' vuota.
+    if isempty(FIN)
+        RESULTS(iCER).NPV = [];
+    else
+        RESULTS(iCER).NPV = FIN.NPV;
+    end
+
     % Il tempo dell'ANALISI, letto prima di salvare le figure: sono due lavori
     % di natura diversa e conviene tenerli separati. Il calcolo e' quello che
     % non si puo' evitare; l'export delle figure e' un servizio, si spegne con
@@ -2075,6 +2106,103 @@ if FIG.confrontoCER && N_CER > 1
 
 end
 
+
+%% ========================================================================
+%  7b) ACCORDO FRA INDICATORI E INVERSIONI DI GRADUATORIA
+%
+%  Le due clausole finali della domanda di ricerca (§2.6 della tesi): "to what
+%  extent do different fairness indicators agree in evaluating them; and to what
+%  extent does this ranking depend on the composition of the community".
+%
+%  Fin qui il progetto rispondeva a entrambe con delle FIGURE. Il README §7.0
+%  racconta il caso piu' netto - l'Equal Split primo su EI e Gini e ultimo sulla
+%  stabilita', il Nucleolo l'opposto - plot_fairness_tradeoff lo rende geometrico
+%  e plot_gini_3d mostra se l'ordine fra i metodi regga al cambio di comunita'.
+%  Ma sono racconto e figura: quanto due indicatori concordino, e dove due metodi
+%  si scambino di posto, andava ricostruito a occhio. Qui si estrae.
+%
+%  NON STA DIETRO A FIG. E' analisi, non presentazione, e la §8 fa gia' quella
+%  distinzione ("il calcolo e' quello che serve, l'export delle figure e' un
+%  servizio"). Con FIG.esporta spento un blocco messo dentro if FIG.confrontoCER
+%  non girerebbe mai. Solo la SCRITTURA e' condizionata, e al suo flag.
+%
+%  L'ORDINE DELLE COMUNITA' NON E' QUELLO DI RESULTS. La §0 ordina le schede in
+%  modo lessicografico, che con schede a una cifra le mette in penetrazione
+%  DECRESCENTE: extract_ranking_reversals riordina per penetrazione crescente
+%  leggendola dal [RIEPILOGO], che load_cer_input valida contro la tabella membri.
+%  ========================================================================
+
+AGR = compute_indicator_agreement(RESULTS);
+
+% --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
+% fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
+% risparmi, quindi dopo l'orientamento il tau fra i due deve valere +1 esatto, e
+% puo' valerlo perche' le strutture di pareggio sono identiche per costruzione.
+% Un singolo assert che esercita insieme la tabella dei versi, la regola dei
+% pareggi e l'implementazione del tau-b: se cade, l'orientamento e' sbagliato e
+% la tabella delle inversioni direbbe il contrario del vero.
+iEI   = find(AGR.indicators == "EI_orig", 1);
+iGini = find(AGR.indicators == "Gini",    1);
+for c = 1:numel(AGR.schede)
+    if AGR.discrimina(iEI, c) && AGR.discrimina(iGini, c)
+        assert(abs(AGR.tau(iEI, iGini, c) - 1) < 1e-12, ...
+               'Accordo fra indicatori: tau(EI_orig, Gini) diverso da +1 su %s', ...
+               AGR.schede(c));
+    end
+    % Simmetria e diagonale unitaria: la matrice deve restare una matrice di
+    % correlazione anche dove qualche indicatore non ordina niente.
+    M = AGR.tau(:, :, c);
+    assert(isequaln(M, M.'), ...
+           'Accordo fra indicatori: matrice non simmetrica su %s', AGR.schede(c));
+    assert(all(abs(diag(M) - 1) < 1e-12), ...
+           'Accordo fra indicatori: diagonale diversa da 1 su %s', AGR.schede(c));
+    assert(all(abs(M(~isnan(M))) <= 1 + 1e-12), ...
+           'Accordo fra indicatori: un tau e'' uscito da [-1,1] su %s', AGR.schede(c));
+end
+
+if N_CER > 1
+    REV = extract_ranking_reversals(AGR);
+
+    % Il dettaglio e il sommario devono contare la stessa cosa: sono due viste
+    % della stessa scansione, e uno scarto vorrebbe dire che una delle due perde
+    % righe.
+    assert(height(REV.inversioni) == sum(REV.sommario.nInversioni), ...
+           'Inversioni: il dettaglio e il sommario non contano lo stesso numero');
+
+    % La penetrazione DICHIARATA nella scheda contro quella CONTATA dai profili:
+    % la prima e' un dato di configurazione, la seconda viene dal fatto che un
+    % membro porti o no generazione nel gioco. Se divergono, l'asse su cui si
+    % misura la dipendenza dalla composizione non e' quello che si crede.
+    contata = 100 * arrayfun(@(r) sum(r.isProsumer)/r.nUsers, RESULTS);
+    assert(max(abs(AGR.penetrazione - contata)) <= 0.5, ...
+           'Inversioni: penetrazione dichiarata e contata divergono di piu'' di 0.5 punti');
+
+    % Il pavimento del Jain e' 1/n: uno scarto di Jain non e' confrontabile fra
+    % comunita' di taglia diversa, e "composizione" verrebbe confusa con "taglia".
+    if numel(unique([RESULTS.nUsers])) > 1
+        fprintf(['\n  ATTENZIONE: le comunita'' hanno un numero di membri DIVERSO.\n' ...
+                 '  Jain e MinMax hanno un pavimento che dipende da n, quindi le loro\n' ...
+                 '  inversioni mescolano l''effetto della composizione con quello della\n' ...
+                 '  taglia. Le colonne normalizzate restano confrontabili.\n']);
+    end
+else
+    REV = struct('inversioni', table(), 'sommario', table());
+    fprintf('\n  Una sola comunita'': le inversioni non sono definite.\n');
+end
+
+if CSV.esporta
+    cartellaCSV = fullfile(CSV.cartella, "confronto");
+    fprintf('\n=== Tabelle di confronto su file ===\n');
+    daScrivere = struct( ...
+        'accordo_indicatori', AGR.table, ...
+        'orientamenti',       AGR.orientation);
+    if N_CER > 1
+        daScrivere.inversioni_di_graduatoria = REV.inversioni;
+        daScrivere.inversioni_sommario       = REV.sommario;
+    end
+    save_tables(cartellaCSV, daScrivere);
+end
+
 %% ========================================================================
 %  8) TEMPO DI ESECUZIONE
 %
@@ -2093,10 +2221,11 @@ tempoAnalisiTot = sum([RESULTS.tempo_analisi_s]);
 tempoFigureTot  = sum([RESULTS.tempo_figure_s]);
 tempoTotale     = toc(T_TOT);
 
-% Quello che resta e' la §7 (confronto fra CER e relativo export): non
-% appartiene a nessuna comunita' e non ha un cronometro proprio, ma va
-% dichiarato lo stesso, altrimenti il totale non tornerebbe e non si capirebbe
-% perche'.
+% Quello che resta e' la §7 e la §7b (confronto fra CER, accordo fra indicatori,
+% inversioni di graduatoria e relativi export): non appartengono a nessuna
+% comunita' e non hanno un cronometro proprio, ma vanno dichiarati lo stesso,
+% altrimenti il totale non tornerebbe e non si capirebbe perche'. La voce e'
+% quindi piu' larga di quanto il nome "confronto CER" suggerisca.
 tempoConfronto = tempoTotale - tempoAnalisiTot - tempoFigureTot;
 
 fprintf('\n\n=== Tempo di esecuzione ===\n');

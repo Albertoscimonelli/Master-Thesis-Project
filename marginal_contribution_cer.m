@@ -127,13 +127,43 @@ function S = marginal_contribution_cer(genUsers, loadUsers, userNames, P_CER, op
         mc(i) = vGrand - vWithout;
     end
 
-    % La monotonia di v garantisce MC_i >= 0: un contributo negativo
-    % significherebbe che togliere un utente AUMENTA l'energia condivisa,
-    % cioe' profili corrotti a monte. Si tollera solo il rumore numerico.
-    if any(mc < -1e-9 * max(1, abs(vGrand)))
-        error('marginal_contribution_cer:negativeContribution', ...
-              ['Contributo marginale negativo (min %.6g EUR): la funzione ' ...
-               'caratteristica dovrebbe essere monotona, controllare i profili.'], min(mc));
+    % SENZA fattore di riduzione la monotonia di v garantisce MC_i >= 0: un
+    % contributo negativo significherebbe che togliere un utente AUMENTA
+    % l'energia condivisa, cioe' profili corrotti a monte, e li' e' un errore.
+    %
+    % CON F > 0 LA MONOTONIA NON VALE PIU', e non per un difetto. Il fattore non
+    % colpisce l'energia dei punti di prelievo esenti, quindi un membro NON
+    % esente che entra in una comunita' gia' satura di generazione non porta un
+    % kWh in piu' e diluisce soltanto la quota esente: il valore scende davvero,
+    % e con esso il premio che il GSE erogherebbe. Caso minimo, un'ora sola, P
+    % che produce 10 kWh, A esente e B non esente che consumano 10 kWh ciascuno,
+    % F = 0,5:
+    %
+    %     v({P,A})   = 1,00 EUR   (10 kWh, quota esente 100%, tariffa piena)
+    %     v({P,A,B}) = 0,75 EUR   (10 kWh, quota esente 50%,  tariffa -25%)
+    %     MC_B = -0,25 EUR
+    %
+    % L'energia condivisa e' la STESSA in entrambe: e' la generazione a fare da
+    % tappo, e B cambia solo le proporzioni. Il contributo negativo va quindi
+    % segnalato e azzerato, non trattato come dato corrotto.
+    %
+    % Serve una comunita' povera di impianti perche' accada: sulle schede
+    % attuali, ricche di surplus, il minimo MC resta ampiamente positivo anche
+    % con F = 0,50 (+24 EUR su CER_0_7_0, +51 EUR su CER_6_1_0).
+    tolMc = -1e-9 * max(1, abs(vGrand));
+    if any(mc < tolMc)
+        if Fred == 0
+            error('marginal_contribution_cer:negativeContribution', ...
+                  ['Contributo marginale negativo (min %.6g EUR): senza fattore ' ...
+                   'di riduzione la funzione caratteristica deve essere monotona, ' ...
+                   'controllare i profili.'], min(mc));
+        end
+        warning('marginal_contribution_cer:nonMonotoneWithF', ...
+                ['Contributo marginale negativo (min %.6g EUR) con F = %.3f: %d ' ...
+                 'membri non esenti diluiscono la quota esente senza aggiungere ' ...
+                 'energia condivisa. E'' un effetto della norma, non un dato ' ...
+                 'sbagliato: le quote negative vengono azzerate.'], ...
+                min(mc), Fred, sum(mc < tolMc));
     end
     mc = max(mc, 0);
 

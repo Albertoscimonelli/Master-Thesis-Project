@@ -572,6 +572,23 @@ Il montepremi crolla del 40%, ma la quota in euro dei domestici **non si muove**
 l'effetto che la norma cerca, e si vede **solo** con il trattamento per coalizione — con
 una quota di comunità scenderebbero in proporzione come tutti.
 
+**`v` non è più monotona, ed è la norma a volerlo.** Con `F > 0` aggiungere un membro può
+*ridurre* `v(S)`. Un'ora sola, `P` che produce 10 kWh, `A` esente e `B` non esente che
+consumano 10 kWh ciascuno, `F = 0,5`:
+
+| Coalizione | Energia condivisa | Quota esente | Tariffa | `v` |
+|---|---:|---:|---:|---:|
+| `{P,A}` | 10 kWh | 100% | piena | **1,00 €** |
+| `{P,A,B}` | 10 kWh | 50% | −25% | **0,75 €** |
+
+L'energia è la stessa — è la *generazione* a fare da tappo — e `B` cambia solo le
+proporzioni: `MC_B = −0,25 €`. Non è un dato corrotto, è il premio che il GSE
+erogherebbe davvero. `marginal_contribution_cer.m` mantiene perciò l'errore solo quando
+`F = 0` (dove la monotonia è garantita) e con `F > 0` emette un warning, azzerando le
+quote negative. Serve una comunità **povera di impianti** perché accada: sulle schede
+attuali, ricche di surplus, il minimo `MC` resta ampiamente positivo anche a `F = 0,50`
+(+24 € su `CER_0_7_0`, +51 € su `CER_6_1_0`).
+
 **Un limite introdotto, dichiarato.** Con `F > 0` il Separation Problem del Variance Least
 Core smette di essere un MILP: il valore della coalizione contiene
 `s_t · loadNonEsente(z)/load(z)`, un **rapporto** fra combinazioni lineari delle binarie.

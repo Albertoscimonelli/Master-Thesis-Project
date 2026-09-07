@@ -327,8 +327,8 @@ isolato dal generatore globale di MATLAB, quindi l'esecuzione è riproducibile.
 ## 7. Indici di valutazione dell'equità
 
 I sedici modelli di §6 dicono **quanto** prende ciascuno; questa sezione dice **quale
-ripartizione sia più equa**, e rispetto a quale definizione di equità. Dieci indicatori,
-calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da due articoli:
+ripartizione sia più equa**, e rispetto a quale definizione di equità. Undici indicatori,
+calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da tre articoli:
 
 | Indicatore | Eq. | File | Cosa misura | Verso |
 |---|---|---|---|:---:|
@@ -342,36 +342,103 @@ calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da due articoli:
 | **Gini di eterogeneità** | 10 | `gini_heterogeneity.m` | varietà delle tipologie di membro (**non** un Gini di reddito) | — |
 | **Fairness Index** + σ | 12-14 | `fairness_index_bm.m` | distanza dalla distribuzione per **contributo** `BCᵢ = v(N) − v(N∖{i})` | 0 = equo |
 | **Eccesso di coalizione** | 23 | `coalition_excess.m` | se qualche sottogruppo guadagnerebbe di più **uscendo** dalla CER | ↓ = stabile |
+| **Forza incentivante** + coseno | 6-8 | `compute_incentive_strength.m` | quanto la regola **premia il sincronismo** fra prelievo e immissione | nessun verso |
 
 Fonti: Dynge, Cali, *Distributive energy justice in local electricity markets*, Appl.
 Energy 384 (2025) 125463 (eq. 11-19); Casalicchio, Manzolini, Prina, Moser, *From
 investment optimization to fair benefit distribution in renewable energy community
 modelling*, Appl. Energy 310 (2022) 118447 (eq. 10, 12-14); Volpato, Carraro, Dal Cin,
 Rech, *On the Different Fair Allocations of Economic Benefits for Energy Communities*,
-Energies 17 (2024) 4788 (eq. 23). Derivazioni, mappatura formula → codice e avvertenze in
+Energies 17 (2024) 4788 (eq. 23); Bilardo, *A fair dynamic incentive allocation method…*,
+Renewable Energy 255 (2025) 123756 (eq. 6-8, riusate come **asse di misura** e non come
+regola). Derivazioni, mappatura formula → codice e avvertenze in
 [GUIDA §18](GUIDA_modelli_distribuzione.md).
 
 **Gini e Jain sono esposti a sé stanti** oltre che dentro EI e QoS: sono le grandezze con
 cui ragiona la letteratura, e tenerle implicite le renderebbe inutilizzabili.
 
-### 7.0 Tre domande diverse, non tre modi di misurare la stessa cosa
+### 7.0 Quattro domande diverse, non quattro modi di misurare la stessa cosa
 
 | Gruppo | Domanda a cui risponde |
 |---|---|
 | MinMax, QoS, EI, Gini, Jain | quanto è **uniforme** la ripartizione |
 | Fairness Index, σ | quanto è vicina al **merito** di ciascuno |
+| Forza incentivante, coseno | quanto **premia il sincronismo** fra prelievo e immissione |
 | Eccesso di coalizione | se **regge**, cioè se un sottogruppo ha convenienza a uscire |
 
-Le tre domande possono dare risposte **opposte**, ed è il caso: l'**Equal Split** è primo
-sulla prima (`EI = 1.00`, `Gini = 0.00` — per quegli indici è la ripartizione più equa
-possibile) e **ultimo** sulla terza (eccesso `+606 €`, nove sottogruppi vorrebbero
-uscire). Il **Nucleolo** fa l'opposto: `EI = 0.45`, il peggiore del lotto, ma è l'unico
-insieme al Variance Least Core a garantire che nessuno voglia andarsene. Guardare una
-colonna sola porta a conclusioni sbagliate.
+Le quattro domande possono dare risposte **opposte**, ed è il caso: l'**Equal Split** è
+primo sulla prima (`EI = 1.00`, `Gini = 0.00` — per quegli indici è la ripartizione più equa
+possibile), vale **esattamente zero** sulla terza (dà a tutti lo stesso, quindi nessun
+comportamento cambia la quota) ed è **ultimo** sulla quarta (eccesso `+606 €`, nove
+sottogruppi vorrebbero uscire). Il **Nucleolo** fa l'opposto sulla prima e sull'ultima:
+`EI = 0.45`, il peggiore del lotto, ma è l'unico insieme al Variance Least Core a garantire
+che nessuno voglia andarsene. Guardare una colonna sola porta a conclusioni sbagliate.
 
-Esiste poi una **quarta domanda, di natura diversa**, che non sta in questa tabella perché
-non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 — un
-metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+Le prime due e la quarta hanno un **verso**: si sa da che parte sta il meglio. La terza no,
+ed è la ragione per cui non entra nella mappa di `plot_fairness_indicators`, il cui
+contratto di colore dichiara che il freddo vuol dire *sempre* "più equo".
+
+Esiste poi una **quinta domanda, di natura ancora diversa**, che non sta in questa tabella
+perché non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 —
+un metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+
+### 7.0-bis La forza incentivante: cosa misura e come si legge
+
+È il terzo criterio della domanda di ricerca — *incentive strength of the rule* — accanto
+all'equità distributiva e alla sostenibilità economica, e fino a qui il modello non lo
+sapeva esprimere. Non è un indice di equità e **non ha un verso normativo**: "più
+incentivante" non vuol dire "più equo", è un asse di progetto.
+
+La definizione letterale sarebbe un'**elasticità** — perturbare il profilo di un membro e
+rileggere la sua quota — che è fuori dallo scope della tesi (richiederebbe di simulare la
+risposta comportamentale) oltre a costare *n* riesecuzioni di Shapley e Nucleolo per
+comunità. Il sostituto ex-post è la **covarianza trasversale fra quota e virtuosità**: i
+membri virtuosi prendono sistematicamente di più, o no?
+
+L'asse di virtuosità è il fattore `θ·η` di Bilardo già calcolato dalla §6 per il modello 12,
+mediato sui giorni **con peso pari all'incentivo maturato** (così un giorno senza
+generazione, dove la chiave non è definita, pesa zero e non inquina l'asse):
+
+```
+b_i = Σ_d w_d · fAll(d,i)        q_k = phi_k / Σ phi_k        u = 1/n
+IS_k    = ⟨q_k − u, b − b̄⟩ / ⟨q_SU − u, b − b̄⟩     forza incentivante
+ALIGN_k = cos( q_k − u , b − b̄ )                    allineamento, in [−1,1]
+```
+
+**Due ancore esatte**, che in `MAIN.m` §3t sono `assert`: `IS = 0` per l'**Equal Split**
+(quote uguali ⇒ nessun segnale) e `IS = 1` per la **Similarity-Utilization**, che fissa
+l'unità di misura. `IS` **non è limitata superiormente**, ed è voluto: è una pendenza, non
+una quota. Si legge *1 = come la regola di Bilardo, 2 = il doppio, negativo = premia il
+contrario*.
+
+Il coseno del riferimento, invece, **vale meno di 1**, ed è la garanzia che la metrica non
+sia circolare: la regola di Bilardo rinormalizza la chiave giorno per giorno, quindi la sua
+ripartizione annua non è proporzionale alla media del fattore. Se l'asse fosse l'*output*
+della regola invece del *segnale grezzo*, il coseno varrebbe 1 per costruzione e la colonna
+misurerebbe sé stessa.
+
+> **Avvertenza sui profili, da leggere prima dei numeri — e non è teorica.** Sui profili
+> **netti** il carico residuo del proprietario dell'impianto è nullo proprio nelle ore di
+> eccedenza, quindi la sua `θ` crolla e ogni metodo che premi i prosumer viene spinto verso
+> il basso. È un artefatto della convenzione, non una proprietà della regola — la stessa
+> contaminazione da proprietà dell'impianto per cui il Fairness Index va letto con cautela
+> (§7.2). Per questo `MAIN.m` calcola la colonna su **entrambi** gli assi e stampa il coseno
+> fra i due.
+>
+> Sulle sette comunità l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
+>
+> | CER | prosumer | cos(assi) | Shapley netto | Shapley lordo |
+> |---|:---:|:---:|---:|---:|
+> | `CER_0_7_0` | 7/7 | 0.903 | +0.697 | +1.652 |
+> | `CER_2_5_0` | 5/7 | 0.616 | +0.555 | +1.970 |
+> | `CER_4_3_0` | 3/7 | 0.566 | +0.384 | +1.014 |
+> | `CER_6_1_0` | **1/7** | **0.224** | **−0.657** | **+2.502** |
+>
+> Con un solo prosumer **il segno dello Shapley si ribalta**: sull'asse netto sembrerebbe
+> punire la virtuosità, su quello lordo la premia più di Bilardo. Il coseno scende sotto 0.8
+> su **sei comunità su sette**. Conclusione operativa: la graduatoria per forza incentivante
+> **va riportata su entrambi gli assi**, e una lettura sui soli profili netti sarebbe una
+> conclusione sbagliata, non una conclusione parziale.
 
 ### 7.1 Due indicatori esclusi, e perché
 

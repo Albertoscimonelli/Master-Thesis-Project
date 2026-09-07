@@ -63,7 +63,8 @@ fprintf('  %s\n', SCHEDE);
 % esecuzione il workspace contiene solo l'ULTIMA comunita': senza, i confronti
 % fra CER non avrebbero piu' i dati su cui lavorare.
 RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
-                 'Tcmp', {}, 'Tfair', {}, 'metodi', {}, 'soglia', {}, ...
+                 'Tcmp', {}, 'Tfair', {}, 'Tfin', {}, 'metodi', {}, ...
+                 'soglia', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
                  'isProsumer', {}, 'tempo_analisi_s', {}, ...
@@ -96,6 +97,7 @@ FIG = struct( ...
     'dettaglio',    false, ...   % 17 grafici di dettaglio, uno per metodo (opt-in)
     'metodi',       false,  ...   % confronto delle quote fra i sedici metodi
     'equita',       false,  ...   % indici, scostamento dal merito, trade-off
+    'finanza',      false,  ...   % VAN, tempo di ritorno, composizione del flusso
     'confrontoCER', true,  ...   % confronto fra comunita' (§7, dopo il ciclo)
     'esporta',      true,  ...   % salva le figure su file
     'chiudi',       false,  ...   % chiude le finestre dopo il salvataggio
@@ -477,10 +479,14 @@ for iCER = 1:N_CER
     % E' la baseline y_noLEM dell'eq. 19 usata dagli indicatori della §3t. Prima
     % si assumeva la MONORARIA per tutti; ora la differenza fra i membri riflette
     % anche il contratto, non la sola collocazione oraria dei consumi.
+    % iModUser si conserva perche' serve di nuovo in §3v: il risparmio da
+    % autoconsumo va valutato allo stesso prezzo orario con cui qui si valuta la
+    % spesa, altrimenti le due grandezze non sono confrontabili.
     costUser = zeros(nUsers, 1);
+    iModUser = zeros(nUsers, 1);
     for u = 1:nUsers
-        iMod = find(Modalita == M.tariffa(u), 1);
-        costUser(u) = costMat(u, iMod);
+        iModUser(u) = find(Modalita == M.tariffa(u), 1);
+        costUser(u) = costMat(u, iModUser(u));
     end
 
 
@@ -1638,6 +1644,154 @@ for iCER = 1:N_CER
 
 
     %% ========================================================================
+    %  3v) VAN, TIR E TEMPO DI RITORNO PER MEMBRO
+    %
+    %  Fin qui il modello si fermava al flusso di cassa ANNUO: [INVESTIMENTO] e
+    %  [MEMBRI].quota_inv_EUR erano letti, validati e mai usati. Qui quel flusso
+    %  viene attualizzato, e la domanda cambia - non piu' "quanto prende ciascuno
+    %  quest'anno" ma "a chi conviene l'investimento".
+    %
+    %  IL PERIMETRO: L'INVESTIMENTO INTERO, NON LA SOLA CER
+    %    La quota di incentivo phi_i da sola non e' il flusso dell'investimento.
+    %    Chi installa un fotovoltaico lo fa per l'autoconsumo: la CER e' il modo
+    %    di valorizzare l'ECCEDENZA, cioe' la parte che avanza. Addebitare a
+    %    phi_i i 42.000 EUR di quota dell'industria di CER_2_5_0 significherebbe
+    %    imputare all'adesione un investimento che compra i pannelli, e ottenere
+    %    tempi di ritorno oltre la vita utile per impianti che rientrano in pochi
+    %    anni.
+    %
+    %    Il flusso e' quindi:
+    %      + risparmio in bolletta da autoconsumo dietro contatore
+    %      + ricavo dalla vendita dell'eccedenza          (revSoldPerPlayer, §3)
+    %      + quota di incentivo CER                       (metodi(k).phi, §3b-3r)
+    %      - OPEX degli impianti posseduti
+    %      - rata del mutuo                               ([MEMBRI].mutuo_EUR_anno)
+    %    e all'anno 0 l'esborso [MEMBRI].quota_inv_EUR.
+    %
+    %  IL RISPARMIO DA AUTOCONSUMO NON ESISTEVA
+    %    costUser (§3a) e' calcolato sul carico LORDO: e' quanto spenderebbe il
+    %    membro senza impianto e senza CER, ed e' giusto cosi' perche' serve da
+    %    baseline agli indicatori di equita'. Ma allora il risparmio che il
+    %    proprietario gia' incassa - l'energia che il suo impianto gli copre
+    %    prima di offrire il resto alla comunita' - non compariva in nessuna
+    %    variabile. E' loadUsers - loadForShare, per costruzione di
+    %    load_cer_data.m, valutato al prezzo orario della tariffa che quel membro
+    %    ha davvero in bolletta: lo stesso con cui §3a valuta la spesa, altrimenti
+    %    risparmio e costo non sarebbero confrontabili.
+    %
+    %  SEDICI METODI, SEDICI VAN
+    %    Il flusso dipende da come si ripartisce l'incentivo, quindi il VAN pure.
+    %    Si calcolano tutte e sedici le colonne in una chiamata sola: e' il
+    %    confronto della §3s portato dal ricavo annuo alla redditivita', ed e'
+    %    li' che si vede se la scelta del metodo cambia la convenienza di
+    %    qualcuno o solo la sua quota.
+    %  ========================================================================
+
+    % Senza le quote di investimento non c'e' niente da attualizzare. Non e' un
+    % caso da riempire con un default: un VAN calcolato su un esborso inventato
+    % e' peggio di nessun VAN, perche' ha l'aria di un risultato.
+    if ~M.noto.quota_inv_EUR
+        FIN  = struct([]);
+        Tfin = table();
+        fprintf(['\n=== Redditivita'' per membro: NON CALCOLATA ===\n' ...
+                 '  [MEMBRI].quota_inv_EUR non e'' compilata in questa scheda.\n' ...
+                 '  Senza l''esborso di ciascuno, VAN, TIR e tempo di ritorno\n' ...
+                 '  non sono definiti: si compili la colonna per ottenerli.\n']);
+    else
+        % --- Risparmio da autoconsumo dietro contatore ---------------------------
+        autocons = loadUsers - loadForShare;              % [N_HOURS x nUsers] [kWh/h]
+        assert(all(autocons(:) >= -1e-9), ...
+               ['Autoconsumo negativo: loadForShare dovrebbe essere il carico ' ...
+                'RESIDUO, quindi mai superiore al carico lordo.']);
+
+        risparmioAutocons = zeros(nUsers, 1);
+        for u = 1:nUsers
+            risparmioAutocons(u) = sum(priceByMod{iModUser(u)} .* autocons(:, u));
+        end
+
+        % --- OPEX per membro ------------------------------------------------------
+        % Preferenza al dato di scheda; in mancanza, la sola quota VARIABILE degli
+        % O&M, che e' proporzionale alla taglia e quindi attribuibile all'impianto.
+        % om_fisso_EUR_anno resta fuori di proposito: viene da optimizer_PV.m, dove
+        % descrive un progetto di taglia industriale, e cinquemila euro l'anno su una
+        % famiglia da 12 kWp non sono un costo, sono un errore di scala.
+        opexUser  = zeros(nUsers, 1);
+        opexNoto  = ismember("opex_EUR_anno", string(CFG.impianti.Properties.VariableNames)) ...
+                    && CFG.noto.impianti.opex_EUR_anno;
+        for p = 1:height(CFG.impianti)
+            iOwner = find(userNames == CFG.impianti.proprietario(p), 1);
+            if isempty(iOwner), continue; end
+            if opexNoto
+                opexUser(iOwner) = opexUser(iOwner) + CFG.impianti.opex_EUR_anno(p);
+            elseif CFG.noto.investimento.om_variabile_EUR_MWp_anno
+                opexUser(iOwner) = opexUser(iOwner) + ...
+                    CFG.investimento.om_variabile_EUR_MWp_anno * CFG.impianti.kWp(p) / 1000;
+            end
+        end
+
+        % --- Flusso annuo, una colonna per metodo di ripartizione ----------------
+        mutuoUser = M.mutuo_EUR_anno;
+        mutuoUser(isnan(mutuoUser)) = 0;      % non dichiarato = nessuna rata
+
+        baseAnnua = risparmioAutocons + revSoldPerPlayer - opexUser - mutuoUser;
+        cfAnnual  = baseAnnua + [metodi.phi];         % [nUsers x nMetodi]
+
+        capexUser = M.quota_inv_EUR;
+        capexUser(isnan(capexUser)) = 0;
+
+        optFin = opts_from_config(CFG.investimento, CFG.noto.investimento, [
+                     "tasso_sconto",    "discountRate"
+                     "vita_utile_anni", "lifetimeYears" ]);
+
+        FIN = compute_financial_metrics(capexUser, cfAnnual, optFin);
+
+        % --- Tabella: il metodo di riferimento in chiaro, gli altri per il VAN ---
+        % Shapley fa da riferimento perche' e' il primo metodo della §3s e quello a
+        % cui gli altri vengono confrontati per tutto il resto del progetto.
+        iRif    = find([metodi.nome] == "Shapley", 1);
+        if isempty(iRif), iRif = 1; end
+        nomeRif = metodi(iRif).nome;
+
+        Tfin = table(userNames(:), capexUser, risparmioAutocons, revSoldPerPlayer, ...
+                     metodi(iRif).phi, opexUser + mutuoUser, cfAnnual(:, iRif), ...
+                     FIN.NPV(:, iRif), FIN.IRR(:, iRif), FIN.payback(:, iRif), ...
+                     FIN.note(:, iRif), ...
+                     'VariableNames', {'Giocatore', 'Investimento_E', ...
+                                       'Risp_autocons_E', 'Vendita_E', ...
+                                       char(matlab.lang.makeValidName( ...
+                                        "Incentivo_" + nomeRif + "_E")), ...
+                                       'OPEX_mutuo_E', 'Flusso_annuo_E', ...
+                                       'VAN_E', 'TIR', 'Payback_anni', 'Nota'});
+
+        fprintf('\n=== Redditivita'' per membro (%s, %d anni al %.1f%%) ===\n', ...
+                nomeRif, FIN.lifetimeYears, 100*FIN.discountRate);
+        fprintf(['  Perimetro: l''INVESTIMENTO, non la sola CER. Il flusso annuo somma il ' ...
+                 'risparmio da\n  autoconsumo, la vendita dell''eccedenza e la quota di ' ...
+                 'incentivo, meno OPEX e mutuo.\n' ...
+                 '  TIR "NaN" e payback 0 su chi non ha investito non sono errori: ' ...
+                 'vedi la colonna Nota.\n']);
+        disp(Tfin);
+
+        % Il VAN dei sedici metodi affiancati: dice se la scelta del meccanismo
+        % sposta la CONVENIENZA di qualcuno o solo la sua quota.
+        Tvan = array2table(FIN.NPV, 'VariableNames', cellstr([metodi.nome]), ...
+                           'RowNames', cellstr(userNames));
+        fprintf('\n=== VAN per membro e per metodo [EUR] ===\n');
+        disp(Tvan);
+
+        if ~isempty(FIN.assumptions)
+            fprintf('\n  Ipotesi attive nel calcolo finanziario:\n');
+            disp(FIN.assumptions);
+        end
+
+        if FIG.finanza
+            plot_financial_metrics(Tfin, FIN, metodi, nomeRif, metodi(iRif).phi);
+        end
+
+    end
+
+
+    %% ========================================================================
     %  4) COSTO ENERGIA DA RETE (PUN 2025)
     %  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
     %  tariffaria, calcolato in §3a. I profili prezzo del 2025 condividono la
@@ -1721,6 +1875,7 @@ for iCER = 1:N_CER
     RESULTS(iCER).userNames      = userNames;
     RESULTS(iCER).Tcmp           = Tcmp;
     RESULTS(iCER).Tfair          = Tfair;
+    RESULTS(iCER).Tfin           = Tfin;   % vuota se quota_inv_EUR non e' nota
     RESULTS(iCER).metodi         = metodi;
     RESULTS(iCER).soglia         = SOG;
     RESULTS(iCER).shared_annual  = shared_annual;

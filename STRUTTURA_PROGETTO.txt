@@ -176,6 +176,17 @@ Project/
 |                                       DM 127/2025: chi cita il solo DM 414/2023 legge
 |                                       la lista pre-127 e perde 4 membri su 7
 |-- irr_bisection.m                     IRR via bisezione (senza Financial Toolbox)
+|-- compute_financial_metrics.m         VAN, TIR e tempo di ritorno per membro, a flussi annui
+|                                       costanti su vent'anni (par. 3v di MAIN.m). Perimetro:
+|                                       l'INVESTIMENTO intero - risparmio da autoconsumo +
+|                                       vendita + incentivo - OPEX - mutuo, con quota_inv_EUR
+|                                       all'anno 0 - non la sola CER, che sui prosumer vale il
+|                                       2-3% del flusso. Marca i casi degeneri invece di
+|                                       stamparne numeri: chi non ha investito ha TIR
+|                                       INDEFINITO (NaN), non altissimo
+|-- plot_financial_metrics.m            Redditivita' per membro: composizione del flusso, VAN,
+|                                       tempo di ritorno, e dispersione del VAN fra i 16 metodi
+|                                       (opt-in con FIG.finanza)
 |-- profilo_prezzi_pun_2025.m           Profilo orario prezzi PUN 2025 (3 modalita' tariffarie)
 |-- optimizer_PV.m                      Dimensionamento/ottimizzazione impianto PV (IRR/NPV)
 |                                       [standalone: NON invocato da MAIN.m, solo per test]
@@ -625,6 +636,24 @@ Pipeline a sezioni indipendenti, RIPETUTA PER OGNI CER:
       Quattro assert di regressione: Equal Split -> EI = 1 esatto; Marginal
       Contribution -> FI = 0 esatto; MinMax originale identico fra i sedici;
       energia implicita = energia condivisa.
+  3v) Redditivita' per membro: VAN, TIR e tempo di ritorno
+      (compute_financial_metrics.m). Cambia la domanda: non piu' "quanto
+      prende ciascuno quest'anno" ma "a chi conviene l'investimento".
+      PERIMETRO: l'investimento intero, non la sola CER. Il flusso annuo e'
+      risparmio da autoconsumo + vendita eccedenza + quota di incentivo -
+      OPEX - mutuo, con quota_inv_EUR all'anno 0. Sui prosumer la quota CER
+      vale il 2-3% del flusso: valutare l'investimento sul solo incentivo
+      darebbe un ritorno oltre la vita utile per impianti che rientrano in
+      meno di quattro anni.
+      Il RISPARMIO DA AUTOCONSUMO non esisteva in nessuna variabile: costUser
+      (3a) e' calcolato sul carico LORDO perche' serve da baseline agli
+      indicatori di equita'. Qui si ricava da loadUsers - loadForShare,
+      valutato al profilo prezzi della tariffa che il membro ha in bolletta.
+      Sedici colonne, una per metodo di ripartizione: il confronto della 3s
+      portato dal ricavo annuo alla redditivita'.
+      Si SALTA se [MEMBRI].quota_inv_EUR non e' compilata (CER_6_1_0): un VAN
+      su un esborso inventato ha l'aria di un risultato ed e' peggio di
+      nessun VAN.
   4) Costo energia da rete (PUN 2025) per utente e modalita' tariffaria.
      NOTA: il CALCOLO (priceByMod, costMat) e' stato anticipato alla sezione
      3a, perche' e' la baseline y_noLEM dell'eq. 19 usata dalla 3t. Qui resta

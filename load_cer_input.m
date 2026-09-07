@@ -543,14 +543,37 @@ function problemi = valida_impianti(CFG)
         end
     end
 
-    % --- Riferimenti da [MEMBRI] risolti ------------------------------------
+    % --- Riferimenti da [MEMBRI] risolti, E CONCORDI ------------------------
+    % Due colonne descrivono lo stesso fatto - chi possiede cosa - da capi
+    % opposti: [MEMBRI].impianto e [IMPIANTI].proprietario. Il modello usa solo
+    % la seconda (costruisci_impianti_struct -> load_cer_data), quindi finche'
+    % nessuno le confronta la prima puo' dire un'altra cosa senza conseguenze
+    % visibili... fino al giorno in cui qualcosa legge anche le colonne che le
+    % stanno accanto. E' successo con [MEMBRI].quota_inv_EUR e l'analisi
+    % finanziaria della par. 3v di MAIN.m: su due schede la quota risultava
+    % pagata da un membro che, secondo [IMPIANTI], non possedeva nulla - VAN
+    % negativo per lui, e doppio impianto gratis per un altro.
+    %
+    % Il controllo va in UNA direzione sola, e non e' una svista: [MEMBRI] ha
+    % una cella per membro, quindi chi possiede due impianti non puo'
+    % dichiararli entrambi. "Il membro dichiara un impianto che non e' suo" e'
+    % un errore; "un impianto non e' dichiarato da nessuno" non lo e'.
     if ismember("impianto", string(M.Properties.VariableNames))
         righeM = M.Properties.UserData;
         for i = find((strlength(M.impianto) > 0).')
-            if ~any(P.id == M.impianto(i))
+            j = find(P.id == M.impianto(i), 1);
+            if isempty(j)
                 problemi(end+1) = sprintf( ...
                     'riga %d: "%s" rimanda all''impianto %s, che non esiste in [IMPIANTI]', ...
                     righeM(i), M.nome_csv(i), M.impianto(i)); %#ok<AGROW>
+            elseif P.proprietario(j) ~= M.nome_csv(i)
+                problemi(end+1) = sprintf( ...
+                    ['riga %d: "%s" dichiara l''impianto %s, ma in [IMPIANTI] ' ...
+                     '(riga %d) quell''impianto risulta di "%s". Le due colonne ' ...
+                     'devono concordare: il modello usa proprietario, quindi ' ...
+                     'chi possiede davvero %s e'' "%s"'], ...
+                    righeM(i), M.nome_csv(i), M.impianto(i), righe(j), ...
+                    P.proprietario(j), P.id(j), P.proprietario(j)); %#ok<AGROW>
             end
         end
     end

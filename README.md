@@ -696,7 +696,26 @@ quando RAMP verrà aggiornato). Vedi `requirements.txt` (freeze completo) e
 
 **MATLAB:** base + **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`,
 richiesti da Nucleolo e Variance Least Core). `irr_bisection.m` evita la dipendenza dalla
-Financial Toolbox per il calcolo dell'IRR in `optimizer_PV.m`.
+Financial Toolbox per il calcolo dell'IRR, usato sia da `optimizer_PV.m` sia da
+`compute_financial_metrics.m` (§3v).
+
+**Un controllo aggiunto, e cosa ha trovato.** `[MEMBRI].impianto` e
+`[IMPIANTI].proprietario` descrivono lo stesso fatto — chi possiede cosa — da capi
+opposti, ma il modello usa **solo** la seconda (`costruisci_impianti_struct` →
+`load_cer_data`). Finché nessuno le confrontava, la prima poteva dire un'altra cosa senza
+conseguenze visibili: `load_cer_input` verificava solo che puntasse a un `id` esistente.
+Il confronto è stato aggiunto, ed era violato in `CER_0_7_0` e `CER_1_6_0` — PV06
+risultava di `office_1_kWh` in `[IMPIANTI]` ma dichiarato da `retail_1_kWh` in
+`[MEMBRI]`, che ne aveva pure pagato la quota. È rimasto invisibile finché
+`quota_inv_EUR` non è stata letta da nessuno; la §3v è la prima cosa che la legge, e ne
+ricavava un VAN negativo per un membro che non possedeva nulla. Le due schede sono state
+corrette assegnando PV06 a `retail_1_kWh`, il che **cambia i loro risultati energetici**
+(l'energia condivisa scende del ~60%, perché PV06 finisce dietro il contatore di un
+commerciale che se ne autoconsuma buona parte invece che dietro quello di un ufficio già
+coperto da PV04). Il controllo è in una direzione sola: `[MEMBRI]` ha una cella per
+membro, quindi chi possiede due impianti non può dichiararli entrambi — «il membro
+dichiara un impianto che non è suo» è un errore, «un impianto non è dichiarato da
+nessuno» non lo è.
 
 ## 11. Output prodotti
 
@@ -843,11 +862,41 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   primo ordine sul risultato — con una potenza sola al posto di due, i pesi α/β
   passerebbero da 0.81/0.19 a 0.63/0.37 e il prosumer riceverebbe quasi il doppio
   ([GUIDA §10.6](GUIDA_modelli_distribuzione.md)).
-- **I costi di investimento sono dichiarati ma non usati.** `[INVESTIMENTO]` e le colonne
-  `capex_EUR` / `quota_inv_EUR` sono lette e validate, ma `MAIN.m` si ferma al flusso di
-  cassa annuo: non calcola NPV, IRR né payback. È anche la ragione dell'ipotesi 3 di
-  `fairness_index_bm` ("costi di investimento per membro ASSENTI: `D_i` calcolato sui
-  benefici LORDI"), che resta attiva finché quei campi non alimentano un calcolo.
+- **I costi di investimento alimentano ora un calcolo — ma solo uno.** `MAIN.m` §3v
+  attualizza il flusso di cassa per membro e produce VAN, TIR e tempo di ritorno
+  (`compute_financial_metrics.m`), leggendo `[MEMBRI].quota_inv_EUR` come esborso
+  all'anno 0 e `[INVESTIMENTO].tasso_sconto` / `vita_utile_anni` come parametri. Restano
+  fuori: `capex_EUR` e `opex_EUR_anno` di `[IMPIANTI]` (usati solo se compilati — oggi
+  sono a `?`, e l'OPEX si ripiega su `om_variabile_EUR_MWp_anno × kWp`), tutti i costi
+  unitari di `[INVESTIMENTO]`, e `om_fisso_EUR_anno`, che viene da `optimizer_PV.m` ed è
+  di taglia industriale: cinquemila euro l'anno su una famiglia da 12 kWp non sono un
+  costo, sono un errore di scala. **L'ipotesi 3 di `fairness_index_bm` resta attiva**
+  ("costi di investimento per membro ASSENTI: `D_i` calcolato sui benefici LORDI"): la
+  §3v non la rimuove, perché gli indicatori di equità continuano deliberatamente a
+  ragionare sui benefici lordi — sono due domande diverse, chi prende quanto e a chi
+  conviene investire.
+- **Il perimetro del flusso di cassa è l'investimento, non la CER.** È una scelta, e
+  cambia il verdetto: sui prosumer di `CER_2_5_0` la quota di incentivo vale il 2-3% del
+  flusso annuo, contro il 60-90% della vendita dell'eccedenza e il resto di risparmio da
+  autoconsumo. Valutare i 42.000 € dell'industria sul solo incentivo darebbe un tempo di
+  ritorno oltre la vita utile per un impianto che rientra in 3,7 anni. Il **risparmio da
+  autoconsumo** non esisteva in nessuna variabile prima della §3v (`costUser` è calcolato
+  sul carico *lordo*, perché serve da baseline agli indicatori): si ottiene da
+  `loadUsers - loadForShare` valutato al profilo prezzi della tariffa del membro.
+- **I flussi sono costanti su vent'anni.** `escalation_energia`, `inflazione_opex` e
+  `degrado_pv_pct_anno` sono dichiarati nello scenario ma **non applicati**, e compaiono
+  fra le ipotesi attive stampate sotto la tabella. Sono tre parametri non tarati che,
+  composti su vent'anni, muovono il VAN più di quanto lo muova la scelta del metodo di
+  ripartizione — cioè proprio la grandezza che il progetto vuole confrontare. Si
+  accendono da `opts` senza toccare la funzione. Nota: l'escalation **non andrebbe
+  comunque** applicata alla quota di incentivo, perché la TIP è regolata e si muove al
+  contrario del prezzo dell'energia (`max(0; 180 − Pz)`).
+- **Vent'anni sono insieme il dato di scheda e il periodo di incentivazione** (Regole
+  Operative GSE §2.2.1, p. 35). Le due cose coincidono per fortuna, non per costruzione:
+  se una scheda dichiarasse una vita utile diversa dal periodo incentivato, il flusso
+  costante smetterebbe di essere una semplificazione innocua, perché dopo il ventesimo
+  anno la quota di incentivo sparisce. (`optimizer_PV.m` usa 30 anni scritti a mano: è un
+  altro ramo del progetto, e la scheda vince.)
 - **Weighted Solidarity — la componente di solidarietà è un proxy debole.** Il modello
   di Marrasso classifica gli utenti "a rischio povertà energetica" dal costo unitario
   in bolletta `Cu`; nel paper quel dato viene da bollette reali e varia di ~4× tra i

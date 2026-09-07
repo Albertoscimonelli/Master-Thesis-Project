@@ -506,6 +506,28 @@ function problemi = valida_impianti(CFG)
             righe(i), P.id(i)); %#ok<AGROW>
     end
 
+    % --- POD: colonna FACOLTATIVA --------------------------------------------
+    % Serve ad aggregare le sezioni collegate allo stesso punto di connessione
+    % PRIMA di scegliere lo scaglione della tariffa (Regole Operative GSE
+    % 16/07/2025 par. 1.2.1.2; il conto sta in cer_tip_bracket_power.m). La
+    % colonna puo' mancare del tutto, e allora una riga vale un impianto.
+    %
+    % Se pero' c'e', non puo' restare a '?'. Qui la distinzione fra i due segni
+    % della scheda smette di essere formale: '-' dice "questo impianto ha un
+    % punto di connessione tutto suo" ed e' un dato, '?' dice "non lo so" e
+    % lascerebbe l'impianto fuori da un'aggregazione che potrebbe cambiargli lo
+    % scaglione - in silenzio, perche' a valle i due casi si assomigliano.
+    if ismember("pod", string(P.Properties.VariableNames)) && ...
+       isfield(CFG, 'incognito') && isfield(CFG.incognito, 'impianti') && ...
+       isfield(CFG.incognito.impianti, 'pod')
+        for i = find(CFG.incognito.impianti.pod(:).')
+            problemi(end+1) = sprintf( ...
+                ['riga %d: impianto %s con pod a ''?'': indicare il punto di ' ...
+                 'connessione, oppure ''-'' se l''impianto ne ha uno suo'], ...
+                righe(i), P.id(i)); %#ok<AGROW>
+        end
+    end
+
     if ~isfield(CFG, 'membri') || ~istable(CFG.membri) || ...
        ~ismember("nome_csv", string(CFG.membri.Properties.VariableNames))
         return;

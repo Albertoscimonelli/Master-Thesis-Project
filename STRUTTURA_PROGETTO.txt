@@ -157,6 +157,12 @@ Project/
 |-- allocate_shared_energy.m            [helper chiavi dinamiche] ripartizione oraria dell'energia
 |                                       condivisa con cap al consumo (algoritmo iterativo di Fig. 2)
 |-- load_zonal_price.m                  Prezzo zonale orario MGP, allineato alla griglia oraria
+|-- cer_tip_bracket_power.m             Potenza che sceglie lo scaglione TP_base/CAP: quella del
+|                                       SINGOLO impianto, non la somma di comunita' (Regole
+|                                       Operative GSE 16/07/2025 par. 2.2.2.1.2). Aggrega per POD
+|                                       se [IMPIANTI].pod e' dichiarata (par. 1.2.1.2) e si ferma
+|                                       se gli impianti cadono in scaglioni diversi, caso che il
+|                                       modello non approssima (README par. 14.4.1)
 |-- compute_cer_incentive.m             Tariffa incentivante CER oraria TIP_h (eq. 3.1).
 |                                       MAIN.m la chiama con F = 0: la tariffa che
 |                                       restituisce e' quella LORDA, cioe' quella dei
@@ -569,8 +575,10 @@ Pipeline a sezioni indipendenti, RIPETUTA PER OGNI CER:
   0a) Configurazione (percorsi, costanti, parametri economici)
   1) Caricamento profili di carico + generazione PV; assegnazione degli
      impianti PV ai proprietari con autoconsumo (vedi Sezione 7)
-  1c) Prezzo zonale orario (load_zonal_price.m) e tariffa incentivante CER
-     oraria TIP_h (compute_cer_incentive.m, eq. 3.1) -> P_CER_h
+  1c) Prezzo zonale orario (load_zonal_price.m), potenza che sceglie lo
+     scaglione (cer_tip_bracket_power.m: quella del singolo impianto) e
+     tariffa incentivante CER oraria TIP_h (compute_cer_incentive.m,
+     eq. 3.1) -> P_CER_h
   2) Energia condivisa/venduta (al netto dell'autoconsumo del proprietario)
   3) Analisi economica (ricavi mensili/annuali, incentivo orario P_CER_h)
   3b/3c/3d/3e) Ripartizione dell'incentivo CER: Shapley value, Nucleolo,
@@ -1091,7 +1099,11 @@ stampano se non si passa opts.quiet.
                             terziario/commerciale/industriale si'
                             (opts.categorieImpresa per sovrascrivere). Un solo
                             insieme di impianti invece dei due della norma,
-                            perche' il modello applica una sola TIP.
+                            perche' il modello applica una sola TIP - il che
+                            ora non e' piu' un'assunzione ma una condizione
+                            verificata a ogni esecuzione da
+                            cer_tip_bracket_power.m, che si ferma se gli
+                            impianti cadono in scaglioni diversi.
                             Chiamato da MAIN.m 3u; esito in RESULTS(i).soglia.
 
 --------------------------------------------------------------------------------
@@ -1267,12 +1279,37 @@ nessun cambiamento funzionale.
                             tenendo l'ultima occorrenza dei timestamp
                             duplicati e lasciando a retime() il completamento
                             per interpolazione dell'ora mancante di marzo.
+  cer_tip_bracket_power.m  Decide QUALE POTENZA guarda lo scaglione, e non
+                            quanto vale la tariffa (che resta in
+                            compute_cer_incentive.m: una sola sorgente per i
+                            coefficienti). Lo scaglione e' dell'IMPIANTO, "in
+                            base al valore della potenza impianto/sezione della
+                            medesima UP" (par. 2.2.2.1.2): prima si sommavano
+                            le potenze, e su CER_0_7_0 (225,6 kW in sette
+                            impianti, il maggiore da 76) e CER_1_6_0 questo
+                            faceva finire l'intera comunita' in 70/110 invece
+                            che in 80/120 - dieci EUR/MWh in ogni ora, perche'
+                            CAP - TP_base vale 40 in tutti gli scaglioni.
+                            L'unita' e' il punto di connessione: se
+                            [IMPIANTI].pod e' dichiarata, le righe che lo
+                            condividono si sommano prima (par. 1.2.1.2).
+                            NON modella l'artato frazionamento (par. 1.2.1.5:
+                            serve la particella catastale) ne' il caso di
+                            impianti in scaglioni DIVERSI, che vorrebbe una
+                            tariffa per impianto e l'energia condivisa
+                            ripartita per UP in ordine di entrata in esercizio
+                            (par. 2.2.2 e Appendice A). Quel caso non si
+                            approssima: la funzione si ferma con un errore che
+                            rimanda a README par. 14.4.1.
+
   compute_cer_incentive.m  Calcola la tariffa incentivante premio oraria
                             TIP_h (eq. 3.1: scaglioni di potenza TP_base/CAP,
                             correzione zonale FC_zonale, fattore di riduzione
                             F). Usata in MAIN.m §1c per ottenere P_CER_h, che
                             sostituisce l'incentivo costante come input di
-                            tutti i modelli di ripartizione.
+                            tutti i modelli di ripartizione. La potenza che
+                            seleziona lo scaglione gliela passa MAIN.m, e la
+                            calcola cer_tip_bracket_power.m.
                             FATTORE F: la regola c'e' (cer_reduction_factor.m)
                             ma NON si applica qui. F non e' una proprieta'
                             della tariffa: non colpisce l'energia dei punti di

@@ -683,8 +683,8 @@ di `Tcost` (§11) ed è la baseline `y_noLEM` degli indicatori di equità — pr
 assumeva la monoraria per tutti.
 
 **Due valori ora derivati invece che scritti a mano.** Se `tip_potenza_rif_kW` è `?`, lo
-scaglione della tariffa TIP usa la potenza installata totale di `[IMPIANTI]`, che si
-aggiorna da sola; se `tip_fattore_riduzione` è `?`, non si applica riduzione.
+scaglione della tariffa TIP si sceglie sulla potenza del **singolo impianto** di
+`[IMPIANTI]` (§14.4.1); se `tip_fattore_riduzione` è `?`, non si applica riduzione.
 
 ## 10. Dipendenze e requisiti
 
@@ -834,9 +834,10 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   condivisa e la scheda dichiara il conto capitale per la *comunità*, non per singolo
   impianto. Con quel dato per impianto la generalizzazione è una chiamata in più a
   `premium_excess_threshold` e la somma delle due `.importoEccedente`.
-- Lo scaglione della tariffa TIP usa la **potenza installata totale**. Con impianti di
-  taglia molto diversa andrebbe valutato per impianto; ora che `[IMPIANTI]` porta il kWp
-  di ciascuno, il dato per farlo esiste già (§14.4).
+- Lo scaglione della tariffa TIP si sceglie sulla potenza del **singolo impianto**, come
+  vuole il par. 2.2.2.1.2. Resta non implementato il caso in cui gli impianti cadano in
+  scaglioni **diversi**: lì servirebbero una tariffa per impianto e la ripartizione
+  dell'energia condivisa per UP. Il modello non lo approssima, si ferma (§14.4.1).
 - Le potenze usate da Remuneration Model 1 restano **da confermare**: potenza di prelievo
   in `[MEMBRI].P_prel_kW`, potenza di generazione in `[IMPIANTI].kWp`. Hanno impatto di
   primo ordine sul risultato — con una potenza sola al posto di due, i pesi α/β
@@ -991,10 +992,85 @@ implementa: dichiara le potenze.
 - **`plot_benefit_network.m`**: dispone i giocatori su una circonferenza con
   un'etichetta ciascuno. A 100 nodi il grafico diventa illeggibile — servirà una
   visualizzazione aggregata o per gruppi.
-- **Scaglione della tariffa TIP**: è ancora uno scalare unico di comunità (la potenza
-  installata totale, o `tip_potenza_rif_kW` se dichiarato). Con molti impianti di taglia
-  diversa la tariffa andrebbe valutata per impianto; ora che `[IMPIANTI]` porta il kWp di
-  ciascuno, il dato per farlo esiste già.
+- **Scaglione della tariffa TIP — corretto, con un caso lasciato scoperto per scelta.**
+  Lo scaglione `TP_base`/`CAP` si sceglie sulla potenza del **singolo impianto**
+  (`cer_tip_bracket_power.m`), non più sulla somma di comunità. Il dettaglio sta nel
+  paragrafo qui sotto: è la voce più lunga di questa sezione perché la parte non
+  implementata va scritta da qualche parte, e questo è il posto a cui rimanda il
+  messaggio d'errore del codice.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
   `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §12) — con 100
   profili la varianza tra run diventa più visibile nei risultati aggregati.
+
+#### 14.4.1 Lo scaglione della TIP: cosa fa il modello e cosa no
+
+**La regola.** `TP_base` e `CAP` si scelgono «in base al valore della *potenza
+impianto/sezione della medesima UP*» (Regole Operative GSE del 16 luglio 2025,
+§2.2.2.1.2): lo scaglione appartiene all'**impianto**, non alla comunità.
+
+| Potenza impianto | `TP_base` | `CAP` |
+|---|---|---|
+| P ≤ 200 kW | 80 €/MWh | 120 €/MWh |
+| 200 < P ≤ 600 kW | 70 €/MWh | 110 €/MWh |
+| P > 600 kW | 60 €/MWh | 100 €/MWh |
+
+**Cos'era sbagliato.** Fino alla correzione `MAIN.m` passava `sum(CFG.impianti.kWp)`. Su
+due schede su sette questo bastava a far scivolare l'intera comunità in uno scaglione che
+il decreto non prevede per quegli impianti: CER_0_7_0 ha sette impianti per 225,6 kW
+complessivi ma il maggiore è da 76 kW, CER_1_6_0 ne ha sei per 213,6 kW. Entrambe
+ricevevano 70/110 invece di 80/120.
+
+Il costo era **esattamente 10 €/MWh in ogni ora**, non in media: poiché `CAP − TP_base`
+vale 40 in tutti e tre gli scaglioni, la spezzata `min(CAP; TP_base + max(0; 180 − Pz))`
+di due scaglioni adiacenti è la stessa curva traslata di dieci, qualunque sia il prezzo
+zonale. Sulle due schede il valore della grande coalizione è salito di +8,5%
+(1694,12 → 1838,26 € e 1797,87 → 1950,73 €), e la differenza coincide con
+`0,010 €/kWh × energia condivisa` fino alla dodicesima cifra — è un'identità, ed è il
+controllo con cui si verifica la correzione.
+
+**Qual è l'unità: il punto di connessione.** «La potenza di un impianto, ai fini
+dell'accesso alla tariffa incentivante, verrà calcolata come somma delle potenze delle
+sezioni che compongono le unità di produzione, alimentate dalla stessa fonte e *collegate
+allo stesso punto di connessione* alla rete elettrica» (§1.2.1.2). L'unità non è quindi la
+riga della scheda, e non è il membro: è il **POD**. Per questo `[IMPIANTI]` accetta una
+colonna facoltativa `pod`: quando c'è, le righe che la condividono si sommano prima di
+scegliere lo scaglione; quando manca, una riga vale un impianto. Sulle schede attuali non
+c'è e non cambierebbe nulla — in CER_0_7_0 `office_1_kWh` possiede PV04 e PV06 da 50,8 kW,
+e 101,6 kW restano nel primo scaglione tanto sommati quanto no.
+
+**Cosa NON è modellato, e perché.**
+
+1. *Artato frazionamento* (§1.2.1.5). Impianti della stessa fonte, su particella catastale
+   medesima o contigua e riconducibili a un unico produttore, contano come «unico
+   impianto» di potenza pari alla somma — anche su POD diversi. Servirebbe la particella
+   catastale, che la scheda non porta; e la norma stessa esclude dalla regola gli impianti
+   «inseriti in distinti edifici/condomini» e quelli «connessi a utenze con potenza in
+   prelievo pari o superiore alla potenza dell'impianto», che senza il dato sull'edificio
+   non si sanno riconoscere. Aggregare per proprietario sarebbe *più* sbagliato che non
+   aggregare: applicherebbe la regola anche dove il decreto la esclude.
+
+2. *Impianti in scaglioni diversi.* È il caso che rende la tariffa non più una sola. Il
+   decreto lo prevede per intero:
+   - una tariffa per impianto — il GSE pubblica «il valore della tariffa premio applicata
+     a ogni impianto incentivato» e «l'energia condivisa incentivabile **ripartita per
+     UP**» (§2.2.2);
+   - la ripartizione dell'energia condivisa fra impianti avviene «a partire dalle
+     immissioni degli impianti di produzione **entrati prima in esercizio**» (Appendice A,
+     definizioni di `E_AC` e `E_ACI`) — una cascata per data di entrata in esercizio, dato
+     che `[IMPIANTI].anno_esercizio` già porta;
+   - il contributo diventa quindi `C_ACI = Σ_p Σ_h E_ACI(p,h) · TIP(p,h)`.
+
+   Non è implementato perché **nessun impianto delle schede supera i 200 kW**: stanno
+   tutti nel primo scaglione, la tariffa resta una sola, e una ripartizione per UP non
+   cambierebbe un solo numero. `cer_tip_bracket_power.m` non lo approssima e non lo tace:
+   verifica che tutti gli impianti condividano lo scaglione e **si ferma** con un errore
+   che rimanda a questo paragrafo. Chi volesse comunque un risultato può dichiarare
+   `[MERCATO].tip_potenza_rif_kW` e imporre uno scaglione unico, sapendo che è
+   un'approssimazione.
+
+   Se un giorno servisse davvero, l'ostacolo non è la formula ma il **gioco cooperativo**:
+   con tariffe diverse per impianto, `v(S)` dipenderebbe da quali impianti possiede la
+   coalizione `S`, e `stratified_expected_value_cer.m` valuta `v` su utenti *fittizi* medi
+   che non possiedono alcun impianto (§4.1.2 di Cremers et al.) — lì la domanda «quali
+   impianti ha questa coalizione» non ha risposta. È lo stesso nodo già affrontato per il
+   fattore F, ma senza la via d'uscita che F aveva.

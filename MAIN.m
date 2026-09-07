@@ -175,16 +175,19 @@ for iCER = 1:N_CER
     ZONA_CER    = CFG.cer.zona_mercato;   % per FC_zonale - deve essere coerente
                                           % con [FILE].prezzi_zonali
 
-    % Potenza che seleziona lo scaglione TP_base/CAP della tariffa. Se la scheda
-    % non la dichiara si usa la potenza installata totale: e' piu' difendibile di
-    % una costante scritta a mano, e si aggiorna da sola quando si aggiungono
-    % impianti. (Con impianti di taglia molto diversa la tariffa andrebbe valutata
-    % per impianto: vedi README §14.4.)
+    % Potenza che seleziona lo scaglione TP_base/CAP della tariffa. Lo scaglione
+    % e' dell'IMPIANTO - "in base al valore della potenza impianto/sezione della
+    % medesima UP", Regole Operative GSE 16/07/2025 par. 2.2.2.1.2 - non della
+    % comunita': sommare le potenze faceva scivolare in 70/110 anche CER da 76 kW
+    % di impianto massimo, solo perche' il TOTALE superava i 200 kW. Il conto, e
+    % la guardia che verifica che tutti gli impianti condividano lo scaglione,
+    % stanno in cer_tip_bracket_power.m.
     if CFG.noto.mercato.tip_potenza_rif_kW
-        P_PV_NOM_KW = CFG.mercato.tip_potenza_rif_kW;
+        potenzaImposta = CFG.mercato.tip_potenza_rif_kW;
     else
-        P_PV_NOM_KW = sum(CFG.impianti.kWp, 'omitnan');
+        potenzaImposta = NaN;
     end
+    [P_PV_NOM_KW, infoTIP] = cer_tip_bracket_power(CFG.impianti, potenzaImposta);
 
     % Il fattore di riduzione F si DERIVA dal contributo in conto capitale
     % (§1c, cer_reduction_factor.m). Qui si legge solo l'eventuale valore
@@ -302,6 +305,33 @@ for iCER = 1:N_CER
     fprintf('  Prezzo zonale medio: %7.2f EUR/MWh\n', mean(Pz_h));
     fprintf('  TIP lorda media:     %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
             mean(P_CER_lordo)*1000, mean(P_CER_lordo));
+
+    % Le potenze che scelgono lo scaglione, una riga per impianto: e' la stessa
+    % informazione che il GSE mette a disposizione del Referente - "il valore
+    % della tariffa premio applicata a ogni impianto incentivato", par. 2.2.2.
+    % La riga del totale c'e' apposta per renderlo visibile: e' il numero che
+    % decideva prima, e su CER_0_7_0 e CER_1_6_0 decideva male.
+    if infoTIP.fonte == "imposta"
+        fprintf('  Scaglione:           potenza imposta in scheda, %.1f kW\n', ...
+                P_PV_NOM_KW);
+    else
+        if infoTIP.aggregato
+            unitaDetta = "impianto (righe aggregate per POD)";
+        else
+            unitaDetta = "impianto";
+        end
+        fprintf('  Scaglione per %s, potenza di riferimento %.1f kW:\n', ...
+                unitaDetta, P_PV_NOM_KW);
+        for k = 1:numel(infoTIP.unita)
+            fprintf('    %-14s %7.1f kW   scaglione %d\n', ...
+                    infoTIP.unita(k), infoTIP.potenze(k), infoTIP.scaglione(k));
+        end
+        if numel(infoTIP.unita) > 1
+            fprintf('    %-14s %7.1f kW   (somma: NON sceglie lo scaglione)\n', ...
+                    "TOTALE", sum(infoTIP.potenze));
+        end
+    end
+
     if F_RIDUZIONE > 0
         fprintf('  Fattore F:           %7.3f', F_RIDUZIONE);
         if ~isnan(F_IMPOSTO)

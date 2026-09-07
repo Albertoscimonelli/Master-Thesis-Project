@@ -335,6 +335,31 @@ id | nome_csv             | ruolo | categoria   | archetipo         | tariffa   
 # file_produzione  export orario PVsyst (colonna E_Grid), cercato in
 #                  [FILE].cartella_pv
 # capex_EUR / opex_EUR_anno  trasportati, vedi [INVESTIMENTO]
+#
+# kWp  e' la potenza del SINGOLO impianto, ed e' quella che sceglie lo scaglione
+#      TP_base/CAP della tariffa premio: "in base al valore della potenza
+#      impianto/sezione della medesima UP" (Regole Operative GSE 16/07/2025,
+#      par. 2.2.2.1.2). NON si sommano le potenze della comunita'.
+#
+# pod  COLONNA FACOLTATIVA, non presente nelle schede operative. Ai fini della
+#      tariffa un impianto e' "la somma delle potenze delle sezioni ...
+#      collegate allo stesso punto di connessione alla rete elettrica"
+#      (par. 1.2.1.2): se due righe descrivono due sezioni dello stesso POD, la
+#      potenza che conta e' la loro somma. Dichiarando la colonna, le righe con
+#      lo stesso pod vengono aggregate prima di scegliere lo scaglione.
+#
+#      Senza la colonna, una riga vale un impianto - che e' il significato del
+#      campo id, e sulle schede attuali non cambia nulla. Se la colonna c'e',
+#      pero', ogni riga deve dire qualcosa: '-' per "punto di connessione tutto
+#      suo", il codice del POD per condividerlo. Un '?' viene rifiutato, perche'
+#      un POD ignoto cambierebbe lo scaglione senza farsi notare.
+#
+#      Esempio: due sezioni da 12 e 190 kW sullo stesso POD sono un impianto da
+#      202 kW -> secondo scaglione (70/110), non due volte il primo (80/120).
+#
+#      id   | proprietario | kWp | ... | pod
+#      SEZA | office_1_kWh |  12 | ... | POD_IT001E00123456
+#      SEZB | office_1_kWh | 190 | ... | POD_IT001E00123456
 # =============================================================================
 id   | proprietario         | kWp | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
 PV01 | small_industry_1_kWh |  20 | Salvaplast_Project_VD7_HourlyRes_1.CSV |    ? |      ? |           2025 |         ? |             ?

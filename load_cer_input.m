@@ -408,9 +408,17 @@ function problemi = valida_membri(CFG)
     % --- Domini ammessi ------------------------------------------------------
     problemi = [problemi, ...
         controlla_dominio(M.ruolo,     ["C","P","E"], "ruolo",     "[MEMBRI]", righe)];
+    % Il dominio si e' allargato con le tre forme giuridiche che il Decreto
+    % CACER esenta dal fattore F ma che una tipologia di CONSUMO non sa
+    % esprimere: un ente del terzo settore consuma come un terziario, e sotto
+    % "terziario" verrebbe tassato come un'impresa. L'aggiunta e' puramente
+    % additiva - le schede esistenti restano valide - e le tre voci nuove sono
+    % esenti come domestico (persone fisiche) e PA (enti territoriali).
+    % Vedi cer_reduction_factor.m e README par. 7.5.
     problemi = [problemi, ...
         controlla_dominio(M.categoria, ["domestico","terziario","commerciale", ...
-                                        "industriale","PA"], ...
+                                        "industriale","PA", ...
+                                        "terzo_settore","religioso","ambientale"], ...
                           "categoria", "[MEMBRI]", righe)];
     problemi = [problemi, ...
         controlla_dominio(M.tariffa,   ["MONORARIA","BIORARIA","ORARIO_VARIABILE"], ...
@@ -498,6 +506,28 @@ function problemi = valida_impianti(CFG)
             righe(i), P.id(i)); %#ok<AGROW>
     end
 
+    % --- POD: colonna FACOLTATIVA --------------------------------------------
+    % Serve ad aggregare le sezioni collegate allo stesso punto di connessione
+    % PRIMA di scegliere lo scaglione della tariffa (Regole Operative GSE
+    % 16/07/2025 par. 1.2.1.2; il conto sta in cer_tip_bracket_power.m). La
+    % colonna puo' mancare del tutto, e allora una riga vale un impianto.
+    %
+    % Se pero' c'e', non puo' restare a '?'. Qui la distinzione fra i due segni
+    % della scheda smette di essere formale: '-' dice "questo impianto ha un
+    % punto di connessione tutto suo" ed e' un dato, '?' dice "non lo so" e
+    % lascerebbe l'impianto fuori da un'aggregazione che potrebbe cambiargli lo
+    % scaglione - in silenzio, perche' a valle i due casi si assomigliano.
+    if ismember("pod", string(P.Properties.VariableNames)) && ...
+       isfield(CFG, 'incognito') && isfield(CFG.incognito, 'impianti') && ...
+       isfield(CFG.incognito.impianti, 'pod')
+        for i = find(CFG.incognito.impianti.pod(:).')
+            problemi(end+1) = sprintf( ...
+                ['riga %d: impianto %s con pod a ''?'': indicare il punto di ' ...
+                 'connessione, oppure ''-'' se l''impianto ne ha uno suo'], ...
+                righe(i), P.id(i)); %#ok<AGROW>
+        end
+    end
+
     if ~isfield(CFG, 'membri') || ~istable(CFG.membri) || ...
        ~ismember("nome_csv", string(CFG.membri.Properties.VariableNames))
         return;
@@ -513,14 +543,37 @@ function problemi = valida_impianti(CFG)
         end
     end
 
-    % --- Riferimenti da [MEMBRI] risolti ------------------------------------
+    % --- Riferimenti da [MEMBRI] risolti, E CONCORDI ------------------------
+    % Due colonne descrivono lo stesso fatto - chi possiede cosa - da capi
+    % opposti: [MEMBRI].impianto e [IMPIANTI].proprietario. Il modello usa solo
+    % la seconda (costruisci_impianti_struct -> load_cer_data), quindi finche'
+    % nessuno le confronta la prima puo' dire un'altra cosa senza conseguenze
+    % visibili... fino al giorno in cui qualcosa legge anche le colonne che le
+    % stanno accanto. E' successo con [MEMBRI].quota_inv_EUR e l'analisi
+    % finanziaria della par. 3v di MAIN.m: su due schede la quota risultava
+    % pagata da un membro che, secondo [IMPIANTI], non possedeva nulla - VAN
+    % negativo per lui, e doppio impianto gratis per un altro.
+    %
+    % Il controllo va in UNA direzione sola, e non e' una svista: [MEMBRI] ha
+    % una cella per membro, quindi chi possiede due impianti non puo'
+    % dichiararli entrambi. "Il membro dichiara un impianto che non e' suo" e'
+    % un errore; "un impianto non e' dichiarato da nessuno" non lo e'.
     if ismember("impianto", string(M.Properties.VariableNames))
         righeM = M.Properties.UserData;
         for i = find((strlength(M.impianto) > 0).')
-            if ~any(P.id == M.impianto(i))
+            j = find(P.id == M.impianto(i), 1);
+            if isempty(j)
                 problemi(end+1) = sprintf( ...
                     'riga %d: "%s" rimanda all''impianto %s, che non esiste in [IMPIANTI]', ...
                     righeM(i), M.nome_csv(i), M.impianto(i)); %#ok<AGROW>
+            elseif P.proprietario(j) ~= M.nome_csv(i)
+                problemi(end+1) = sprintf( ...
+                    ['riga %d: "%s" dichiara l''impianto %s, ma in [IMPIANTI] ' ...
+                     '(riga %d) quell''impianto risulta di "%s". Le due colonne ' ...
+                     'devono concordare: il modello usa proprietario, quindi ' ...
+                     'chi possiede davvero %s e'' "%s"'], ...
+                    righeM(i), M.nome_csv(i), M.impianto(i), righe(j), ...
+                    P.proprietario(j), P.id(j), P.proprietario(j)); %#ok<AGROW>
             end
         end
     end

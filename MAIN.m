@@ -63,7 +63,8 @@ fprintf('  %s\n', SCHEDE);
 % esecuzione il workspace contiene solo l'ULTIMA comunita': senza, i confronti
 % fra CER non avrebbero piu' i dati su cui lavorare.
 RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
-                 'Tcmp', {}, 'Tfair', {}, 'metodi', {}, ...
+                 'Tcmp', {}, 'Tfair', {}, 'Tfin', {}, 'metodi', {}, ...
+                 'soglia', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
                  'isProsumer', {}, 'tempo_analisi_s', {}, ...
@@ -96,6 +97,7 @@ FIG = struct( ...
     'dettaglio',    false, ...   % 17 grafici di dettaglio, uno per metodo (opt-in)
     'metodi',       false,  ...   % confronto delle quote fra i sedici metodi
     'equita',       false,  ...   % indici, scostamento dal merito, trade-off
+    'finanza',      false,  ...   % VAN, tempo di ritorno, composizione del flusso
     'confrontoCER', true,  ...   % confronto fra comunita' (§7, dopo il ciclo)
     'esporta',      true,  ...   % salva le figure su file
     'chiudi',       false,  ...   % chiude le finestre dopo il salvataggio
@@ -175,23 +177,29 @@ for iCER = 1:N_CER
     ZONA_CER    = CFG.cer.zona_mercato;   % per FC_zonale - deve essere coerente
                                           % con [FILE].prezzi_zonali
 
-    % Potenza che seleziona lo scaglione TP_base/CAP della tariffa. Se la scheda
-    % non la dichiara si usa la potenza installata totale: e' piu' difendibile di
-    % una costante scritta a mano, e si aggiorna da sola quando si aggiungono
-    % impianti. (Con impianti di taglia molto diversa la tariffa andrebbe valutata
-    % per impianto: vedi README §14.4.)
+    % Potenza che seleziona lo scaglione TP_base/CAP della tariffa. Lo scaglione
+    % e' dell'IMPIANTO - "in base al valore della potenza impianto/sezione della
+    % medesima UP", Regole Operative GSE 16/07/2025 par. 2.2.2.1.2 - non della
+    % comunita': sommare le potenze faceva scivolare in 70/110 anche CER da 76 kW
+    % di impianto massimo, solo perche' il TOTALE superava i 200 kW. Il conto, e
+    % la guardia che verifica che tutti gli impianti condividano lo scaglione,
+    % stanno in cer_tip_bracket_power.m.
     if CFG.noto.mercato.tip_potenza_rif_kW
-        P_PV_NOM_KW = CFG.mercato.tip_potenza_rif_kW;
+        potenzaImposta = CFG.mercato.tip_potenza_rif_kW;
     else
-        P_PV_NOM_KW = sum(CFG.impianti.kWp, 'omitnan');
+        potenzaImposta = NaN;
     end
+    [P_PV_NOM_KW, infoTIP] = cer_tip_bracket_power(CFG.impianti, potenzaImposta);
 
-    % Il fattore di riduzione F non e' ancora definito per intero: finche' nella
-    % scheda vale '?', nessuna riduzione viene applicata.
+    % Il fattore di riduzione F si DERIVA dal contributo in conto capitale
+    % (§1c, cer_reduction_factor.m). Qui si legge solo l'eventuale valore
+    % imposto a mano nella scheda, che ha la precedenza sulla derivazione:
+    % serve per riprodurre un conguaglio GSE gia' emesso senza dover ricostruire
+    % l'intensita' del contributo che l'ha generato. NaN = non imposto.
     if CFG.noto.mercato.tip_fattore_riduzione
-        F_RIDUZIONE = CFG.mercato.tip_fattore_riduzione;
+        F_IMPOSTO = CFG.mercato.tip_fattore_riduzione;
     else
-        F_RIDUZIONE = 0;
+        F_IMPOSTO = NaN;
     end
 
     % --- Modalita tariffarie PUN ---------------------------------------------
@@ -250,18 +258,100 @@ for iCER = 1:N_CER
     %  Il prezzo zonale orario (mercato del giorno prima, MGP) alimenta la
     %  formula 3.1 della tariffa incentivante premio: al posto di un incentivo
     %  CER costante si ottiene un vettore orario P_CER_h, coerente con la griglia
-    %  oraria canonica tGrid. Vedi compute_cer_incentive.m per i dettagli e per
-    %  il TODO sul fattore di riduzione F.
+    %  oraria canonica tGrid. Vedi compute_cer_incentive.m per i dettagli.
+    %
+    %  FATTORE F: UNA TARIFFA SOLA NON BASTA PIU'
+    %    Con un contributo in conto capitale la tariffa e' decurtata di (1-F),
+    %    ma NON sull'energia afferente ai punti di prelievo esenti - persone
+    %    fisiche ed enti (cer_reduction_factor.m). La tariffa smette quindi di
+    %    essere una grandezza sola e diventa due:
+    %
+    %      P_CER_lordo  tariffa piena, quella che spetta ai membri ESENTI
+    %      P_CER_h      tariffa EFFICACE di comunita', cioe' la lorda pesata
+    %                   ora per ora sulla quota esente del carico residuo
+    %
+    %    P_CER_h e' quella che vale per il RICAVO (§3) e per i metodi che si
+    %    limitano a spartire v(N). I metodi che valutano anche le SOTTO-
+    %    coalizioni ricevono invece la lorda piu' la maschera di esenzione,
+    %    perche' ogni coalizione ha la propria quota esente: vedi
+    %    cer_shared_value.m. Le due strade danno lo stesso v(N) per
+    %    costruzione, ed e' verificato da un assert in §3b.
     %  ========================================================================
 
     zonalPriceFile = fullfile(CFG.radice, CFG.file.prezzi_zonali);
-    Pz_h    = load_zonal_price(zonalPriceFile, tGrid);
-    P_CER_h = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, F_RIDUZIONE);
+    Pz_h           = load_zonal_price(zonalPriceFile, tGrid);
+    P_CER_lordo    = compute_cer_incentive(Pz_h, P_PV_NOM_KW, ZONA_CER, 0);
+
+    % --- Fattore F e membri esenti ------------------------------------------
+    [F_RIDUZIONE, esenteF, infoF] = cer_reduction_factor( ...
+        CFG.investimento.contributo_conto_capitale_pct, M.categoria);
+
+    if ~isnan(F_IMPOSTO)
+        F_RIDUZIONE = F_IMPOSTO;   % la scheda impone F: vince sulla derivazione
+    end
+
+    % Quota esente del carico residuo di COMUNITA', ora per ora. Nelle ore a
+    % carico nullo non c'e' energia condivisa da attribuire e la quota resta 0:
+    % moltiplica comunque uno zero.
+    wEsN     = zeros(N_HOURS, 1);
+    okLoad   = loadTotalForShare > 0;
+    wEsN(okLoad) = sum(loadForShare(okLoad, esenteF), 2) ./ loadTotalForShare(okLoad);
+
+    P_CER_h = P_CER_lordo .* (1 - F_RIDUZIONE * (1 - wEsN));
+
+    % Le sole opzioni di gioco: chi le riceve valuta v(S) con la quota esente
+    % della coalizione, chi non le riceve lavora gia' sulla tariffa efficace.
+    optF = struct('esente', esenteF, 'F', F_RIDUZIONE);
 
     fprintf('\n=== Tariffa incentivante CER (TIP_h) ===\n');
     fprintf('  Prezzo zonale medio: %7.2f EUR/MWh\n', mean(Pz_h));
-    fprintf('  TIP_h media:         %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
-            mean(P_CER_h)*1000, mean(P_CER_h));
+    fprintf('  TIP lorda media:     %7.2f EUR/MWh  (%.4f EUR/kWh)\n', ...
+            mean(P_CER_lordo)*1000, mean(P_CER_lordo));
+
+    % Le potenze che scelgono lo scaglione, una riga per impianto: e' la stessa
+    % informazione che il GSE mette a disposizione del Referente - "il valore
+    % della tariffa premio applicata a ogni impianto incentivato", par. 2.2.2.
+    % La riga del totale c'e' apposta per renderlo visibile: e' il numero che
+    % decideva prima, e su CER_0_7_0 e CER_1_6_0 decideva male.
+    if infoTIP.fonte == "imposta"
+        fprintf('  Scaglione:           potenza imposta in scheda, %.1f kW\n', ...
+                P_PV_NOM_KW);
+    else
+        if infoTIP.aggregato
+            unitaDetta = "impianto (righe aggregate per POD)";
+        else
+            unitaDetta = "impianto";
+        end
+        fprintf('  Scaglione per %s, potenza di riferimento %.1f kW:\n', ...
+                unitaDetta, P_PV_NOM_KW);
+        for k = 1:numel(infoTIP.unita)
+            fprintf('    %-14s %7.1f kW   scaglione %d\n', ...
+                    infoTIP.unita(k), infoTIP.potenze(k), infoTIP.scaglione(k));
+        end
+        if numel(infoTIP.unita) > 1
+            fprintf('    %-14s %7.1f kW   (somma: NON sceglie lo scaglione)\n', ...
+                    "TOTALE", sum(infoTIP.potenze));
+        end
+    end
+
+    if F_RIDUZIONE > 0
+        fprintf('  Fattore F:           %7.3f', F_RIDUZIONE);
+        if ~isnan(F_IMPOSTO)
+            fprintf('   (imposto in scheda)\n');
+        else
+            fprintf('   (conto capitale al %.1f%% dell''investimento)\n', infoF.pct);
+        end
+        fprintf('  Membri esenti da F:  %d su %d  (%s)\n', ...
+                sum(esenteF), nUsers, strjoin(userNames(esenteF), ', '));
+        fprintf('  Quota esente del carico residuo: %.1f%% (media pesata sul condiviso)\n', ...
+                100 * sum(min(genPVSurplus, loadTotalForShare) .* wEsN) ...
+                    / max(eps, sum(min(genPVSurplus, loadTotalForShare))));
+        fprintf('  TIP efficace media:  %7.2f EUR/MWh  (%+.1f%% sulla lorda)\n', ...
+                mean(P_CER_h)*1000, 100*(mean(P_CER_h)/mean(P_CER_lordo) - 1));
+    else
+        fprintf('  Fattore F:           %7.3f   (nessun contributo in conto capitale)\n', ...
+                F_RIDUZIONE);
+    end
     fprintf('  TIP_h min / max:     %7.2f / %7.2f EUR/MWh\n', ...
             min(P_CER_h)*1000, max(P_CER_h)*1000);
 
@@ -389,10 +479,14 @@ for iCER = 1:N_CER
     % E' la baseline y_noLEM dell'eq. 19 usata dagli indicatori della §3t. Prima
     % si assumeva la MONORARIA per tutti; ora la differenza fra i membri riflette
     % anche il contratto, non la sola collocazione oraria dei consumi.
+    % iModUser si conserva perche' serve di nuovo in §3v: il risparmio da
+    % autoconsumo va valutato allo stesso prezzo orario con cui qui si valuta la
+    % spesa, altrimenti le due grandezze non sono confrontabili.
     costUser = zeros(nUsers, 1);
+    iModUser = zeros(nUsers, 1);
     for u = 1:nUsers
-        iMod = find(Modalita == M.tariffa(u), 1);
-        costUser(u) = costMat(u, iMod);
+        iModUser(u) = find(Modalita == M.tariffa(u), 1);
+        costUser(u) = costMat(u, iModUser(u));
     end
 
 
@@ -415,7 +509,20 @@ for iCER = 1:N_CER
     %  non e' energia condivisibile con la CER e va esclusa dal gioco.
     %  ========================================================================
 
-    Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_h);
+    Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+
+    % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
+    % tariffa lorda con esenzione applicata coalizione per coalizione (quella
+    % che percorrono Shapley, Nucleolo, Nash, VLC e le tre approssimazioni) e
+    % tariffa efficace di comunita' (quella che ricevono gli altri metodi e il
+    % ricavo della §3). Se divergono, il fattore F si sta applicando due volte
+    % da una parte o sparendo dall'altra - ed e' un errore che senza questo
+    % assert si vedrebbe solo come uno scarto inspiegabile fra i metodi.
+    vGrandEff = sum(min(sum(genForShare, 2), sum(loadForShare, 2)) .* P_CER_h);
+    assert(abs(Sh.vGrand - vGrandEff) <= 1e-6 * max(1, abs(vGrandEff)), ...
+           ['v(N) incoerente fra le due strade del fattore F: EUR %.6f con la ' ...
+            'tariffa lorda piu'' esenzione per coalizione, EUR %.6f con la ' ...
+            'tariffa efficace di comunita''.'], Sh.vGrand, vGrandEff);
     report_allocation(Sh, "Shapley");
 
     % Coerenza con l'analisi economica: il valore distribuito coincide con il
@@ -460,7 +567,7 @@ for iCER = 1:N_CER
     %  quindi STABILE (nessuna sotto-coalizione conviene).
     %  ========================================================================
 
-    Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_h);
+    Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
 
     coreMsg = "fuori dal Core";
     if Nu.inCore, coreMsg = "nel Core (stabile)"; end
@@ -484,7 +591,7 @@ for iCER = 1:N_CER
     %  nash_bargaining_cer.m per i dettagli e i riferimenti.
     %  ========================================================================
 
-    NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_h);
+    NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
     report_allocation(NB, "Nash Bargaining");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
@@ -509,7 +616,8 @@ for iCER = 1:N_CER
     %  Vedi variance_least_core_cer.m per i dettagli.
     %  ========================================================================
 
-    VLC = variance_least_core_cer(genForShare, loadForShare, userNames, P_CER_h);
+    VLC = variance_least_core_cer(genForShare, loadForShare, userNames, ...
+                                  P_CER_lordo, optF);
 
     coreMsgVLC = "fuori dal Core";
     if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
@@ -810,7 +918,8 @@ for iCER = 1:N_CER
     %  degenere quando un consumatore e' superfluo (MC = 0 -> quota nulla).
     %  ========================================================================
 
-    MC = marginal_contribution_cer(genForShare, loadForShare, userNames, P_CER_h);
+    MC = marginal_contribution_cer(genForShare, loadForShare, userNames, ...
+                                   P_CER_lordo, optF);
     report_allocation(MC, "Marginal Contribution", [ ...
         string(sprintf('  %-25s: %.4f  (v(N) / somma dei contributi grezzi)', ...
                        'Fattore di normalizz.', MC.normFactor)), ...
@@ -844,8 +953,10 @@ for iCER = 1:N_CER
     % coalizione e l'approssimazione non ha spazio per sbagliare -- la stima sia
     % esatta. E' cio' che distingue un errore di IMPLEMENTAZIONE da un limite di
     % MODELLO, e con 6 giocatori costa 192 valutazioni di v: si tiene acceso.
-    SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, P_CER_h, ...
-                                        struct('validateStrata', true));
+    optSEV = optF;
+    optSEV.validateStrata = true;
+    SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, ...
+                                        P_CER_lordo, optSEV);
 
     interior   = 2:(nUsers-1);                       % strati intermedi (1..n-2)
     relBiasMax = 100 * max(SEV.strataBias(:, interior) ./ ...
@@ -893,9 +1004,10 @@ for iCER = 1:N_CER
     % e non nascosto in un default.
     optAS = opts_from_config(CFG.governance, CFG.noto.governance, [ ...
         "as_campioni", "M"
-        "as_seed",     "seed"]);
+        "as_seed",     "seed"], optF);
 
-    AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, P_CER_h, optAS);
+    AS = adaptive_sampling_shapley_cer(genForShare, loadForShare, userNames, ...
+                                       P_CER_lordo, optAS);
     report_allocation(AS, "Adaptive Sampling Shapley", [ ...
         string(sprintf('  %-25s: M = %d campioni/giocatore, seed = %d (metodo STOCASTICO)', ...
                        'Campionamento', AS.M, AS.seed)), ...
@@ -1296,8 +1408,13 @@ for iCER = 1:N_CER
     % Unica colonna che non guarda l'uniformita' della ripartizione ne' la sua
     % aderenza al merito, ma se REGGE: per ogni sottogruppo confronta quanto
     % genererebbe uscendo dalla CER con quanto riceve restandoci.
+    % La stessa tariffa lorda e la stessa esenzione dei metodi: se qui si
+    % passasse la tariffa efficace, le quote e i v(S) starebbero su due giochi
+    % diversi e l'eccesso di coalizione non vorrebbe dire nulla.
+    optEX = optF;
+    optEX.quiet = true;
     EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
-                          userNames, P_CER_h, struct('quiet', true));
+                          userNames, P_CER_lordo, optEX);
 
     % --- Tabella di confronto -------------------------------------------------
     Tfair = table([metodi.nome].', ...
@@ -1473,6 +1590,208 @@ for iCER = 1:N_CER
 
 
     %% ========================================================================
+    %  3u) AMMISSIBILITA' REGOLATORIA - SOGLIA DI ENERGIA INCENTIVABILE
+    %
+    %  La §3t giudica i sedici metodi sull'equita'; questa li giudica sulla
+    %  NORMA. Il Decreto CACER (DM MASE 7 dicembre 2023 n. 414, art. 3 comma 2
+    %  lett. g e Allegato 1 par. 3-4; Regole Operative GSE del 16 luglio 2025,
+    %  par. 2.2.2.1.3 e Appendice B par. 4) fissa un valore soglia dell'energia
+    %  condivisa incentivabile, espresso in percentuale dell'energia immessa in
+    %  rete: 55% con la sola tariffa premio, 45% in caso di cumulo con un
+    %  contributo in conto capitale. L'importo di premio che eccede quella
+    %  soglia NON puo' essere destinato ai membri che sono imprese: spetta ai
+    %  soli consumatori diversi dalle imprese, o a finalita' sociali con
+    %  ricadute sui territori dove stanno gli impianti.
+    %
+    %  E' un controllo POST-HOC, e sta FUORI dai metodi per un motivo preciso:
+    %  la norma non dice come ripartire, dice dove non puo' finire una parte del
+    %  gia' ripartito. Entrare nei sedici metodi li renderebbe non piu'
+    %  confrontabili con i rispettivi paper, che e' il punto del confronto della
+    %  §3s. E' anche l'ordine in cui la norma stessa opera: il GSE verifica il
+    %  superamento della soglia A CONGUAGLIO, su base annuale, sull'esito della
+    %  ripartizione.
+    %
+    %  DUE ESITI DIVERSI, DA NON CONFONDERE. Se la quota incentivata sta sotto
+    %  la soglia il vincolo e' NON BINDING, l'eccedenza e' nulla e nessun metodo
+    %  puo' violarlo: e' un fatto della configurazione energetica, non dei
+    %  meccanismi. Solo se e' BINDING ha senso chiedersi quale metodo assegni
+    %  alle imprese piu' del consentito.
+    %  ========================================================================
+
+    % Energia immessa in rete: e' l'eccedenza dopo l'autoconsumo del
+    % proprietario, cioe' esattamente cio' che il modello condivide o vende
+    % (§2). Non e' la produzione lorda, che comprende anche il dietro-contatore.
+    E_immessa_annual = shared_annual + sold_annual;
+
+    % QUALE DELLE DUE SOGLIE. Il discrimine e' il cumulo con un contributo in
+    % conto capitale, che la scheda gia' dichiara: [INVESTIMENTO].
+    % contributo_conto_capitale_pct. Non serve una chiave nuova, e quel campo -
+    % finora letto e validato ma mai usato - comincia da qui ad alimentare un
+    % calcolo. Se e' a '?' si ripiega sul fattore F: l'Allegato 1 par. 3 lo fa
+    % variare linearmente CON l'intensita' del contributo (0 senza contributo,
+    % 0,50 al 40% di copertura), quindi F > 0 implica contributo presente. Se
+    % nessuno dei due e' noto resta il regime base, soglia al 55%.
+    if CFG.noto.investimento.contributo_conto_capitale_pct
+        contoCapitale = CFG.investimento.contributo_conto_capitale_pct > 0;
+    else
+        contoCapitale = F_RIDUZIONE > 0;
+    end
+
+    SOG = premium_excess_threshold([metodi.phi], [metodi.nome], M.categoria, ...
+                                   shared_annual, E_immessa_annual, ...
+                                   struct('contoCapitale', contoCapitale, ...
+                                          'playerNames',   Sh.players));
+
+
+    %% ========================================================================
+    %  3v) VAN, TIR E TEMPO DI RITORNO PER MEMBRO
+    %
+    %  Fin qui il modello si fermava al flusso di cassa ANNUO: [INVESTIMENTO] e
+    %  [MEMBRI].quota_inv_EUR erano letti, validati e mai usati. Qui quel flusso
+    %  viene attualizzato, e la domanda cambia - non piu' "quanto prende ciascuno
+    %  quest'anno" ma "a chi conviene l'investimento".
+    %
+    %  IL PERIMETRO: L'INVESTIMENTO INTERO, NON LA SOLA CER
+    %    La quota di incentivo phi_i da sola non e' il flusso dell'investimento.
+    %    Chi installa un fotovoltaico lo fa per l'autoconsumo: la CER e' il modo
+    %    di valorizzare l'ECCEDENZA, cioe' la parte che avanza. Addebitare a
+    %    phi_i i 42.000 EUR di quota dell'industria di CER_2_5_0 significherebbe
+    %    imputare all'adesione un investimento che compra i pannelli, e ottenere
+    %    tempi di ritorno oltre la vita utile per impianti che rientrano in pochi
+    %    anni.
+    %
+    %    Il flusso e' quindi:
+    %      + risparmio in bolletta da autoconsumo dietro contatore
+    %      + ricavo dalla vendita dell'eccedenza          (revSoldPerPlayer, §3)
+    %      + quota di incentivo CER                       (metodi(k).phi, §3b-3r)
+    %      - OPEX degli impianti posseduti
+    %      - rata del mutuo                               ([MEMBRI].mutuo_EUR_anno)
+    %    e all'anno 0 l'esborso [MEMBRI].quota_inv_EUR.
+    %
+    %  IL RISPARMIO DA AUTOCONSUMO NON ESISTEVA
+    %    costUser (§3a) e' calcolato sul carico LORDO: e' quanto spenderebbe il
+    %    membro senza impianto e senza CER, ed e' giusto cosi' perche' serve da
+    %    baseline agli indicatori di equita'. Ma allora il risparmio che il
+    %    proprietario gia' incassa - l'energia che il suo impianto gli copre
+    %    prima di offrire il resto alla comunita' - non compariva in nessuna
+    %    variabile. E' loadUsers - loadForShare, per costruzione di
+    %    load_cer_data.m, valutato al prezzo orario della tariffa che quel membro
+    %    ha davvero in bolletta: lo stesso con cui §3a valuta la spesa, altrimenti
+    %    risparmio e costo non sarebbero confrontabili.
+    %
+    %  SEDICI METODI, SEDICI VAN
+    %    Il flusso dipende da come si ripartisce l'incentivo, quindi il VAN pure.
+    %    Si calcolano tutte e sedici le colonne in una chiamata sola: e' il
+    %    confronto della §3s portato dal ricavo annuo alla redditivita', ed e'
+    %    li' che si vede se la scelta del metodo cambia la convenienza di
+    %    qualcuno o solo la sua quota.
+    %  ========================================================================
+
+    % Senza le quote di investimento non c'e' niente da attualizzare. Non e' un
+    % caso da riempire con un default: un VAN calcolato su un esborso inventato
+    % e' peggio di nessun VAN, perche' ha l'aria di un risultato.
+    if ~M.noto.quota_inv_EUR
+        FIN  = struct([]);
+        Tfin = table();
+        fprintf(['\n=== Redditivita'' per membro: NON CALCOLATA ===\n' ...
+                 '  [MEMBRI].quota_inv_EUR non e'' compilata in questa scheda.\n' ...
+                 '  Senza l''esborso di ciascuno, VAN, TIR e tempo di ritorno\n' ...
+                 '  non sono definiti: si compili la colonna per ottenerli.\n']);
+    else
+        % --- Risparmio da autoconsumo dietro contatore ---------------------------
+        autocons = loadUsers - loadForShare;              % [N_HOURS x nUsers] [kWh/h]
+        assert(all(autocons(:) >= -1e-9), ...
+               ['Autoconsumo negativo: loadForShare dovrebbe essere il carico ' ...
+                'RESIDUO, quindi mai superiore al carico lordo.']);
+
+        risparmioAutocons = zeros(nUsers, 1);
+        for u = 1:nUsers
+            risparmioAutocons(u) = sum(priceByMod{iModUser(u)} .* autocons(:, u));
+        end
+
+        % --- OPEX per membro ------------------------------------------------------
+        % Preferenza al dato di scheda; in mancanza, la sola quota VARIABILE degli
+        % O&M, che e' proporzionale alla taglia e quindi attribuibile all'impianto.
+        % om_fisso_EUR_anno resta fuori di proposito: viene da optimizer_PV.m, dove
+        % descrive un progetto di taglia industriale, e cinquemila euro l'anno su una
+        % famiglia da 12 kWp non sono un costo, sono un errore di scala.
+        opexUser  = zeros(nUsers, 1);
+        opexNoto  = ismember("opex_EUR_anno", string(CFG.impianti.Properties.VariableNames)) ...
+                    && CFG.noto.impianti.opex_EUR_anno;
+        for p = 1:height(CFG.impianti)
+            iOwner = find(userNames == CFG.impianti.proprietario(p), 1);
+            if isempty(iOwner), continue; end
+            if opexNoto
+                opexUser(iOwner) = opexUser(iOwner) + CFG.impianti.opex_EUR_anno(p);
+            elseif CFG.noto.investimento.om_variabile_EUR_MWp_anno
+                opexUser(iOwner) = opexUser(iOwner) + ...
+                    CFG.investimento.om_variabile_EUR_MWp_anno * CFG.impianti.kWp(p) / 1000;
+            end
+        end
+
+        % --- Flusso annuo, una colonna per metodo di ripartizione ----------------
+        mutuoUser = M.mutuo_EUR_anno;
+        mutuoUser(isnan(mutuoUser)) = 0;      % non dichiarato = nessuna rata
+
+        baseAnnua = risparmioAutocons + revSoldPerPlayer - opexUser - mutuoUser;
+        cfAnnual  = baseAnnua + [metodi.phi];         % [nUsers x nMetodi]
+
+        capexUser = M.quota_inv_EUR;
+        capexUser(isnan(capexUser)) = 0;
+
+        optFin = opts_from_config(CFG.investimento, CFG.noto.investimento, [
+                     "tasso_sconto",    "discountRate"
+                     "vita_utile_anni", "lifetimeYears" ]);
+
+        FIN = compute_financial_metrics(capexUser, cfAnnual, optFin);
+
+        % --- Tabella: il metodo di riferimento in chiaro, gli altri per il VAN ---
+        % Shapley fa da riferimento perche' e' il primo metodo della §3s e quello a
+        % cui gli altri vengono confrontati per tutto il resto del progetto.
+        iRif    = find([metodi.nome] == "Shapley", 1);
+        if isempty(iRif), iRif = 1; end
+        nomeRif = metodi(iRif).nome;
+
+        Tfin = table(userNames(:), capexUser, risparmioAutocons, revSoldPerPlayer, ...
+                     metodi(iRif).phi, opexUser + mutuoUser, cfAnnual(:, iRif), ...
+                     FIN.NPV(:, iRif), FIN.IRR(:, iRif), FIN.payback(:, iRif), ...
+                     FIN.note(:, iRif), ...
+                     'VariableNames', {'Giocatore', 'Investimento_E', ...
+                                       'Risp_autocons_E', 'Vendita_E', ...
+                                       char(matlab.lang.makeValidName( ...
+                                        "Incentivo_" + nomeRif + "_E")), ...
+                                       'OPEX_mutuo_E', 'Flusso_annuo_E', ...
+                                       'VAN_E', 'TIR', 'Payback_anni', 'Nota'});
+
+        fprintf('\n=== Redditivita'' per membro (%s, %d anni al %.1f%%) ===\n', ...
+                nomeRif, FIN.lifetimeYears, 100*FIN.discountRate);
+        fprintf(['  Perimetro: l''INVESTIMENTO, non la sola CER. Il flusso annuo somma il ' ...
+                 'risparmio da\n  autoconsumo, la vendita dell''eccedenza e la quota di ' ...
+                 'incentivo, meno OPEX e mutuo.\n' ...
+                 '  TIR "NaN" e payback 0 su chi non ha investito non sono errori: ' ...
+                 'vedi la colonna Nota.\n']);
+        disp(Tfin);
+
+        % Il VAN dei sedici metodi affiancati: dice se la scelta del meccanismo
+        % sposta la CONVENIENZA di qualcuno o solo la sua quota.
+        Tvan = array2table(FIN.NPV, 'VariableNames', cellstr([metodi.nome]), ...
+                           'RowNames', cellstr(userNames));
+        fprintf('\n=== VAN per membro e per metodo [EUR] ===\n');
+        disp(Tvan);
+
+        if ~isempty(FIN.assumptions)
+            fprintf('\n  Ipotesi attive nel calcolo finanziario:\n');
+            disp(FIN.assumptions);
+        end
+
+        if FIG.finanza
+            plot_financial_metrics(Tfin, FIN, metodi, nomeRif, metodi(iRif).phi);
+        end
+
+    end
+
+
+    %% ========================================================================
     %  4) COSTO ENERGIA DA RETE (PUN 2025)
     %  Costo annuo di approvvigionamento per ogni utente e per ogni modalita'
     %  tariffaria, calcolato in §3a. I profili prezzo del 2025 condividono la
@@ -1556,7 +1875,9 @@ for iCER = 1:N_CER
     RESULTS(iCER).userNames      = userNames;
     RESULTS(iCER).Tcmp           = Tcmp;
     RESULTS(iCER).Tfair          = Tfair;
+    RESULTS(iCER).Tfin           = Tfin;   % vuota se quota_inv_EUR non e' nota
     RESULTS(iCER).metodi         = metodi;
+    RESULTS(iCER).soglia         = SOG;
     RESULTS(iCER).shared_annual  = shared_annual;
     RESULTS(iCER).sold_annual    = sold_annual;
     RESULTS(iCER).rev_tot_annual = rev_tot_annual;

@@ -146,8 +146,14 @@ tip_potenza_rif_kW     = ?       # potenza che seleziona lo scaglione
                                  # TP_base/CAP della TIP: <=200 | <=600 | >600
                                  # Fallback: la potenza installata totale di
                                  # [IMPIANTI], che si aggiorna da sola.
-tip_fattore_riduzione  = ?       # fattore F della formula: definizione non
-                                 # ancora nota per intero. Fallback: F = 0.
+tip_fattore_riduzione  = ?       # fattore F della formula. NON serve
+                                 # compilarlo: F si deriva da
+                                 # [INVESTIMENTO].contributo_conto_capitale_pct
+                                 # (F = 0,50 * pct/40). Metterlo qui SCAVALCA
+                                 # la derivazione, e serve a un caso solo:
+                                 # riprodurre un conguaglio GSE gia' emesso
+                                 # senza dover ricostruire l'intensita' del
+                                 # contributo che l'ha generato.
 
 
 # =============================================================================
@@ -175,7 +181,21 @@ costi_fissi_progetto_EUR     = ?       # 50000 in optimizer_PV, ma e' una
                                        # taglia industriale: da ritarare
 om_variabile_EUR_MWp_anno    = 10000
 om_fisso_EUR_anno            = 5000
-contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile
+contributo_conto_capitale_pct = ?      # PNRR o bando regionale, se applicabile.
+                                       # NON e' solo un dato di investimento:
+                                       # e' il campo da cui dipendono DUE
+                                       # meccanismi del Decreto CACER.
+                                       # (a) Il fattore F che decurta la
+                                       #     tariffa premio (MAIN.m 1c):
+                                       #     F = 0,50 * pct/40, quindi 0 senza
+                                       #     contributo e 0,50 al 40%. Oltre il
+                                       #     40% la tariffa non e' cumulabile e
+                                       #     il loader si ferma.
+                                       # (b) La soglia di energia incentivabile
+                                       #     (MAIN.m 3u): 45% se > 0, 55% se
+                                       #     assente.
+                                       # A '?' entrambi ripiegano sul valore
+                                       # base (F = 0, soglia 55%).
 
 
 # =============================================================================
@@ -239,7 +259,20 @@ as_seed           = 42     # unico metodo stocastico del progetto: il seed
 # ruolo       C = consumatore | P = prosumer (consuma e possiede impianto)
 #                             | E = produttore puro (solo impianto)
 # categoria   domestico | terziario | commerciale | industriale | PA
-#             Usata come tipologia nell'indice di eterogeneita' della CER.
+#             | terzo_settore | religioso | ambientale
+#             Due usi, non uno. (a) tipologia nell'indice di eterogeneita'
+#             della CER. (b) ESENZIONE dal fattore F di decurtazione della
+#             tariffa premio: il Decreto CACER non applica F all'energia dei
+#             punti di prelievo di persone fisiche, enti territoriali, enti
+#             religiosi, del terzo settore e di protezione ambientale.
+#             Sono percio' esenti: domestico (persone fisiche), PA (enti
+#             territoriali), terzo_settore, religioso, ambientale.
+#             Non lo sono: terziario, commerciale, industriale.
+#             Le ultime tre voci esistono proprio per questo: una tipologia
+#             di CONSUMO non sa esprimere una forma GIURIDICA, e un ente del
+#             terzo settore consuma come un terziario. Contarlo come impresa
+#             sarebbe un errore che vale il 50% della tariffa.
+#             Dettagli e riferimenti in cer_reduction_factor.m.
 # archetipo   profilo di generazione del carico (template LPG o caso RAMP)
 # tariffa     MONORARIA | BIORARIA | ORARIO_VARIABILE
 #             La spesa annua NON si dichiara: si calcola incrociando questa
@@ -302,6 +335,31 @@ id | nome_csv             | ruolo | categoria   | archetipo         | tariffa   
 # file_produzione  export orario PVsyst (colonna E_Grid), cercato in
 #                  [FILE].cartella_pv
 # capex_EUR / opex_EUR_anno  trasportati, vedi [INVESTIMENTO]
+#
+# kWp  e' la potenza del SINGOLO impianto, ed e' quella che sceglie lo scaglione
+#      TP_base/CAP della tariffa premio: "in base al valore della potenza
+#      impianto/sezione della medesima UP" (Regole Operative GSE 16/07/2025,
+#      par. 2.2.2.1.2). NON si sommano le potenze della comunita'.
+#
+# pod  COLONNA FACOLTATIVA, non presente nelle schede operative. Ai fini della
+#      tariffa un impianto e' "la somma delle potenze delle sezioni ...
+#      collegate allo stesso punto di connessione alla rete elettrica"
+#      (par. 1.2.1.2): se due righe descrivono due sezioni dello stesso POD, la
+#      potenza che conta e' la loro somma. Dichiarando la colonna, le righe con
+#      lo stesso pod vengono aggregate prima di scegliere lo scaglione.
+#
+#      Senza la colonna, una riga vale un impianto - che e' il significato del
+#      campo id, e sulle schede attuali non cambia nulla. Se la colonna c'e',
+#      pero', ogni riga deve dire qualcosa: '-' per "punto di connessione tutto
+#      suo", il codice del POD per condividerlo. Un '?' viene rifiutato, perche'
+#      un POD ignoto cambierebbe lo scaglione senza farsi notare.
+#
+#      Esempio: due sezioni da 12 e 190 kW sullo stesso POD sono un impianto da
+#      202 kW -> secondo scaglione (70/110), non due volte il primo (80/120).
+#
+#      id   | proprietario | kWp | ... | pod
+#      SEZA | office_1_kWh |  12 | ... | POD_IT001E00123456
+#      SEZB | office_1_kWh | 190 | ... | POD_IT001E00123456
 # =============================================================================
 id   | proprietario         | kWp | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
 PV01 | small_industry_1_kWh |  20 | Salvaplast_Project_VD7_HourlyRes_1.CSV |    ? |      ? |           2025 |         ? |             ?

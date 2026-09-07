@@ -11,10 +11,25 @@ function TIP_h = compute_cer_incentive(Pz_h, P_nom_kW, zona, F)
 %   FC_zonale [EUR/MWh] corregge per differenziale di insolazione:
 %     nord = +10, centro = +4, sud = 0.
 %
-%   NOTA SU F: la definizione completa del fattore di riduzione F non e'
-%   ancora disponibile (il testo di riferimento con la regola esatta e'
-%   incompleto). Per ora F = 0 (nessuna riduzione) di default: sostituire con
-%   la regola/il valore corretto non appena noto.
+%   FATTORE F: LA REGOLA C'E', MA NON SI APPLICA QUI
+%     F decurta la tariffa in presenza di contributo in conto capitale e vale
+%     0,50 * pct/40 (Regole Operative GSE 16/07/2025, Appendice B par. 3): la
+%     derivazione dal contributo sta in cer_reduction_factor.m.
+%
+%     Il punto e' che F NON e' una proprieta' della tariffa: non si applica
+%     all'energia afferente a punti di prelievo esenti (persone fisiche ed
+%     enti), quindi il suo effetto dipende da CHI consuma l'energia condivisa,
+%     e cambia da coalizione a coalizione. Applicarlo qui vorrebbe dire
+%     decidere quella composizione una volta per tutte.
+%
+%     Percio' MAIN.m chiama questa funzione con F = 0 e ne ricava la tariffa
+%     LORDA - che e' poi la tariffa dei membri esenti - mentre la decurtazione
+%     entra dentro la funzione caratteristica, dove la quota esente e' quella
+%     della coalizione che si sta valutando (cer_shared_value.m).
+%
+%     L'argomento F resta perche' la formula 3.1 lo prevede e perche' per una
+%     configurazione SENZA membri esenti le due strade coincidono: in quel caso
+%     passarlo qui e' legittimo e piu' diretto.
 %
 %   INPUT
 %     Pz_h      [H x 1]        prezzo zonale orario           [EUR/MWh]

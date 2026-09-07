@@ -1,4 +1,4 @@
-function S = shapley_cer(genUsers, loadUsers, userNames, P_CER)
+function S = shapley_cer(genUsers, loadUsers, userNames, P_CER, opts)
 %SHAPLEY_CER  Ripartizione dell'incentivo CER sull'energia condivisa tramite
 %   Shapley value (gioco cooperativo, Moncecchi et al., Appl. Sci. 2020).
 %
@@ -24,6 +24,12 @@ function S = shapley_cer(genUsers, loadUsers, userNames, P_CER)
 %     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x n]   nomi degli utenti                     (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%     opts      struct opzionale:
+%                 .F      scalare  fattore di riduzione per contributo in
+%                         conto capitale (def. 0 = nessuna decurtazione)
+%                 .esente [n x 1] logico, membri esenti da F. La quota esente
+%                         entra in v(C) COALIZIONE PER COALIZIONE, non con la
+%                         media di comunita': vedi cer_shared_value.m
 %
 %   OUTPUT (struct S)
 %     .players    [1 x n]  nomi dei giocatori (= userNames)
@@ -43,9 +49,14 @@ function S = shapley_cer(genUsers, loadUsers, userNames, P_CER)
              'raggruppamento dei consumatori.'], n, n);
     end
 
+    if nargin < 5 || isempty(opts), opts = struct(); end
+    if ~isfield(opts, 'esente'), opts.esente = []; end
+    if ~isfield(opts, 'F'),      opts.F      = 0;  end
+
     % --- Funzione caratteristica v(S) condivisa con gli altri metodi --------
     % Bitmask su n bit: bit i = giocatore i.
-    [v, players] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER);
+    [v, players] = cer_coalition_values(genUsers, loadUsers, userNames, ...
+                                        P_CER, opts.esente, opts.F);
     nSub = numel(v);
 
     % --- Pesi di Shapley w(s) = s!(n-s-1)!/n! in funzione di s = |C| ---------

@@ -150,6 +150,8 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `fairness_indicators_lem.m` | I sette indicatori di equità distributiva di Dynge & Cali 2025 — MinMax, QoS, EI (originali e riformulati) su **una** ripartizione (§7) |
 | `fairness_index_bm.m` | **Fairness Index** di Casalicchio et al. 2022: distanza di ciascun metodo dalla distribuzione per contributo `v(N) − v(N∖{i})` (§7) |
 | `coalition_excess.m` | **Eccesso di coalizione** di Volpato et al. 2024 (eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — l'unico indicatore di **stabilità** (§7) |
+| `premium_excess_threshold.m` | **Soglia di energia incentivabile** 55%/45% e destinazione della tariffa premio eccedentaria (DM MASE 414/2023, Regole Operative GSE): non misura l'equità, dice quali ripartizioni sono **ammissibili** (§7.4) |
+| `cer_reduction_factor.m` | **Fattore F** di decurtazione della tariffa premio per contributo in conto capitale, e maschera dei membri **esenti** — persone fisiche ed enti (§7.5) |
 | `gini_index.m`, `jain_index.m` | I due nuclei degli indicatori sopra (`EI = 1 − Gini`, `QoS = Jain`), esposti a sé stanti e condivisi anche da `weighted_solidarity_cer.m` |
 | `gini_heterogeneity.m` | Gini di **eterogeneità** della composizione della comunità (Casalicchio eq. 10) — non è un Gini di reddito |
 | `plot_fairness_indicators.m` | Mappa di calore metodi × indicatori di equità (§7) |
@@ -367,6 +369,10 @@ uscire). Il **Nucleolo** fa l'opposto: `EI = 0.45`, il peggiore del lotto, ma è
 insieme al Variance Least Core a garantire che nessuno voglia andarsene. Guardare una
 colonna sola porta a conclusioni sbagliate.
 
+Esiste poi una **quarta domanda, di natura diversa**, che non sta in questa tabella perché
+non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 — un
+metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+
 ### 7.1 Due indicatori esclusi, e perché
 
 - **QoE** (Dynge eq. 13-14) richiede il prezzo di mercato locale `λ_t`. In una CER a
@@ -421,6 +427,180 @@ Inoltre `fairness_index_bm.m` ha un auto-test analitico (`opts.validateSelf`, at
 default): la Tab. 7 del paper **non** è riproducibile — i `Dᵢ` per membro stanno solo in un
 grafico — quindi si verifica la formula su casi costruiti a penna, contributi negativi
 inclusi.
+
+Stessa convenzione in `premium_excess_threshold.m` (§7.4), e lì serve per una ragione
+precisa: la formula dell'eccedenza ha **due letture plausibili** e solo una è quella del
+GSE. Un refuso che scivolasse sull'altra darebbe numeri credibili e sbagliati (83,33 €
+invece di 50,00 € sul caso di riferimento), senza che nessun `assert` a valle se ne
+accorga. L'auto-test blocca proprio quello, più il regime 45%/55%, il riconoscimento
+della violazione e la classificazione impresa / non-impresa.
+
+### 7.4 Ammissibilità regolatoria: la soglia di energia incentivabile
+
+Il §7 giudica i sedici metodi sull'**equità**; `MAIN.m` §3u li giudica sulla **norma**.
+Sono due domande diverse: un metodo può essere il più equo dei sedici e restare
+inammissibile, o viceversa.
+
+**La regola.** Il Decreto CACER (DM MASE 7 dicembre 2023 n. 414, art. 3 c. 2 lett. g e
+Allegato 1 §§3-4; Regole Operative GSE del 16 luglio 2025, §2.2.2.1.3 e Appendice B §4)
+fissa un valore soglia dell'energia condivisa incentivabile, espresso in **percentuale
+dell'energia immessa in rete**:
+
+| Regime | Soglia |
+|---|---|
+| accesso alla sola tariffa premio | **55%** |
+| cumulo della tariffa premio con contributo in conto capitale | **45%** |
+
+L'importo di premio che eccede la soglia **non può essere destinato ai membri che sono
+imprese**: spetta ai soli consumatori diversi dalle imprese, o a finalità sociali con
+ricadute sui territori dove stanno gli impianti.
+
+```
+%E_ACI,ecc = max[0; (E_ACI / E_immessa · 100)% − valore soglia]
+C_ACI,ecc  = %E_ACI,ecc · C_ACI
+```
+
+Attenzione alla seconda riga: l'eccedenza economica è il prodotto **letterale** fra la
+differenza in *punti percentuali* e l'importo totale del premio — non la quota
+proporzionale di premio associata all'energia in eccesso, che varrebbe
+`(quota − soglia)/quota · C_ACI`. Con `quota = 60%` e `soglia = 55%` l'eccedenza vale il
+**5%** di `C_ACI`, non l'8,3%. Si implementa la formula del GSE alla lettera, perché è
+quella che il GSE applica a conguaglio.
+
+**Perché è post-hoc, e non dentro i metodi.** La norma non dice *come* ripartire: dice
+dove non può finire una parte del già ripartito. Entrare nei sedici metodi li renderebbe
+non più confrontabili con i rispettivi paper — che è il punto del confronto del §6. È
+anche l'ordine in cui la norma stessa opera: il GSE verifica il superamento della soglia
+**a conguaglio, su base annuale**, sull'esito della ripartizione.
+
+**Due esiti, da non confondere.** Se la quota incentivata sta sotto la soglia il vincolo è
+**non binding**, l'eccedenza è nulla e *nessun* metodo può violarlo: è un fatto della
+configurazione energetica, non dei meccanismi. Solo se è **binding** ha senso chiedersi
+quale metodo assegni alle imprese più del consentito (tetto: `(1 − %E_ACI,ecc) · C_ACI`).
+
+**Sulle sette CER attuali il vincolo non morde, e con ampio margine.** Il rapporto
+`E_ACI/E_immessa` va dal 5,3% (`CER_0_7_0`) al 24,3% (`CER_6_1_0`), cioè da 49,7 a 30,7
+punti *sotto* la soglia del 55% — e resterebbe non binding anche nel regime al 45%:
+
+| Scheda | E condivisa [kWh] | E immessa [kWh] | Quota | Distanza dalla soglia |
+|---|---:|---:|---:|---:|
+| `CER_0_7_0` | 14 414 | 272 842 | 5,3% | −49,7 pt |
+| `CER_1_6_0` | 15 286 | 255 178 | 6,0% | −49,0 pt |
+| `CER_2_5_0` | 13 454 | 182 854 | 7,4% | −47,6 pt |
+| `CER_3_4_0` | 13 064 | 164 433 | 7,9% | −47,1 pt |
+| `CER_4_3_0` | 18 056 | 100 834 | 17,9% | −37,1 pt |
+| `CER_5_2_0` | 17 314 |  83 186 | 20,8% | −34,2 pt |
+| `CER_6_1_0` | 15 870 |  65 362 | 24,3% | −30,7 pt |
+
+La monotonia non è casuale: più prosumer ci sono, più potenza è installata, più energia
+finisce immessa senza trovare carico residuo da coprire — e il rapporto crolla. È lo
+stesso meccanismo che tiene bassa la frazione di energia contendibile (§7.2). **Il vincolo
+di destinazione dell'eccedenza è quindi, su questa topologia, strutturalmente
+irrilevante**: perché diventi vincolante servirebbe una CER molto più sbilanciata verso i
+consumatori puri di quanto lo sia `CER_6_1_0`. È un risultato da riportare come tale, non
+un controllo da togliere: cambia con i dati, non con il codice.
+
+**Due ipotesi dichiarate.**
+
+1. **Chi è "impresa".** La norma esenta i punti di prelievo di enti territoriali e autorità
+   locali, enti religiosi, enti del terzo settore e di protezione ambientale, e *persone
+   fisiche*. Sul dominio di `[MEMBRI].categoria` la mappatura è `domestico` → persona
+   fisica e `PA` → ente territoriale (**non** imprese), `terziario | commerciale |
+   industriale` → **imprese**. È un'ipotesi, non un dato: la categoria del progetto è una
+   *tipologia di consumo*, non una forma giuridica, e un ente del terzo settore
+   ricadrebbe sotto `terziario` e verrebbe contato come impresa a torto. Si sovrascrive
+   con `opts.categorieImpresa`.
+2. **Quale delle due soglie.** La decide `[INVESTIMENTO].contributo_conto_capitale_pct`,
+   che finora era letto e validato ma mai usato. A `?` si ripiega su
+   `tip_fattore_riduzione` (`F > 0` implica conto capitale, Allegato 1 §3); se nessuno
+   dei due è noto resta il regime base al 55%, che è quello attuale.
+
+Il risultato per comunità sta in `RESULTS(i).soglia`, con `.isBinding`, `.quotaEccedente`,
+`.importoEccedente` e la tabella per metodo (`.table`).
+
+### 7.5 Il fattore di riduzione F, e chi ne è esente
+
+**La regola.** Con un contributo in conto capitale la tariffa premio è decurtata:
+`TIP = TIP_lorda · (1 − F)`, dove `F` varia linearmente fra `0` (nessun contributo) e
+`0,50` (contributo pari al **40%** dell'investimento) — Regole Operative GSE del
+16 luglio 2025, Appendice B §3. Quindi `F = 0,50 · pct/40`. Oltre il 40% la tariffa non è
+cumulabile affatto (§1.2.1.6): lì `cer_reduction_factor.m` si ferma con un errore invece
+di troncare in silenzio.
+
+**L'esenzione, e la voce che sfugge.** F *non si applica* all'energia afferente a punti di
+prelievo di enti territoriali, enti religiosi, enti del terzo settore e di protezione
+ambientale, **e persone fisiche** (§2.2.2.1.2).
+
+> ⚠️ Le **persone fisiche** non erano nell'Allegato 1 del DM 414/2023: le ha aggiunte il
+> **DM 127 del 16 maggio 2025** (Premessa delle Regole Operative, p. 5). Chi cita il solo
+> 414/2023 legge la lista *pre-127* e lascia fuori la categoria più numerosa di una CER
+> residenziale — qui **4 membri su 7**.
+
+**Il campo che lo esprime.** Il dominio di `[MEMBRI].categoria` si è allargato a
+`terzo_settore | religioso | ambientale`. È additivo — nessuna scheda esistente cambia — e
+serve perché una tipologia di *consumo* non sa esprimere una forma *giuridica*: un ente del
+terzo settore consuma come un terziario, e contarlo come impresa costerebbe il 50% della
+tariffa. Esenti: `domestico` (persone fisiche), `PA` (enti territoriali), `terzo_settore`,
+`religioso`, `ambientale`.
+
+**Perché F entra dentro `v(S)` e non nella tariffa.** F dipende da *chi* consuma l'energia
+condivisa, quindi cambia da coalizione a coalizione. Sulle schede attuali la quota esente
+va da **0%** (coalizioni di sole imprese) a **100%** (di sole famiglie), contro l'1-20%
+della comunità intera. Usare la quota di comunità dentro `v(S)` sottostimerebbe le
+coalizioni ricche di esenti e farebbe sembrare la CER **più stabile di quanto sia** —
+un bias proprio sull'indicatore del §7.3. Perciò:
+
+- `compute_cer_incentive.m` produce la tariffa **lorda** (`F = 0`), che è poi la tariffa
+  dei membri esenti;
+- la decurtazione entra in `cer_shared_value.m`, con la quota esente **della coalizione**;
+- i metodi che spartiscono solo `v(N)` ricevono la **tariffa efficace di comunità**.
+
+Le due strade danno lo stesso `v(N)` per costruzione, ed è verificato da un `assert` in
+`MAIN.m` §3b — senza, un F applicato due volte si vedrebbe solo come uno scarto
+inspiegabile fra metodi.
+
+**Cosa succede davvero** (`CER_6_1_0`, gli stessi profili, solo il contributo cambia):
+
+| Conto capitale | `F` | `v(N)` | Quota domestici | in % di `v(N)` |
+|---:|---:|---:|---:|---:|
+| 0% | 0,000 | €2039,54 | €200,06 | 9,8% |
+| 20% | 0,250 | €1632,28 | €202,02 | 12,4% |
+| 40% | 0,500 | €1225,02 | €203,99 | **16,7%** |
+
+Il montepremi crolla del 40%, ma la quota in euro dei domestici **non si muove** (€200 →
+€204): l'esenzione li protegge, e la loro fetta relativa passa da 9,8% a 16,7%. È
+l'effetto che la norma cerca, e si vede **solo** con il trattamento per coalizione — con
+una quota di comunità scenderebbero in proporzione come tutti.
+
+**`v` non è più monotona, ed è la norma a volerlo.** Con `F > 0` aggiungere un membro può
+*ridurre* `v(S)`. Un'ora sola, `P` che produce 10 kWh, `A` esente e `B` non esente che
+consumano 10 kWh ciascuno, `F = 0,5`:
+
+| Coalizione | Energia condivisa | Quota esente | Tariffa | `v` |
+|---|---:|---:|---:|---:|
+| `{P,A}` | 10 kWh | 100% | piena | **1,00 €** |
+| `{P,A,B}` | 10 kWh | 50% | −25% | **0,75 €** |
+
+L'energia è la stessa — è la *generazione* a fare da tappo — e `B` cambia solo le
+proporzioni: `MC_B = −0,25 €`. Non è un dato corrotto, è il premio che il GSE
+erogherebbe davvero. `marginal_contribution_cer.m` mantiene perciò l'errore solo quando
+`F = 0` (dove la monotonia è garantita) e con `F > 0` emette un warning, azzerando le
+quote negative. Serve una comunità **povera di impianti** perché accada: sulle schede
+attuali, ricche di surplus, il minimo `MC` resta ampiamente positivo anche a `F = 0,50`
+(+24 € su `CER_0_7_0`, +51 € su `CER_6_1_0`).
+
+**Un limite introdotto, dichiarato.** Con `F > 0` il Separation Problem del Variance Least
+Core smette di essere un MILP: il valore della coalizione contiene
+`s_t · loadNonEsente(z)/load(z)`, un **rapporto** fra combinazioni lineari delle binarie.
+Linearizzarlo è un lavoro di modellazione a sé. Finché non è fatto, con `F > 0` la
+separazione ripiega sull'**enumerazione** di tutte le coalizioni: il risultato è esatto —
+anzi, è la separazione esatta per definizione, e `theta_LC` continua a coincidere con il
+surplus minimo del Nucleolo — ma il metodo perde la scalabilità che è il suo tratto
+distintivo e ricade nel limite di §14.1. Con `F = 0` non cambia nulla.
+
+**Regressione.** Con `contributo_conto_capitale_pct = ?` si ha `F = 0` e l'output è
+**identico riga per riga** a prima dell'introduzione del fattore: le uniche differenze
+sono le nuove righe diagnostiche della §1c.
 
 ## 8. Dimensionamento impianto PV (standalone)
 
@@ -503,8 +683,8 @@ di `Tcost` (§11) ed è la baseline `y_noLEM` degli indicatori di equità — pr
 assumeva la monoraria per tutti.
 
 **Due valori ora derivati invece che scritti a mano.** Se `tip_potenza_rif_kW` è `?`, lo
-scaglione della tariffa TIP usa la potenza installata totale di `[IMPIANTI]`, che si
-aggiorna da sola; se `tip_fattore_riduzione` è `?`, non si applica riduzione.
+scaglione della tariffa TIP si sceglie sulla potenza del **singolo impianto** di
+`[IMPIANTI]` (§14.4.1); se `tip_fattore_riduzione` è `?`, non si applica riduzione.
 
 ## 10. Dipendenze e requisiti
 
@@ -516,7 +696,26 @@ quando RAMP verrà aggiornato). Vedi `requirements.txt` (freeze completo) e
 
 **MATLAB:** base + **Optimization Toolbox** (`linprog`, `quadprog`, `intlinprog`,
 richiesti da Nucleolo e Variance Least Core). `irr_bisection.m` evita la dipendenza dalla
-Financial Toolbox per il calcolo dell'IRR in `optimizer_PV.m`.
+Financial Toolbox per il calcolo dell'IRR, usato sia da `optimizer_PV.m` sia da
+`compute_financial_metrics.m` (§3v).
+
+**Un controllo aggiunto, e cosa ha trovato.** `[MEMBRI].impianto` e
+`[IMPIANTI].proprietario` descrivono lo stesso fatto — chi possiede cosa — da capi
+opposti, ma il modello usa **solo** la seconda (`costruisci_impianti_struct` →
+`load_cer_data`). Finché nessuno le confrontava, la prima poteva dire un'altra cosa senza
+conseguenze visibili: `load_cer_input` verificava solo che puntasse a un `id` esistente.
+Il confronto è stato aggiunto, ed era violato in `CER_0_7_0` e `CER_1_6_0` — PV06
+risultava di `office_1_kWh` in `[IMPIANTI]` ma dichiarato da `retail_1_kWh` in
+`[MEMBRI]`, che ne aveva pure pagato la quota. È rimasto invisibile finché
+`quota_inv_EUR` non è stata letta da nessuno; la §3v è la prima cosa che la legge, e ne
+ricavava un VAN negativo per un membro che non possedeva nulla. Le due schede sono state
+corrette assegnando PV06 a `retail_1_kWh`, il che **cambia i loro risultati energetici**
+(l'energia condivisa scende del ~60%, perché PV06 finisce dietro il contatore di un
+commerciale che se ne autoconsuma buona parte invece che dietro quello di un ufficio già
+coperto da PV04). Il controllo è in una direzione sola: `[MEMBRI]` ha una cella per
+membro, quindi chi possiede due impianti non può dichiararli entrambi — «il membro
+dichiara un impianto che non è suo» è un errore, «un impianto non è dichiarato da
+nessuno» non lo è.
 
 ## 11. Output prodotti
 
@@ -632,21 +831,72 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
-- `tip_fattore_riduzione` (fattore F della formula TIP) **non è ancora definito per
-  intero**: finché la scheda lo lascia a `?`, nessuna riduzione viene applicata.
-- Lo scaglione della tariffa TIP usa la **potenza installata totale**. Con impianti di
-  taglia molto diversa andrebbe valutato per impianto; ora che `[IMPIANTI]` porta il kWp
-  di ciascuno, il dato per farlo esiste già (§14.4).
+- **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
+  `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
+  capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano
+  finanziario della CER è deciso — è lo stesso che sceglie la soglia del §7.4.
+- **Con `F > 0` il Variance Least Core perde la scalabilità.** Il suo Separation Problem
+  non è più un MILP (il termine di esenzione è un rapporto fra combinazioni lineari delle
+  binarie) e il metodo ripiega sull'enumerazione: esatto, ma con lo stesso limite di
+  Shapley e Nucleolo (§14.1). Rimuoverlo richiede di linearizzare il rapporto con
+  variabili ausiliarie — modellazione, non implementazione.
+- **La quota esente dell'energia condivisa è attribuita ai punti di prelievo
+  *pro-rata sul carico residuo* orario.** Il decreto prescrive «un'ulteriore ripartizione»
+  senza fissarne la chiave; il pro-rata è quella neutra, ma è un'ipotesi e va detta se il
+  risultato finisce in tesi. La regola di priorità del §2.2.2.1.2 (energia degli enti
+  allocata prima agli impianti col contributo) qui è **vacua**, perché il conto capitale è
+  dichiarato per la comunità e non per singolo impianto: o tutti gli impianti sono
+  decurtati o nessuno.
+- **Il controllo di soglia (§7.4) ragiona su un solo insieme di impianti.** La norma ne
+  prevede due (sola tariffa premio / cumulo con conto capitale) e somma le eccedenze;
+  qui l'insieme è uno perché il modello applica **una sola TIP** a tutta l'energia
+  condivisa e la scheda dichiara il conto capitale per la *comunità*, non per singolo
+  impianto. Con quel dato per impianto la generalizzazione è una chiamata in più a
+  `premium_excess_threshold` e la somma delle due `.importoEccedente`.
+- Lo scaglione della tariffa TIP si sceglie sulla potenza del **singolo impianto**, come
+  vuole il par. 2.2.2.1.2. Resta non implementato il caso in cui gli impianti cadano in
+  scaglioni **diversi**: lì servirebbero una tariffa per impianto e la ripartizione
+  dell'energia condivisa per UP. Il modello non lo approssima, si ferma (§14.4.1).
 - Le potenze usate da Remuneration Model 1 restano **da confermare**: potenza di prelievo
   in `[MEMBRI].P_prel_kW`, potenza di generazione in `[IMPIANTI].kWp`. Hanno impatto di
   primo ordine sul risultato — con una potenza sola al posto di due, i pesi α/β
   passerebbero da 0.81/0.19 a 0.63/0.37 e il prosumer riceverebbe quasi il doppio
   ([GUIDA §10.6](GUIDA_modelli_distribuzione.md)).
-- **I costi di investimento sono dichiarati ma non usati.** `[INVESTIMENTO]` e le colonne
-  `capex_EUR` / `quota_inv_EUR` sono lette e validate, ma `MAIN.m` si ferma al flusso di
-  cassa annuo: non calcola NPV, IRR né payback. È anche la ragione dell'ipotesi 3 di
-  `fairness_index_bm` ("costi di investimento per membro ASSENTI: `D_i` calcolato sui
-  benefici LORDI"), che resta attiva finché quei campi non alimentano un calcolo.
+- **I costi di investimento alimentano ora un calcolo — ma solo uno.** `MAIN.m` §3v
+  attualizza il flusso di cassa per membro e produce VAN, TIR e tempo di ritorno
+  (`compute_financial_metrics.m`), leggendo `[MEMBRI].quota_inv_EUR` come esborso
+  all'anno 0 e `[INVESTIMENTO].tasso_sconto` / `vita_utile_anni` come parametri. Restano
+  fuori: `capex_EUR` e `opex_EUR_anno` di `[IMPIANTI]` (usati solo se compilati — oggi
+  sono a `?`, e l'OPEX si ripiega su `om_variabile_EUR_MWp_anno × kWp`), tutti i costi
+  unitari di `[INVESTIMENTO]`, e `om_fisso_EUR_anno`, che viene da `optimizer_PV.m` ed è
+  di taglia industriale: cinquemila euro l'anno su una famiglia da 12 kWp non sono un
+  costo, sono un errore di scala. **L'ipotesi 3 di `fairness_index_bm` resta attiva**
+  ("costi di investimento per membro ASSENTI: `D_i` calcolato sui benefici LORDI"): la
+  §3v non la rimuove, perché gli indicatori di equità continuano deliberatamente a
+  ragionare sui benefici lordi — sono due domande diverse, chi prende quanto e a chi
+  conviene investire.
+- **Il perimetro del flusso di cassa è l'investimento, non la CER.** È una scelta, e
+  cambia il verdetto: sui prosumer di `CER_2_5_0` la quota di incentivo vale il 2-3% del
+  flusso annuo, contro il 60-90% della vendita dell'eccedenza e il resto di risparmio da
+  autoconsumo. Valutare i 42.000 € dell'industria sul solo incentivo darebbe un tempo di
+  ritorno oltre la vita utile per un impianto che rientra in 3,7 anni. Il **risparmio da
+  autoconsumo** non esisteva in nessuna variabile prima della §3v (`costUser` è calcolato
+  sul carico *lordo*, perché serve da baseline agli indicatori): si ottiene da
+  `loadUsers - loadForShare` valutato al profilo prezzi della tariffa del membro.
+- **I flussi sono costanti su vent'anni.** `escalation_energia`, `inflazione_opex` e
+  `degrado_pv_pct_anno` sono dichiarati nello scenario ma **non applicati**, e compaiono
+  fra le ipotesi attive stampate sotto la tabella. Sono tre parametri non tarati che,
+  composti su vent'anni, muovono il VAN più di quanto lo muova la scelta del metodo di
+  ripartizione — cioè proprio la grandezza che il progetto vuole confrontare. Si
+  accendono da `opts` senza toccare la funzione. Nota: l'escalation **non andrebbe
+  comunque** applicata alla quota di incentivo, perché la TIP è regolata e si muove al
+  contrario del prezzo dell'energia (`max(0; 180 − Pz)`).
+- **Vent'anni sono insieme il dato di scheda e il periodo di incentivazione** (Regole
+  Operative GSE §2.2.1, p. 35). Le due cose coincidono per fortuna, non per costruzione:
+  se una scheda dichiarasse una vita utile diversa dal periodo incentivato, il flusso
+  costante smetterebbe di essere una semplificazione innocua, perché dopo il ventesimo
+  anno la quota di incentivo sparisce. (`optimizer_PV.m` usa 30 anni scritti a mano: è un
+  altro ramo del progetto, e la scheda vince.)
 - **Weighted Solidarity — la componente di solidarietà è un proxy debole.** Il modello
   di Marrasso classifica gli utenti "a rischio povertà energetica" dal costo unitario
   in bolletta `Cu`; nel paper quel dato viene da bollette reali e varia di ~4× tra i
@@ -705,6 +955,12 @@ enumera **2^n** coalizioni. Con `n = 100` significa ~10³⁰ valori: non è un p
 lentezza, è irrealizzabile su qualsiasi hardware. `shapley_cer.m` emette già un warning
 sopra i 20 giocatori; oltre quella soglia `MAIN.m` §3b fallirebbe in allocazione di
 memoria.
+
+> **Con `F > 0` diventano quattro.** Il Variance Least Core sfugge a questo limite grazie
+> alla row-generation, ma solo finché il suo Separation Problem è un MILP — e con il
+> fattore di riduzione non lo è più (§7.5). In quel caso ripiega sull'enumerazione e
+> si aggiunge alla lista, con un errore esplicito sopra i 20 giocatori. È il primo punto
+> da sistemare se si vorrà usare il conto capitale su comunità grandi.
 
 **Per lo Shapley la via d'uscita è già in repo (metodi 13-15, §6).** Le tre
 approssimazioni di Cremers et al. sono state introdotte esattamente per questo: valutano
@@ -785,10 +1041,85 @@ implementa: dichiara le potenze.
 - **`plot_benefit_network.m`**: dispone i giocatori su una circonferenza con
   un'etichetta ciascuno. A 100 nodi il grafico diventa illeggibile — servirà una
   visualizzazione aggregata o per gruppi.
-- **Scaglione della tariffa TIP**: è ancora uno scalare unico di comunità (la potenza
-  installata totale, o `tip_potenza_rif_kW` se dichiarato). Con molti impianti di taglia
-  diversa la tariffa andrebbe valutata per impianto; ora che `[IMPIANTI]` porta il kWp di
-  ciascuno, il dato per farlo esiste già.
+- **Scaglione della tariffa TIP — corretto, con un caso lasciato scoperto per scelta.**
+  Lo scaglione `TP_base`/`CAP` si sceglie sulla potenza del **singolo impianto**
+  (`cer_tip_bracket_power.m`), non più sulla somma di comunità. Il dettaglio sta nel
+  paragrafo qui sotto: è la voce più lunga di questa sezione perché la parte non
+  implementata va scritta da qualche parte, e questo è il posto a cui rimanda il
+  messaggio d'errore del codice.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
   `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §12) — con 100
   profili la varianza tra run diventa più visibile nei risultati aggregati.
+
+#### 14.4.1 Lo scaglione della TIP: cosa fa il modello e cosa no
+
+**La regola.** `TP_base` e `CAP` si scelgono «in base al valore della *potenza
+impianto/sezione della medesima UP*» (Regole Operative GSE del 16 luglio 2025,
+§2.2.2.1.2): lo scaglione appartiene all'**impianto**, non alla comunità.
+
+| Potenza impianto | `TP_base` | `CAP` |
+|---|---|---|
+| P ≤ 200 kW | 80 €/MWh | 120 €/MWh |
+| 200 < P ≤ 600 kW | 70 €/MWh | 110 €/MWh |
+| P > 600 kW | 60 €/MWh | 100 €/MWh |
+
+**Cos'era sbagliato.** Fino alla correzione `MAIN.m` passava `sum(CFG.impianti.kWp)`. Su
+due schede su sette questo bastava a far scivolare l'intera comunità in uno scaglione che
+il decreto non prevede per quegli impianti: CER_0_7_0 ha sette impianti per 225,6 kW
+complessivi ma il maggiore è da 76 kW, CER_1_6_0 ne ha sei per 213,6 kW. Entrambe
+ricevevano 70/110 invece di 80/120.
+
+Il costo era **esattamente 10 €/MWh in ogni ora**, non in media: poiché `CAP − TP_base`
+vale 40 in tutti e tre gli scaglioni, la spezzata `min(CAP; TP_base + max(0; 180 − Pz))`
+di due scaglioni adiacenti è la stessa curva traslata di dieci, qualunque sia il prezzo
+zonale. Sulle due schede il valore della grande coalizione è salito di +8,5%
+(1694,12 → 1838,26 € e 1797,87 → 1950,73 €), e la differenza coincide con
+`0,010 €/kWh × energia condivisa` fino alla dodicesima cifra — è un'identità, ed è il
+controllo con cui si verifica la correzione.
+
+**Qual è l'unità: il punto di connessione.** «La potenza di un impianto, ai fini
+dell'accesso alla tariffa incentivante, verrà calcolata come somma delle potenze delle
+sezioni che compongono le unità di produzione, alimentate dalla stessa fonte e *collegate
+allo stesso punto di connessione* alla rete elettrica» (§1.2.1.2). L'unità non è quindi la
+riga della scheda, e non è il membro: è il **POD**. Per questo `[IMPIANTI]` accetta una
+colonna facoltativa `pod`: quando c'è, le righe che la condividono si sommano prima di
+scegliere lo scaglione; quando manca, una riga vale un impianto. Sulle schede attuali non
+c'è e non cambierebbe nulla — in CER_0_7_0 `office_1_kWh` possiede PV04 e PV06 da 50,8 kW,
+e 101,6 kW restano nel primo scaglione tanto sommati quanto no.
+
+**Cosa NON è modellato, e perché.**
+
+1. *Artato frazionamento* (§1.2.1.5). Impianti della stessa fonte, su particella catastale
+   medesima o contigua e riconducibili a un unico produttore, contano come «unico
+   impianto» di potenza pari alla somma — anche su POD diversi. Servirebbe la particella
+   catastale, che la scheda non porta; e la norma stessa esclude dalla regola gli impianti
+   «inseriti in distinti edifici/condomini» e quelli «connessi a utenze con potenza in
+   prelievo pari o superiore alla potenza dell'impianto», che senza il dato sull'edificio
+   non si sanno riconoscere. Aggregare per proprietario sarebbe *più* sbagliato che non
+   aggregare: applicherebbe la regola anche dove il decreto la esclude.
+
+2. *Impianti in scaglioni diversi.* È il caso che rende la tariffa non più una sola. Il
+   decreto lo prevede per intero:
+   - una tariffa per impianto — il GSE pubblica «il valore della tariffa premio applicata
+     a ogni impianto incentivato» e «l'energia condivisa incentivabile **ripartita per
+     UP**» (§2.2.2);
+   - la ripartizione dell'energia condivisa fra impianti avviene «a partire dalle
+     immissioni degli impianti di produzione **entrati prima in esercizio**» (Appendice A,
+     definizioni di `E_AC` e `E_ACI`) — una cascata per data di entrata in esercizio, dato
+     che `[IMPIANTI].anno_esercizio` già porta;
+   - il contributo diventa quindi `C_ACI = Σ_p Σ_h E_ACI(p,h) · TIP(p,h)`.
+
+   Non è implementato perché **nessun impianto delle schede supera i 200 kW**: stanno
+   tutti nel primo scaglione, la tariffa resta una sola, e una ripartizione per UP non
+   cambierebbe un solo numero. `cer_tip_bracket_power.m` non lo approssima e non lo tace:
+   verifica che tutti gli impianti condividano lo scaglione e **si ferma** con un errore
+   che rimanda a questo paragrafo. Chi volesse comunque un risultato può dichiarare
+   `[MERCATO].tip_potenza_rif_kW` e imporre uno scaglione unico, sapendo che è
+   un'approssimazione.
+
+   Se un giorno servisse davvero, l'ostacolo non è la formula ma il **gioco cooperativo**:
+   con tariffe diverse per impianto, `v(S)` dipenderebbe da quali impianti possiede la
+   coalizione `S`, e `stratified_expected_value_cer.m` valuta `v` su utenti *fittizi* medi
+   che non possiedono alcun impianto (§4.1.2 di Cremers et al.) — lì la domanda «quali
+   impianti ha questa coalizione» non ha risposta. È lo stesso nodo già affrontato per il
+   fattore F, ma senza la via d'uscita che F aveva.

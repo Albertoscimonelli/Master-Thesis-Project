@@ -1,4 +1,4 @@
-function [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER)
+function [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNames, P_CER, esente, F)
 %CER_COALITION_VALUES  Funzione caratteristica v(S) del gioco cooperativo CER.
 %
 %   Calcola il valore v(S) per OGNI coalizione S del gioco, condiviso da tutti
@@ -22,6 +22,15 @@ function [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNam
 %   P_CER puo' essere uno scalare (incentivo costante) o un vettore [H x 1]
 %   (incentivo orario, es. la tariffa TIP_h di compute_cer_incentive.m).
 %
+%   FATTORE F (contributo in conto capitale)
+%     Con F > 0 la tariffa e' decurtata, ma NON sull'energia afferente a punti
+%     di prelievo esenti (persone fisiche ed enti: cer_reduction_factor.m).
+%     La quota esente e' quella DELLA COALIZIONE, perche' v(S) e' il valore che
+%     S avrebbe da sola, con la propria composizione. La formula sta in un
+%     posto solo, cer_shared_value.m, che questa funzione chiama per ogni
+%     bitmask: cosi' l'enumerazione completa e la valutazione su richiesta non
+%     possono divergere.
+%
 %   NETTING DIETRO AL CONTATORE
 %     genUsers e loadUsers sono attesi gia' al NETTO dell'autoconsumo di
 %     ciascun utente (vedi load_cer_data.m): per ogni ora un utente ha
@@ -35,6 +44,9 @@ function [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNam
 %     loadUsers [H x nU]  carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x nU]  nomi degli utenti                       (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%     esente    [nU x 1] logico, membri esenti dal fattore F (facoltativo,
+%                        serve solo se F > 0; default: nessuno)
+%     F         scalare  fattore di riduzione in [0,1] (default 0)
 %
 %   OUTPUT
 %     v       [2^n x 1]  valore di ogni coalizione, indicizzato dalla bitmask
@@ -54,13 +66,36 @@ function [v, players, A_inc] = cer_coalition_values(genUsers, loadUsers, userNam
               size(genUsers, 2), n);
     end
 
+    % --- Fattore F ed esenzione ---------------------------------------------
+    if nargin < 6 || isempty(F), F = 0; end
+    if nargin < 5 || isempty(esente)
+        esente = false(n, 1);
+    else
+        esente = logical(esente(:));
+        if numel(esente) ~= n
+            error('cer_coalition_values:exemptSizeMismatch', ...
+                  'esente ha %d elementi, i giocatori sono %d.', numel(esente), n);
+        end
+    end
+
+    % P_CER espanso una volta sola: cer_shared_value pretende la stessa forma
+    % di colonna degli aggregati, e ripetere l'espansione a ogni bitmask
+    % costerebbe 2^n volte tanto.
+    H = size(loadUsers, 1);
+    if isscalar(P_CER)
+        P_CER = P_CER * ones(H, 1);
+    else
+        P_CER = P_CER(:);
+    end
+
     % --- Valore di ogni coalizione ------------------------------------------
     v = zeros(nSub, 1);
     for mask = 1:(nSub - 1)             % mask = 0 -> coalizione vuota -> v = 0
         sel       = bitget(mask, 1:n) == 1;
         genS      = sum(genUsers(:,  sel), 2);
         loadS     = sum(loadUsers(:, sel), 2);
-        v(mask+1) = sum(min(genS, loadS) .* P_CER(:));
+        loadEsS   = sum(loadUsers(:, sel(:) & esente), 2);
+        v(mask+1) = cer_shared_value(genS, loadS, P_CER, loadEsS, F);
     end
 
     % --- Matrice di incidenza coalizione/giocatore --------------------------

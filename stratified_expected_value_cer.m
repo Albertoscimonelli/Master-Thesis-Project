@@ -130,6 +130,11 @@ function S = stratified_expected_value_cer(genUsers, loadUsers, userNames, P_CER
 %     loadUsers [H x n]   carico residuo orario di ciascun utente [kWh/h]
 %     userNames [1 x n]   nomi degli utenti                       (string)
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
+%                 .F      scalare  fattore di riduzione per contributo in conto
+%                         capitale (def. 0); .esente [n x 1] logico, membri
+%                         esenti. Per l'utente fittizio medio (eq. 11) la quota
+%                         esente e' quella MEDIA degli altri n-1, coerente col
+%                         fatto che quell'utente E' la loro media
 %     opts      struct    opzionale, campi tutti facoltativi:
 %                 .validateStrata  logico (def. false). Se true - e solo per
 %                   n <= 12, altrimenti la verifica costerebbe quanto lo
@@ -193,10 +198,21 @@ function S = stratified_expected_value_cer(genUsers, loadUsers, userNames, P_CER
         P_CER = P_CER(:);
     end
 
+    % --- Fattore F ed esenzione ---------------------------------------------
+    if ~isfield(opts, 'esente'), opts.esente = []; end
+    if ~isfield(opts, 'F'),      opts.F      = 0;  end
+    if isempty(opts.esente)
+        esente = false(n, 1);
+    else
+        esente = logical(opts.esente(:));
+    end
+    Fred = opts.F;
+
     % --- Grande coalizione --------------------------------------------------
     genComm  = sum(genUsers,  2);
     loadComm = sum(loadUsers, 2);
-    vGrand   = cer_shared_value(genComm, loadComm, P_CER);
+    loadEsC  = sum(loadUsers(:, esente), 2);
+    vGrand   = cer_shared_value(genComm, loadComm, P_CER, loadEsC, Fred);
 
     % --- Contributo marginale atteso, strato per strato (eq. 11-12) ---------
     strataMC = zeros(n, n);        % riga = giocatore, colonna j+1 = strato j
@@ -204,13 +220,18 @@ function S = stratified_expected_value_cer(genUsers, loadUsers, userNames, P_CER
         % Utente fittizio medio degli altri n-1 (eq. 11), su entrambi i lati.
         genAvg  = (genComm  - genUsers(:,  i)) / (n - 1);
         loadAvg = (loadComm - loadUsers(:, i)) / (n - 1);
+        % L'utente medio e' la media degli altri n-1: la sua quota esente e'
+        % percio' la loro quota esente media, non quella della comunita'.
+        loadEsAvg = (loadEsC - loadUsers(:, i) * esente(i)) / (n - 1);
 
         for j = 0:(n-1)
             % Strato j rappresentato da j copie dell'utente medio: gli
             % aggregati sono semplicemente j volte il profilo medio.
-            vBase = cer_shared_value(j * genAvg, j * loadAvg, P_CER);
+            vBase = cer_shared_value(j * genAvg, j * loadAvg, P_CER, ...
+                                     j * loadEsAvg, Fred);
             vWith = cer_shared_value(j * genAvg  + genUsers(:,  i), ...
-                                     j * loadAvg + loadUsers(:, i), P_CER);
+                                     j * loadAvg + loadUsers(:, i), P_CER, ...
+                                     j * loadEsAvg + loadUsers(:, i) * esente(i), Fred);
             strataMC(i, j+1) = vWith - vBase;
         end
     end
@@ -237,7 +258,7 @@ function S = stratified_expected_value_cer(genUsers, loadUsers, userNames, P_CER
                     ['Validazione per strati saltata: %d giocatori, ' ...
                      'l''enumerazione costerebbe quanto lo Shapley esatto.'], n);
         else
-            muExact    = exact_strata_mc(genUsers, loadUsers, P_CER, n);
+            muExact    = exact_strata_mc(genUsers, loadUsers, P_CER, n, esente, Fred);
             strataBias = strataMC - muExact;
 
             % Strati 0 e n-1: una sola coalizione ciascuno, quindi l'utente
@@ -277,7 +298,7 @@ function S = stratified_expected_value_cer(genUsers, loadUsers, userNames, P_CER
 end
 
 
-function muExact = exact_strata_mc(genUsers, loadUsers, P_CER, n)
+function muExact = exact_strata_mc(genUsers, loadUsers, P_CER, n, esente, Fred)
 %EXACT_STRATA_MC  Contributo marginale medio VERO di ogni strato (eq. 8):
 %
 %     mu(i,j) = media, su TUTTE le S subset N\{i} con |S| = j, di v(S+i) - v(S)
@@ -299,11 +320,13 @@ function muExact = exact_strata_mc(genUsers, loadUsers, P_CER, n)
         cnt = zeros(1, n);
         for mask = 0:(2^(n-1) - 1)
             sel   = others(bitget(mask, 1:(n-1)) == 1);
-            genS  = sum(genUsers(:,  sel), 2);      % [H x 0] -> colonna di zeri
-            loadS = sum(loadUsers(:, sel), 2);
+            genS   = sum(genUsers(:,  sel), 2);     % [H x 0] -> colonna di zeri
+            loadS  = sum(loadUsers(:, sel), 2);
+            loadEs = sum(loadUsers(:, sel(esente(sel))), 2);
             mc    = cer_shared_value(genS + genUsers(:,  i), ...
-                                     loadS + loadUsers(:, i), P_CER) ...
-                  - cer_shared_value(genS, loadS, P_CER);
+                                     loadS + loadUsers(:, i), P_CER, ...
+                                     loadEs + loadUsers(:, i) * esente(i), Fred) ...
+                  - cer_shared_value(genS, loadS, P_CER, loadEs, Fred);
             j        = numel(sel);
             acc(j+1) = acc(j+1) + mc;
             cnt(j+1) = cnt(j+1) + 1;

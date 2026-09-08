@@ -67,7 +67,8 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'soglia', {}, ...
                  'shared_annual', {}, 'sold_annual', {}, 'vGrand', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
-                 'isProsumer', {}, 'tempo_analisi_s', {}, ...
+                 'isProsumer', {}, 'forza', {}, 'forzaLorda', {}, ...
+                 'penetrazione', {}, 'NPV', {}, 'tempo_analisi_s', {}, ...
                  'tempo_figure_s', {}, 'CFG', {});
 
 
@@ -89,6 +90,12 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
 %  Con .esporta le figure finiscono su file (PDF vettoriale per la tesi + PNG),
 %  una cartella per scheda; con .chiudi le finestre si chiudono dopo il
 %  salvataggio, cosi' il giro successivo parte pulito.
+%
+%  .esporta E' SPENTO IN QUESTA FASE DEL LAVORO, di proposito. L'export non e'
+%  gratuito: la §8 tiene i due cronometri separati proprio per farlo vedere, e
+%  un PDF vettoriale con migliaia di punti costa piu' di un'intera ripartizione.
+%  Finche' si sta lavorando sui NUMERI e non sulle figure e' costo puro. Si
+%  riaccende quando servono le tavole per la tesi.
 %  ========================================================================
 
 FIG = struct( ...
@@ -99,9 +106,20 @@ FIG = struct( ...
     'equita',       false,  ...   % indici, scostamento dal merito, trade-off
     'finanza',      false,  ...   % VAN, tempo di ritorno, composizione del flusso
     'confrontoCER', true,  ...   % confronto fra comunita' (§7, dopo il ciclo)
-    'esporta',      true,  ...   % salva le figure su file
+    'esporta',      false,  ...   % salva le figure su file (vedi nota qui sopra)
     'chiudi',       false,  ...   % chiude le finestre dopo il salvataggio
     'cartella',     "outputs/figures");
+
+% --- Le tabelle di risultato su file --------------------------------------
+%  Interruttore SEPARATO da quello delle figure, e non per simmetria: le figure
+%  sono un servizio, queste tabelle sono un risultato. Con .esporta delle figure
+%  spento - che e' lo stato attuale - un export gestito dallo stesso flag non
+%  girerebbe mai, e i CSV che rispondono alla domanda di ricerca non esisterebbero.
+%  A differenza delle figure questi file si VERSIONANO: sono ASCII, pesano poco e
+%  si leggono in diff. Le ragioni per esteso in: help save_tables
+CSV = struct( ...
+    'esporta',  true, ...
+    'cartella', "outputs/tables");
 
 
 % --- Cronometro dell'intera esecuzione ------------------------------------
@@ -124,7 +142,7 @@ T_TOT = tic;
 %  l'errore in chiaro, invece di nasconderlo in un riepilogo di fine batch.
 for iCER = 1:N_CER
 
-    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG T_TOT
+    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG CSV T_TOT
 
     % Cronometro di QUESTA comunita'. Sta dopo il clearvars, quindi nasce e
     % muore dentro il giro: quello che serve dopo finisce in RESULTS (§6).
@@ -1303,15 +1321,22 @@ for iCER = 1:N_CER
     %  Piu' il Gini e il Jain grezzi, che di quegli indici sono il nucleo (EI =
     %  1 - Gini, QoS = Jain) ed e' con quelli che ragiona la letteratura.
     %
-    %  TRE DOMANDE DIVERSE. Gli indicatori non misurano la stessa cosa in modi
+    %  QUATTRO DOMANDE DIVERSE. Gli indicatori non misurano la stessa cosa in modi
     %  diversi: rispondono a domande che possono dare risposte opposte.
     %    MinMax, QoS, EI, Gini, Jain   quanto e' UNIFORME la ripartizione
     %    Fairness Index                quanto e' vicina al MERITO di ciascuno
+    %    Forza incentivante            quanto PREMIA IL SINCRONISMO fra prelievo
+    %                                  e immissione (compute_incentive_strength)
     %    Eccesso di coalizione         se REGGE, cioe' se qualche sottogruppo ha
     %                                  convenienza a uscire dalla CER
-    %  L'Equal Split e' primo sulla prima domanda (EI = 1, Gini = 0) e ULTIMO sulla
-    %  terza (nove coalizioni vorrebbero uscire). Guardare una colonna sola porta a
-    %  conclusioni sbagliate.
+    %  L'Equal Split e' primo sulla prima domanda (EI = 1, Gini = 0), vale ZERO
+    %  sulla terza per costruzione ed e' ULTIMO sulla quarta (nove coalizioni
+    %  vorrebbero uscire). Guardare una colonna sola porta a conclusioni sbagliate.
+    %
+    %  La terza domanda e' l'unica SENZA VERSO NORMATIVO: "piu' incentivante" non
+    %  vuol dire "piu' equo", ed e' un asse di progetto, non un giudizio. Per
+    %  questo non entra nella mappa di plot_fairness_indicators, il cui contratto
+    %  di colore dichiara che il freddo vuol dire sempre "piu' equo".
     %
     %  DUE ESCLUSIONI MOTIVATE (dettagli in GUIDA §18)
     %    QoE (Dynge eq. 13-14) richiede il prezzo di mercato locale lambda_t, che
@@ -1416,6 +1441,33 @@ for iCER = 1:N_CER
     EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
                           userNames, P_CER_lordo, optEX);
 
+    % --- Forza incentivante della regola (asse di virtuosita' di Bilardo) ----
+    % La QUARTA domanda: non quanto e' uniforme la ripartizione, ne' quanto e'
+    % vicina al merito, ne' se regge - ma quanto PREMIA IL SINCRONISMO fra
+    % prelievo e immissione. E' il termine "incentive strength of the rule" della
+    % domanda di ricerca, e senza questa colonna il modello non sa esprimerlo.
+    %
+    % Si misura proiettando la deviazione dall'uniforme di ciascun metodo
+    % sull'asse di virtuosita', che e' il fattore theta*eta gia' calcolato dalla
+    % §3o. Zero = l'Equal Split, che non trasmette alcun segnale; uno = la regola
+    % di Bilardo, che e' pura virtuosita'. Vedi help compute_incentive_strength.
+    %
+    % DUE ASSI, NON UNO. Sui profili NETTI il carico residuo del proprietario
+    % dell'impianto e' nullo proprio nelle ore di eccedenza, quindi la sua
+    % similarita' crolla e ogni metodo che premi i prosumer risulta negativo: e'
+    % un artefatto della convenzione, non una proprieta' della regola. L'asse
+    % LORDO - i flussi dietro contatore, la lettura letterale del paper - non ha
+    % quel difetto. Si calcolano entrambi e si stampa il coseno fra i due: se e'
+    % basso, la graduatoria dipende dalla convenzione e va detto.
+    % SUl e' SOLO una sorgente d'asse: non entra in metodi, non entra in Tcmp, e
+    % il montepremi non cambia (vedi similarity_utilization_cer.m).
+    SUl = similarity_utilization_cer(genForShare, loadForShare, userNames, P_CER_h, ...
+              struct('loadForFactors', loadUsers, 'genForFactors', genPV_raw));
+
+    optFZ = struct('playerNames', Sh.players, 'quiet', true);
+    FZ    = compute_incentive_strength([metodi.phi], SU,  [metodi.nome], optFZ);
+    FZl   = compute_incentive_strength([metodi.phi], SUl, [metodi.nome], optFZ);
+
     % --- Tabella di confronto -------------------------------------------------
     Tfair = table([metodi.nome].', ...
                   cellfun(@(F) F.minMaxPro, FIND), cellfun(@(F) F.minMaxCon, FIND), ...
@@ -1423,10 +1475,13 @@ for iCER = 1:N_CER
                   cellfun(@(F) F.eiOrig,    FIND), cellfun(@(F) F.eiNew,     FIND), ...
                   cellfun(@(F) F.jain,      FIND), cellfun(@(F) F.gini,      FIND), ...
                   BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+                  FZ.IS, FZ.align, FZl.IS, FZl.align, ...
                   'VariableNames', {'Metodo', 'MinMax_pro', 'MinMax_con', ...
                                     'QoS_orig', 'QoS_new', 'EI_orig', 'EI_new', ...
                                     'Jain', 'Gini', 'FairnessIndex', 'Sigma', ...
-                                    'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili'});
+                                    'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili', ...
+                                    'ForzaIncentivante', 'AllineamentoVirtu', ...
+                                    'ForzaIncentivante_lordo', 'AllineamentoVirtu_lordo'});
     fprintf('\n=== Indicatori di equita'' per metodo ===\n');
     disp(Tfair);
 
@@ -1545,6 +1600,74 @@ for iCER = 1:N_CER
     % ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.
     assert(EX.maxExcess(iNu) <= min(EX.maxExcess) + tolEx, ...
            'Indici di equita'': il Nucleolo non e'' il metodo con eccesso minimo');
+
+    % --- Le due ancore della forza incentivante ------------------------------
+    % Sono esatte per costruzione, quindi sono il test piu' netto sulla metrica:
+    % l'Equal Split non trasmette alcun segnale (deviazione dall'uniforme nulla,
+    % quindi numeratore nullo) e la regola di Bilardo E' l'unita' di misura
+    % (denominatore = suo numeratore). Se cadono, o l'asse e' stato costruito con
+    % un P_CER diverso da quello della §3o, oppure l'ordine dei membri e' saltato.
+    iSU = find([metodi.nome] == "Similarity-Utilization", 1);
+    if FZ.identificabile
+        assert(abs(Tfair.ForzaIncentivante(iES)) < 1e-12, ...
+               'Forza incentivante: l''Equal Split non vale zero');
+        assert(abs(Tfair.ForzaIncentivante(iSU) - 1) < 1e-12, ...
+               'Forza incentivante: la regola di riferimento non vale uno');
+        % NOTA: il COSENO del riferimento NON vale uno, e non deve valerlo. La
+        % regola di Bilardo rinormalizza la chiave GIORNO PER GIORNO, quindi la
+        % sua ripartizione annua non e' proporzionale alla media pesata del
+        % fattore: e' la stessa cosa vista da due angoli diversi, non lo stesso
+        % vettore. Vale uno solo l'INDICE, perche' quello e' definito come
+        % rapporto alla proiezione del riferimento. Che il coseno resti sotto uno
+        % e' anzi la prova che la metrica non e' circolare: se l'asse fosse
+        % l'output della regola invece del segnale grezzo, varrebbe uno per
+        % costruzione e la colonna misurerebbe se stessa.
+        assert(all(abs(Tfair.AllineamentoVirtu) <= 1 + 1e-12), ...
+               'Forza incentivante: il coseno e'' uscito da [-1,1]');
+        assert(all(FZ.virtuosita >= -1e-12 & FZ.virtuosita <= 1 + 1e-12), ...
+               'Forza incentivante: la virtuosita'' e'' uscita da [0,1]');
+    end
+    % L'ancora dello zero deve valere su ENTRAMBI gli assi: non dipende
+    % dall'asse, solo dal fatto che la ripartizione sia uniforme.
+    if FZl.identificabile
+        assert(abs(Tfair.ForzaIncentivante_lordo(iES)) < 1e-12, ...
+               'Forza incentivante: l''Equal Split non vale zero sull''asse lordo');
+    end
+    % Le quote di ogni metodo devono sommare a uno: e' cio' che rende la
+    % proiezione una covarianza, e senza sommerebbe un termine di media spurio.
+    assert(max(abs(sum(FZ.deviazione, 1))) < 1e-12, ...
+           'Forza incentivante: le quote di qualche metodo non sommano a uno');
+    % I pesi giornalieri esauriscono il montepremi: se non lo facessero, l'asse
+    % sarebbe costruito su una frazione dell'anno senza che nulla lo segnali.
+    assert(abs(sum(SU.dailyIncentive) - Sh.vGrand) < 1e-6 * max(1, Sh.vGrand), ...
+           'Forza incentivante: l''incentivo giornaliero non somma a v(N)');
+    assert(isequal(FZ.players, string(Sh.players(:).')), ...
+           'Forza incentivante: l''ordine dei membri non coincide con quello del gioco');
+
+    % --- Quanto costa la convenzione sui profili -----------------------------
+    % Non e' un assert ma informazione: se i due assi sono poco allineati, la
+    % graduatoria per forza incentivante dipende da una scelta di modello, e la
+    % tesi deve dirlo invece di presentarne una sola.
+    cosAssi = (FZ.virtuositaC.' * FZl.virtuositaC) / (FZ.normaAsse * FZl.normaAsse);
+    fprintf('\n=== Forza incentivante: netti contro lordi ===\n');
+    fprintf('  %-34s: %+.3f  (1 = stessa graduatoria di virtuosita'')\n', ...
+            'Coseno fra i due assi', cosAssi);
+    fprintf('  %-34s: %+.3f netto / %+.3f lordo\n', ...
+            'Shapley', Tfair.ForzaIncentivante(1), Tfair.ForzaIncentivante_lordo(1));
+    fprintf('  %-34s: %+.3f netto / %+.3f lordo\n', ...
+            'Similarity-Utilization', Tfair.ForzaIncentivante(iSU), ...
+            Tfair.ForzaIncentivante_lordo(iSU));
+    % Quanto la regola di riferimento sta ESSA STESSA sull'asse grezzo: la
+    % distanza da 1 e' l'effetto della rinormalizzazione giornaliera, ed e' la
+    % misura di quanto la metrica NON sia una tautologia.
+    fprintf('  %-34s: %+.3f  (< 1 per la rinormalizzazione giornaliera)\n', ...
+            'Coseno del riferimento sull''asse', Tfair.AllineamentoVirtu(iSU));
+    if cosAssi < 0.8
+        fprintf(['  ATTENZIONE: i due assi sono poco allineati. La graduatoria per\n' ...
+                 '  forza incentivante dipende dalla convenzione sui profili, e il\n' ...
+                 '  risultato va riportato su entrambi. Vedi "PROFILI NETTI O LORDI"\n' ...
+                 '  in: help compute_incentive_strength\n']);
+    end
 
     % --- Mappa di calore ------------------------------------------------------
     % Un pannello per DOMANDA (vedi header): uniformita', merito, stabilita'. Non
@@ -1893,6 +2016,34 @@ for iCER = 1:N_CER
     RESULTS(iCER).contendibleShare = FIND{1}.contendibleShare;
     RESULTS(iCER).isProsumer       = FIND{1}.isProsumer;
 
+    % Le due strutture della forza incentivante per intero, non solo le colonne
+    % gia' finite in Tfair: portano .beta, che e' l'unica grandezza della
+    % famiglia confrontabile FRA comunita' (IS ha un denominatore specifico della
+    % configurazione), e la virtuosita' per membro, senza cui la colonna non si
+    % puo' spiegare a chi legge.
+    RESULTS(iCER).forza      = FZ;
+    RESULTS(iCER).forzaLorda = FZl;
+
+    % --- L'asse di composizione, e il terzo criterio della domanda -----------
+    % La penetrazione si prende dalla SCHEDA e non dal nome del file: il nome e'
+    % un'etichetta, mentre questo campo e' validato riga per riga contro la
+    % tabella dei membri da valida_riepilogo (tolleranza 0.5 punti). E' anche
+    % l'unico modo di ordinare le comunita' senza dipendere dall'ordinamento
+    % LESSICOGRAFICO delle schede della §0, che con schede a una cifra mette le
+    % comunita' in ordine di penetrazione DECRESCENTE.
+    RESULTS(iCER).penetrazione = CFG.riepilogo.penetrazione_prosumer_pct;
+
+    % Il VAN di TUTTI e sedici i metodi, non solo quello di riferimento che
+    % finisce in Tfin. Senza, la "sostenibilita' economica della partecipazione"
+    % - il terzo criterio della domanda di ricerca - non e' confrontabile fra
+    % metodi: si vedeva una volta a schermo come Tvan e spariva. Vuoto quando la
+    % scheda non compila quota_inv_EUR, che e' il caso in cui Tfin e' vuota.
+    if isempty(FIN)
+        RESULTS(iCER).NPV = [];
+    else
+        RESULTS(iCER).NPV = FIN.NPV;
+    end
+
     % Il tempo dell'ANALISI, letto prima di salvare le figure: sono due lavori
     % di natura diversa e conviene tenerli separati. Il calcolo e' quello che
     % non si puo' evitare; l'export delle figure e' un servizio, si spegne con
@@ -1955,6 +2106,103 @@ if FIG.confrontoCER && N_CER > 1
 
 end
 
+
+%% ========================================================================
+%  7b) ACCORDO FRA INDICATORI E INVERSIONI DI GRADUATORIA
+%
+%  Le due clausole finali della domanda di ricerca (§2.6 della tesi): "to what
+%  extent do different fairness indicators agree in evaluating them; and to what
+%  extent does this ranking depend on the composition of the community".
+%
+%  Fin qui il progetto rispondeva a entrambe con delle FIGURE. Il README §7.0
+%  racconta il caso piu' netto - l'Equal Split primo su EI e Gini e ultimo sulla
+%  stabilita', il Nucleolo l'opposto - plot_fairness_tradeoff lo rende geometrico
+%  e plot_gini_3d mostra se l'ordine fra i metodi regga al cambio di comunita'.
+%  Ma sono racconto e figura: quanto due indicatori concordino, e dove due metodi
+%  si scambino di posto, andava ricostruito a occhio. Qui si estrae.
+%
+%  NON STA DIETRO A FIG. E' analisi, non presentazione, e la §8 fa gia' quella
+%  distinzione ("il calcolo e' quello che serve, l'export delle figure e' un
+%  servizio"). Con FIG.esporta spento un blocco messo dentro if FIG.confrontoCER
+%  non girerebbe mai. Solo la SCRITTURA e' condizionata, e al suo flag.
+%
+%  L'ORDINE DELLE COMUNITA' NON E' QUELLO DI RESULTS. La §0 ordina le schede in
+%  modo lessicografico, che con schede a una cifra le mette in penetrazione
+%  DECRESCENTE: extract_ranking_reversals riordina per penetrazione crescente
+%  leggendola dal [RIEPILOGO], che load_cer_input valida contro la tabella membri.
+%  ========================================================================
+
+AGR = compute_indicator_agreement(RESULTS);
+
+% --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
+% fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
+% risparmi, quindi dopo l'orientamento il tau fra i due deve valere +1 esatto, e
+% puo' valerlo perche' le strutture di pareggio sono identiche per costruzione.
+% Un singolo assert che esercita insieme la tabella dei versi, la regola dei
+% pareggi e l'implementazione del tau-b: se cade, l'orientamento e' sbagliato e
+% la tabella delle inversioni direbbe il contrario del vero.
+iEI   = find(AGR.indicators == "EI_orig", 1);
+iGini = find(AGR.indicators == "Gini",    1);
+for c = 1:numel(AGR.schede)
+    if AGR.discrimina(iEI, c) && AGR.discrimina(iGini, c)
+        assert(abs(AGR.tau(iEI, iGini, c) - 1) < 1e-12, ...
+               'Accordo fra indicatori: tau(EI_orig, Gini) diverso da +1 su %s', ...
+               AGR.schede(c));
+    end
+    % Simmetria e diagonale unitaria: la matrice deve restare una matrice di
+    % correlazione anche dove qualche indicatore non ordina niente.
+    M = AGR.tau(:, :, c);
+    assert(isequaln(M, M.'), ...
+           'Accordo fra indicatori: matrice non simmetrica su %s', AGR.schede(c));
+    assert(all(abs(diag(M) - 1) < 1e-12), ...
+           'Accordo fra indicatori: diagonale diversa da 1 su %s', AGR.schede(c));
+    assert(all(abs(M(~isnan(M))) <= 1 + 1e-12), ...
+           'Accordo fra indicatori: un tau e'' uscito da [-1,1] su %s', AGR.schede(c));
+end
+
+if N_CER > 1
+    REV = extract_ranking_reversals(AGR);
+
+    % Il dettaglio e il sommario devono contare la stessa cosa: sono due viste
+    % della stessa scansione, e uno scarto vorrebbe dire che una delle due perde
+    % righe.
+    assert(height(REV.inversioni) == sum(REV.sommario.nInversioni), ...
+           'Inversioni: il dettaglio e il sommario non contano lo stesso numero');
+
+    % La penetrazione DICHIARATA nella scheda contro quella CONTATA dai profili:
+    % la prima e' un dato di configurazione, la seconda viene dal fatto che un
+    % membro porti o no generazione nel gioco. Se divergono, l'asse su cui si
+    % misura la dipendenza dalla composizione non e' quello che si crede.
+    contata = 100 * arrayfun(@(r) sum(r.isProsumer)/r.nUsers, RESULTS);
+    assert(max(abs(AGR.penetrazione - contata)) <= 0.5, ...
+           'Inversioni: penetrazione dichiarata e contata divergono di piu'' di 0.5 punti');
+
+    % Il pavimento del Jain e' 1/n: uno scarto di Jain non e' confrontabile fra
+    % comunita' di taglia diversa, e "composizione" verrebbe confusa con "taglia".
+    if numel(unique([RESULTS.nUsers])) > 1
+        fprintf(['\n  ATTENZIONE: le comunita'' hanno un numero di membri DIVERSO.\n' ...
+                 '  Jain e MinMax hanno un pavimento che dipende da n, quindi le loro\n' ...
+                 '  inversioni mescolano l''effetto della composizione con quello della\n' ...
+                 '  taglia. Le colonne normalizzate restano confrontabili.\n']);
+    end
+else
+    REV = struct('inversioni', table(), 'sommario', table());
+    fprintf('\n  Una sola comunita'': le inversioni non sono definite.\n');
+end
+
+if CSV.esporta
+    cartellaCSV = fullfile(CSV.cartella, "confronto");
+    fprintf('\n=== Tabelle di confronto su file ===\n');
+    daScrivere = struct( ...
+        'accordo_indicatori', AGR.table, ...
+        'orientamenti',       AGR.orientation);
+    if N_CER > 1
+        daScrivere.inversioni_di_graduatoria = REV.inversioni;
+        daScrivere.inversioni_sommario       = REV.sommario;
+    end
+    save_tables(cartellaCSV, daScrivere);
+end
+
 %% ========================================================================
 %  8) TEMPO DI ESECUZIONE
 %
@@ -1973,10 +2221,11 @@ tempoAnalisiTot = sum([RESULTS.tempo_analisi_s]);
 tempoFigureTot  = sum([RESULTS.tempo_figure_s]);
 tempoTotale     = toc(T_TOT);
 
-% Quello che resta e' la §7 (confronto fra CER e relativo export): non
-% appartiene a nessuna comunita' e non ha un cronometro proprio, ma va
-% dichiarato lo stesso, altrimenti il totale non tornerebbe e non si capirebbe
-% perche'.
+% Quello che resta e' la §7 e la §7b (confronto fra CER, accordo fra indicatori,
+% inversioni di graduatoria e relativi export): non appartengono a nessuna
+% comunita' e non hanno un cronometro proprio, ma vanno dichiarati lo stesso,
+% altrimenti il totale non tornerebbe e non si capirebbe perche'. La voce e'
+% quindi piu' larga di quanto il nome "confronto CER" suggerisca.
 tempoConfronto = tempoTotale - tempoAnalisiTot - tempoFigureTot;
 
 fprintf('\n\n=== Tempo di esecuzione ===\n');

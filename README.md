@@ -327,8 +327,8 @@ isolato dal generatore globale di MATLAB, quindi l'esecuzione è riproducibile.
 ## 7. Indici di valutazione dell'equità
 
 I sedici modelli di §6 dicono **quanto** prende ciascuno; questa sezione dice **quale
-ripartizione sia più equa**, e rispetto a quale definizione di equità. Dieci indicatori,
-calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da due articoli:
+ripartizione sia più equa**, e rispetto a quale definizione di equità. Undici indicatori,
+calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da tre articoli:
 
 | Indicatore | Eq. | File | Cosa misura | Verso |
 |---|---|---|---|:---:|
@@ -342,36 +342,103 @@ calcolati in `MAIN.m` §3t su tutti e sedici i metodi, da due articoli:
 | **Gini di eterogeneità** | 10 | `gini_heterogeneity.m` | varietà delle tipologie di membro (**non** un Gini di reddito) | — |
 | **Fairness Index** + σ | 12-14 | `fairness_index_bm.m` | distanza dalla distribuzione per **contributo** `BCᵢ = v(N) − v(N∖{i})` | 0 = equo |
 | **Eccesso di coalizione** | 23 | `coalition_excess.m` | se qualche sottogruppo guadagnerebbe di più **uscendo** dalla CER | ↓ = stabile |
+| **Forza incentivante** + coseno | 6-8 | `compute_incentive_strength.m` | quanto la regola **premia il sincronismo** fra prelievo e immissione | nessun verso |
 
 Fonti: Dynge, Cali, *Distributive energy justice in local electricity markets*, Appl.
 Energy 384 (2025) 125463 (eq. 11-19); Casalicchio, Manzolini, Prina, Moser, *From
 investment optimization to fair benefit distribution in renewable energy community
 modelling*, Appl. Energy 310 (2022) 118447 (eq. 10, 12-14); Volpato, Carraro, Dal Cin,
 Rech, *On the Different Fair Allocations of Economic Benefits for Energy Communities*,
-Energies 17 (2024) 4788 (eq. 23). Derivazioni, mappatura formula → codice e avvertenze in
+Energies 17 (2024) 4788 (eq. 23); Bilardo, *A fair dynamic incentive allocation method…*,
+Renewable Energy 255 (2025) 123756 (eq. 6-8, riusate come **asse di misura** e non come
+regola). Derivazioni, mappatura formula → codice e avvertenze in
 [GUIDA §18](GUIDA_modelli_distribuzione.md).
 
 **Gini e Jain sono esposti a sé stanti** oltre che dentro EI e QoS: sono le grandezze con
 cui ragiona la letteratura, e tenerle implicite le renderebbe inutilizzabili.
 
-### 7.0 Tre domande diverse, non tre modi di misurare la stessa cosa
+### 7.0 Quattro domande diverse, non quattro modi di misurare la stessa cosa
 
 | Gruppo | Domanda a cui risponde |
 |---|---|
 | MinMax, QoS, EI, Gini, Jain | quanto è **uniforme** la ripartizione |
 | Fairness Index, σ | quanto è vicina al **merito** di ciascuno |
+| Forza incentivante, coseno | quanto **premia il sincronismo** fra prelievo e immissione |
 | Eccesso di coalizione | se **regge**, cioè se un sottogruppo ha convenienza a uscire |
 
-Le tre domande possono dare risposte **opposte**, ed è il caso: l'**Equal Split** è primo
-sulla prima (`EI = 1.00`, `Gini = 0.00` — per quegli indici è la ripartizione più equa
-possibile) e **ultimo** sulla terza (eccesso `+606 €`, nove sottogruppi vorrebbero
-uscire). Il **Nucleolo** fa l'opposto: `EI = 0.45`, il peggiore del lotto, ma è l'unico
-insieme al Variance Least Core a garantire che nessuno voglia andarsene. Guardare una
-colonna sola porta a conclusioni sbagliate.
+Le quattro domande possono dare risposte **opposte**, ed è il caso: l'**Equal Split** è
+primo sulla prima (`EI = 1.00`, `Gini = 0.00` — per quegli indici è la ripartizione più equa
+possibile), vale **esattamente zero** sulla terza (dà a tutti lo stesso, quindi nessun
+comportamento cambia la quota) ed è **ultimo** sulla quarta (eccesso `+606 €`, nove
+sottogruppi vorrebbero uscire). Il **Nucleolo** fa l'opposto sulla prima e sull'ultima:
+`EI = 0.45`, il peggiore del lotto, ma è l'unico insieme al Variance Least Core a garantire
+che nessuno voglia andarsene. Guardare una colonna sola porta a conclusioni sbagliate.
 
-Esiste poi una **quarta domanda, di natura diversa**, che non sta in questa tabella perché
-non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 — un
-metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+Le prime due e la quarta hanno un **verso**: si sa da che parte sta il meglio. La terza no,
+ed è la ragione per cui non entra nella mappa di `plot_fairness_indicators`, il cui
+contratto di colore dichiara che il freddo vuol dire *sempre* "più equo".
+
+Esiste poi una **quinta domanda, di natura ancora diversa**, che non sta in questa tabella
+perché non misura equità: *quali ripartizioni sono ammesse dalla norma*. La tratta il §7.4 —
+un metodo può essere il più equo dei sedici e restare inammissibile, o viceversa.
+
+### 7.0-bis La forza incentivante: cosa misura e come si legge
+
+È il terzo criterio della domanda di ricerca — *incentive strength of the rule* — accanto
+all'equità distributiva e alla sostenibilità economica, e fino a qui il modello non lo
+sapeva esprimere. Non è un indice di equità e **non ha un verso normativo**: "più
+incentivante" non vuol dire "più equo", è un asse di progetto.
+
+La definizione letterale sarebbe un'**elasticità** — perturbare il profilo di un membro e
+rileggere la sua quota — che è fuori dallo scope della tesi (richiederebbe di simulare la
+risposta comportamentale) oltre a costare *n* riesecuzioni di Shapley e Nucleolo per
+comunità. Il sostituto ex-post è la **covarianza trasversale fra quota e virtuosità**: i
+membri virtuosi prendono sistematicamente di più, o no?
+
+L'asse di virtuosità è il fattore `θ·η` di Bilardo già calcolato dalla §6 per il modello 12,
+mediato sui giorni **con peso pari all'incentivo maturato** (così un giorno senza
+generazione, dove la chiave non è definita, pesa zero e non inquina l'asse):
+
+```
+b_i = Σ_d w_d · fAll(d,i)        q_k = phi_k / Σ phi_k        u = 1/n
+IS_k    = ⟨q_k − u, b − b̄⟩ / ⟨q_SU − u, b − b̄⟩     forza incentivante
+ALIGN_k = cos( q_k − u , b − b̄ )                    allineamento, in [−1,1]
+```
+
+**Due ancore esatte**, che in `MAIN.m` §3t sono `assert`: `IS = 0` per l'**Equal Split**
+(quote uguali ⇒ nessun segnale) e `IS = 1` per la **Similarity-Utilization**, che fissa
+l'unità di misura. `IS` **non è limitata superiormente**, ed è voluto: è una pendenza, non
+una quota. Si legge *1 = come la regola di Bilardo, 2 = il doppio, negativo = premia il
+contrario*.
+
+Il coseno del riferimento, invece, **vale meno di 1**, ed è la garanzia che la metrica non
+sia circolare: la regola di Bilardo rinormalizza la chiave giorno per giorno, quindi la sua
+ripartizione annua non è proporzionale alla media del fattore. Se l'asse fosse l'*output*
+della regola invece del *segnale grezzo*, il coseno varrebbe 1 per costruzione e la colonna
+misurerebbe sé stessa.
+
+> **Avvertenza sui profili, da leggere prima dei numeri — e non è teorica.** Sui profili
+> **netti** il carico residuo del proprietario dell'impianto è nullo proprio nelle ore di
+> eccedenza, quindi la sua `θ` crolla e ogni metodo che premi i prosumer viene spinto verso
+> il basso. È un artefatto della convenzione, non una proprietà della regola — la stessa
+> contaminazione da proprietà dell'impianto per cui il Fairness Index va letto con cautela
+> (§7.2). Per questo `MAIN.m` calcola la colonna su **entrambi** gli assi e stampa il coseno
+> fra i due.
+>
+> Sulle sette comunità l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
+>
+> | CER | prosumer | cos(assi) | Shapley netto | Shapley lordo |
+> |---|:---:|:---:|---:|---:|
+> | `CER_0_7_0` | 7/7 | 0.903 | +0.697 | +1.652 |
+> | `CER_2_5_0` | 5/7 | 0.616 | +0.555 | +1.970 |
+> | `CER_4_3_0` | 3/7 | 0.566 | +0.384 | +1.014 |
+> | `CER_6_1_0` | **1/7** | **0.224** | **−0.657** | **+2.502** |
+>
+> Con un solo prosumer **il segno dello Shapley si ribalta**: sull'asse netto sembrerebbe
+> punire la virtuosità, su quello lordo la premia più di Bilardo. Il coseno scende sotto 0.8
+> su **sei comunità su sette**. Conclusione operativa: la graduatoria per forza incentivante
+> **va riportata su entrambi gli assi**, e una lettura sui soli profili netti sarebbe una
+> conclusione sbagliata, non una conclusione parziale.
 
 ### 7.1 Due indicatori esclusi, e perché
 
@@ -602,6 +669,64 @@ distintivo e ricade nel limite di §14.1. Con `F = 0` non cambia nulla.
 **identico riga per riga** a prima dell'introduzione del fattore: le uniche differenze
 sono le nuove righe diagnostiche della §1c.
 
+### 7.6 Quanto gli indicatori concordano, e quanto la graduatoria dipende dalla comunità
+
+Le §7.0–7.5 dicono **quali** indicatori esistono e cosa misurano. Questa sezione risponde
+alle due domande che vengono dopo, e che il §2.6 della tesi pone esplicitamente: *quanto
+indicatori diversi concordino nel giudicare gli stessi metodi*, e *quanto la graduatoria
+dipenda dalla composizione della comunità*. Le calcola `MAIN.m` §7b — **dopo** il ciclo,
+perché servono tutte le comunità insieme — e le scrive in `outputs/tables/confronto/`
+(§11.0).
+
+**L'accordo si misura col τ-b di Kendall**, scritto a mano perché il progetto non dipende
+dallo Statistics Toolbox. Prima di calcolarlo bisogna **orientare** gli indicatori, ed è il
+passaggio più facile da sbagliare: EI, Jain, QoS e MinMax vanno verso 1, mentre Gini,
+Fairness Index, σ ed EccessoMax vanno verso il basso. Senza orientarli, τ fra EI e Gini
+verrebbe −1 mentre la verità è +1. L'orientamento è quindi **dato e non codice** — sta in
+una tabella letterale, esce in `orientamenti.csv`, e una colonna nuova di `Tfair` senza un
+verso dichiarato fa **fallire** la funzione invece di farle indovinare.
+
+C'è un'ancora esatta che verifica tutto l'impianto in un colpo solo: `fairness_indicators_lem`
+calcola `eiOrig = 1 - gini` sullo **stesso** vettore di risparmi, quindi dopo un orientamento
+corretto `τ(EI_orig, Gini)` deve valere **esattamente +1** su ogni configurazione. È un
+`assert` in §7b, e verifica insieme la tabella dei versi, la regola dei pareggi e
+l'implementazione del τ.
+
+**Il risultato: la §7.0 non è un aneddoto, ed è modulata dalla composizione.** L'accordo fra
+uniformità e stabilità — le due domande che il §7.0 dice opposte — è negativo su sei
+comunità su sette, e **si fa più negativo al calare dei prosumer**:
+
+| CER | prosumer | `τ(EI_orig, EccessoMax_EUR)` |
+|---|:---:|---:|
+| `CER_0_7_0` | 7/7 | −0.08 |
+| `CER_1_6_0` | 6/7 | **+0.16** |
+| `CER_2_5_0` | 5/7 | −0.29 |
+| `CER_4_3_0` | 3/7 | −0.19 |
+| `CER_5_2_0` | 2/7 | −0.38 |
+| `CER_6_1_0` | **1/7** | **−0.60** |
+
+Con sette prosumer i due criteri sono quasi indipendenti; con uno solo si oppongono
+nettamente. E all'85.7% l'accordo **cambia segno**: la divergenza raccontata a parole nel
+§7.0 non è una costante della CER, è una funzione della sua composizione.
+
+**Le inversioni di graduatoria** seguono i metodi a coppie lungo l'asse di penetrazione
+(14.3% → 100%) e registrano ogni cambio di segno. Su **2160 serie** — 18 indicatori × 120
+coppie di metodi:
+
+- **1132 si invertono almeno una volta**, cioè il **52%**;
+- 1943 cambi di segno in totale;
+- **715 coppie sono invertite fra i due estremi** dell'asse, il 33%.
+
+Detto altrimenti: su questa famiglia di comunità, per **una coppia di metodi su due** la
+risposta alla domanda "quale dei due è più equo" **cambia** al variare della penetrazione
+prosumer. Il che è, di per sé, la risposta alla terza clausola della domanda di ricerca.
+
+> **Quello che questi numeri non dicono.** L'asse variato è **uno solo**: tutte e sette le
+> schede hanno 7 membri e la stessa ripartizione per categoria. Il §2.6 promette di variare
+> anche **il numero di membri** e **la composizione per categoria**, e quei due assi non sono
+> ancora coperti — non per un limite del codice, che è agnostico rispetto alla scheda, ma
+> perché le schede non esistono. Vedi §12.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -743,6 +868,34 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
   primo da `load_cer_input`.
 - Grafici energetici: andamento mensile CER, PV vs domanda, profili di consumo tipo.
 
+### 11.0 Le tabelle su file: `outputs/tables/`
+
+Fino alla §7b la pipeline MATLAB **non salvava un solo numero**: niente `save`, niente
+`writetable` in tutto il repository. `RESULTS` viveva nel workspace e moriva alla chiusura
+di MATLAB, e ogni cifra citata in tesi andava riletta a schermo da un'esecuzione completa.
+La §7b rompe quella convenzione, con l'interruttore `CSV` della §0b — **separato** da
+quello delle figure, perché le figure sono un servizio e queste tabelle sono un risultato.
+
+| File | Cosa contiene |
+|---|---|
+| `accordo_indicatori.csv` | il **τ-b di Kendall** fra ogni coppia di indicatori, una configurazione alla volta, con il conteggio di coppie concordi e discordi e se ciascuno dei due discrimini |
+| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari |
+| `inversioni_sommario.csv` | una riga per serie: quante inversioni, e se la graduatoria sia **invertita fra i due estremi** dell'asse — che non è deducibile dal conteggio, perché un numero pari di inversioni riporta all'ordine di partenza |
+| `orientamenti.csv` | **da che parte sta il meglio**, indicatore per indicatore, con il motivo e se il verso sia normativo. È il primo file da aprire quando un risultato non torna |
+
+Questi CSV **si versionano**, a differenza delle figure: sono ASCII, pesano poche decine di
+KB e si leggono in diff. `save_tables` arrotonda **in scrittura e solo lì** — due decimali
+fissi sugli euro, sei **cifre significative** sul resto, con uno zero vero sotto `1e-12` —
+perché la precisione di default di `writetable` produrrebbe churn a `1e-16` a ogni
+riesecuzione, indistinguibile in un diff da un cambiamento vero.
+
+Le cifre significative non sono un vezzo: coi decimali fissi un divario di `3e-8` diventa
+`0.000000`, e sono proprio quelli i divari delle inversioni su `MinMax_con`, `QoS` e `Jain`
+— i tre indicatori che il §7.2 dichiara quasi costanti. Chi legge vedrebbe *"un'inversione
+con divario zero"* e concluderebbe che il codice conta il rumore, mentre il divario c'è ed è
+solo piccolo. Sono 3 righe su 1943, ma sono esattamente quelle su cui si verificherebbe la
+correttezza del metodo.
+
 ### 11.1 Le figure: quali si producono, e dove finiscono
 
 `MAIN.m` §0b contiene la struct `FIG`, l'unico punto da cui si decide **cosa disegnare**.
@@ -831,6 +984,21 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
+- **L'asse di composizione variato è uno solo.** Tutte e sette le schede hanno **7 membri**
+  e la stessa ripartizione per categoria (1 terziario, 1 industriale, 1 commerciale, 4
+  domestici): varia solo chi possiede l'impianto, dal 14.3% al 100% di penetrazione. Le
+  inversioni della §7.6 misurano quindi la dipendenza dalla **penetrazione prosumer** e da
+  nient'altro. Servono schede che varino anche il **numero di membri** e la **composizione
+  per categoria**. Non è un limite del codice — aggiungere una comunità significa aggiungere
+  un file in `CER_configuration/`, e `cer_config_writer.py` ne redige la bozza — ma delle
+  configurazioni disponibili, e serve il corrispondente set di profili dallo stadio Python.
+  È la voce più pesante di questa lista, perché è quella che la domanda di ricerca chiede
+  esplicitamente.
+- **`CER_6_1_0` non ha `quota_inv_EUR`**: sei membri su sette sono a `?`, quindi quella
+  comunità non produce VAN e la colonna `VAN_min_EUR` della §7.6 vale `NaN` lì. Le altre sei
+  ce l'hanno, e la colonna resta utile: `compute_indicator_agreement` dichiara la comunità
+  non discriminante per quell'indicatore invece di cancellare la colonna dappertutto.
+  Compilando quelle sei celle la copertura diventa piena.
 - **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
   `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
   capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano

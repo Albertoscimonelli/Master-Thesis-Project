@@ -1,0 +1,19 @@
+Indicatore,Verso,Normativo,Motivo
+MinMax_pro,1,1,1 = equo (Dynge eq. 16)
+MinMax_con,1,1,1 = equo (Dynge eq. 17)
+QoS_orig,1,1,1 = equo - Jain sui volumi (Dynge eq. 12)
+QoS_new,1,1,1 = equo - Jain segmentato (Dynge eq. 18)
+EI_orig,1,1,1 = equo - 1 meno il Gini dei risparmi (Dynge eq. 15)
+EI_new,1,1,1 = equo - EI segmentato (Dynge eq. 19)
+Jain,1,1,1 = equo - indice di Jain grezzo
+Gini,-1,1,0 = equo - concentrazione dei risparmi
+FairnessIndex,-1,1,0 = equo - distanza dal merito (Casalicchio eq. 14)
+Sigma,-1,1,0 = equo - dispersione dello scostamento dal merito
+QuoteNulle,-1,1,0 = equo - membri lasciati a quota nulla
+EccessoMax_EUR,-1,1,piu' basso = piu' stabile (Volpato eq. 23)
+CoalizioniInstabili,-1,1,piu' basso = piu' stabile - sottogruppi che uscirebbero
+ForzaIncentivante,1,0,piu' alto = premia di piu' il sincronismo - NON un giudizio di equita'
+AllineamentoVirtu,1,0,piu' alto = il premio e' piu' diretto alla virtuosita' - NON equita'
+ForzaIncentivante_lordo,1,0,come sopra - asse costruito sui profili lordi
+AllineamentoVirtu_lordo,1,0,come sopra - asse costruito sui profili lordi
+VAN_min_EUR,1,1,piu' alto = il membro messo peggio rientra meglio

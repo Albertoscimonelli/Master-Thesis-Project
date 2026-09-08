@@ -266,11 +266,13 @@ function F = compute_incentive_strength(phiMat, SU, methodNames, opts)
     bc = b - mean(b);
     normaAsse = norm(bc);
 
-    if normaAsse == 0
-        error('compute_incentive_strength:asseNullo', ...
-              ['Tutti i membri hanno la stessa virtuosita'' misurata: l''asse non ' ...
-               'esiste e la forza incentivante non e'' definita.']);
-    end
+    % Asse assente: e' un'ASSENZA DI RISPOSTA, non un errore. E' cio' che
+    % l'header dichiara gia' sopra ("IS e ALIGN valgono NaN e .identificabile e'
+    % false"), e il caso esatto normaAsse == 0 e' solo il limite di quello sotto
+    % tolleranza: due ingressi che differiscono di un ulp non possono avere
+    % esiti qualitativamente opposti. Un error qui abortirebbe il giro di MAIN.m
+    % su UNA comunita' degenere, buttando via anche quelle gia' calcolate, che
+    % vivono solo nel workspace finche' la 7b non scrive i CSV.
     identificabile = normaAsse > opts.tolAsse;
 
     % --- Quote e deviazioni dall'uniforme ------------------------------------
@@ -306,7 +308,10 @@ function F = compute_incentive_strength(phiMat, SU, methodNames, opts)
     devRif        = SU.phi(:) / totRif - u;
     proiezioneRif = devRif.' * bc;
 
-    if abs(proiezioneRif) <= opts.tolAsse * normaAsse
+    % Solo se l'asse esiste: senza asse la proiezione e' nulla per forza, e
+    % questa guardia ritrasformerebbe in errore l'assenza di risposta appena
+    % ammessa qui sopra.
+    if identificabile && abs(proiezioneRif) <= opts.tolAsse * normaAsse
         error('compute_incentive_strength:unitaDegenere', ...
               ['La regola di riferimento non e'' essa stessa allineata all''asse ' ...
                '(proiezione %.3g): l''unita'' di misura sarebbe priva di senso.'], ...
@@ -329,7 +334,13 @@ function F = compute_incentive_strength(phiMat, SU, methodNames, opts)
     end
 
     % Guardia numerica: il coseno resta un coseno anche dopo gli arrotondamenti.
-    align = min(max(align, -1), 1);
+    % SOLO sui valori finiti: in MATLAB max(NaN, -1) vale -1, perche' le forme
+    % a due argomenti di max e min SCARTANO il NaN. Un clamp cieco
+    % trasformerebbe quindi l'asse NON IDENTIFICABILE in un coseno di -1, e
+    % R2 = align^2 direbbe che il 100% della deviazione giace su un asse che
+    % non esiste: peggio dell'errore che questa funzione non solleva piu'.
+    fin        = isfinite(align);
+    align(fin) = min(max(align(fin), -1), 1);
 
     % --- Spearman, diagnostico ------------------------------------------------
     % Non entra in Tfair: satura (premiare il membro piu' virtuoso di +0.001 o di

@@ -31,6 +31,15 @@ function R = extract_ranking_reversals(A, opts)
 %     e' l'affermazione da titolo, e NON e' deducibile dal conteggio, perche' un
 %     numero pari di inversioni riporta all'ordine di partenza.
 %
+%     ATTENZIONE, ED E' IL MOTIVO DELLE DUE COLONNE ACCANTO: quei due estremi
+%     sono il primo e l'ultimo segno NON NULLO, che non coincidono con i due
+%     estremi dell'ASSE quando la coppia e' a pari - o l'indicatore non
+%     discriminante - proprio nella prima o nell'ultima configurazione. Succede:
+%     MinMax_con e QoS_new non discriminano alle due penetrazioni piu' alte.
+%     PenetrazioneSegnoIniziale_pct e PenetrazioneSegnoFinale_pct dicono dove
+%     stanno davvero i due segni confrontati, cosi' l'affermazione da titolo si
+%     puo' verificare invece che dare per buona.
+%
 %   I PAREGGI IN MEZZO A UNA SEQUENZA
 %     Si tiene l'ultimo segno NON NULLO invece di confrontare i passi grezzi. Cosi'
 %     la sequenza  + , 0 , -  e' registrata come UNA inversione, delimitata dalle
@@ -119,6 +128,7 @@ function R = extract_ranking_reversals(A, opts)
     sInd = strings(nSer,1);  sA = strings(nSer,1);  sB = strings(nSer,1);
     sN   = zeros(nSer,1);    sIni = zeros(nSer,1);  sFin = zeros(nSer,1);
     sEst = false(nSer,1);    sMax = zeros(nSer,1);  sVal = zeros(nSer,1);
+    sPIni = nan(nSer,1);     sPFin = nan(nSer,1);
     nSerie = 0;
 
     for j = 1:nI
@@ -127,8 +137,9 @@ function R = extract_ranking_reversals(A, opts)
                 gap = squeeze(scores(a, j, :) - scores(b, j, :)).';   % [1 x nK]
 
                 ultimoSegno = 0; ultimoIdx = 0;
-                primoSegno  = 0;
+                primoSegno  = 0; primoIdx  = 0;
                 nInv = 0; nValidi = 0; gapMax = 0;
+                nPari = 0;   % passi VALUTATI e risultati a pari dall'ultimo segno
 
                 for c = 1:nK
                     if ~discrimina(j, c) || ~isfinite(gap(c)), continue; end
@@ -136,9 +147,12 @@ function R = extract_ranking_reversals(A, opts)
                     gapMax  = max(gapMax, abs(gap(c)));
 
                     s = local_segno(gap(c), tolTie(j, c));
-                    if s == 0, continue; end          % passo a pari: non chiude nulla
+                    if s == 0                         % passo a pari: non chiude nulla
+                        nPari = nPari + 1;
+                        continue
+                    end
 
-                    if primoSegno == 0, primoSegno = s; end
+                    if primoSegno == 0, primoSegno = s; primoIdx = c; end
 
                     if ultimoSegno ~= 0 && s ~= ultimoSegno
                         nInv = nInv + 1;
@@ -148,10 +162,16 @@ function R = extract_ranking_reversals(A, opts)
                         dSda(nRig) = schede(ultimoIdx);  dSa(nRig) = schede(c);
                         dPda(nRig) = asse(ultimoIdx);    dPa(nRig) = asse(c);
                         dGda(nRig) = gap(ultimoIdx);     dGa(nRig) = gap(c);
-                        dPar(nRig) = c - ultimoIdx - 1;  % passi neutri in mezzo
+                        % SOLO i passi valutati e risultati a pari. La distanza
+                        % fra gli indici conterebbe anche le configurazioni in
+                        % cui l'indicatore non ordina niente, e quelle non sono
+                        % pareggi fra A e B: sono osservazioni MANCANTI, che e'
+                        % un'affermazione diversa e piu' debole.
+                        dPar(nRig) = nPari;
                     end
                     ultimoSegno = s;
                     ultimoIdx   = c;
+                    nPari       = 0;
                 end
 
                 nSerie = nSerie + 1;
@@ -163,6 +183,14 @@ function R = extract_ranking_reversals(A, opts)
                                primoSegno ~= ultimoSegno;
                 sMax(nSerie) = gapMax;
                 sVal(nSerie) = nValidi;
+                % DOVE stanno i due segni confrontati. Senza queste due colonne
+                % InvertitoAgliEstremi non e' verificabile: il primo e l'ultimo
+                % segno NON sono in generale i due estremi dell'asse, perche' la
+                % coppia puo' essere a pari - o l'indicatore non discriminante -
+                % proprio nella prima o nell'ultima configurazione. NaN quando la
+                % serie non ha nemmeno un segno non nullo.
+                if primoIdx  > 0, sPIni(nSerie) = asse(primoIdx);  end
+                if ultimoIdx > 0, sPFin(nSerie) = asse(ultimoIdx); end
             end
         end
     end
@@ -177,11 +205,14 @@ function R = extract_ranking_reversals(A, opts)
 
     R.sommario = table(sInd(1:nSerie), sA(1:nSerie), sB(1:nSerie), ...
                        sN(1:nSerie), sIni(1:nSerie), sFin(1:nSerie), ...
-                       sEst(1:nSerie), sMax(1:nSerie), sVal(1:nSerie), ...
+                       sEst(1:nSerie), sPIni(1:nSerie), sPFin(1:nSerie), ...
+                       sMax(1:nSerie), sVal(1:nSerie), ...
                        'VariableNames', {'Indicatore', 'MetodoA', 'MetodoB', ...
                                          'nInversioni', 'SegnoIniziale', 'SegnoFinale', ...
-                                         'InvertitoAgliEstremi', 'DivarioMax', ...
-                                         'ConfigurazioniValide'});
+                                         'InvertitoAgliEstremi', ...
+                                         'PenetrazioneSegnoIniziale_pct', ...
+                                         'PenetrazioneSegnoFinale_pct', ...
+                                         'DivarioMax', 'ConfigurazioniValide'});
 
     R.asse        = asse;
     R.schede      = schede;
@@ -253,4 +284,60 @@ function local_validate_self()
     % ...ma una differenza vera sopra soglia lo e'
     assert(local_conta_inversioni([1 -1 1], 1e-9) == 2, ...
            'extract_ranking_reversals: un attraversamento vero non viene contato');
+
+    % --- LA SCANSIONE REALE, non una sua copia ------------------------------
+    % Gli assert qui sopra esercitano local_conta_inversioni, che la funzione
+    % pubblica NON chiama: il ciclo di produzione reimplementa la stessa regola
+    % inline. Senza questo blocco un errore introdotto nel ciclo reale passa
+    % l'auto-test indisturbato, ed e' proprio il caso peggiore - una rete di
+    % sicurezza che non copre nulla e ti fa smettere di guardare.
+    % Stessa convenzione di compute_incentive_strength.m, il cui auto-test
+    % chiama la funzione pubblica in modo ricorsivo con validateSelf a false.
+    o = struct('validateSelf', false, 'quiet', true);
+
+    scores = zeros(2, 1, 3);
+    scores(1,1,:) = [1 0 1];        % divario A-B: + , - , +  -> DUE inversioni
+    scores(2,1,:) = [0 1 0];
+    A = struct('indicators', "X", 'methods', ["A" "B"], ...
+               'schede', ["c1" "c2" "c3"], 'penetrazione', [10 20 30], ...
+               'scores', scores, 'discrimina', true(1,3), 'tolTie', zeros(1,3));
+    R = extract_ranking_reversals(A, o);
+
+    assert(R.nInversioni == 2, ...
+           'extract_ranking_reversals: la scansione reale non trova le due inversioni');
+    assert(height(R.inversioni) == 2, ...
+           'extract_ranking_reversals: il dettaglio non ha una riga per inversione');
+    assert(sum(R.sommario.nInversioni) == 2, ...
+           'extract_ranking_reversals: il sommario non concorda col dettaglio');
+    % Un numero PARI di inversioni riporta all'ordine di partenza: e' il motivo
+    % per cui la colonna degli estremi esiste, e non si deduce dal conteggio.
+    assert(~R.sommario.InvertitoAgliEstremi(1), ...
+           'extract_ranking_reversals: due inversioni non riportano all''ordine iniziale');
+    assert(isequal(R.asse, [10 20 30]), ...
+           'extract_ranking_reversals: l''asse non e'' ordinato per penetrazione');
+    % Qui i due segni estremi cadono davvero sui due estremi dell'asse.
+    assert(R.sommario.PenetrazioneSegnoIniziale_pct(1) == 10 && ...
+           R.sommario.PenetrazioneSegnoFinale_pct(1)   == 30, ...
+           'extract_ranking_reversals: le posizioni dei segni estremi sono sbagliate');
+
+    % --- Un pareggio E una configurazione non misurata, in mezzo -------------
+    % Cinque configurazioni: alla terza l'indicatore NON discrimina, alla quarta
+    % la coppia e' a pari. Fra il segno + (c=2) e il segno - (c=5) c'e' UN solo
+    % pareggio misurato; la distanza fra gli indici ne conterebbe DUE, e
+    % scriverebbe come pareggio una configurazione che non e' stata valutata.
+    s2 = zeros(2, 1, 5);
+    s2(1,1,:) = [1 1 0 1 0];
+    s2(2,1,:) = [0 0 0 1 1];
+    A2 = struct('indicators', "X", 'methods', ["A" "B"], ...
+                'schede', ["a" "b" "c" "d" "e"], 'penetrazione', [10 20 30 40 50], ...
+                'scores', s2, 'discrimina', [true true false true true], ...
+                'tolTie', zeros(1,5));
+    R2 = extract_ranking_reversals(A2, o);
+
+    assert(R2.nInversioni == 1, ...
+           'extract_ranking_reversals: inversione persa oltre un passo non misurato');
+    assert(R2.inversioni.PassiPari(1) == 1, ...
+           'extract_ranking_reversals: PassiPari conta le configurazioni non misurate');
+    assert(R2.sommario.ConfigurazioniValide(1) == 4, ...
+           'extract_ranking_reversals: la configurazione non discriminante e'' stata contata');
 end

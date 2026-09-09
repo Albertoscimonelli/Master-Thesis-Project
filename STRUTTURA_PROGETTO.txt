@@ -385,12 +385,15 @@ COME FUNZIONA:
      profilo 1D in Watt a risoluzione 1 minuto (anno intero)
   3. Assembla tutti i profili in un DataFrame con DatetimeIndex
 
-  NOTA SUI SEED: il seed e' calcolato come hash(f"{nome}_{indice}") % 2^31.
-  In Python, hash() su stringhe e' salato per processo (PYTHONHASHSEED),
-  quindi il seed NON e' identico tra esecuzioni diverse: i profili RAMP
-  non sono bit-per-bit riproducibili da un run all'altro. Per ottenere
-  seed davvero deterministici servirebbe una funzione hash non salata
-  (es. zlib.crc32) al posto di hash().
+  NOTA SUI SEED: il seed viene da _seed_stabile(), cioe' zlib.crc32 sulla
+  stringa "{nome}_{indice}". crc32 NON e' salato per processo, quindi il
+  seed e' identico fra esecuzioni diverse e i profili sono riproducibili.
+  Verificato: rigenerando, le quattro famiglie LPG escono identiche byte
+  per byte allo snapshot precedente.
+  Resta un solo punto non riproducibile: il FALLBACK SINTETICO di
+  lpg_runner._generate_synthetic_profile, che ricava il proprio seed da
+  hash() ignorando quello deterministico gia' calcolato dal chiamante.
+  Scatta solo se pyLPG non risponde, e l'avviso lo dichiara.
 
 --------------------------------------------------------------------------------
  3.3  lpg_runner.py  (PROFILI FAMIGLIE)
@@ -431,7 +434,12 @@ SEZIONI:
 
   simulation:
     year: 2025                        Anno di simulazione
-    timezone: "Europe/Rome"           Fuso orario per RAMP
+    timezone: "Europe/Rome"           Fuso civile che i profili RAPPRESENTANO.
+                                      NON costruisce piu' l'indice di RAMP:
+                                      quell'indice e' tz-naive, perche' RAMP
+                                      genera in ora civile locale e un indice
+                                      tz-aware spostava avanti di un'ora tutta
+                                      la meta' estiva. Vedi README par. 5.1.
     (la risoluzione di output e' fissa a 1 ora, non configurabile)
 
   ramp:
@@ -610,7 +618,9 @@ Pipeline a sezioni indipendenti, RIPETUTA PER OGNI CER:
       enumerare.
   3q) Accuratezza delle tre approssimazioni rispetto allo Shapley esatto
       (eq. 16-17 del paper). RISULTATO: la graduatoria del paper si rovescia
-      - MC 1,07%, Adaptive Sampling 1,52%, Stratified Expected Value 21,98%
+      - Adaptive Sampling 1,34%, Marginal Contribution 16,20%, Stratified
+      Expected Value 21,79% (RD media sui 7 membri x 7 comunita'). L'unica
+      approssimazione utilizzabile e' quindi la piu' cara delle tre
       (vedi GUIDA §16.7-§16.8 per il perche').
   3r) Ripartizione dell'incentivo CER: Tri-level EP (Campagna et al. 2024 -
       proprieta' + proporzionale + poverta' energetica LIHC). PROVVISORIO:
@@ -840,7 +850,7 @@ richiesta con cer_shared_value. Nessun toolbox richiesto.
                             O(n^2), DETERMINISTICO.
                             ATTENZIONE - non usare i suoi numeri senza
                             leggere GUIDA §16.8: sui dati del progetto
-                            sbaglia del 21,98% (il peggiore dei tre, mentre
+                            sbaglia del 21,79% (il peggiore dei tre, mentre
                             nel paper e' il migliore). L'eq. 11 assume membri
                             INTERCAMBIABILI: vero nel paper, dove l'impianto
                             e' in comproprieta', falso qui, dove la

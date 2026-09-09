@@ -1985,6 +1985,13 @@ Montepremi `v(N)` = **2 348,59 €**. Confronto con lo Shapley esatto (eq. 16 de
 | household_3 | 101,23 | 100,09 | 124,98 | 101,78 | 1,12% | 23,46% | 0,55% |
 | **RD media (eq. 17)** | | **1,07%** | **21,98%** | **1,52%** | | | |
 
+> ⚠ **Tabella anteriore all'unificazione del calendario** (README §5.1) e alla community a
+> sette membri. Rimisurata sul run del 9 settembre 2026, la RD media sui 7 membri × 7
+> comunità vale: **Adaptive Sampling 1,34%**, **Marginal Contribution 16,20%**,
+> **Stratified Expected Value 21,79%**. La SEV resta la peggiore, ma **la MC non è più
+> accurata**: la più accurata è l'Adaptive Sampling. Il ragionamento del §16.8 sulla SEV
+> regge; quello sulla MC va rivisto (vedi la nota lì).
+
 Nel paper la SEV è il metodo **più** accurato e la MC il **meno**; da noi succede
 l'esatto contrario. E l'errore della SEV non è rumore: è **sistematico e con segno** —
 gonfia tutti i consumatori (+19÷25%) e sgonfia il prosumer (−20%).
@@ -2052,7 +2059,16 @@ giocatore che era corretto: da qui il suo −20%.
 > approssimazioni pensate per comunità omogenee reggano su una comunità con un unico
 > prosumer pivotale**.
 
-**Perché invece la MC se la cava (1,07%)?** Perché usa *solo* lo strato `n-1`, dove
+**Perché invece la MC se la cava (1,07%)?**
+> ⚠ **Non se la cava più.** Sui dati attuali la MC sbaglia in media del **16,20%** — vedi
+> la nota al §16.7. La spiegazione qui sotto resta valida come *meccanismo* (usa un solo
+> strato, esatto per costruzione, e la sua accuratezza dipende da quanto le proporzioni fra
+> giocatori sono stabili fra gli strati), ma la premessa empirica è cambiata: su questa
+> topologia quelle proporzioni **non** sono stabili, ed è esattamente il motivo per cui la
+> MC sbaglia. L'ipotesi da verificare è che a `n` grande, con più impianti distribuiti,
+> tornino stabili.
+
+Perché usa *solo* lo strato `n-1`, dove
 l'approssimazione è **esatta per costruzione** (§16.4). Il suo errore non è di
 approssimazione dello strato, ma di "un solo strato invece della media degli `n`" — e qui
 capita che le proporzioni fra giocatori siano stabili fra gli strati. È in parte

@@ -2,7 +2,7 @@
 
 Simulazione e analisi tecnico-economica di una **Comunità Energetica Rinnovabile (CER)**
 italiana: generazione di profili di carico realistici, bilancio energia condivisa/venduta,
-ripartizione dell'incentivo CER tra i membri con quindici modelli alternativi (teoria dei giochi
+ripartizione dell'incentivo CER tra i membri con sedici modelli alternativi (teoria dei giochi
 cooperativi, benchmark elementari, modelli dalla letteratura sulle REC italiane e chiavi
 dinamiche di ripartizione dell'energia), costo dell'approvvigionamento da rete,
 dimensionamento di un impianto fotovoltaico.
@@ -25,7 +25,7 @@ dimensionamento di un impianto fotovoltaico.
 3. [Come eseguirlo](#3-come-eseguirlo)
 4. [Struttura del repository](#4-struttura-del-repository)
 5. [Il modello energetico CER](#5-il-modello-energetico-cer)
-6. [I quindici modelli di ripartizione dei benefici](#6-i-quindici-modelli-di-ripartizione-dei-benefici)
+6. [I sedici modelli di ripartizione dei benefici](#6-i-sedici-modelli-di-ripartizione-dei-benefici)
 7. [Indici di valutazione dell'equità](#7-indici-di-valutazione-dellequità)
 8. [Dimensionamento impianto PV (standalone)](#8-dimensionamento-impianto-pv-standalone)
 9. [Configurazione attuale (community di default)](#9-configurazione-attuale-community-di-default)
@@ -46,7 +46,7 @@ con il resto della comunità: sull'energia condivisa lo Stato eroga un incentivo
 tariffa incentivante premio, **TIP_h**). Il progetto risponde a tre domande:
 
 1. **Quanta energia si condivide e quanta si vende in rete?** (bilancio orario annuale)
-2. **Come si ripartisce equamente l'incentivo tra i membri?** (quindici modelli a confronto,
+2. **Come si ripartisce equamente l'incentivo tra i membri?** (sedici modelli a confronto,
    dalla teoria dei giochi cooperativi a semplici regole di buon senso, fino a modelli
    proposti in letteratura per le REC italiane e a chiavi dinamiche che ripartiscono
    l'energia ora per ora)
@@ -78,7 +78,7 @@ outputs/csv/*.csv  (kWh/h, 2025, ~8760 righe)
   pyLPG non è disponibile). Output: CSV orari in kWh, compatibili con `readtable()` di
   MATLAB.
 - **Stadio 2 — MATLAB** (root): `MAIN.m` è l'entry point che carica i profili di carico +
-  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con quindici modelli,
+  la produzione PV, calcola il bilancio energetico, ripartisce i benefici con sedici modelli,
   calcola il costo dell'approvvigionamento da rete e produce i grafici. `optimizer_PV.m` è
   uno script **indipendente** (non chiamato da `MAIN.m`) per il dimensionamento fisico
   dell'impianto.
@@ -157,7 +157,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_fairness_indicators.m` | Mappa di calore metodi × indicatori di equità (§7) |
 | `pearson_hourly_key.m`, `sharing_rate_key.m`, `normalize_key_rows.m`, `allocate_shared_energy.m` | Helper condivisi dalle chiavi dinamiche: pesi di Pearson, sharing rate, normalizzazione oraria, ripartizione iterativa con cap al consumo |
 | `cer_shared_value.m` | Helper condiviso dalle tre approssimazioni: `v` di **una** coalizione dai profili aggregati, `O(H)` invece di `O(H·2ⁿ)` |
-| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e quindici i modelli |
+| `report_allocation.m`, `method_color.m`, `plot_allocation_comparison.m`, `plot_benefit_network.m` | Reporting e grafici condivisi da tutti e sedici i modelli |
 | `plot_allocation_heatmap.m` | Mappa quote **metodi × membri** in % di `v(N)`: il confronto a barre non regge sedici metodi (§11.1) |
 | `plot_merit_deviation.m` | Chi è premiato e chi penalizzato rispetto al contributo marginale — apre lo scalare `FI` per membro (§11.1) |
 | `plot_fairness_tradeoff.m` | **Uniformità × stabilità** dei sedici metodi su un piano, con frontiera di Pareto (§11.1) |
@@ -170,7 +170,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `profilo_prezzi_pun_2025.m` | Prezzi PUN 2025 per 3 modalità tariffarie (costo da rete, §4) |
 | `optimizer_PV.m`, `irr_bisection.m` | Dimensionamento impianto PV (standalone, §8) |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
-| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei quindici modelli di ripartizione |
+| `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei sedici modelli di ripartizione |
 | `STRUTTURA_PROGETTO.txt` | Mappa dettagliatissima di ogni file/funzione/CSV del progetto |
 | `AUDIT_REPORT.md` | Audit del codice — bug noti e possibili miglioramenti (2026-07-10) |
 
@@ -200,16 +200,41 @@ energia venduta(t)   = max( 0, Σ_i gen_i(t) - Σ_i load_i(t) )  → venduta in 
 dal prezzo zonale orario del Mercato del Giorno Prima (`load_zonal_price.m`, letto da
 `20250101_20251231_MGP_PrezziZonali_Nord.xlsx`).
 
-Questo bilancio (con `P_CER_h`) è l'input di **tutti e quindici** i modelli di ripartizione:
+Questo bilancio (con `P_CER_h`) è l'input di **tutti e sedici** i modelli di ripartizione:
 ```
 v(S) = Σ_t min( Σ_{i∈S} gen_i(t), Σ_{i∈S} load_i(t) ) · P_CER_h(t)
 ```
 è la **funzione caratteristica** del gioco cooperativo (`cer_coalition_values.m`), e
-`v(N)` (l'intera comunità) è il totale che i quindici modelli si dividono in modo diverso.
+`v(N)` (l'intera comunità) è il totale che i sedici modelli si dividono in modo diverso.
 
-## 6. I quindici modelli di ripartizione dei benefici
+### 5.1 Il modello di calendario: un orologio solo, senza cambio d'ora
 
-L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo quindici modelli,
+Tutte le serie del progetto vivono su un **anno locale uniforme di 8760 ore**: la riga `k`
+di ciascuna è la `k`-esima ora **assoluta** dell'anno. Non si modella l'ora legale, in
+nessun punto della catena.
+
+Non è una semplificazione scelta a tavolino, è una **proprietà delle sorgenti**, verificata:
+RAMP genera 525 600 minuti consecutivi giorno per giorno, pyLPG un anno pieno di 8760 ore,
+e l'export PVsyst ha il picco di produzione a mezzogiorno in *tutti* i mesi — misurato,
+estate compresa — quindi non conosce il cambio d'ora nemmeno lui. Il file GME dei prezzi
+zonali *sì*, ma contiene comunque le 8760 ore assolute dell'anno (un giorno da 23 ore e uno
+da 25, che si compensano): `load_zonal_price` lo allinea **per posizione**, come già faceva
+`load_pv_generation`, quindi la riga `k` finisce nell'ora `k` della griglia.
+
+> **Perché è importante saperlo.** Fino al 9 settembre 2026 il progetto usava *due* modelli
+> di calendario senza dichiararlo. `ramp_runner` costruiva un indice `tz`-aware sopra un
+> array che non aveva l'ora legale, e questo spostava avanti di un'ora **tutta la metà
+> estiva** dei profili aziendali (30 marzo → 26 ottobre): il minuto generato come «15 luglio
+> ore 12:00» finiva etichettato 13:00. In parallelo il prezzo zonale era indicizzato per
+> etichetta in ora legale, e finiva un'ora più avanti dell'energia che doveva valorizzare.
+> Correggendo entrambi, **l'energia condivisa è salita del 5,43%** (89 443 → 94 302 kWh) e
+> il montepremi del 5,46% (11 444 → 12 068 €), con l'effetto che cresce con la penetrazione
+> prosumer (+4,4% con un impianto solo, +8,1% con sette). Tutti i risultati numerici di
+> questo README sono posteriori alla correzione.
+
+## 6. I sedici modelli di ripartizione dei benefici
+
+L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo sedici modelli,
 tutti calcolati in `MAIN.m` (§3b-§3p) e confrontati in tabella e grafico (§3r). Firma comune:
 `S = metodo_cer(genUsers, loadUsers, userNames, P_CER, ...)` → struct con almeno `.phi`
 (quota per utente, €), `.vGrand` (= `v(N)`, salvo eccezioni documentate), `.table`.
@@ -294,9 +319,14 @@ letteratura al bloccante di [§14.1](#141-tre-modelli-diventano-matematicamente-
 Vanno quindi giudicati sull'**errore**, non sull'equità: con `n = 6` lo Shapley esatto è
 disponibile come *ground truth*, e `MAIN.m` §3q ne misura lo scarto (eq. 16-17 del paper).
 
-> ⚠ **Risultato: la graduatoria del paper si rovescia.** Scarto medio dallo Shapley esatto
-> sui dati del progetto: **Marginal Contribution 1,07%**, **Adaptive Sampling 1,52%**,
-> **Stratified Expected Value 21,98%** — mentre nel paper è quest'ultima la più accurata.
+> ⚠ **Risultato: la graduatoria del paper si rovescia.** Scarto relativo medio dallo
+> Shapley esatto (`RD` dell'eq. 17, media sui 7 membri × 7 comunità): **Adaptive Sampling
+> 1,34%**, **Marginal Contribution 16,20%**, **Stratified Expected Value 21,79%** —
+> mentre nel paper è quest'ultima la più accurata.
+>
+> L'unica approssimazione utilizzabile su questi dati è quindi l'**Adaptive Sampling**, ed
+> è anche la più cara delle tre (`O(n·M)`). La Marginal Contribution, che costa `O(n)`,
+> sbaglia in media del 16%: non è un ripiego accettabile.
 > L'errore è sistematico (gonfia i consumatori del +19÷25%, sgonfia il prosumer del −20%) e
 > la causa è strutturale: la SEV rappresenta ogni strato con un utente **medio**, ipotesi
 > valida quando l'impianto è in comproprietà fra tutti — il caso del paper — e insostenibile
@@ -464,8 +494,9 @@ Non sono bug, sono proprietà del modello. Vanno riportate, non nascoste.
 3. **Il MinMax originale è identico per tutti e sedici i metodi**: i flussi fisici di una
    CER non cambiano al cambiare di chi prende i soldi. È la versione estrema della critica
    che il paper stesso muove all'indicatore.
-4. **Anche `MinMax_con`, `QoS` e `Jain` variano pochissimo fra i metodi.** Sulla community
-   di default solo l'**8.7%** dell'energia condivisa è *contendibile*: nel restante 91.3%
+4. **Anche `MinMax_con`, `QoS` e `Jain` variano pochissimo fra i metodi.** La frazione di
+   energia condivisa *contendibile* va dal **7,9%** (`CER_6_1_0`, un solo prosumer) al
+   **43,8%** (`CER_0_7_0`, tutti prosumer): nel resto
    l'immissione copre l'intero carico residuo e ogni utente riceve esattamente il proprio
    consumo, qualunque sia la chiave. Con `contendibleShare` così basso, gli indicatori
    **energetici** descrivono la comunità più che il metodo — a discriminare sono quelli
@@ -546,18 +577,18 @@ configurazione energetica, non dei meccanismi. Solo se è **binding** ha senso c
 quale metodo assegni alle imprese più del consentito (tetto: `(1 − %E_ACI,ecc) · C_ACI`).
 
 **Sulle sette CER attuali il vincolo non morde, e con ampio margine.** Il rapporto
-`E_ACI/E_immessa` va dal 5,3% (`CER_0_7_0`) al 24,3% (`CER_6_1_0`), cioè da 49,7 a 30,7
+`E_ACI/E_immessa` va dal 2,2% (`CER_0_7_0`) al 25,7% (`CER_6_1_0`), cioè da 52,8 a 29,3
 punti *sotto* la soglia del 55% — e resterebbe non binding anche nel regime al 45%:
 
 | Scheda | E condivisa [kWh] | E immessa [kWh] | Quota | Distanza dalla soglia |
 |---|---:|---:|---:|---:|
-| `CER_0_7_0` | 14 414 | 272 842 | 5,3% | −49,7 pt |
-| `CER_1_6_0` | 15 286 | 255 178 | 6,0% | −49,0 pt |
-| `CER_2_5_0` | 13 454 | 182 854 | 7,4% | −47,6 pt |
-| `CER_3_4_0` | 13 064 | 164 433 | 7,9% | −47,1 pt |
-| `CER_4_3_0` | 18 056 | 100 834 | 17,9% | −37,1 pt |
-| `CER_5_2_0` | 17 314 |  83 186 | 20,8% | −34,2 pt |
-| `CER_6_1_0` | 15 870 |  65 362 | 24,3% | −30,7 pt |
+| `CER_0_7_0` |  5 845 | 262 250 |  2,2% | −52,8 pt |
+| `CER_1_6_0` |  6 692 | 244 587 |  2,7% | −52,3 pt |
+| `CER_2_5_0` | 14 313 | 181 754 |  7,9% | −47,1 pt |
+| `CER_3_4_0` | 13 897 | 163 334 |  8,5% | −46,5 pt |
+| `CER_4_3_0` | 18 902 |  99 926 | 18,9% | −36,1 pt |
+| `CER_5_2_0` | 18 083 |  82 279 | 22,0% | −33,0 pt |
+| `CER_6_1_0` | 16 569 |  64 454 | 25,7% | −29,3 pt |
 
 La monotonia non è casuale: più prosumer ci sono, più potenza è installata, più energia
 finisce immessa senza trovare carico residuo da coprire — e il rapporto crolla. È lo
@@ -634,6 +665,13 @@ inspiegabile fra metodi.
 | 20% | 0,250 | €1632,28 | €202,02 | 12,4% |
 | 40% | 0,500 | €1225,02 | €203,99 | **16,7%** |
 
+> ⚠ **Valori assoluti da rigenerare.** Questa tabella precede l'unificazione del calendario
+> (§5.1): con i profili corretti `v(N)` di `CER_6_1_0` vale ora **€2130,66** e non €2039,54,
+> e le due righe con `F > 0` richiedono di rieseguire `MAIN` dopo aver compilato
+> `[MERCATO].tip_fattore_riduzione` in `scenario_economico.txt`. **Il meccanismo che la
+> tabella illustra non cambia** — il montepremi crolla, la quota in euro dei domestici no —
+> ma i tre numeri vanno rimisurati prima di citarli in tesi.
+
 Il montepremi crolla del 40%, ma la quota in euro dei domestici **non si muove** (€200 →
 €204): l'esenzione li protegge, e la loro fetta relativa passa da 9,8% a 16,7%. È
 l'effetto che la norma cerca, e si vede **solo** con il trattamento per coalizione — con
@@ -709,13 +747,22 @@ Con sette prosumer i due criteri sono quasi indipendenti; con uno solo si oppong
 nettamente. E all'85.7% l'accordo **cambia segno**: la divergenza raccontata a parole nel
 §7.0 non è una costante della CER, è una funzione della sua composizione.
 
+> ⚠ **Tabella da rigenerare.** Anche questi valori precedono l'unificazione del calendario
+> (§5.1). Il *segno* e l'andamento monotono sono robusti — si leggono in
+> `accordo_indicatori.csv`, che è rigenerato — ma i sei coefficienti vanno rimisurati, e con
+> essi la penetrazione a cui l'accordo cambia segno.
+
 **Le inversioni di graduatoria** seguono i metodi a coppie lungo l'asse di penetrazione
 (14.3% → 100%) e registrano ogni cambio di segno. Su **2160 serie** — 18 indicatori × 120
 coppie di metodi:
 
-- **1132 si invertono almeno una volta**, cioè il **52%**;
-- 1943 cambi di segno in totale;
-- **715 coppie sono invertite fra i due estremi** dell'asse, il 33%.
+- **1126 si invertono almeno una volta**, cioè il **52%**;
+- 1905 cambi di segno in totale;
+- **713 coppie sono invertite fra i due estremi** dell'asse, il 33%. Attenzione: "estremi"
+  significa il primo e l'ultimo segno NON NULLO, che coincidono con il 14,3% e il 100%
+  solo se la coppia non è a pari lì. Le colonne `PenetrazioneSegnoIniziale_pct` e
+  `PenetrazioneSegnoFinale_pct` di `inversioni_sommario.csv` dicono dove stanno davvero:
+  **132 coppie su 713 coprono un intervallo più corto**.
 
 Detto altrimenti: su questa famiglia di comunità, per **una coppia di metodi su due** la
 risposta alla domanda "quale dei due è più equo" **cambia** al variare della penetrazione
@@ -850,11 +897,11 @@ CSV orari, separatore virgola, timestamp ISO8601, ~8760 righe.
 
 **Stadio MATLAB** (`MAIN.m`), a schermo e in tabelle/figure:
 - `Treport` — riepilogo mensile/annuale energia condivisa, venduta, ricavi.
-- Report testuale + grafico a barre + grafico a rete per ciascuno dei quindici modelli di
+- Report testuale + grafico a barre + grafico a rete per ciascuno dei sedici modelli di
   ripartizione (§6).
 - `Trd` — accuratezza delle tre approssimazioni dello Shapley rispetto al valore esatto
   (§3q, eq. 16-17 di Cremers et al.).
-- `Tcmp` — tabella di confronto tra i quindici modelli + grafico a barre raggruppate.
+- `Tcmp` — tabella di confronto tra i sedici modelli + grafico a barre raggruppate.
 - `Tfair` — i dieci **indici di equità** per ciascun metodo + mappa di calore a tre
   pannelli (uniformità / merito / stabilità), più il registro delle ipotesi attive, la
   distribuzione per contributo e la classifica di stabilità con la coalizione peggiore di
@@ -925,8 +972,8 @@ quindi la cartella si legge senza aprire le immagini. `outputs/figures/` è in
 
 | Figura | Risultato che rende visibile |
 |---|---|
-| **Mappa oraria 24×365** | dove cadono nell'anno le ore **sature** — quelle in cui l'immissione copre l'intero carico e nessuna chiave può cambiare nulla. È la premessa per leggere la §7: sulla community di default solo il **10%** dell'energia è contendibile fra i metodi |
-| **Curve di durata** | quanta immissione eccede il carico e finisce **venduta invece che incentivata** (69,7% sui dati attuali) — la lettura di dimensionamento |
+| **Mappa oraria 24×365** | dove cadono nell'anno le ore **sature** — quelle in cui l'immissione copre l'intero carico e nessuna chiave può cambiare nulla. È la premessa per leggere la §7: la frazione contendibile va dal 7,9% al 43,8% a seconda della comunità (§7.2) |
+| **Curve di durata** | quanta immissione eccede il carico e finisce **venduta invece che incentivata**: dal 74,3% (`CER_6_1_0`) al 97,8% (`CER_0_7_0`) dell'energia immessa — la lettura di dimensionamento |
 | **TIP_h vs prezzo zonale** | la spezzata dell'eq. 3.1 con sopra le 8760 ore, e il confronto fra TIP **media** e TIP **effettivamente incassata**: se la seconda è maggiore, la CER condivide nelle ore in cui l'incentivo vale di più |
 | **Mappa quote metodi × membri** | i **gruppi di metodi che si comportano uguale**, che il grafico a barre non mostra più: con sedici metodi ogni barra è larga `0.8/16 = 0.05` tick |
 | **Scostamento dal merito** | apre lo scalare `FI` per membro: non *quanto* un metodo si discosta dal contributo marginale, ma **chi** premia e chi penalizza |
@@ -1090,9 +1137,13 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   assorbe il resto — manca chi sovraconsuma, l'unico caso in cui lo sharing rate morde.
   **Da ricontrollare sui dati reali**: la nota in
   [GUIDA §14.6](GUIDA_modelli_distribuzione.md) elenca i tre indicatori da ricalcolare.
-- I seed RAMP non sono bit-per-bit riproducibili tra esecuzioni diverse (`hash()` su
-  stringhe è salato per processo in Python) — vedi
-  [STRUTTURA_PROGETTO.txt §3.2](STRUTTURA_PROGETTO.txt).
+- **I seed di RAMP e pyLPG sono deterministici** (`_seed_stabile`, `zlib.crc32`), e la
+  riproducibilità è verificata: rigenerando i profili, le quattro famiglie LPG escono
+  identiche byte per byte. Resta **un solo punto non riproducibile**, il *fallback
+  sintetico* di `lpg_runner`: `_generate_synthetic_profile` ricava il proprio seed da
+  `hash()`, salato per processo, ignorando quello deterministico calcolato dal chiamante.
+  Scatta solo se pyLPG non risponde, e l'avviso lo dichiara — ma finché resta così un
+  profilo sintetico va trattato come un risultato non riproducibile.
 - `optimizer_PV.m` non è integrato nella pipeline di `MAIN.m` ed è pensato per test
   occasionali, non per l'uso corrente della community.
 - Per l'elenco completo di bug noti e miglioramenti proposti vedi
@@ -1103,7 +1154,7 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | Documento | Quando consultarlo |
 |---|---|
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Serve il dettaglio di un file/funzione specifico, o la mappa completa di cartelle e CSV |
-| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei quindici modelli di ripartizione |
+| [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei sedici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
 | [REPORT_VALIDAZIONE_LPG.md](REPORT_VALIDAZIONE_LPG.md) | **Serve sapere perché i profili domestici, costruiti su un catalogo tedesco, rappresentano famiglie italiane.** Metodo e risultati della validazione contro ARERA (§1-§12); il **§13 è il registro modifica per modifica**, con la fonte che giustifica ciascuna — è la sezione da citare in tesi |
@@ -1139,9 +1190,9 @@ approssimazioni di Cremers et al. sono state introdotte esattamente per questo: 
 
 | Metodo | Costo | Scarto medio dallo Shapley esatto |
 |---|---|---:|
-| Marginal Contribution | `O(n)` | 1,07% |
-| Adaptive Sampling | `O(n·M)` | 1,52% |
-| Stratified Expected Value | `O(n²)` | **21,98%** ⚠ |
+| Adaptive Sampling | `O(n·M)` | **1,34%** |
+| Marginal Contribution | `O(n)` | 16,20% ⚠ |
+| Stratified Expected Value | `O(n²)` | **21,79%** ⚠ |
 
 La SEV non è utilizzabile con l'attuale topologia (un solo prosumer pivotale, vedi §6 e
 [GUIDA §16.8](GUIDA_modelli_distribuzione.md)); potrebbe però tornare la migliore proprio
@@ -1216,8 +1267,9 @@ implementa: dichiara le potenze.
   implementata va scritta da qualche parte, e questo è il posto a cui rimanda il
   messaggio d'errore del codice.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
-  `count`, ma i seed RAMP non sono riproducibili tra esecuzioni (vedi §12) — con 100
-  profili la varianza tra run diventa più visibile nei risultati aggregati.
+  `count`. I seed sono deterministici (§12), quindi la varianza fra run non è un problema;
+  lo diventa il **tempo**, perché pyLPG simula un nucleo alla volta — quattro famiglie
+  costano ~21 minuti, cento ne costerebbero ore.
 
 #### 14.4.1 Lo scaglione della TIP: cosa fa il modello e cosa no
 

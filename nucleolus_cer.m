@@ -56,7 +56,15 @@ function S = nucleolus_cer(genUsers, loadUsers, userNames, P_CER, opts)
     n      = numel(players);
     nSub   = numel(v);
     vGrand = v(end);
-    tol    = 1e-7;
+
+    % RELATIVA a v(N), non assoluta. Gli excess sono in EURO e v(N) va da ~690 a
+    % ~2220 fra le schede di questo progetto: con linprog a precisione relativa
+    % ~1e-9 i residui assoluti arrivano a ~2e-6, cioe' SOPRA una soglia fissa di
+    % 1e-7. Un vincolo davvero attivo verrebbe allora mancato, il ciclo non
+    % progredirebbe - settled e fixRows non cambiano, si ririsolve lo stesso LP -
+    % e la funzione uscirebbe con il warning notUnique invece che col nucleolo.
+    % E' la disciplina che i 39 assert di MAIN.m usano gia': 1e-6 * max(1, |v|).
+    tol    = 1e-9 * max(1, abs(vGrand));
 
     % Coalizioni "proprie" su cui si misura il surplus: tutte tranne la vuota
     % (riga 1) e la grande coalizione (riga nSub, fissata dall'efficienza).

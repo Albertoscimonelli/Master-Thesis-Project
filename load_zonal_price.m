@@ -50,6 +50,31 @@ function Pz_h = load_zonal_price(xlsxFile, tGrid)
     [ts, iKeep] = unique(ts, 'last');
     priceVal    = priceVal(iKeep);
 
+    % str2double NON segnala: una cella malformata diventa NaN, e a valle
+    % compute_cer_incentive la ASSORBE invece di propagarla, perche' in MATLAB
+    % max(0, NaN) vale 0. Il prezzo mancante si travestirebbe da prezzo alto e
+    % non ci sarebbe modo di accorgersene. Va intercettato qui, dove si sa
+    % ancora a quale timestamp corrispondeva.
+    if any(isnan(priceVal))
+        primo = find(isnan(priceVal), 1);
+        error('load_zonal_price:prezzoNonLeggibile', ...
+              ['%d prezzi non leggibili come numero in:\n  %s\n' ...
+               '  prima occorrenza al timestamp %s.\n' ...
+               '  Se il file usa il punto come separatore delle migliaia, ' ...
+               'riesportarlo senza.'], ...
+              sum(isnan(priceVal)), xlsxFile, string(ts(primo)));
+    end
+
+    % Come per i profili di carico: retime estrapola fuori dall'intervallo dei
+    % dati invece di lasciare NaN.
+    if min(ts) > tGrid(1) || max(ts) < tGrid(end)
+        error('load_zonal_price:coperturaInsufficiente', ...
+              ['I prezzi coprono %s - %s, la griglia chiede %s - %s:\n  %s\n' ...
+               '  fuori da quell''intervallo retime estrapola in silenzio.'], ...
+              string(min(ts)), string(max(ts)), ...
+              string(tGrid(1)), string(tGrid(end)), xlsxFile);
+    end
+
     TT        = timetable(ts, priceVal, 'VariableNames', {'price'});
     TTaligned = retime(TT, tGrid, 'linear');
     Pz_h      = TTaligned.price;

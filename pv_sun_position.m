@@ -35,13 +35,31 @@ function sun = pv_sun_position(hours_vet, lat, long, STZ)
     sun.t_s   = (hours_vet - (n_day-1)*24) + (long - STZ*15)/15 + sun.E_n/60;
     sun.omega = 15 * (sun.t_s - 12);
 
-    % Angolo zenitale [gradi]
-    sun.theta_z = acosd( sind(sun.delta)*sind(lat) ...
-                       + cosd(sun.delta)*cosd(lat) .* cosd(sun.omega) );
+    % Clamp del dominio di acosd. L'argomento e' matematicamente in [-1,1], ma a
+    % latitudini dove il sole si avvicina allo zenit l'arrotondamento puo'
+    % portarlo appena oltre, e acosd restituisce allora un angolo COMPLESSO che
+    % si propaga in G_tot e P_dc senza un avviso. Misurato a 45.96N sull'anno
+    % intero: theta_z in [-0.9235, 0.9231] e gamma_s esattamente in [-1, 1], zero
+    % ore complesse. Il clamp non cambia quindi un solo valore qui - protegge un
+    % cambio di sito, e costa nulla.
+    clamp = @(x) min(max(x, -1), 1);
 
-    % Azimut solare [gradi]
-    sun.gamma_s = acosd( (cosd(sun.theta_z)*sind(lat) - sind(sun.delta)) ...
-                       ./ (cosd(90 - sun.theta_z)*cosd(lat)) * sign(lat) );
+    % Angolo zenitale [gradi]
+    sun.theta_z = acosd( clamp( sind(sun.delta)*sind(lat) ...
+                              + cosd(sun.delta)*cosd(lat) .* cosd(sun.omega) ));
+
+    % Azimut solare [gradi], in [0,180]: acosd PERDE IL SEGNO, cioe' la
+    % distinzione mattina/pomeriggio, che sta nel segno di sun.omega e che qui
+    % non viene mai ripristinato.
+    %
+    % Oggi e' innocuo, e va detto perche' non lo resti: pv_poa_tcell usa
+    % cosd(gamma_s) su una falda esposta a sud, e il coseno e' una funzione PARI,
+    % quindi il segno non conta. Ma le schede dichiarano gia' una colonna azimut
+    % in [IMPIANTI] (oggi tutta a '?'). CHI LA ATTIVERA' scrivera'
+    % cosd(gamma_s - azimut), e li' il segno conta: senza  .* sign(sun.omega)
+    % l'irradianza sara' sbagliata ogni mattina, senza che nulla protesti.
+    sun.gamma_s = acosd( clamp( (cosd(sun.theta_z)*sind(lat) - sind(sun.delta)) ...
+                              ./ (cosd(90 - sun.theta_z)*cosd(lat)) * sign(lat) ));
 
     % Altezza solare [gradi]
     sun.alpha_s = 90 - sun.theta_z;

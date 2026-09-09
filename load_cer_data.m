@@ -111,9 +111,50 @@ function [userNames, loadUsers] = read_load_profiles(loadFile, tGrid)
     userNames = string(Tload.Properties.VariableNames(isNum));
     loadRaw   = Tload{:, isNum};                       % [nRighe x nUtenti]
 
+    % retime 'linear' ESTRAPOLA fuori dall'intervallo dei dati: non mette NaN,
+    % prosegue la pendenza delle ultime due osservazioni. Un CSV troncato a
+    % meta' anno viene cosi' completato con numeri che sembrano energia - su un
+    % profilo che oscilla attorno a 0.5 kWh/h la seconda meta' arriva a 457 e
+    % la media annua passa da 0.5 a 115.8, senza un solo avviso. Il file va
+    % RIFIUTATO, come gia' fa load_pv_generation qui sotto per lo stesso motivo.
+    if min(ts) > tGrid(1) || max(ts) < tGrid(end)
+        error('load_cer_data:coperturaInsufficiente', ...
+              ['I profili coprono %s - %s, la griglia canonica chiede %s - %s:\n' ...
+               '  %s\n' ...
+               '  fuori da quell''intervallo retime estrapola in silenzio. ' ...
+               'Rigenerare i profili sull''anno intero.'], ...
+              string(min(ts)), string(max(ts)), ...
+              string(tGrid(1)), string(tGrid(end)), loadFile);
+    end
+
+    % QUANTE ore mancano, e QUALI. La scheda dichiara n_ore e MAIN.m lo verifica
+    % contro il calendario, ma nessuno lo confrontava con le righe del CSV. La
+    % differenza esiste davvero: l'indice tz-aware di RAMP salta l'ora del
+    % passaggio all'ora legale, e retime la ricostruisce per interpolazione
+    % senza dire nulla. Un dato inventato che non si annuncia e' peggio di un
+    % dato mancante che si annuncia, quindi qui si annuncia.
+    mancanti = setdiff(tGrid, ts);
+    if ~isempty(mancanti)
+        nMostra = min(5, numel(mancanti));
+        coda    = "";
+        if numel(mancanti) > nMostra, coda = sprintf(' (e altre %d)', ...
+                                                     numel(mancanti) - nMostra); end
+        warning('load_cer_data:oreMancanti', ...
+                ['%d ore della griglia non sono nel CSV e verranno INTERPOLATE ' ...
+                 'da retime:\n  %s%s\n  %s'], ...
+                numel(mancanti), ...
+                strjoin(string(mancanti(1:nMostra)), ', '), coda, loadFile);
+    end
+
     % Riallineamento sulla griglia canonica -> [nHours x nUtenti]
     TTload    = retime(timetable(ts, loadRaw, 'VariableNames', {'load'}), tGrid, 'linear');
     loadUsers = TTload.load;
+
+    if ~all(isfinite(loadUsers), 'all')
+        error('load_cer_data:profiliNonFiniti', ...
+              '%d valori non finiti nei profili dopo l''allineamento:\n  %s', ...
+              sum(~isfinite(loadUsers), 'all'), loadFile);
+    end
 end
 
 

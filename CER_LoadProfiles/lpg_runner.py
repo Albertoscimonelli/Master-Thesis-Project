@@ -653,11 +653,29 @@ def run_lpg(config: dict) -> pd.DataFrame:
 
     _scrivi_dettaglio(config, componenti)
 
+    # NON RIPRODUCIBILI, ed e' la parte che questi avvisi non dicevano.
+    # _generate_synthetic_profile ricava il proprio seed da hash(label), e
+    # hash() sulle stringhe e' salato per processo (PEP 456): due esecuzioni
+    # dello stesso comando danno profili sintetici DIVERSI. Il seed
+    # deterministico esiste gia' - _seed_stabile, calcolato poco sopra e passato
+    # a pyLPG - ma il ramo di ripiego non lo usa. Finche' resta cosi', un
+    # profilo sintetico va trattato come un risultato non riproducibile, e
+    # l'avviso deve dirlo: e' proprio il caso in cui si e' tentati di non
+    # rileggere il log perche' "tanto ha girato".
+    NON_RIPRODUCIBILE = (
+        "I profili sintetici NON sono riproducibili fra esecuzioni: il loro seed "
+        "viene da hash(), salato per processo. Due run dello stesso comando danno "
+        "numeri diversi, quindi una differenza a valle non e' attribuibile a una "
+        "modifica del modello."
+    )
+
     if not _PYLPG_AVAILABLE:
         logger.warning(
             "pyLPG non disponibile. Tutti i profili residenziali sono sintetici. "
             "Per profili realistici installa: pip install pyloadprofilegenerator "
-            "e il runtime .NET 6 (su Linux: sudo apt install dotnet-runtime-6.0)"
+            "e il runtime .NET 6 (su Linux: sudo apt install dotnet-runtime-6.0). "
+            "%s",
+            NON_RIPRODUCIBILE,
         )
     elif sintetici:
         # Il fallback e' un warning fra centinaia di righe di log ed e' facile
@@ -668,10 +686,11 @@ def run_lpg(config: dict) -> pd.DataFrame:
             "%d profili su %d sono SINTETICI, non generati da LPG: %s. "
             "Le impostazioni del catalogo (database, orari, vacanze) non hanno "
             "avuto effetto su questi. Controlla i warning qui sopra prima di "
-            "usare questi profili per un confronto.",
+            "usare questi profili per un confronto. %s",
             len(sintetici),
             len(all_profiles),
             ", ".join(sintetici),
+            NON_RIPRODUCIBILE,
         )
 
     logger.info(

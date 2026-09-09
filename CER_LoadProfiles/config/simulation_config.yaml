@@ -1,5 +1,9 @@
 simulation:
   year: 2025
+  # Fuso civile che i profili RAPPRESENTANO. NON viene piu' usato per costruire
+  # l'indice temporale di RAMP: quell'indice e' tz-naive, perche' RAMP genera in
+  # ora civile locale e un indice tz-aware spostava avanti di un'ora tutta la
+  # meta' estiva dell'anno. Il perche' per esteso in ramp_runner.run_ramp().
   timezone: "Europe/Rome"
   # Risoluzione di output: fissa a 1 ora (energia in kWh/h), vedi
   # postprocessing.resample_to_hourly_energy(). Non e' configurabile.

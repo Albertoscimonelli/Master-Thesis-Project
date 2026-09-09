@@ -65,6 +65,18 @@ function TIP_h = compute_cer_incentive(Pz_h, P_nom_kW, zona, F)
 
     Pz_h    = Pz_h(:);
     F       = F(:);
+
+    % Un NaN qui NON propaga da solo: le forme a DUE argomenti di max e min
+    % scartano il NaN, quindi max(0, 180 - NaN) vale 0 e min(CAP, NaN) vale CAP.
+    % Il prezzo mancante diventerebbe la tariffa base - per il nord 0.09
+    % EUR/kWh, indistinguibile da quella di un prezzo di 180+ EUR/MWh. Un dato
+    % assente deve restare assente, non travestirsi da dato plausibile.
+    if ~all(isfinite(Pz_h))
+        error('compute_cer_incentive:prezzoNonFinito', ...
+              ['%d ore con prezzo zonale non finito: la tariffa risulterebbe ' ...
+               'quella base invece di segnalare il buco.'], sum(~isfinite(Pz_h)));
+    end
+
     TIP_MWh = min(CAP, TP_base + max(0, 180 - Pz_h)) + FC_zonale;
     TIP_MWh = TIP_MWh .* (1 - F);
 

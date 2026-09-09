@@ -316,6 +316,23 @@ function [CFG, problemi] = chiudi_tabella(CFG, problemi, campoCorr, intestaz, ce
             col(isDato)    = num;
             vars{c}        = col;
         else
+            % Una colonna quasi tutta numerica con una sola cella illeggibile e'
+            % quasi sempre un errore di compilazione - virgola decimale, unita'
+            % appiccicata, una O al posto di uno 0 - non una colonna testuale.
+            % Diventando stringa fallirebbe molto piu' a valle, con un errore su
+            % un operatore non definito che non nomina ne' la scheda ne' la riga.
+            % Lo si dice qui, dove si sa ancora dov'era. E' un AVVISO, non un
+            % errore: una colonna genuinamente testuale resta legittima.
+            iCattive = find(isDato & isnan(str2double(grezze)));
+            if numel(iCattive) < sum(isDato)
+                problemi(end+1) = sprintf( ...
+                    ['sezione [%s], colonna "%s": %d celle su %d sono numeri, ' ...
+                     'ma "%s" (riga %d del file) non lo e''. La colonna diventa ' ...
+                     'testuale: se doveva essere numerica, correggere quella cella.'], ...
+                    upper(campoCorr), intestaz(c), ...
+                    sum(isDato) - numel(iCattive), sum(isDato), ...
+                    grezze(iCattive(1)), righeTab(iCattive(1))); %#ok<AGROW>
+            end
             col            = grezze;
             col(~isDato)   = "";
             vars{c}        = col;

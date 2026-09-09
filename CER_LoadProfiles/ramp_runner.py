@@ -201,7 +201,6 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
     from ramp.core.core import UseCase
 
     ramp_config = config["ramp"]
-    sim_config = config["simulation"]
     date_start = ramp_config["date_start"]
     date_end = ramp_config["date_end"]
 
@@ -259,11 +258,33 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
     # Costruisci DatetimeIndex a 1 minuto
     first_profile = next(iter(all_profiles.values()))
     n_steps = len(first_profile)
+    # INDICE TZ-NAIVE, e non e' un dettaglio di forma.
+    #
+    # RAMP costruisce un array PIATTO di 525.600 minuti giorno per giorno, e i
+    # suoi use case sono definiti in ORA CIVILE LOCALE: "l'ufficio apre alle 8"
+    # vuol dire le 8 dell'orologio, non le 8 UTC. Appiccicare a quell'array un
+    # indice tz-aware fa avanzare le etichette in tempo ASSOLUTO, e siccome
+    # l'orologio civile salta avanti il 30 marzo, tutta la meta' estiva
+    # dell'anno finiva etichettata UN'ORA PIU' TARDI di quanto RAMP intendesse.
+    # Misurato: il minuto che RAMP genera come "15 luglio ore 12:00" riceveva
+    # l'etichetta 13:00, e cosi' ogni minuto fra il 30 marzo e il 26 ottobre.
+    #
+    # Due conseguenze, entrambe silenziose:
+    #   - i profili aziendali risultavano sfasati di un'ora per SETTE MESI
+    #     rispetto alle famiglie LPG (che sono gia' tz-naive), alla produzione
+    #     PVsyst e alla griglia dei prezzi zonali - cioe' proprio rispetto alle
+    #     serie con cui devono sovrapporsi per produrre energia condivisa;
+    #   - l'ora del cambio (2025-03-30 02:00) spariva dall'indice civile, e
+    #     un'ora reale del rientro (26 ottobre) veniva poi scartata come
+    #     duplicata, lasciando 8759 righe invece di 8760.
+    #
+    # La chiave 'timezone' del config resta, ma NON governa piu' questo indice:
+    # dichiara il fuso civile che i profili rappresentano, ed e' documentata in
+    # simulation_config.yaml.
     timestamps = pd.date_range(
         start=date_start,
         periods=n_steps,
         freq="1min",
-        tz=sim_config.get("timezone"),
     )
 
     df = pd.DataFrame(all_profiles, index=timestamps)

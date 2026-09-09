@@ -6,6 +6,37 @@
 
 ---
 
+## 0. Stato dei rilievi al 2026-09-09 (verificato, non dedotto)
+
+Ogni voce sotto e' stata ricontrollata sul codice attuale. Il corpo del rapporto **non e'
+stato riscritto**: resta la fotografia del 10 luglio, e questa sezione dice cosa e'
+successo dopo.
+
+| ID | Stato | Come e' stato verificato |
+|---|---|---|
+| **C1** seed da `hash()` | **quasi chiuso** | `ramp_runner` e `lpg_runner` usano `_seed_stabile` (`zlib.crc32`). Rigenerando, le 4 famiglie LPG escono identiche byte per byte. Resta il **fallback sintetico** di `lpg_runner`, che ricava il seed da `hash()` ignorando quello deterministico del chiamante: ora l'avviso lo dichiara |
+| **C2** `pun_gme_2025.m` duplicato | **chiuso** | il file non esiste piu' |
+| **C3** `requirements.txt` in UTF-16 | **chiuso** | entrambi ASCII |
+| **H1** `STRUTTURA_PROGETTO.txt` alla deriva | **parziale** | aggiornate le sezioni su seed, `timezone` e scarti delle approssimazioni; il resto va riletto |
+| **H2** chiavi di config morte | **chiuso** | `temporal_resolution_minutes` e `resample_to_resolution` non esistono piu' |
+| **H3** perdita dati sul cambio d'ora | **chiuso** | era il caso: `2025-03-30 02:00` mancava e un'ora reale di ottobre veniva scartata. Risolto alla radice rendendo tz-naive l'indice di RAMP; il file rigenerato ha 8760 righe, zero mancanti, zero duplicati. **L'effetto era molto piu' grande di quanto l'audit stimasse**: non un'ora, ma uno sfasamento di un'ora su sette mesi, che valeva il 5,43% di energia condivisa (README §5.1) |
+| **H4** `optimizer_PV.m` non valida lo schema CSV | **aperto** | non verificato in questa tornata |
+| **H5** percorsi assoluti | **chiuso** | nessun `C:\Users\...` nei `.m` |
+| **H6** `acosd` senza clamp | **declassato a Low, e corretto** | **la misura non conferma l'audit**: a 45.96N, sull'anno intero, l'argomento di `theta_z` resta in `[-0.9235, 0.9231]` e quello di `gamma_s` esattamente in `[-1, 1]` — **zero ore complesse**. Il clamp e' stato aggiunto lo stesso perche' costa nulla e protegge un cambio di sito. Il difetto vero e' un altro e resta dormiente: `acosd` perde il **segno** dell'azimut, innocuo finche' la falda e' a sud, sbagliato appena si attiva la colonna `azimut` di `[IMPIANTI]` |
+| **M1** off-by-one su escalation | **aperto** | in `optimizer_PV.m`, fuori dal flusso di `MAIN` |
+| **M2** incentivo CER incoerente fra i due script | **aperto** | idem |
+| **M4** tolleranze del Nucleolo | **chiuso** | `tol` era `1e-7` assoluto su grandezze in EURO con `v(N)` fra 690 e 2220; ora `1e-9 * max(1, |v(N)|)` |
+| **M5** `irr()` da Financial Toolbox | **chiuso** | sostituita da `irr_bisection.m` |
+| **M8** `PROVA_PV.m` legacy | **chiuso** | il file non esiste piu' |
+
+**Rilievi nuovi, non presenti in questo rapporto**, aperti al 2026-09-09: `retime` che
+**estrapola** invece di lasciare NaN (corretto con guardie di copertura); `max(0, NaN) = 0`
+che trasformava un prezzo mancante nella tariffa base (corretto); Nucleolo e Variance Least
+Core che ottimizzano su **insiemi ammissibili diversi** con un `assert` che li accoppia
+(dichiarato); nessuna persistenza dei risultati fino a fine esecuzione.
+
+---
+
 ## 1. Project overview
 
 ### Purpose

@@ -33,6 +33,19 @@ function g = gini_index(x)
               'Vettore con NaN o Inf in ingresso: controllare i dati a monte.');
     end
 
+    % La formula presuppone valori NON NEGATIVI, e l'header lo dichiara gia': con
+    % un elemento negativo l'indice esce da [0,1) e EI = 1 - G supera 1. Il caso
+    % non e' teorico - nucleolus_cer passa lb vuoto a linprog, quindi le sue x
+    % sono illimitate inferiormente e una quota negativa e' nel suo insieme
+    % ammissibile. Meglio che a segnalarlo sia questa funzione, che sa chi l'ha
+    % chiamata, dell'assert di dominio della par. 3t di MAIN.m tre schermate piu'
+    % in la'.
+    if any(x < 0, 'all')
+        error('gini_index:negativeInput', ...
+              ['%d valori negativi in ingresso: il Gini non e'' definito su una ' ...
+               'distribuzione con quote negative.'], sum(x < 0, 'all'));
+    end
+
     x = sort(x(:));
     m = numel(x);
     if m == 0 || sum(x) <= 0

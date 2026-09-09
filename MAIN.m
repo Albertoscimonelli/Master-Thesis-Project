@@ -649,6 +649,15 @@ for iCER = 1:N_CER
     % Controllo incrociato: il primo LP del Nucleolo E' l'LP del Least Core,
     % quindi i due surplus minimi devono coincidere. E' la verifica piu' forte
     % che la row-generation non abbia trascurato coalizioni vincolanti.
+    %
+    % ATTENZIONE, I DUE NON OTTIMIZZANO SULLO STESSO INSIEME, ED E' VOLUTO. Il
+    % VLC impone x >= 0 (lb = [zeros(n,1); -Inf], eq. 9), il Nucleolo lascia le
+    % x libere: e' il nucleolo sulle PRE-imputazioni, che e' la definizione
+    % standard. I due surplus coincidono finche' il vincolo di non negativita'
+    % non morde, ed e' il caso su tutte le schede di oggi. Se questo assert
+    % cadesse su una scheda nuova, il primo sospetto NON e' un bug in uno dei
+    % due risolutori: e' che quel vincolo abbia iniziato a mordere. Si verifica
+    % guardando se min(Nu.phi) < 0.
     assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
            'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
 

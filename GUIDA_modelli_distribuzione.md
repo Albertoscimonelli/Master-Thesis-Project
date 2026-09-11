@@ -380,7 +380,8 @@ costruzione max-min. Per questo il Nucleolo riporta anche il flag `inCore`.
 
 ## 4. Validazione effettuata
 
-**Shapley** (test indipendente per permutazioni di tutti gli `n!` ordini):
+**Shapley** (test indipendente per permutazioni di tutti gli `n!` ordini,
+riproducibile in `test_shapley_permutations.m`):
 - coincidenza con la formula a `< 10⁻¹²`;
 - efficienza `Σφ = v(N)`;
 - null player (consumatore a carico nullo → 0) e simmetria (consumatori identici →

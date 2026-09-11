@@ -1,0 +1,804 @@
+<title>Sedici regole, cinque criteri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F5F6F7; --surface:#FFFFFF; --surface-2:#EEF0F2;
+  --ink:#13171C; --ink-2:#4C565F; --ink-3:#7E8891;
+  --rule:#DCE0E4; --rule-2:#C6CCD2;
+  --warm:#B0741C; --cool:#1A6DBA; --neg:#A34B3C; --tie:#8A8F96;
+  --warm-wash:#F0E2CC; --cool-wash:#D8E5F3;
+  --serif:"Spectral",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#14171B; --surface:#1B1F24; --surface-2:#232830;
+    --ink:#E9ECEF; --ink-2:#A6B0B9; --ink-3:#767F88;
+    --rule:#292F36; --rule-2:#3A424B;
+    --warm:#C08430; --cool:#4B92CE; --neg:#C57A6B; --tie:#767F88;
+    --warm-wash:#3A2E1C; --cool-wash:#1C2B3D;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14171B; --surface:#1B1F24; --surface-2:#232830;
+  --ink:#E9ECEF; --ink-2:#A6B0B9; --ink-3:#767F88;
+  --rule:#292F36; --rule-2:#3A424B;
+  --warm:#C08430; --cool:#4B92CE; --neg:#C57A6B; --tie:#767F88;
+  --warm-wash:#3A2E1C; --cool-wash:#1C2B3D;
+}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.shell{max-width:1180px;margin:0 auto;padding:0 28px 110px;display:grid;grid-template-columns:1fr}
+
+.mast{grid-column:1/-1;padding:56px 0 34px;border-bottom:2px solid var(--ink)}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);margin:0 0 18px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.3rem,5.4vw,3.7rem);line-height:1.05;letter-spacing:-.018em;margin:0 0 16px;text-wrap:balance;max-width:17ch}
+.dek{font-family:var(--serif);font-size:clamp(1.04rem,2vw,1.26rem);line-height:1.5;color:var(--ink-2);max-width:60ch;margin:0}
+
+.facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));border-bottom:1px solid var(--rule)}
+.fact{padding:18px 20px 18px 0}
+.fact b{display:block;font-family:var(--mono);font-size:1.36rem;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.2}
+.fact span{display:block;font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.35}
+
+.toc{display:none;position:sticky;top:26px;align-self:start;padding-top:44px;font-size:13px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.toc a{color:var(--ink-3);text-decoration:none;display:flex;gap:9px;line-height:1.35}
+.toc a:hover{color:var(--warm)}
+.toc em{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--rule-2);padding-top:2px;width:16px;flex:none}
+
+/* la media query DEVE stare dopo .toc{display:none} */
+@media(min-width:1080px){
+  .shell{grid-template-columns:190px minmax(0,1fr);column-gap:56px}
+  .toc{display:block}
+}
+
+main{padding-top:44px;min-width:0}
+section{margin-bottom:62px;scroll-margin-top:24px}
+.part{font-family:var(--mono);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--warm);margin:0 0 10px}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.55rem,3.1vw,2.05rem);line-height:1.16;letter-spacing:-.012em;margin:0 0 20px;text-wrap:balance;max-width:25ch}
+h3{font-family:var(--sans);font-weight:600;font-size:1.02rem;letter-spacing:-.005em;margin:34px 0 10px;color:var(--ink)}
+h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:28px 0 10px}
+p{margin:0 0 15px;max-width:67ch}
+li{max-width:65ch;margin-bottom:7px}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.87em;background:var(--surface-2);padding:.08em .33em;border-radius:2px;color:var(--ink-2)}
+.lead{font-family:var(--serif);font-size:1.1rem;line-height:1.56;color:var(--ink-2);max-width:60ch}
+
+.note{border-left:3px solid var(--warm);background:var(--surface);padding:16px 20px;margin:22px 0;max-width:67ch}
+.note p:last-child{margin-bottom:0}
+.note .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--warm);display:block;margin-bottom:7px}
+.corr{border-left:3px solid var(--neg)}
+.corr .lbl{color:var(--neg)}
+.info{border-left:3px solid var(--cool)}
+.info .lbl{color:var(--cool)}
+
+.tw{overflow-x:auto;margin:20px 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:440px}
+th,td{text-align:left;padding:9px 14px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--rule-2);padding-bottom:7px;white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:24px}
+th:last-child,td:last-child{padding-right:0}
+tbody tr:last-child td{border-bottom:none}
+.nm{font-weight:500}
+.sub{color:var(--ink-3);font-size:13px}
+.neg{color:var(--neg)}
+.pos{color:var(--cool)}
+
+.mx{border-collapse:separate;border-spacing:2px;min-width:540px;font-size:13px}
+.mx th{border:none;padding:5px 6px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.mx th.rh{text-align:right;white-space:nowrap;font-size:11.5px;text-transform:none;letter-spacing:0;font-family:var(--sans);color:var(--ink-2);padding-right:10px;font-weight:600}
+.mx td{border:none;text-align:center;padding:10px 4px;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12.5px;border-radius:2px;color:var(--ink)}
+.mx td.diag{font-weight:500;border:1px solid var(--rule-2)}
+
+figure{margin:26px 0}
+figcaption{font-size:13px;color:var(--ink-3);margin-top:11px;line-height:1.5;max-width:64ch}
+.chart{width:100%;height:auto;display:block}
+.ax{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3)}
+.axv{font-family:var(--mono);font-size:11px;fill:var(--ink-2);font-weight:500}
+
+.bar{display:flex;align-items:center;gap:9px;min-width:160px}
+.bar i{display:block;height:9px;border-radius:1px;background:var(--cool);flex:none}
+.bar b{font-family:var(--mono);font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+
+.fam{border-top:1px solid var(--rule);padding-top:15px;margin-top:24px}
+.fam-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.fam-h h3{margin:0}
+.fam-h .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.fam>p{color:var(--ink-2);font-size:15px;margin-bottom:12px}
+dl.meths{margin:0}
+dl.meths>div{display:grid;grid-template-columns:1fr;gap:2px;padding:10px 0;border-bottom:1px dotted var(--rule)}
+@media(min-width:660px){dl.meths>div{grid-template-columns:198px 1fr;gap:0 22px;align-items:baseline}}
+dl.meths dt{font-weight:600;font-size:14.5px}
+dl.meths dd{margin:0;color:var(--ink-2);font-size:14.5px;line-height:1.55;max-width:58ch}
+dl.meths>div:last-child{border-bottom:none}
+
+.ruler{margin:24px 0 10px}
+.ruler svg{width:100%;height:auto;display:block}
+
+hr.rule{border:none;border-top:1px solid var(--rule);margin:0}
+.foot{grid-column:1/-1;border-top:2px solid var(--ink);margin-top:30px;padding-top:20px;font-size:13px;color:var(--ink-3);max-width:72ch}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+a{color:var(--cool)}
+a:focus-visible{outline:2px solid var(--warm);outline-offset:3px}
+</style>
+
+<div class="shell">
+
+  <header class="mast">
+    <p class="kicker">Report completo · modello CER · settembre 2026</p>
+    <h1>Sedici regole, cinque criteri</h1>
+    <p class="dek">Come il modello divide l'incentivo di una comunità energetica, con quali criteri giudica il risultato, e cosa dicono i numeri quando si confrontano sedici regole su sette comunità diverse.</p>
+  </header>
+
+  <div class="facts">
+    <div class="fact"><b>16</b><span>regole di ripartizione</span></div>
+    <div class="fact"><b>18</b><span>indicatori di valutazione</span></div>
+    <div class="fact"><b>7</b><span>comunità simulate</span></div>
+    <div class="fact"><b>120</b><span>coppie di metodi per confronto</span></div>
+    <div class="fact"><b>2 160</b><span>graduatorie esaminate</span></div>
+    <div class="fact"><b>52%</b><span>si invertono cambiando comunità</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Indice">
+    <ol>
+      <li><a href="#p1"><em>01</em><span>Cosa fa il modello</span></a></li>
+      <li><a href="#p2"><em>02</em><span>Le sedici regole</span></a></li>
+      <li><a href="#p3"><em>03</em><span>I diciotto indicatori</span></a></li>
+      <li><a href="#p4"><em>04</em><span>La forza incentivante</span></a></li>
+      <li><a href="#p5"><em>05</em><span>Come valutiamo</span></a></li>
+      <li><a href="#p6"><em>06</em><span>I quattro file</span></a></li>
+      <li><a href="#p7"><em>07</em><span>I risultati</span></a></li>
+      <li><a href="#p8"><em>08</em><span>Limiti</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- ================= 01 ================= -->
+  <section id="p1">
+    <p class="part">Parte 01</p>
+    <h2>Cosa fa il modello</h2>
+
+    <p class="lead">Una comunità energetica raccoglie un incentivo pubblico sull'energia che i suoi membri riescono a condividere. Il modello calcola quanto vale quell'incentivo, lo divide fra i membri in sedici modi diversi, e poi giudica quale divisione sia più equa — sapendo che «equa» vuol dire almeno cinque cose diverse.</p>
+
+    <h3>Il meccanismo</h3>
+    <p>In una CER a condivisione <em>virtuale</em> — quella prevista dalla normativa italiana — nessuno scambia fisicamente energia con nessuno. Ogni membro resta col suo contatore e col suo contratto. Quello che succede è contabile: ora per ora si guarda quanta energia la comunità ha immesso in rete e quanta ne ha prelevata, e <strong>il minore dei due valori è l'energia condivisa</strong>. Su quella lo Stato paga una tariffa premio.</p>
+
+    <p>Quel denaro arriva alla comunità come somma unica. Dividerlo è una <strong>scelta di governance</strong>, non un calcolo obbligato: la norma non dice come farlo. È esattamente il problema che il modello studia.</p>
+
+    <h3>Due stadi</h3>
+    <p>Il <strong>primo stadio</strong>, in Python, genera i profili di consumo orari dei membri — famiglie, uffici, piccola industria, negozi — producendo un CSV con una colonna per membro e 8 760 righe, una per ora dell'anno. Il <strong>secondo stadio</strong>, in MATLAB, prende quei profili più le curve di produzione dei fotovoltaici, calcola l'energia condivisa ora per ora, la valorizza con la tariffa vigente, e da lì fa il lavoro vero: ripartisce, misura, confronta.</p>
+
+    <div class="info note">
+      <span class="lbl">Una scelta che rende possibile la ricerca</span>
+      <p>Le comunità sono <strong>dati, non codice</strong>. Aggiungerne una allo studio significa mettere un file di testo in una cartella — il nome dice già la composizione (<code>CER_2_5_0</code> = due consumatori, cinque prosumer, zero produttori puri) e il codice non va toccato. È quello che permette di studiare la composizione, che è il cuore della domanda di ricerca.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 02 ================= -->
+  <section id="p2">
+    <p class="part">Parte 02</p>
+    <h2>Le sedici regole di ripartizione</h2>
+
+    <p class="lead">Tutte ricevono lo stesso montepremi e gli stessi profili, e restituiscono la stessa cosa: quanti euro a ciascun membro. Cambia solo l'idea di merito che incorporano.</p>
+
+    <div class="fam">
+      <div class="fam-h"><h3>Teoria dei giochi cooperativi</h3><span class="cnt">4 regole</span></div>
+      <p>Trattano la comunità come una coalizione e si chiedono quanto varrebbe ogni possibile sottogruppo. Le più rigorose e le più costose.</p>
+      <dl class="meths">
+        <div><dt>Shapley value</dt><dd>Dà a ciascuno la media di quanto aggiunge alla comunità, su tutti gli ordini possibili di ingresso. Il riferimento classico di equità.</dd></div>
+        <div><dt>Nucleolo</dt><dd>Cerca la divisione che rende meno scontento possibile il sottogruppo più scontento. Massima stabilità.</dd></div>
+        <div><dt>Nash Bargaining</dt><dd>Quota proporzionale al contributo marginale alla comunità completa, in forma chiusa.</dd></div>
+        <div><dt>Variance Least Core</dt><dd>Fra tutte le divisioni stabili, sceglie quella più vicina alle parti uguali. Unica delle quattro che scala su comunità grandi.</dd></div>
+      </dl>
+    </div>
+
+    <div class="fam">
+      <div class="fam-h"><h3>Approssimazioni dello Shapley</h3><span class="cnt">3 regole</span></div>
+      <p>Il valore di Shapley esatto diventa impossibile oltre una ventina di membri. Queste lo stimano a costo molto più basso.</p>
+      <dl class="meths">
+        <div><dt>Marginal Contribution</dt><dd>Tiene un solo contributo invece della media di tutti: quanto perderebbe la comunità se quel membro se ne andasse.</dd></div>
+        <div><dt>Stratified Expected Value</dt><dd>Raggruppa i membri per profilo simile e stima il contributo di ogni gruppo con un membro «medio». Deterministica.</dd></div>
+        <div><dt>Adaptive Sampling</dt><dd>Campiona a caso un sottoinsieme di coalizioni, concentrando i campioni dove la stima è più incerta. L'unica regola non deterministica del progetto.</dd></div>
+      </dl>
+    </div>
+
+    <div class="fam">
+      <div class="fam-h"><h3>Regole semplificate</h3><span class="cnt">4 regole</span></div>
+      <p>Aritmetica elementare, spiegabili in una frase a un'assemblea di soci. Sono quelle che le comunità reali usano davvero.</p>
+      <dl class="meths">
+        <div><dt>Equal Split</dt><dd>Il montepremi diviso per il numero di membri. Nient'altro.</dd></div>
+        <div><dt>Proportional to Consumption</dt><dd>Quota proporzionale a quanto ciascuno consuma nelle ore in cui la comunità condivide energia.</dd></div>
+        <div><dt>Remuneration Model 1</dt><dd>Divide prima fra consumatori e produttori in proporzione alla potenza installata dei due gruppi, poi ripartisce dentro ciascuno.</dd></div>
+        <div><dt>Cascading Tree</dt><dd>L'incentivo scende lungo un albero di categorie — quota fissa uguale per tutti, poi variabile fra chi preleva e chi immette — con pesi decisi dalla governance.</dd></div>
+      </dl>
+    </div>
+
+    <div class="fam">
+      <div class="fam-h"><h3>Regole basate sul comportamento</h3><span class="cnt">3 regole</span></div>
+      <p>Non premiano quello che un membro <em>è</em> (quanto consuma, cosa possiede) ma quello che <em>fa</em>: consumare quando la comunità produce.</p>
+      <dl class="meths">
+        <div><dt>Pearson Key</dt><dd>Misura giorno per giorno quanto il profilo di consumo del membro assomiglia alla curva di produzione della comunità, e ripartisce in proporzione.</dd></div>
+        <div><dt>Pearson-Sharing Rate</dt><dd>Come sopra, ma penalizza anche chi in una certa ora consuma più di quanto la comunità stia immettendo.</dd></div>
+        <div><dt>Similarity-Utilization</dt><dd>Combina sincronismo (θ) e sobrietà (η) in un fattore giornaliero. Premia solo chi fa entrambe le cose. <strong>È la regola che fissa l'unità di misura della forza incentivante</strong> (Parte 04).</dd></div>
+      </dl>
+    </div>
+
+    <div class="fam">
+      <div class="fam-h"><h3>Regole con criteri sociali</h3><span class="cnt">2 regole</span></div>
+      <p>Introducono nella divisione dimensioni non energetiche: reddito, vulnerabilità, proprietà.</p>
+      <dl class="meths">
+        <div><dt>Weighted Solidarity</dt><dd>Il peso somma una componente tecnica e una di solidarietà, tarata sul costo unitario dell'energia come indizio di povertà energetica.</dd></div>
+        <div><dt>Tri-level EP</dt><dd>Tre livelli: una quota riservata ai membri in povertà energetica, il resto diviso fra consumo e proprietà. <strong>Provvisoria</strong>: gira su undici dati segnaposto, non va usata per conclusioni.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 03 ================= -->
+  <section id="p3">
+    <p class="part">Parte 03</p>
+    <h2>I diciotto indicatori, in cinque gruppi</h2>
+
+    <p class="lead">Gli indicatori non misurano la stessa cosa in modi diversi. Rispondono a domande diverse, che possono dare risposte opposte sullo stesso identico risultato.</p>
+
+    <h4>1 · Uniformità — quanto è divisa in parti uguali · 8 indicatori</h4>
+    <p>Fonte: Dynge &amp; Cali, <em>Applied Energy</em> 384 (2025).</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th class="n">Eq.</th><th>Cosa misura</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>MinMax_pro</code></td><td class="n">16</td><td>rapporto min/max della quota di surplus condivisa fra i prosumer</td></tr>
+          <tr><td class="nm"><code>MinMax_con</code></td><td class="n">17</td><td>rapporto min/max del volume di condivisa ricevuto dai consumatori</td></tr>
+          <tr><td class="nm"><code>QoS_orig</code></td><td class="n">12</td><td>indice di Jain sui volumi di energia scambiati</td></tr>
+          <tr><td class="nm"><code>QoS_new</code></td><td class="n">18</td><td>QoS separato per ruolo, prosumer e consumatori pesati</td></tr>
+          <tr><td class="nm"><code>EI_orig</code></td><td class="n">15</td><td><code>1 − Gini</code> dei risparmi in bolletta</td></tr>
+          <tr><td class="nm"><code>EI_new</code></td><td class="n">19</td><td>EI separato per ruolo</td></tr>
+          <tr><td class="nm"><code>Jain</code></td><td class="n">—</td><td>l'indice di Jain grezzo, nucleo del QoS</td></tr>
+          <tr><td class="nm"><code>Gini</code></td><td class="n">—</td><td>il Gini grezzo, nucleo dell'EI</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>2 · Merito — quanto rispecchia il contributo di ciascuno · 3 indicatori</h4>
+    <p>Fonte: Casalicchio et al., <em>Applied Energy</em> 310 (2022).</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th>Cosa misura</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>FairnessIndex</code></td><td>distanza fra la quota ricevuta e quella «giusta» secondo il contributo marginale</td></tr>
+          <tr><td class="nm"><code>Sigma</code></td><td>quanto è dispersa quella distanza fra i membri</td></tr>
+          <tr><td class="nm"><code>QuoteNulle</code></td><td>quanti membri restano a zero euro — serve a leggere correttamente il Fairness Index</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>3 · Stabilità — se la comunità regge · 2 indicatori</h4>
+    <p>Fonte: Volpato et al., <em>Energies</em> 17 (2024), eq. 23. L'unico gruppo dove <strong>più basso è meglio</strong>, e dove i valori possono scendere sotto zero.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th>Cosa misura</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>EccessoMax_EUR</code></td><td>il guadagno più grande che un sottogruppo otterrebbe <strong>uscendo</strong> dalla comunità — se negativo, nessuno ci guadagna a uscire</td></tr>
+          <tr><td class="nm"><code>CoalizioniInstabili</code></td><td>quanti sottogruppi avrebbero effettivamente convenienza a farlo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>4 · Comportamento — quanto premia il sincronismo · 4 indicatori</h4>
+    <p>Costruito per questa tesi, non presente in letteratura. Vedi Parte 04.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th>Cosa misura</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>ForzaIncentivante</code></td><td>quanto la quota segue il sincronismo consumo/produzione, sui profili <strong>netti</strong></td></tr>
+          <tr><td class="nm"><code>AllineamentoVirtu</code></td><td>la sola <strong>direzione</strong> del premio (coseno), senza l'intensità</td></tr>
+          <tr><td class="nm"><code>ForzaIncentivante_lordo</code></td><td>come sopra, sui profili <strong>lordi</strong> (dietro contatore)</td></tr>
+          <tr><td class="nm"><code>AllineamentoVirtu_lordo</code></td><td>direzione, sui profili lordi</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="lbl">Questi quattro non hanno verso normativo</span>
+      <p>Nella tabella dei versi hanno <code>Normativo = 0</code>. Un valore alto vuol dire «premia di più il comportamento», <strong>non</strong> «è più equo». Sono l'unico gruppo che non va mai sommato con gli altri in un punteggio unico di equità.</p>
+    </div>
+
+    <h4>5 · Convenienza — la partecipazione conviene? · 1 indicatore</h4>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th>Cosa misura</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>VAN_min_EUR</code></td><td>il valore attuale netto del <strong>membro messo peggio</strong> sotto quella regola. Unico indicatore che non nasce dai flussi di energia ma dal modulo finanziario.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>8 + 3 + 2 + 4 + 1 = 18.</strong></p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 04 ================= -->
+  <section id="p4">
+    <p class="part">Parte 04</p>
+    <h2>La forza incentivante: il righello nuovo</h2>
+
+    <p class="lead">È il terzo criterio della domanda di ricerca, e fino a questo lavoro il modello non sapeva esprimerlo. Non è un indice di equità: è un asse di progetto.</p>
+
+    <h3>L'idea, con una classe di scuola</h3>
+    <p>Immagina una classe. Alcuni bambini studiano prima del compito, altri no.</p>
+    <ul>
+      <li>Se la maestra dà <strong>lo stesso voto a tutti</strong>, studiare non serve a niente — incentivo <strong>zero</strong>.</li>
+      <li>Se dà <strong>voti più alti a chi ha studiato</strong>, studiare conviene — incentivo <strong>positivo</strong>.</li>
+      <li>Se dà voti più alti a chi ha studiato <strong>meno</strong>, l'incentivo è <strong>al contrario</strong>.</li>
+    </ul>
+
+    <p>Qui «studiare» vuol dire <em>consumare energia quando il sole produce</em>. La misura è la <strong>covarianza fra quota e virtuosità</strong>: i membri più sincronizzati prendono sistematicamente di più, o no?</p>
+
+    <h3>Le due ancore, e la scala</h3>
+
+    <div class="ruler">
+      <svg viewBox="0 0 730 150" role="img" aria-labelledby="tr">
+        <title id="tr">I punti di riferimento della forza incentivante</title>
+        <line x1="60" y1="62" x2="680" y2="62" stroke="var(--rule-2)" stroke-width="2"/>
+        <line x1="60" y1="56" x2="60" y2="68" stroke="var(--rule-2)" stroke-width="1.5"/>
+        <line x1="680" y1="56" x2="680" y2="68" stroke="var(--rule-2)" stroke-width="1.5"/>
+
+        <circle cx="130" cy="62" r="7" fill="var(--warm)"/>
+        <text class="axv" x="130" y="44" text-anchor="middle" style="fill:var(--warm)">−2.55</text>
+        <text class="ax" x="130" y="88" text-anchor="middle">Nucleolo</text>
+        <text class="ax" x="130" y="102" text-anchor="middle">(1 prosumer)</text>
+
+        <circle cx="310" cy="62" r="7" fill="var(--ink-3)"/>
+        <text class="axv" x="310" y="44" text-anchor="middle">0</text>
+        <text class="ax" x="310" y="88" text-anchor="middle">Equal Split</text>
+        <text class="ax" x="310" y="102" text-anchor="middle">nessun segnale</text>
+
+        <circle cx="480" cy="62" r="7" fill="var(--cool)"/>
+        <text class="axv" x="480" y="44" text-anchor="middle" style="fill:var(--cool)">1</text>
+        <text class="ax" x="480" y="88" text-anchor="middle">Similarity-Utilization</text>
+        <text class="ax" x="480" y="102" text-anchor="middle">l'unità di misura</text>
+
+        <circle cx="640" cy="62" r="7" fill="var(--cool)"/>
+        <text class="axv" x="640" y="44" text-anchor="middle" style="fill:var(--cool)">1.60</text>
+        <text class="ax" x="640" y="88" text-anchor="middle">Pearson Key</text>
+        <text class="ax" x="640" y="102" text-anchor="middle">(1 prosumer)</text>
+
+        <text class="ax" x="60" y="140">premia il contrario</text>
+        <text class="ax" x="680" y="140" text-anchor="end">premia il sincronismo</text>
+      </svg>
+      <p class="sub" style="margin-top:8px">Posizioni schematiche: i punti sono equispaziati per leggibilità, i valori sono quelli reali.</p>
+    </div>
+
+    <p><strong>Zero</strong> è l'Equal Split: dando a tutti la stessa cosa, nessun comportamento cambia la quota. <strong>Uno</strong> è la regola di Bilardo (Similarity-Utilization), costruita apposta per premiare la virtuosità: è il metro di riferimento.</p>
+
+    <h3>Cosa significa superare 1, o scendere sotto −1</h3>
+    <p>Il righello <strong>non ha un tetto</strong>, ed è voluto: è una pendenza, non una percentuale. Costringerlo in <code>[0,1]</code> distruggerebbe l'informazione che una regola può premiare la virtuosità più di quanto faccia la regola pensata apposta per farlo.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Caso reale (comunità con 1 prosumer su 7)</th><th class="n">Forza</th><th class="n">Allineamento</th></tr></thead>
+        <tbody>
+          <tr><td class="nm">Pearson Key</td><td class="n pos">1.60</td><td class="n">0.85</td></tr>
+          <tr><td class="nm">Similarity-Utilization <span class="sub">(il riferimento)</span></td><td class="n">1.00</td><td class="n">1.00</td></tr>
+          <tr><td class="nm">Equal Split</td><td class="n">0.00</td><td class="n">0.00</td></tr>
+          <tr><td class="nm">Nucleolo</td><td class="n neg">−2.55</td><td class="n neg">−0.71</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Pearson Key a 1.60.</strong> Guarda l'allineamento: 0.85, <em>meno</em> puro del riferimento. Non punta più dritto alla virtuosità — <strong>sposta le quote in modo più drastico</strong>. La regola di Bilardo media θ ed η smussando le punte; la chiave di Pearson premia la correlazione senza quell'ammortizzatore, quindi al membro più sincronizzato dà una fetta molto più grande.</p>
+
+    <p><strong>Nucleolo a −2.55.</strong> Il Nucleolo non ha <em>nessuna</em> idea di virtuosità nella sua logica: il suo unico obiettivo è che nessun sottogruppo voglia uscire. Con un solo prosumer deve dargli una fetta enorme per tenerlo dentro, <strong>indipendentemente da quando quel prosumer consuma</strong>. Se consuma male, quella fetta grande spinge fortissimo nella direzione sbagliata.</p>
+
+    <div class="note corr">
+      <span class="lbl">Avvertenza sui profili — misurata, non teorica</span>
+      <p>Sui profili <strong>netti</strong> il carico residuo del proprietario dell'impianto è nullo proprio nelle ore di eccedenza, quindi la sua virtuosità misurata crolla. L'effetto è grande: su <code>CER_6_1_0</code> lo Shapley vale <strong>−0.657 sull'asse netto e +2.502 su quello lordo</strong> — il segno si ribalta. Il coseno fra i due assi scende da 0.903 (sette prosumer) a 0.224 (uno solo), sotto 0.8 su sei comunità su sette.</p>
+      <p>Per questo il modello calcola <strong>entrambe</strong> le colonne. Una lettura sui soli profili netti sarebbe una conclusione sbagliata, non parziale.</p>
+    </div>
+
+    <p>Ultima cosa: la soglia «1» <strong>non è la stessa da una comunità all'altra</strong> — è tarata sulla regola di riferimento in quella specifica comunità. Per confrontare l'intensità <em>fra</em> comunità serve il campo <code>beta</code>, la pendenza grezza, non <code>IS</code>.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 05 ================= -->
+  <section id="p5">
+    <p class="part">Parte 05</p>
+    <h2>Come valutiamo i risultati</h2>
+
+    <p class="lead">Con sedici regole, diciotto indicatori e sette comunità ci sono più di duemila graduatorie possibili. Il punto del metodo è non guardarle a occhio.</p>
+
+    <h3>Primo passo · mettere tutti gli indicatori nello stesso verso</h3>
+    <p>È il passaggio più facile da sbagliare, e sbagliarlo capovolge ogni conclusione. Alcuni indicatori sono migliori quando salgono (l'Equality Index, dove 1 è perfetta uguaglianza); altri quando scendono (il Gini, dove 0 è perfetta uguaglianza). Senza orientarli, due indicatori che dicono <em>esattamente la stessa cosa</em> sembrano opporsi.</p>
+
+    <div class="note">
+      <span class="lbl">La verifica che smaschera l'errore</span>
+      <p>Nel modello <code>EI_orig</code> è calcolato come <code>1 − Gini</code> sugli stessi numeri. Sono la stessa grandezza scritta al contrario. Quindi, se l'orientamento è corretto, il loro accordo deve risultare <strong>esattamente +1</strong> — verificato su tutte e sette le comunità a ogni esecuzione.</p>
+    </div>
+
+    <h3>Secondo passo · misurare quanto due indicatori concordano</h3>
+    <p>Si usa il <strong>τ-b di Kendall</strong>: prende le due classifiche dei sedici metodi prodotte da due indicatori diversi e conta quante <em>coppie di metodi</em> sono ordinate allo stesso modo e quante al contrario.</p>
+
+    <h4>Da dove vengono le 120 coppie</h4>
+    <p>È il numero di modi di scegliere 2 metodi su 16 senza contare l'ordine:</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Passo</th><th>Conto</th></tr></thead>
+        <tbody>
+          <tr><td>Per il primo metodo della coppia</td><td class="n">16 scelte</td></tr>
+          <tr><td>Per il secondo (uno è già preso)</td><td class="n">15 scelte</td></tr>
+          <tr><td>Coppie <em>ordinate</em></td><td class="n">16 × 15 = 240</td></tr>
+          <tr><td>Ma «Shapley–Nucleolo» e «Nucleolo–Shapley» sono la stessa coppia</td><td class="n">÷ 2</td></tr>
+          <tr><td class="nm">Coppie distinte</td><td class="n"><strong>120</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Nel codice questo <code>÷2</code> non è una divisione ma una regola di ciclo: <code>for i = 1:m-1, for j = i+1:m</code> — il secondo indice parte <em>sempre dopo</em> il primo, quindi la coppia doppia non viene mai generata.</p>
+
+    <h4>I pareggi, e perché contano</h4>
+    <p>Se due regole danno quasi lo stesso voto — un decimo di millesimo di differenza — contarlo come «vince l'uno» sarebbe come far decidere una gara da un fotofinish di un millimetro. Il modello usa due soglie: una per capire se l'indicatore <strong>distingue</strong> davvero i sedici metodi, una per decidere se due metodi sono <strong>a pari</strong>. Un indicatore che dà lo stesso voto a tutti restituisce <code>NaN</code>, non zero — dire zero significherebbe affermare che i due indicatori sono indipendenti, che è falso.</p>
+
+    <h3>Terzo passo · seguire le graduatorie al cambiare della comunità</h3>
+    <p>Le sette comunità sono ordinate lungo un asse: la percentuale di membri con impianto, dal 14.3% al 100%. Per ogni coppia di metodi e ogni indicatore, il modello segue chi dei due sta davanti e registra <strong>ogni punto in cui si scambiano di posto</strong>.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Distacco da una comunità alla successiva</th><th>Cosa viene registrato</th></tr></thead>
+        <tbody>
+          <tr><td>positivo → positivo</td><td class="sub">nessuna riga — non è successo niente</td></tr>
+          <tr><td>negativo → negativo</td><td class="sub">nessuna riga</td></tr>
+          <tr><td class="nm">positivo → negativo</td><td class="pos">una riga: sorpasso</td></tr>
+          <tr><td class="nm">negativo → positivo</td><td class="pos">una riga: sorpasso</td></tr>
+          <tr><td>positivo → pari → negativo</td><td class="pos">una riga, con la tappa pari scavalcata e contata</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Si confrontano solo comunità <strong>consecutive</strong>, perché un sorpasso è un attraversamento e va localizzato dove avviene. E se una coppia di metodi non si incrocia mai, quella coppia <strong>non compare proprio</strong> nel file.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 06 ================= -->
+  <section id="p6">
+    <p class="part">Parte 06</p>
+    <h2>I quattro file dei risultati</h2>
+
+    <p class="lead">A fine esecuzione il modello scrive quattro CSV in <code>outputs/tables/confronto/</code>. Non contengono i valori grezzi: sono un livello sopra, e misurano come si comportano le misurazioni fra loro.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>File</th><th class="n">Righe</th><th>Cosa contiene</th><th>A cosa serve in tesi</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="nm"><code>orientamenti</code></td><td class="n">19</td>
+            <td>per ogni indicatore: se alto è buono o cattivo, e se il giudizio è normativo</td>
+            <td class="sub">capitolo di metodo — è la chiave che rende leggibili gli altri tre</td>
+          </tr>
+          <tr>
+            <td class="nm"><code>accordo_indicatori</code></td><td class="n">2 269</td>
+            <td>per ogni coppia di indicatori, su ogni comunità, quanto concordano nell'ordinare i 16 metodi</td>
+            <td class="sub">risponde a «quanto gli indicatori concordano»</td>
+          </tr>
+          <tr>
+            <td class="nm"><code>inversioni_di_graduatoria</code></td><td class="n">1 944</td>
+            <td>una riga per ogni singolo sorpasso, con le due comunità e i due distacchi</td>
+            <td class="sub">per verificare e citare un caso specifico</td>
+          </tr>
+          <tr>
+            <td class="nm"><code>inversioni_sommario</code></td><td class="n">2 161</td>
+            <td>una riga per coppia di metodi: quanti sorpassi, e se il vincitore è cambiato</td>
+            <td class="sub">i numeri aggregati da mettere in tabella</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note info">
+      <span class="lbl">Cosa non è in questi file</span>
+      <p>I <strong>valori assoluti</strong> dei singoli metodi — «Shapley vale 0.589 su <code>EI_orig</code> nella comunità con sette prosumer» — non sono in nessuno dei quattro. Escono da <code>Tfair</code>, che <code>MAIN.m</code> stampa a schermo ma <strong>non esporta</strong>. Se in tesi serve un valore assoluto, va preso da lì.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 07 ================= -->
+  <section id="p7">
+    <p class="part">Parte 07</p>
+    <h2>I risultati</h2>
+
+    <p class="lead">Sette comunità di sette membri, identiche per composizione salvo una cosa: quanti di loro possiedono un impianto fotovoltaico. Si va da uno su sette a sette su sette.</p>
+
+    <h3>1 · Il vincolo normativo esiste, ma non morde</h3>
+    <p>La normativa fissa una soglia: l'energia condivisa incentivabile non può superare una certa percentuale di quella immessa in rete. Il modello la verifica su ogni comunità — e su tutte e sette resta <strong>lontanissima</strong>.</p>
+
+    <figure>
+      <svg class="chart" viewBox="0 0 730 250" role="img" aria-labelledby="t1">
+        <title id="t1">Quota di energia incentivata rispetto alla soglia del 55%</title>
+        <line x1="40" y1="43.3" x2="716" y2="43.3" stroke="var(--warm)" stroke-width="2" stroke-dasharray="5 4"></line>
+        <text class="axv" x="716" y="37" text-anchor="end" style="fill:var(--warm)">soglia normativa 55%</text>
+        <line x1="40" y1="190" x2="716" y2="190" stroke="var(--rule-2)" stroke-width="1"></line>
+        <text class="ax" x="34" y="194" text-anchor="end">0%</text>
+        <text class="ax" x="34" y="47" text-anchor="end">55%</text>
+
+        <rect x="42"  y="125.2" width="56" height="64.8" rx="2" fill="var(--cool)"></rect>
+        <rect x="147" y="134.5" width="56" height="55.5" rx="2" fill="var(--cool)"></rect>
+        <rect x="252" y="142.3" width="56" height="47.7" rx="2" fill="var(--cool)"></rect>
+        <rect x="357" y="168.9" width="56" height="21.1" rx="2" fill="var(--cool)"></rect>
+        <rect x="462" y="170.3" width="56" height="19.7" rx="2" fill="var(--cool)"></rect>
+        <rect x="567" y="183.1" width="56" height="6.9"  rx="2" fill="var(--cool)"></rect>
+        <rect x="660" y="184.7" width="56" height="5.3"  rx="2" fill="var(--cool)"></rect>
+
+        <text class="axv" x="70"  y="119" text-anchor="middle">24.3%</text>
+        <text class="axv" x="175" y="128" text-anchor="middle">20.8%</text>
+        <text class="axv" x="280" y="136" text-anchor="middle">17.9%</text>
+        <text class="axv" x="385" y="163" text-anchor="middle">7.9%</text>
+        <text class="axv" x="490" y="164" text-anchor="middle">7.4%</text>
+        <text class="axv" x="595" y="177" text-anchor="middle">2.6%</text>
+        <text class="axv" x="688" y="179" text-anchor="middle">2.0%</text>
+
+        <text class="ax" x="70"  y="208" text-anchor="middle">1 su 7</text>
+        <text class="ax" x="175" y="208" text-anchor="middle">2 su 7</text>
+        <text class="ax" x="280" y="208" text-anchor="middle">3 su 7</text>
+        <text class="ax" x="385" y="208" text-anchor="middle">4 su 7</text>
+        <text class="ax" x="490" y="208" text-anchor="middle">5 su 7</text>
+        <text class="ax" x="595" y="208" text-anchor="middle">6 su 7</text>
+        <text class="ax" x="688" y="208" text-anchor="middle">7 su 7</text>
+        <text class="ax" x="378" y="232" text-anchor="middle">membri con impianto fotovoltaico</text>
+      </svg>
+      <figcaption>Quota di energia condivisa sul totale immesso in rete. Il massimo osservato è 24.3%, nella comunità con un solo impianto — meno della metà della soglia.</figcaption>
+    </figure>
+
+    <div class="note">
+      <span class="lbl">Risultato</span>
+      <p>Il tetto regolatorio <strong>non è ciò che limita queste comunità</strong>. Con sette impianti solo <strong>5 406 kWh su 263 834 immessi</strong> diventano energia condivisa: il 2%. Il collo di bottiglia è l'accoppiamento temporale fra produzione e consumo, non la norma. Gli impianti sono dimensionati per l'autoconsumo, non per la condivisione.</p>
+    </div>
+
+    <p>Lo stesso vale per la convenienza: <strong>tutte e sedici le regole lasciano ogni membro con un VAN positivo</strong>, in tutte e sette le comunità. Nessun meccanismo viene escluso — si ordinano soltanto. Lo scarto fra la regola migliore e la peggiore, per il membro messo peggio, è del <strong>10.4%</strong> (da 12 688 a 14 002 €).</p>
+
+    <h3>2 · Tre criteri, tre vincitori diversi</h3>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Criterio</th><th>Prima classificata</th><th class="n">Valore</th><th>Dove crolla</th></tr></thead>
+        <tbody>
+          <tr><td class="nm">Uniformità</td><td>Equal Split</td><td class="n">1.000</td><td class="sub">forza incentivante <strong>esattamente 0</strong>; nove sottogruppi vorrebbero uscire</td></tr>
+          <tr><td class="nm">Stabilità</td><td>Nucleolo · Variance Least Core</td><td class="n">−25 €</td><td class="sub">il Nucleolo è il <strong>peggiore</strong> sull'uniformità (0.22)</td></tr>
+          <tr><td class="nm">Comportamento</td><td>Pearson Key · Tri-level EP</td><td class="n">1.60</td><td class="sub">uniformità mediocre, fra 0.21 e 0.45</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Nessuna regola vince su più di un criterio, e ciascuna vincitrice è fra le peggiori su almeno un altro.</p>
+
+    <h3>3 · Il Variance Least Core, l'unico mai dominato</h3>
+    <p>Guardando la <strong>posizione in classifica</strong> (1° = migliore delle sedici) su ciascun criterio, in ciascuna comunità:</p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Penetrazione</th><th class="n">VLC<br>Uniformità</th><th class="n">VLC<br>Stabilità</th><th class="n">VLC<br>Comportam.</th><th class="n">Nucleolo<br>Uniformità</th><th class="n">Nucleolo<br>Stabilità</th><th class="n">Nucleolo<br>Comportam.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="nm">14.3%</td><td class="n">4°</td><td class="n">2°</td><td class="n">6°</td><td class="n neg">16°</td><td class="n">1°</td><td class="n neg">16°</td></tr>
+          <tr><td class="nm">28.6%</td><td class="n">11°</td><td class="n">2°</td><td class="n">6°</td><td class="n">12°</td><td class="n">1°</td><td class="n">5°</td></tr>
+          <tr><td class="nm">42.9%</td><td class="n">9°</td><td class="n">2°</td><td class="n">7°</td><td class="n">11°</td><td class="n">1°</td><td class="n">6°</td></tr>
+          <tr><td class="nm">57.1%</td><td class="n">10°</td><td class="n">2°</td><td class="n">7°</td><td class="n">11°</td><td class="n">1°</td><td class="n">5°</td></tr>
+          <tr><td class="nm">71.4%</td><td class="n">10°</td><td class="n">2°</td><td class="n">6°</td><td class="n">11°</td><td class="n">1°</td><td class="n">5°</td></tr>
+          <tr><td class="nm">85.7%</td><td class="n">7°</td><td class="n">2°</td><td class="n">8°</td><td class="n">10°</td><td class="n">1°</td><td class="n">6°</td></tr>
+          <tr><td class="nm">100%</td><td class="n">10°</td><td class="n">2°</td><td class="n">7°</td><td class="n">12°</td><td class="n">1°</td><td class="n">5°</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Il VLC non scende mai sotto l'11° posto su 16</strong>, su nessuno dei tre criteri, in nessuna delle sette comunità — e sulla stabilità è <strong>sempre 2°</strong>. È il modo rigoroso per dire quello che altrimenti resterebbe un'impressione: non è mai fra i cattivi.</p>
+
+    <p>Il <strong>Nucleolo è sempre 1° sulla stabilità</strong>, e non è fortuna: è costruito per minimizzare l'instabilità, quindi esserlo è la sua definizione matematica. Il VLC gli resta incollato al 2° perché lavora dentro lo stesso confine di stabilità, scegliendo un punto diverso al suo interno. Ma a 14.3% il Nucleolo <strong>crolla al 16° posto su due criteri contemporaneamente</strong>; il VLC, nella stessa comunità, resta 4°, 2° e 6°.</p>
+
+    <div class="note info">
+      <span class="lbl">Da sapere per la riproducibilità</span>
+      <p>Questa tabella <strong>non si ricava dai quattro CSV</strong>: richiede i valori grezzi di <code>Tfair</code> per tutti i sedici metodi, che oggi non vengono esportati. Per renderla riproducibile aprendo un file basterebbe aggiungere un quinto export.</p>
+    </div>
+
+    <h3>4 · Diciotto indicatori, cinque famiglie, poca coerenza interna</h3>
+
+    <p>Mediando il τ-b su <strong>tutte</strong> le coppie di indicatori dentro e fra le famiglie, e su tutte le comunità:</p>
+
+    <figure>
+      <div class="tw">
+        <table class="mx">
+          <thead><tr><th></th><th>Uniformità</th><th>Merito</th><th>Stabilità</th><th>Comportam.</th><th>Convenienza</th></tr></thead>
+          <tbody>
+            <tr><th class="rh">Uniformità</th>
+              <td class="diag" style="background:color-mix(in srgb,var(--cool-wash) 40%,transparent)">0.40</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 40%,transparent)">−0.22</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 55%,transparent)">−0.29</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 48%,transparent)">−0.26</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 25%,transparent)">0.25</td></tr>
+            <tr><th class="rh">Merito</th>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 40%,transparent)">−0.22</td>
+              <td class="diag" style="background:var(--cool-wash)">0.88</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 72%,transparent)">0.68</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 10%,transparent)">0.08</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 40%,transparent)">−0.22</td></tr>
+            <tr><th class="rh">Stabilità</th>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 55%,transparent)">−0.29</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 72%,transparent)">0.68</td>
+              <td class="diag" style="background:color-mix(in srgb,var(--cool-wash) 78%,transparent)">0.72</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 15%,transparent)">0.13</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 35%,transparent)">−0.19</td></tr>
+            <tr><th class="rh">Comportamento</th>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 48%,transparent)">−0.26</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 10%,transparent)">0.08</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 15%,transparent)">0.13</td>
+              <td class="diag" style="background:color-mix(in srgb,var(--cool-wash) 30%,transparent)">0.29</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 8%,transparent)">0.06</td></tr>
+            <tr><th class="rh">Convenienza</th>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 25%,transparent)">0.25</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 40%,transparent)">−0.22</td>
+              <td style="background:color-mix(in srgb,var(--warm-wash) 35%,transparent)">−0.19</td>
+              <td style="background:color-mix(in srgb,var(--cool-wash) 8%,transparent)">0.06</td>
+              <td class="diag" style="background:var(--surface-2)">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption><span style="display:inline-block;width:11px;height:11px;background:var(--cool-wash);border-radius:2px;vertical-align:-1px;margin-right:5px"></span>blu = graduatorie concordi &nbsp;·&nbsp; <span style="display:inline-block;width:11px;height:11px;background:var(--warm-wash);border-radius:2px;vertical-align:-1px;margin-right:5px"></span>ocra = graduatorie opposte. La diagonale misura la <strong>coerenza interna</strong> di ciascuna famiglia. «Convenienza» ha un solo indicatore, quindi non ha coerenza interna da misurare.</figcaption>
+    </figure>
+
+    <ul>
+      <li><strong>Merito e Stabilità sono quasi la stessa domanda</strong> (0.68): chi si avvicina al contributo marginale tende anche a reggere coalizionalmente.</li>
+      <li><strong>La Convenienza economica è indipendente da tutto</strong> (mai oltre 0.25 in valore assoluto). Non è un quarto modo di misurare l'equità: è un criterio a sé.</li>
+      <li><strong>La diagonale è il risultato nuovo.</strong> La famiglia Merito è internamente coerente (0.88), la Stabilità pure (0.72) — ma l'<strong>Uniformità è solo 0.40</strong> e il <strong>Comportamento 0.29</strong>. Otto indicatori che condividono l'etichetta «uniformità» non condividono sempre il giudizio.</li>
+    </ul>
+
+    <div class="note corr">
+      <span class="lbl">Correzione rispetto a una versione precedente</span>
+      <p>Una prima versione di questa tabella usava <strong>un solo indicatore rappresentante</strong> per famiglia, e dava «Uniformità contro Comportamento = −0.61», presentandolo come il conflitto dominante, due volte e mezzo quello con la Stabilità. <strong>Non regge.</strong> Mediando su tutte le coppie, i due contrasti sono quasi uguali: <strong>−0.26 contro −0.29</strong>. La versione semplificata esagerava, perché <code>EI_orig</code> è uno degli indicatori di Uniformità più opposti al Comportamento, ma non rappresenta la media della sua famiglia.</p>
+      <p>La versione qui sopra è quella da usare: non richiede di giustificare perché si sia scelto un indicatore invece di un altro.</p>
+    </div>
+
+    <h3>5 · Quanto la graduatoria dipende dalla composizione</h3>
+
+    <div class="note">
+      <span class="lbl">Il numero di testa</span>
+      <p>Su <strong>2 160 confronti</strong> — diciotto indicatori per centoventi coppie di metodi — <strong>1 132 (52%) si invertono almeno una volta</strong> cambiando comunità, con 1 943 sorpassi in totale, e <strong>715 (33%) sono invertiti fra i due estremi</strong>: chi vince con un prosumer non è chi vince con sette.</p>
+    </div>
+
+    <p>Ma non tutti i criteri sono ugualmente fragili:</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Indicatore</th><th>Coppie che si invertono</th><th class="n">Invertite agli estremi</th><th class="n">Distacco tipico</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><code>EccessoMax_EUR</code> <span class="sub">stabilità</span></td><td><span class="bar"><i style="width:50px"></i><b>36%</b></span></td><td class="n">17%</td><td class="n">473 €</td></tr>
+          <tr><td class="nm"><code>ForzaIncentivante</code> <span class="sub">comportamento</span></td><td><span class="bar"><i style="width:64px"></i><b>46%</b></span></td><td class="n">29%</td><td class="n">1.26</td></tr>
+          <tr><td class="nm"><code>FairnessIndex</code> <span class="sub">merito</span></td><td><span class="bar"><i style="width:65px"></i><b>47%</b></span></td><td class="n">30%</td><td class="n">0.46</td></tr>
+          <tr><td class="nm"><code>EI_orig</code> <span class="sub">uniformità</span></td><td><span class="bar"><i style="width:75px"></i><b>54%</b></span></td><td class="n">41%</td><td class="n">0.33</td></tr>
+          <tr><td class="nm"><code>VAN_min_EUR</code> <span class="sub">convenienza</span></td><td><span class="bar"><i style="width:120px;background:var(--warm)"></i><b>86%</b></span></td><td class="n">56%</td><td class="n">1 021 €</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>La stabilità è il criterio più robusto, la convenienza economica il meno.</strong> Una graduatoria costruita sul VAN non sopravvive a un cambio di composizione; una costruita sulla stabilità sì.</p>
+
+    <h3>6 · Dove si concentra l'instabilità</h3>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Transizione (penetrazione prosumer)</th><th class="n">Sorpassi registrati</th></tr></thead>
+        <tbody>
+          <tr><td class="nm">14.3% → 28.6% <span class="sub">da 1 a 2 impianti</span></td><td class="n"><strong>524</strong></td></tr>
+          <tr><td>28.6% → 42.9%</td><td class="n">215</td></tr>
+          <tr><td>42.9% → 57.1%</td><td class="n">317</td></tr>
+          <tr><td>57.1% → 71.4%</td><td class="n">172</td></tr>
+          <tr><td>71.4% → 85.7%</td><td class="n">363</td></tr>
+          <tr><td>85.7% → 100%</td><td class="n">348</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Il 27% di tutti i sorpassi avviene in un solo tratto</strong>, quello fra uno e due prosumer. Aggiungere il secondo impianto sconvolge le graduatorie più di qualunque passo successivo.</p>
+
+    <h3>7 · Anche il disaccordo dipende dalla composizione</h3>
+
+    <p>La divergenza fra uniformità e stabilità — quella per cui l'Equal Split è primo su una e ultimo sull'altra — <strong>non è una costante</strong>: è massima dove i prosumer sono pochi, e in una configurazione cambia perfino segno.</p>
+
+    <figure>
+      <svg class="chart" viewBox="0 0 730 250" role="img" aria-labelledby="t2">
+        <title id="t2">Accordo fra uniformità e stabilità nelle sette comunità</title>
+        <line x1="40" y1="81" x2="716" y2="81" stroke="var(--rule-2)" stroke-width="1.5"></line>
+        <text class="ax" x="34" y="85" text-anchor="end">0</text>
+        <text class="ax" x="34" y="34" text-anchor="end">+0.3</text>
+        <text class="ax" x="34" y="187" text-anchor="end">−0.6</text>
+        <text class="ax" x="46" y="97" style="fill:var(--warm)">i due criteri si oppongono</text>
+        <text class="ax" x="46" y="72" style="fill:var(--cool)">i due criteri concordano</text>
+
+        <polyline points="70,182.5 175,145.3 280,113.8 385,136.8 490,131.0 595,53.8 700,93.9"
+          fill="none" stroke="var(--cool)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+
+        <circle cx="70"  cy="182.5" r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="175" cy="145.3" r="4.5" fill="var(--cool)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="280" cy="113.8" r="4.5" fill="var(--cool)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="385" cy="136.8" r="4.5" fill="var(--cool)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="490" cy="131.0" r="4.5" fill="var(--cool)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="595" cy="53.8"  r="5" fill="var(--warm)" stroke="var(--surface)" stroke-width="2"></circle>
+        <circle cx="700" cy="93.9"  r="4.5" fill="var(--cool)" stroke="var(--surface)" stroke-width="2"></circle>
+
+        <text class="axv" x="70"  y="202" text-anchor="middle" style="fill:var(--warm)">−0.60</text>
+        <text class="axv" x="595" y="44"  text-anchor="middle" style="fill:var(--warm)">+0.16</text>
+        <text class="axv" x="700" y="112" text-anchor="middle">−0.08</text>
+
+        <text class="ax" x="70"  y="224" text-anchor="middle">1 su 7</text>
+        <text class="ax" x="175" y="224" text-anchor="middle">2 su 7</text>
+        <text class="ax" x="280" y="224" text-anchor="middle">3 su 7</text>
+        <text class="ax" x="385" y="224" text-anchor="middle">4 su 7</text>
+        <text class="ax" x="490" y="224" text-anchor="middle">5 su 7</text>
+        <text class="ax" x="595" y="224" text-anchor="middle">6 su 7</text>
+        <text class="ax" x="700" y="224" text-anchor="middle">7 su 7</text>
+        <text class="ax" x="378" y="244" text-anchor="middle">membri con impianto fotovoltaico</text>
+      </svg>
+      <figcaption>Con un solo prosumer i due criteri si oppongono nettamente (−0.60); con sette sono quasi indipendenti (−0.08). A sei prosumer l'accordo passa in positivo (+0.16). La divergenza raccontata in letteratura è una funzione della composizione, non una proprietà fissa delle comunità energetiche.</figcaption>
+    </figure>
+
+    <h3>8 · Un dettaglio che merita attenzione</h3>
+    <p>Lo Shapley value <strong>non si comporta in modo monotono</strong> sulla stabilità: è dentro il nucleo ai due estremi dell'asse — con sette prosumer e con uno solo — ma ne esce nelle configurazioni intermedie, dove tre o quattro membri su sette hanno un impianto. Non è un andamento che si intuisce, e vale la pena capirne la ragione.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ================= 08 ================= -->
+  <section id="p8">
+    <p class="part">Parte 08</p>
+    <h2>Limiti, e cosa manca per chiudere il cerchio</h2>
+
+    <p class="lead">I risultati sopra valgono lungo <strong>un solo asse di composizione</strong>. È il limite principale, e va dichiarato prima di generalizzare.</p>
+
+    <p>Tutte e sette le comunità hanno <strong>sette membri</strong> e la stessa ripartizione per categoria: un terziario, un industriale, un commerciale, quattro domestici. Varia soltanto chi possiede un impianto. La formulazione onesta è quindi <em>«al variare della penetrazione di prosumer»</em>, non <em>«al variare della composizione»</em>.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Asse</th><th>Stato</th><th>Cosa serve</th></tr></thead>
+        <tbody>
+          <tr><td class="nm">Penetrazione prosumer</td><td class="sub">coperto, 7 configurazioni</td><td class="sub">—</td></tr>
+          <tr><td class="nm">Composizione per categoria</td><td class="sub">non coperto</td><td class="sub">nuove schede e i profili corrispondenti; nessun ostacolo tecnico</td></tr>
+          <tr><td class="nm">Numero di membri</td><td class="sub">non coperto, e con un ostacolo</td><td class="sub">oltre ~20 membri Shapley, Nucleolo e Nash Bargaining diventano impossibili da calcolare</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note corr">
+      <span class="lbl">La decisione da prendere prima di generare nuovi dati</span>
+      <p>Shapley, Nucleolo e Nash Bargaining devono valutare <strong>tutti i sottoinsiemi possibili</strong> di membri: con venti membri sono già oltre un milione, con cento è irrealizzabile. Quindi <strong>o si resta sotto la ventina</strong> tenendo tutte e sedici le regole, <strong>oppure si va su comunità grandi</strong> confrontando solo quelle che scalano — approssimazioni, regole semplificate, comportamentali e Variance Least Core.</p>
+    </div>
+
+    <h3>Altre cautele</h3>
+    <ul>
+      <li><strong>Tri-level EP</strong> gira su dati segnaposto (redditi, spese per il gas, soglie di povertà energetica) e non va usata per conclusioni.</li>
+      <li><strong>Tre indicatori variano pochissimo</strong> fra i metodi (<code>MinMax_con</code>, <code>QoS_new</code>, e in parte <code>Jain</code>/<code>QoS_orig</code>), perché su queste comunità solo una piccola parte dell'energia condivisa è davvero contendibile. Le loro inversioni hanno distacchi dell'ordine di un millesimo e vanno escluse dai conteggi.</li>
+      <li>La comunità con <strong>sei prosumer su sette</strong> si comporta in modo anomalo su tre indicatori indipendenti — va controllata prima di citarla.</li>
+      <li><strong>Una comunità non ha le quote di investimento</strong> compilate, quindi non contribuisce al criterio di convenienza economica.</li>
+      <li><strong>I valori grezzi di <code>Tfair</code> non sono esportati</strong>: alcune conclusioni (la tabella delle posizioni del VLC) non sono oggi riproducibili aprendo solo i quattro CSV.</li>
+    </ul>
+
+    <h3>Il gap della letteratura: quanto è coperto</h3>
+    <p>Il regime studiato — <strong>trasferimento regolato invece di surplus di mercato</strong> — è implementato in pieno, ed è la condizione sotto cui la letteratura di riferimento dichiara di non aver confrontato nulla. Il vincolo normativo sulle allocazioni ammissibili c'è ed è letterale, anche se su questi dati non si attiva mai. Le due clausole sull'accordo fra indicatori e sulla dipendenza dalla composizione sono <strong>misurate</strong> e non più solo mostrate.</p>
+    <p>Resta scoperto il <strong>lato empirico</strong>: due assi di composizione su tre. E restano due allineamenti fra testo e codice — la famiglia price-based, che il capitolo promette di valutare ma che sotto CACER non si applica, e le ipotesi provvisorie del Tri-level EP.</p>
+  </section>
+
+  <div class="foot">
+    <p>Numeri verificati sull'esecuzione di riferimento del modello — sette comunità, settembre 2026. I dati di supporto sono in <code>outputs/tables/confronto/</code>, riproducibili eseguendo <code>MAIN.m</code>. Le tabelle delle posizioni in classifica e i valori per metodo richiedono l'output di <code>Tfair</code>, oggi non esportato su file.</p>
+  </div>
+
+  </main>
+</div>

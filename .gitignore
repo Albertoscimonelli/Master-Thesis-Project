@@ -270,6 +270,11 @@ PV_Generation/*
 # cronologia: una volta dentro ci resta per sempre.
 Paper/
 
+# Fonti grezze per i profili non domestici (PDF, xlsx, zip dai dati
+# provinciali e dai profili GSE prelievo/immissione): ~692 MB, non e' codice
+# e non va nella cronologia per lo stesso motivo di Paper/ qui sopra.
+CER_LoadProfiles/File Non Domestici/
+
 # Run di controllo per i confronti A/B (es. generazione senza profilo di
 # temperatura). Dati derivati, si rigenerano con la configurazione
 # corrispondente in CER_LoadProfiles/config/.

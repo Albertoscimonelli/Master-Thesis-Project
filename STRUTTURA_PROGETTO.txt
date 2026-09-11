@@ -190,6 +190,13 @@ Project/
 |-- profilo_prezzi_pun_2025.m           Profilo orario prezzi PUN 2025 (3 modalita' tariffarie)
 |-- optimizer_PV.m                      Dimensionamento/ottimizzazione impianto PV (IRR/NPV)
 |                                       [standalone: NON invocato da MAIN.m, solo per test]
+|-- test_shapley_permutations.m         VALIDAZIONE di shapley_cer.m: confronta la formula chiusa
+|                                       pesata sui sottoinsiemi con la media bruta sui 6! = 720
+|                                       ordini di formazione della grande coalizione (gioco
+|                                       sintetico a 6 giocatori). Verifica anche efficienza, null
+|                                       player e simmetria. E' il test citato in
+|                                       GUIDA_modelli_distribuzione.md §4 ("Validazione effettuata")
+|                                       [standalone: NON invocato da MAIN.m, solo per test]
 |-- load_cer_data.m                     Caricamento profili di carico + generazione PV
 |-- report_allocation.m                 Stampa e verifica di una ripartizione dei benefici
 |-- method_color.m                      Colore RGB coerente per ciascun modello di ripartizione (grafici)

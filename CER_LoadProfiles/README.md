@@ -167,6 +167,8 @@ CER_LoadProfiles/
   ramp_db/                           # Riferimento non domestico (vedi sotto)
     riferimento_arera_nd.py          # Livello: ARERA per ATECO e classe BTA, mensile
     riferimento_gse_nd.py            # Forma oraria: profili standard GSE
+    leggi_quaderno_enea.py           # Estrae gli indici kWh/m2 dai PDF di benchmark
+    benchmark_letteratura.csv        # Secondo parere sul livello, con fonte e pagina
     dati/riferimento_arera_nd/       # Cache ARERA non domestica (versionata)
   outputs/csv/                       # CSV generati
 ```
@@ -215,6 +217,7 @@ cd ramp_db
 python riferimento_arera_nd.py --ispeziona          # struttura dei file grezzi
 python riferimento_arera_nd.py Milano --ateco 82.11 # livello e forma mensile
 python riferimento_gse_nd.py                        # forma oraria e controlli
+python leggi_quaderno_enea.py --elenca              # indici kWh/m2 nei PDF
 ```
 
 ### Le fonti, e da dove vengono i dati
@@ -247,6 +250,60 @@ sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
   prelievo puro / M misto / I immissione; ZZ = tipologia di utenza; Y = M
   monorario / F a fasce. Il documento precede il TIAD, ma la struttura dei codici
   nei file 2024 e 2025 e' invariata.
+
+### I benchmark di letteratura: l'albero energetico e il secondo parere
+
+ARERA e GSE dicono quanto consuma e quando, ma non **di che cosa** e' fatto quel
+consumo. Il difetto piu' grave degli archetipi RAMP non e' che i numeri di
+`office.py` siano sbagliati: e' che non hanno una fonte. Gli indici di
+prestazione energetica per uso finale ce l'hanno, e ogni ramo diventa un gruppo
+di `Appliance`. `benchmark_letteratura.csv` li raccoglie con fonte, pagina e
+stato di verifica; `leggi_quaderno_enea.py` li ritrova nei PDF.
+
+**ENEA con Assoimmobiliare, *Uffici — Quaderni dell'Efficienza Energetica***
+(Ricerca di Sistema Elettrico 2022-2024, MASE), guida alla diagnosi energetica
+ex Allegato II del D.Lgs. 102/2014. Il §4.3 porta gli IPE di secondo livello,
+cioe' l'albero energetico elettrico di un ufficio:
+
+| Uso finale | Indice | Pagina |
+|---|---|---|
+| Illuminazione | 25,7 ± 11,8 kWh/m² (≤1.000 m²: 29,1; >1.000 m²: 23,7) | 75 |
+| Climatizzazione, trattamento aria e ACS | 126 ± 53 kWh/m² tutti i vettori; **zona E-F solo elettrico 93 ± 39** | 76-77 |
+| Infrastruttura informatica (PC, monitor, stampanti, router) | 21,4 ± 11,8 kWh/m², oppure 534 ± 253 kWh/utente | 77-78 |
+| Data center | PUE 1,83 ± 0,36 | 78 |
+| *Indice globale di sito, tutti i vettori* | *201 ± 79 kWh/m²* | *73* |
+
+Milano e' in **zona climatica E**: la riga da usare per `office` e' quella dei
+93 ± 39 kWh/m² a impianto solo elettrico, non i 126 che sommano anche il gas.
+
+**Corgnati, Fabrizio, Ariaudo, Rollino, *Edifici tipo, indici di benchmark di
+consumo ... ad uso scolastico (medie superiori e istituti tecnici)***, Report
+RSE/2010: per `scuola_superiore`, **energia elettrica 15 kWh/m²** (rule of thumb
+30) contro 114 kWh/m² di energia utile per la climatizzazione invernale, con un
+breakdown 88% termico / 12% elettrico (p. 42). Da citare con la sua data: e' del
+2010.
+
+**RSE, *I consumi della Pubblica Amministrazione* (RSEview**, ISBN
+978-88-943145-5-7): il §3.3 copre gli uffici pubblici "dall'amministrazione
+centrale a quelli dell'amministrazione regionale sino al livello comunale",
+quindi comprende il municipio di `comune`. La Tabella 3.8 (p. 47) da' 373,39
+ktep elettrici su 38.248 migliaia di m² in Italia, e 57,17 ktep su 5.553 in
+Lombardia.
+
+**La colonna `verificato` ha tre valori, e la distinzione e' il punto della
+tabella**: `si` per un numero **riletto sul documento** alla pagina indicata;
+`no` per una riga proposta dall'estrattore e non ancora controllata; `derivato`
+per un valore **calcolato da altri**, mai stampato come tale nella fonte — i
+113,5 kWh/m² degli uffici PA italiani sono il rapporto fra le due grandezze
+della Tabella 3.8, non una citazione, e in tesi vanno presentati come tali.
+
+`leggi_quaderno_enea.py` distingue le pagine in cui valore e unita' sono
+attaccati (leggibili in automatico) da quelle con la **sola unita'**, dove
+l'estrazione ha spezzato la tabella e il numero va letto a mano con `--pagine`.
+Non e' un dettaglio: nel report sulle scuole l'unita' sta nell'intestazione di
+colonna e i valori su una riga a parte, quindi **tutte** le sue 50 pagine di
+indici cadono nel secondo gruppo. Una ricerca dei soli valori attaccati
+all'unita' avrebbe concluso che quel documento non contiene benchmark.
 
 ### Sei proprieta' dei dati, verificate e non assunte
 

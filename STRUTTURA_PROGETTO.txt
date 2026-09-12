@@ -73,6 +73,8 @@ Project/
 |   +-- ramp_db/                        RIFERIMENTO NON DOMESTICO (§3.11)
 |   |   |-- riferimento_arera_nd.py     Livello: ARERA per ATECO e classe BTA
 |   |   |-- riferimento_gse_nd.py       Forma oraria: profili standard GSE
+|   |   |-- leggi_quaderno_enea.py      Indici kWh/m2 dai PDF di benchmark
+|   |   |-- benchmark_letteratura.csv   Secondo parere, con fonte e pagina
 |   |   +-- dati/                       Cache ARERA non domestica (versionata)
 |   +-- outputs/csv/
 |       |-- profili_aziende.csv         Profili individuali aziende (kWh/h)
@@ -623,6 +625,31 @@ IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
                             fasce(), rumore_fonte_forma() e le diagnostiche
                             strutturali.
 
+  leggi_quaderno_enea.py    ALBERO ENERGETICO E BENCHMARK. Percorre i PDF di
+                            benchmark e trova gli indici di consumo specifico
+                            con la loro pagina. Distingue le pagine dove valore
+                            e unita' sono attaccati da quelle con la SOLA
+                            unita', dove l'estrazione ha spezzato la tabella e
+                            il numero va letto a mano: nel report sulle scuole
+                            l'unita' sta nell'intestazione di colonna, quindi
+                            tutte le sue 50 pagine di indici cadono nel secondo
+                            gruppo e cercare i soli valori attaccati avrebbe
+                            concluso che il documento non ha benchmark.
+                            PROPONE righe, non le certifica: escono con
+                            verificato = no.
+
+  benchmark_letteratura.csv IL SECONDO PARERE sul livello, indipendente da
+                            ARERA. Colonne: fonte, anno, tipologia, indicatore,
+                            valore, deviazione, unita, campione, pagina, url,
+                            verificato. Separatore ';' perche' i valori usano
+                            la virgola decimale.
+                            La colonna verificato ha TRE valori: si = riletto
+                            sul documento alla pagina indicata; no = proposto
+                            dall'estrattore e non controllato; derivato =
+                            calcolato da altri valori, mai stampato come tale
+                            nella fonte (es. i 113,5 kWh/m2 degli uffici PA,
+                            che sono un rapporto fra due righe di tabella).
+
   dati/                     Cache ARERA non domestica (riferimento_arera_nd/),
                             un CSV per provincia con accanto il .json degli
                             SHA-256. Circa 2 MB per provincia.
@@ -641,6 +668,32 @@ FONTI E BASE NORMATIVA - da citare in tesi:
   GSE, "Modalita' di profilazione ... ai sensi dell'articolo 9 dell'Allegato A
     alla Delibera 318/2020/R/eel", v1 del 04/04/2022: decodifica i codici di
     colonna XZZY (X = P/M/I, ZZ = tipologia, Y = M monorario / F a fasce).
+
+  --- BENCHMARK DI LETTERATURA (l'albero energetico degli archetipi) ---
+  ENEA con Assoimmobiliare, "Uffici - Quaderni dell'Efficienza Energetica",
+    Ricerca di Sistema Elettrico 2022-2024 (MASE), guida alla diagnosi
+    energetica ex Allegato II del D.Lgs. 102/2014. Il §4.3 porta gli IPE di
+    secondo livello, cioe' l'albero energetico elettrico di un ufficio:
+      illuminazione            25,7 +/- 11,8 kWh/m2            (p. 75)
+      climatizzazione          126 +/- 53 kWh/m2 tutti i vettori
+                               ZONA E-F SOLO ELETTRICO 93 +/- 39 (p. 76-77)
+      infrastruttura ICT       21,4 +/- 11,8 kWh/m2, oppure
+                               534 +/- 253 kWh/utente          (p. 77-78)
+      data center              PUE 1,83 +/- 0,36               (p. 78)
+      indice globale di sito   201 +/- 79 kWh/m2, tutti i vettori (p. 73)
+    Milano e' in zona climatica E: per office vale la riga a solo elettrico,
+    non i 126 che sommano anche il gas.
+  Corgnati, Fabrizio, Ariaudo, Rollino, "Edifici tipo, indici di benchmark di
+    consumo ... ad uso scolastico (medie superiori e istituti tecnici)",
+    Report RSE/2010: per scuola_superiore, energia elettrica 15 kWh/m2 (rule
+    of thumb 30) contro 114 kWh/m2 di energia utile per la climatizzazione
+    invernale, breakdown 88% termico / 12% elettrico (p. 42). Da citare con
+    la sua data: e' del 2010.
+  RSE, "I consumi della Pubblica Amministrazione" (RSEview, ISBN
+    978-88-943145-5-7): il §3.3 copre gli uffici pubblici dall'amministrazione
+    centrale fino al livello comunale, quindi comprende il municipio di
+    comune.py. Tabella 3.8 (p. 47): 373,39 ktep elettrici su 38.248 migliaia
+    di m2 in Italia, 57,17 ktep su 5.553 in Lombardia.
 
 LA SOGLIA DI ACCETTAZIONE, MISURATA (Milano, ATECO 82.11, 2024 contro 2025):
   livello annuo      da -4,5% a +3,8% secondo la classe BTA

@@ -407,6 +407,47 @@ un edificio di ~120 m² — implausibile per un municipio con sala consiglio. O
 l'indicatore aggrega ministeri e data center, o un municipio reale ha piu' di un
 POD e BTA5 ne descrive uno solo. La superficie resta un'ipotesi dichiarata.
 
+### Quanto dello scarto e' numerosita' del campione? Zero
+
+Uno scarto dal riferimento puo' venire da due cose diverse: il modello e'
+sbagliato, oppure una sola istanza non e' una media. `numerosita_nd.py` le
+separa generando **venti istanze per archetipo**
+(`config/simulation_config.nd20.yaml`, 47 minuti) e adattando
+`TVD(N) = a + b/√N`: il termine `b/√N` e' errore di campionamento, `a` e'
+l'errore che resterebbe con un campione infinito.
+
+| archetipo | `a` | TVD a N=1 | `b` | quota spiegata dalla numerosita' |
+|---|---|---|---|---|
+| `office` | 0,4652 | 0,4652 | 0,0000 | **0%** |
+| `scuola_superiore` | 0,2651 | 0,2655 | 0,0004 | **0%** |
+| `comune` | 0,2527 | 0,2529 | −0,0000 | **0%** |
+
+**Cosa decresce davvero:** non la media, ma la **dispersione** — la deviazione
+standard fra sottoinsiemi passa da 0,0035 a N=1 a 0,0000 a N=20, esattamente
+come 1/√N prevede. Mediare venti istanze dello stesso archetipo converge alla
+curva media *dell'archetipo*, che una singola istanza gia' approssima: il
+campionamento sposta la varianza attorno al centro, non il centro.
+
+**Perche' qui e' diverso dal lato domestico.** La' le venti famiglie erano di
+tipologie diverse, e mediarle avvicinava davvero la curva alla media di
+popolazione ARERA. Qui le venti istanze sono cloni in distribuzione: stesse
+finestre, stessa lista di apparecchi, solo semi diversi. La curva e' **meglio
+posta** — e' l'ipotesi che 1/√N presuppone — e proprio per questo la sua
+risposta e' piu' netta.
+
+**Una riserva sul significato di `a`.** Il riferimento GSE e' uno solo per tutta
+la categoria "altri usi" e ignora il giorno della settimana, quindi `a` contiene
+anche la distanza fra l'archetipo e quella media di categoria, che non e' un
+difetto dell'archetipo. `a` e' percio' un **limite superiore** dell'errore di
+modello. Lo conferma l'ordine dei valori: `office` ha il piu' alto, ed e' anche
+quello con la finestra oraria piu' stretta rispetto a una media che comprende
+utenze attive ventiquattr'ore su ventiquattro.
+
+**Il livello non e' in discussione**, e lo dice la generazione stessa: su venti
+istanze il consumo annuo varia di ±4,5% (`office`), ±0,8% (`scuola_superiore`) e
+±1,1% (`comune`). Gli scarti di livello dei passi 5-7 non sono quindi artefatti
+di campionamento — sono proprieta' del modello.
+
 ### Accendere e spegnere gli archetipi
 
 `config/simulation_config.yaml` e' il catalogo: ogni voce di `ramp.use_cases`

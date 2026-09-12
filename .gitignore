@@ -295,6 +295,13 @@ CER_LoadProfiles/outputs/csv_baseline/
 # a parita' di catalogo produce gli stessi profili. Quello che si versiona sono
 # la configurazione che li descrive e i numeri misurati nel report.
 CER_LoadProfiles/outputs/csv_campione20/
+
+# Campione allargato dei non domestici: 20 istanze per archetipo, generate da
+# config/simulation_config.nd20.yaml. Stessa regola di csv_campione20 qui
+# sopra: dati derivati, riproducibili dai seed deterministici, non si
+# versionano. Quello che si versiona sono la configurazione che li descrive e
+# i numeri misurati in ramp_db/dati/validazione/.
+CER_LoadProfiles/outputs/csv_nd20/
 CER_LoadProfiles/outputs/csv_lombardia20/
 CER_LoadProfiles/outputs/csv_milano20/
 

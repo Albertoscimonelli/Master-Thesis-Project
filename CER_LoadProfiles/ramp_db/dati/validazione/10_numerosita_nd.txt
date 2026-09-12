@@ -1,0 +1,112 @@
+# Passo 8 - Curva di numerosita' dei tre archetipi non domestici
+#
+# Comando:  cd CER_LoadProfiles
+#           ../venv/Scripts/python.exe  (generazione da config/simulation_config.nd20.yaml)
+#           cd ramp_db && ../../venv/Scripts/python.exe \
+#               numerosita_nd.py ../outputs/csv_nd20/profili_nd20.csv
+# Data:     2026-09-12
+# Costo:    47,4 minuti per 60 istanze (20 per archetipo, 14 anni-regime in tutto).
+# Nota:     outputs/csv_nd20/ e' gitignorato: dati derivati, riproducibili dai
+#           seed deterministici. Si versionano la configurazione e questo file.
+#
+# ESITO: RISULTATO NULLO, ed e' il risultato. Per tutti e tre gli archetipi
+# b ~ 0 e a ~ TVD(N=1): la distanza dal riferimento NON CALA al crescere di N.
+#
+#   archetipo           a        TVD(N=1)   b          quota spiegata
+#   office              0,4652   0,4652     0,0000     0%
+#   scuola_superiore    0,2651   0,2655     0,0004     0%
+#   comune              0,2527   0,2529    -0,0000     0%
+#
+# COSA DECRESCE DAVVERO. Non la media, ma la DISPERSIONE: la deviazione standard
+# fra sottoinsiemi passa da 0,0035 a N=1 a 0,0000 a N=20, esattamente come
+# 1/sqrt(N) prevede. Mediare venti istanze dello stesso archetipo converge alla
+# curva media DELL'ARCHETIPO, che una singola istanza gia' approssima: il
+# campionamento sposta la varianza attorno al centro, non il centro.
+#
+# PERCHE' QUI E' DIVERSO DAL LATO DOMESTICO. La' le venti famiglie erano di
+# tipologie diverse, e mediarle avvicinava davvero la curva alla media di
+# popolazione ARERA. Qui le venti istanze sono cloni in distribuzione: stesse
+# finestre, stessa lista di apparecchi, solo semi diversi. La curva e' meglio
+# posta - e' l'ipotesi che 1/sqrt(N) presuppone - e proprio per questo la sua
+# risposta e' piu' netta: dello scarto sulla forma, la numerosita' non spiega
+# nulla.
+#
+# CONSEGUENZA PRATICA. Non ha senso attendersi che una comunita' con piu' utenti
+# non domestici riduca questo scarto, ne' inseguirlo ulteriormente correggendo
+# gli archetipi. Lo scarto e' errore di modello.
+#
+# RISERVA IMPORTANTE SU "a". Il riferimento GSE e' UNO SOLO per tutta la
+# categoria "altri usi" e ignora il giorno della settimana, quindi "a" contiene
+# anche la distanza fra l'archetipo specifico e quella media di categoria, che
+# non e' un difetto dell'archetipo. "a" e' percio' un LIMITE SUPERIORE
+# dell'errore di modello, non l'errore di modello. E' coerente con l'ordine dei
+# valori: office 0,4652 e' il piu' alto, ed e' anche l'archetipo con la finestra
+# oraria piu' stretta (solo 8-18 nei feriali) rispetto a una media di categoria
+# che comprende utenze attive ventiquattr'ore su ventiquattro.
+#
+# IL LIVELLO NON E' IN DISCUSSIONE, e lo dice la generazione stessa. Su venti
+# istanze il consumo annuo varia pochissimo:
+#   office             min 4.567   media 4.745    max 4.993   (+/- 4,5%)
+#   scuola_superiore   min 106.512 media 107.414  max 108.275 (+/- 0,8%)
+#   comune             min 13.055  media 13.195   max 13.354  (+/- 1,1%)
+# Gli scarti di livello misurati nei passi 5-7 (0,69x, 1,10x, 0,97x) non sono
+# quindi artefatti di campionamento: sono proprieta' del modello. I valori su
+# cui quegli archetipi erano stati validati (4.781, 107.103, 13.274) cadono
+# tutti dentro la forbice delle rispettive venti istanze.
+
+CURVA DI NUMEROSITA' - profili_nd20.csv
+riferimento: profili standard GSE 2025, categoria altri usi
+
+comune  (20 istanze)
+    N  estrazioni  TVD medio      min      max  dev.std
+    1         400     0.2529   0.2465   0.2608   0.0035
+    2         400     0.2527   0.2466   0.2589   0.0025
+    4         400     0.2527   0.2483   0.2575   0.0016
+    6         400     0.2527   0.2492   0.2561   0.0013
+    8         400     0.2527   0.2502   0.2554   0.0010
+   10         400     0.2527   0.2506   0.2555   0.0008
+   12         400     0.2527   0.2509   0.2545   0.0007
+   16         400     0.2527   0.2516   0.2538   0.0004
+   20           1     0.2527   0.2527   0.2527   0.0000
+  fit TVD(N) = a + b/sqrt(N):  a = 0.2527   b = -0.0000   residuo max 0.0000
+  errore di MODELLO a = 0.2527 contro 0.2529 misurato su una sola istanza:
+  la numerosita' del campione spiega il 0% dello scarto osservato.
+
+office  (20 istanze)
+    N  estrazioni  TVD medio      min      max  dev.std
+    1         400     0.4652   0.4604   0.4723   0.0026
+    2         400     0.4653   0.4610   0.4700   0.0017
+    4         400     0.4653   0.4622   0.4689   0.0012
+    6         400     0.4652   0.4634   0.4679   0.0008
+    8         400     0.4653   0.4635   0.4670   0.0007
+   10         400     0.4652   0.4639   0.4666   0.0006
+   12         400     0.4653   0.4640   0.4663   0.0005
+   16         400     0.4652   0.4643   0.4659   0.0003
+   20           1     0.4652   0.4652   0.4652   0.0000
+  fit TVD(N) = a + b/sqrt(N):  a = 0.4652   b = 0.0000   residuo max 0.0001
+  errore di MODELLO a = 0.4652 contro 0.4652 misurato su una sola istanza:
+  la numerosita' del campione spiega il -0% dello scarto osservato.
+
+scuola_superiore  (20 istanze)
+    N  estrazioni  TVD medio      min      max  dev.std
+    1         400     0.2655   0.2608   0.2696   0.0024
+    2         400     0.2654   0.2612   0.2690   0.0017
+    4         400     0.2653   0.2621   0.2683   0.0011
+    6         400     0.2652   0.2629   0.2672   0.0009
+    8         400     0.2652   0.2635   0.2670   0.0007
+   10         400     0.2652   0.2636   0.2667   0.0006
+   12         400     0.2652   0.2638   0.2664   0.0005
+   16         400     0.2652   0.2645   0.2659   0.0003
+   20           1     0.2652   0.2652   0.2652   0.0000
+  fit TVD(N) = a + b/sqrt(N):  a = 0.2651   b = 0.0004   residuo max 0.0001
+  errore di MODELLO a = 0.2651 contro 0.2655 misurato su una sola istanza:
+  la numerosita' del campione spiega il 0% dello scarto osservato.
+
+Due cose da tenere presenti leggendo questi numeri:
+  - il riferimento GSE e' uno solo per tutta la categoria 'altri usi'
+    e ignora il giorno della settimana, quindi l'errore irriducibile
+    'a' contiene anche la distanza fra l'archetipo e quella media di
+    categoria, che non e' un difetto dell'archetipo;
+  - il punto a N=20 ha una sola combinazione possibile, quindi
+    varianza nulla: e' il piu' preciso ma e' anche quello che ancora
+    il fit.

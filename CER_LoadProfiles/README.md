@@ -187,7 +187,9 @@ CER_LoadProfiles/
     simulation_config.lombardia20.yaml  # Societa' lombarda: 20 famiglie, 20 template
     simulation_config.milano20.yaml     # Societa' milanese: idem, comune di Milano
   ramp_inputs/use_cases/
-    office.py                        # Ufficio medio (illuminazione, PC, clima, stampante, caffe)
+    office.py                        # Ufficio medio - a regimi (stagioni, festivi, agosto)
+    scuola_superiore.py              # Istituto superiore - a regimi (calendario scolastico)
+    comune.py                        # Municipio - a regimi (sabato, agosto, sala consiglio)
     small_industry.py                # Piccola industria (CNC, compressore, illuminazione, ufficio)
     retail.py                        # Negozio (illuminazione, cassa, frigo, clima)
   lpg_inputs/
@@ -610,5 +612,5 @@ mensile**. Per `office` il bersaglio e' 7.062 kWh/anno nel 2024 e 6.840 nel 2025
 - **Patch di compatibilita**: `ramp_runner.py` include patch per RAMP 0.5.0 con NumPy >= 2.0 e Pandas >= 3.0
 - **Fallback sintetico**: se pyLPG non e installato, `lpg_runner.py` genera profili basati su pattern tipici italiani (pensionati, lavoratori, famiglie con figli)
 - **Seed random**: calcolati da `_seed_stabile(label, indice)`, che usa `zlib.crc32` e non `hash()`. `hash()` sulle stringhe e' randomizzato a ogni avvio dell'interprete (PEP 456) e rendeva i profili diversi a ogni esecuzione; con crc32 il seed e' deterministico. La riproducibilita' e' il prerequisito per poter attribuire una differenza fra due run a una modifica del modello invece che al generatore casuale
-- **Profili stocastici**: RAMP genera profili diversi ad ogni esecuzione grazie alla variabilita integrata nel modello
+- **Profili stocastici, ma esecuzioni riproducibili**: RAMP e' un modello stocastico, e due *istanze* dello stesso archetipo escono diverse fra loro. Due *esecuzioni* no: da quando i seed vengono da `_seed_stabile()` (riga sopra), a parita' di configurazione la generazione e' deterministica e produce gli stessi profili byte per byte. E' la premessa che rende possibile attribuire una differenza fra due run a una modifica del modello — ed e' verificata dal collaudo in `ramp_db/collaudo_regimi.py`
 - **Unita interne**: tutti i profili sono generati in Watt a 1 minuto, poi aggregati in energia (kWh) su base oraria nel postprocessing

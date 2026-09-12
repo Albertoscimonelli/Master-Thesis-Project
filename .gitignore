@@ -302,6 +302,11 @@ CER_LoadProfiles/outputs/csv_campione20/
 # versionano. Quello che si versiona sono la configurazione che li descrive e
 # i numeri misurati in ramp_db/dati/validazione/.
 CER_LoadProfiles/outputs/csv_nd20/
+
+# Run a nove membri per preparare la scheda CER che contempla anche
+# scuola_superiore e comune (config/simulation_config.scheda9.yaml). Stessa
+# regola: dati derivati, si rigenerano. Quello che si versiona e' la scheda.
+CER_LoadProfiles/outputs/csv_scheda9/
 CER_LoadProfiles/outputs/csv_lombardia20/
 CER_LoadProfiles/outputs/csv_milano20/
 

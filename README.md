@@ -129,7 +129,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 |---|---|
 | `CER_LoadProfiles/` | Pacchetto Python — generazione profili di carico (RAMP + pyLPG) |
 | `CER_LoadProfiles/lpg_db/` | **Italianizzazione del catalogo LPG e validazione dei profili domestici.** `build_italian_db.py` applica 19 migrazioni al `.db3` tedesco (festività, orari, vettori, dotazione); `riferimento_arera.py` costruisce il bersaglio, `riferimento_istat.py` e `tipologie_famiglie.py` le calibrazioni, `valida_domestici.py` / `curva_numerosita.py` / `confronta_societa.py` la misura. Vedi [REPORT_VALIDAZIONE_LPG.md](REPORT_VALIDAZIONE_LPG.md) |
-| `CER_LoadProfiles/ramp_db/` | **Riferimento per la validazione dei profili non domestici.** Gemello non domestico di `lpg_db/`, con il bersaglio diviso fra due fonti: `riferimento_arera_nd.py` porta livello annuo e peso dei mesi da ARERA per ATECO e classe BTA (dato **solo mensile**), `riferimento_gse_nd.py` la forma oraria dentro il mese dai **profili standard GSE** 2024-2025 — gli stessi che il GSE applica nel settlement dei POD non trattati orari (TIAD, delibera ARERA 727/2022/R/eel). Fonti, trappole dei file e limiti in [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) |
+| `CER_LoadProfiles/ramp_db/` | **Riferimento per la validazione dei profili non domestici.** Gemello non domestico di `lpg_db/`, con il bersaglio diviso fra due fonti: `riferimento_arera_nd.py` porta livello annuo e peso dei mesi da ARERA per ATECO e classe BTA (dato **solo mensile**), `riferimento_gse_nd.py` la forma oraria dentro il mese dai **profili standard GSE** 2024-2025 — gli stessi che il GSE applica nel settlement dei POD non trattati orari (TIAD, delibera ARERA 727/2022/R/eel). Fonti, trappole dei file e limiti in [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md); risultati, difetti residui e riproducibilità in [REPORT_VALIDAZIONE_RAMP.md](REPORT_VALIDAZIONE_RAMP.md) |
 | `PV_Generation/` | Export orario PVsyst della produzione dell'impianto PV |
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
 | `CER_configuration/` | **Schede dati lette da `MAIN.m`**, tutte, una per giro di ciclo — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
@@ -173,6 +173,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
 | `GUIDA_modelli_distribuzione.md` | Derivazione matematica completa dei sedici modelli di ripartizione |
 | `STRUTTURA_PROGETTO.txt` | Mappa dettagliatissima di ogni file/funzione/CSV del progetto |
+| `REPORT_VALIDAZIONE_RAMP.md` | **Validazione dei profili non domestici** — gemello non domestico del report LPG: come `office`, `scuola_superiore` e `comune` sono stati confrontati con ARERA (livello, solo mensile) e con i profili standard GSE (forma oraria), che cosa è stato corretto, e i difetti residui dichiarati |
 | `AUDIT_REPORT.md` | Audit del codice — bug noti e possibili miglioramenti (2026-07-10) |
 
 ## 5. Il modello energetico CER

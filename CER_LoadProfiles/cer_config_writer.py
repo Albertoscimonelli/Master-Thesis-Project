@@ -45,6 +45,21 @@ DEFAULT_RAMP: dict[str, tuple[str, str, str]] = {
     "office":         ("terziario",   "BIORARIA",         "10"),
     "small_industry": ("industriale", "ORARIO_VARIABILE", "50"),
     "retail":         ("commerciale", "MONORARIA",        "15"),
+    # I due archetipi non domestici nuovi sono ENTI TERRITORIALI, e la categoria
+    # non e' un dettaglio contabile: "PA" li rende esenti dal fattore F di
+    # decurtazione della tariffa premio (cer_reduction_factor.m). L'edificio di
+    # una scuola secondaria di secondo grado e' per legge della Provincia o
+    # Citta' metropolitana (L. 23/1996 art. 3), e il comune e' il primo degli
+    # enti locali del Testo Unico (D.Lgs. 267/2000); il GSE riconosce entrambi
+    # come "autorita' locali" ai fini CER. E' una scelta deliberata.
+    #
+    # Le potenze sono coerenti con la classe ARERA di validazione e con il picco
+    # misurato sulle venti istanze: la scuola e' validata su BTA6 (oltre 16,5
+    # kW) e ha un picco di 83,8 kW, quindi 100; il municipio su BTA5 (10-16,5
+    # kW) con un picco di 7,2 kW, quindi 15 - lo stesso rapporto fra picco e
+    # contrattuale che retail gia' dichiara.
+    "scuola_superiore": ("PA",        "BIORARIA",         "100"),
+    "comune":           ("PA",        "BIORARIA",         "15"),
 }
 
 # Le famiglie LPG sono tutte domestiche: un default solo, non una tabella.

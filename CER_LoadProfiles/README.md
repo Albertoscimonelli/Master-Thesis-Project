@@ -164,6 +164,10 @@ CER_LoadProfiles/
     curva_numerosita.py              # Numerosita' vs modello; eterogeneita' di forma
     confronta_societa.py             # Confronto fra due composizioni familiari
     dati/                            # Cache ARERA (versionata) e rapporti per passo
+  ramp_db/                           # Riferimento non domestico (vedi sotto)
+    riferimento_arera_nd.py          # Livello: ARERA per ATECO e classe BTA, mensile
+    riferimento_gse_nd.py            # Forma oraria: profili standard GSE
+    dati/riferimento_arera_nd/       # Cache ARERA non domestica (versionata)
   outputs/csv/                       # CSV generati
 ```
 
@@ -191,6 +195,89 @@ leggibile, modifica per modifica, e' il §13 di
 coerenza semantica del catalogo. Un catalogo che passa il check puo' comunque
 essere rifiutato dal motore con `DataIntegrityException`: ogni migrazione
 richiede uno smoke run.
+
+## Riferimento non domestico (`ramp_db/`)
+
+Il gemello non domestico di `lpg_db/`: costruisce il bersaglio contro cui validare
+gli archetipi RAMP (`office`, e i futuri `scuola_superiore` e `comune`). A
+differenza del lato domestico il bersaglio viene da **due fonti diverse**, perche'
+nessuna delle due lo fornisce per intero:
+
+| Cosa | Fonte | Modulo |
+|---|---|---|
+| livello annuo e peso di ciascun mese | ARERA, per ATECO e classe di potenza (solo mensile) | `riferimento_arera_nd.py` |
+| forma oraria dentro il mese | profili standard GSE | `riferimento_gse_nd.py` |
+
+Un profilo di riferimento completo si ottiene componendo le due cose:
+
+```bash
+cd ramp_db
+python riferimento_arera_nd.py --ispeziona          # struttura dei file grezzi
+python riferimento_arera_nd.py Milano --ateco 82.11 # livello e forma mensile
+python riferimento_gse_nd.py                        # forma oraria e controlli
+```
+
+### Le fonti, e da dove vengono i dati
+
+I file grezzi stanno in `CER_LoadProfiles/File Non Domestici/`, **non versionati**
+per dimensione (~692 MB, vedi `.gitignore`); si versiona la cache in
+`ramp_db/dati/riferimento_arera_nd/`, con accanto lo SHA-256 di ogni sorgente,
+cosi' la validazione resta rieseguibile da chi clona il progetto. La radice si
+sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
+
+- **ARERA** — consumi provinciali dei clienti non domestici in bassa tensione,
+  "Dati provincia" parti 1-3, anno 2025: sette CSV, uno per classe tariffaria
+  BTA. Ogni riga e' il prelievo medio mensile per punto di prelievo di una terna
+  (provincia, classe di potenza, classe ATECO). Copertura verificata: 110
+  province, 20 regioni, 12 mesi, 755 classi ATECO.
+- **GSE** — "Modalita' di profilazione dei dati di misura: profili standard GSE
+  in prelievo e immissione", annualita' 2024 e 2025, area CACER del portale GSE.
+  I due xlsx del 2025 in cartella sono stati verificati identici per dimensione
+  a quelli dello zip ufficiale `profili GSE_prelievo e immissione_2025.zip`.
+- **Base normativa dell'applicazione dei profili** — Testo Integrato Autoconsumo
+  Diffuso (TIAD), allegato alla delibera ARERA 727/2022/R/eel: quando il gestore
+  di rete non e' tecnicamente in grado di raccogliere i dati di misura orari, il
+  GSE profila i dati per tipologia di utenza secondo i profili standard. Per un
+  socio di CER non trattato orario la curva che entra nel settlement **e'** quella.
+- **Decodifica dei codici di colonna** (`PAUM`, `PDMF`, `IFVM`, ...) — GSE,
+  "Modalita' di profilazione dei dati di misura e relative modalita' di utilizzo
+  ai sensi dell'articolo 9 dell'Allegato A alla Delibera 318/2020/R/eel",
+  versione 1 del 04/04/2022 (`Autoconsumatori.pdf`). Codice `XZZY`: X = P
+  prelievo puro / M misto / I immissione; ZZ = tipologia di utenza; Y = M
+  monorario / F a fasce. Il documento precede il TIAD, ma la struttura dei codici
+  nei file 2024 e 2025 e' invariata.
+
+### Quattro proprieta' dei dati, verificate e non assunte
+
+1. **ARERA non domestico e' solo mensile.** Non esiste la traccia oraria che sul
+   lato domestico copre i clienti trattati orari: la forma oraria non e'
+   validabile su questa fonte, e per quello servono i profili GSE.
+2. **I coefficienti GSE sono normalizzati dentro il mese**, non sull'anno: 1 per
+   i profili monorari, 3 per quelli a fasce (una normalizzazione per fascia). Il
+   profilo piatto `IAFM` vale 1/744 in ogni ora di gennaio. Ne segue che il peso
+   relativo dei mesi va preso da ARERA: GSE non lo contiene.
+3. **Il profilo predefinito e' il monorario `PAUM`**, non la variante a fasce.
+   Non e' una preferenza sul misuratore: un profilo a fasce richiederebbe il
+   consumo mensile *per fascia*, che il file ARERA non domestico non pubblica.
+4. **La colonna `Data ora` del file GSE 2025 e' corrotta** da errore di virgola
+   mobile (l'ultimo istante e' `22:59:59,998` del 31 dicembre) e verso fine anno
+   resta indietro di un'ora rispetto alla colonna `Ora`. L'indice si ricostruisce
+   dalle colonne intere Anno/Mese/Giorno/Ora. Indicizzare su `Data ora` produce
+   una curva giornaliera traslata di un'ora e somme mensili che non chiudono a 1.
+
+### Due limiti da dichiarare in tesi
+
+- **Il profilo GSE dei non domestici e' uno solo** per tutta la categoria "altri
+  usi": non distingue un ufficio da una scuola da un municipio. Uno scarto sulla
+  forma di un archetipo con stagionalita' marcata e' quindi atteso anche se
+  l'archetipo e' corretto.
+- **Non e' una misura, e' una tabella di giorni tipo.** Misurato: 291 valori
+  distinti in un anno (12 mesi x 24 ore = 288), differenza massima fra le tabelle
+  2024 e 2025 pari a 7,5e-5, distanza fra giornata feriale e domenicale pari a
+  0,001. Il profilo ignora quindi il giorno della settimana, e non varia
+  praticamente da un anno all'altro: la chiusura nel fine settimana di un
+  archetipo **non e' validabile** su questa fonte, e lo scarto fra due annualita'
+  non puo' fare da soglia di accettazione come sul lato domestico.
 
 ## Pipeline di Esecuzione
 

@@ -218,6 +218,13 @@ CER_LoadProfiles/lpg_db/*.db3
 # domestici non sarebbe rieseguibile da chi clona il progetto. I file .json
 # accanto a ciascun CSV portano lo SHA-256 dei sorgenti da cui derivano, cosi'
 # resta verificabile su quali dati sono stati calcolati i risultati in tesi.
+#
+# Stessa deroga, stessa ragione, per il lato NON domestico:
+# CER_LoadProfiles/ramp_db/dati/riferimento_arera_nd/ SI VERSIONA. I sorgenti
+# sono i CSV provinciali ARERA per classe BTA sotto
+# CER_LoadProfiles/File Non Domestici/, che qui sopra e' gia' escluso per
+# dimensione (~692 MB). Anche qui ogni CSV di cache ha accanto un .json con lo
+# SHA-256 dei sorgenti da cui deriva.
 
 # Storico dei profili generati (output.versioned nella configurazione).
 # Cresce di ~500 KB a ogni run e resta locale: i CSV dal nome fisso in

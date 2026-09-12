@@ -56,6 +56,7 @@ Project/
 |   |   +-- use_cases/
 |   |       |-- office.py               Use case: ufficio medio (a regimi)
 |   |       |-- scuola_superiore.py     Use case: istituto superiore (a regimi)
+|   |       |-- comune.py               Use case: municipio (a regimi)
 |   |       |-- small_industry.py       Use case: piccola industria
 |   |       +-- retail.py               Use case: negozio al dettaglio
 |   +-- lpg_inputs/
@@ -549,6 +550,30 @@ finestra oraria) di ciascun archetipo. Due forme, entrambe valide (§3.2):
                       fattore F (§7.5 del README di progetto).
                       NASCE SPENTO in simulation_config.yaml: si accende
                       insieme alla scheda CER che lo contempla.
+
+  comune.py           FORMA A REGIMI. Municipio di un comune piccolo o medio.
+                      Bersaglio ARERA: ATECO 84.11, classe BTA5, 13.695
+                      kWh/anno - la cella MEGLIO CAMPIONATA fra quelle usate,
+                      con rumore di fonte -0,9%, il piu' basso della colonna.
+                      E' il meglio validato dei tre: livello 0,97x e forma
+                      mensile L1 0,0503 contro una soglia di 0,0504, cioe'
+                      DENTRO di un millesimo, con il picco feriale alle 11
+                      esattamente come il GSE. Riuscito al primo tentativo,
+                      senza ritocchi.
+                      Due tratti lo distinguono da un ufficio, ed entrambi si
+                      misurano: i SABATI (984 kWh, 7,4% dell'anno) per lo
+                      sportello di anagrafe e stato civile, ed e' l'unico
+                      archetipo non domestico che consuma di sabato; e la SALA
+                      CONSIGLIO di sera (1.298 kWh fra le 20 e le 24, 9,8%),
+                      unico carico serale non domestico della CER - cade in
+                      fascia F3 e in ore senza sole, quindi incide
+                      sull'energia condivisa piu' del suo peso in kWh.
+                      Agosto non e' chiusura ma organico ridotto: ARERA da'
+                      un rapporto massimo/minimo di 1,35, contro l'1,9 di una
+                      scuola.
+                      POD di ente territoriale in senso proprio (comune, primo
+                      degli enti locali del D.Lgs. 267/2000): categoria PA.
+                      NASCE SPENTO in simulation_config.yaml.
 
 Vedi i docstring dei singoli file per la fonte di ogni gruppo di apparecchi, e
 ramp_db/dati/validazione/ per le misure passaggio per passaggio.

@@ -41,6 +41,9 @@ ramp:
     - name: "scuola_superiore"
       num_users: 1
       enabled: false
+    - name: "comune"
+      num_users: 1
+      enabled: false
 
 lpg:
   households:

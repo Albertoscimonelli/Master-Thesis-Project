@@ -371,6 +371,42 @@ nemmeno monotoni nella potenza (BTA3b 10.401 > BTA4 8.159 > BTA5 3.853) e il
 rumore di fonte arriva al 60%. Limare ancora vorrebbe dire tarare dentro il
 rumore della fonte.
 
+### `comune`: il meglio validato dei tre
+
+Bersaglio ARERA: ATECO **84.11**, classe **BTA5**, 13.695 kWh/anno. E' la cella
+meglio campionata fra quelle usate — i livelli sono monotoni nella potenza e il
+rumore di fonte vale **−0,9%**, il piu' basso dell'intera colonna — quindi qui
+la soglia e' stretta davvero, al contrario dell'istruzione.
+
+| Grandezza | `comune` | Riferimento | Esito |
+|---|---|---|---|
+| livello annuo | 13.274 kWh (0,97x) | 13.695 kWh | −3,1% contro una soglia di −0,9%: **fuori di poco** |
+| forma mensile (L1) | **0,0503** | soglia 0,0504 | **dentro**, di un millesimo |
+| picco feriale | ore 11 | ore 11 (GSE) | coincide |
+| TVD feriale | 0,261 | — | in linea con la scuola (0,262) |
+
+Riuscito **al primo tentativo**, senza ritocchi: i tre punti che mancano sul
+livello starebbero dentro il rumore, e limarli sarebbe tarare sul bersaglio.
+
+**I due tratti che distinguono un municipio da un ufficio**, entrambi misurati:
+i **sabati** valgono 984 kWh, il 7,4% dell'anno — e' l'unico archetipo non
+domestico della comunita' che consuma di sabato, per lo sportello di anagrafe e
+stato civile; le **sere fra le 20 e le 24** valgono 1.298 kWh, il 9,8%, ed e'
+l'unico carico serale non domestico dell'intera CER. Quest'ultimo conta piu'
+del suo peso in kWh: cade in fascia F3 e in ore senza sole, quindi incide
+sull'energia condivisa in modo sproporzionato.
+
+**Agosto non e' chiusura, e' organico ridotto.** ARERA lo conferma: agosto e' il
+minimo dell'anno al 7,2%, ma il rapporto fra massimo e minimo e' appena 1,35
+contro l'1,9 di una scuola. Il modello fa 6,2%, quindi chiude un po' troppo:
+e' l'unico scarto mensile di rilievo rimasto.
+
+Il secondo parere **non torna, e non e' stato forzato**: RSEview da' 113,5
+kWh/m² per gli uffici della PA, che applicati a un POD da 13.695 kWh darebbero
+un edificio di ~120 m² — implausibile per un municipio con sala consiglio. O
+l'indicatore aggrega ministeri e data center, o un municipio reale ha piu' di un
+POD e BTA5 ne descrive uno solo. La superficie resta un'ipotesi dichiarata.
+
 ### Accendere e spegnere gli archetipi
 
 `config/simulation_config.yaml` e' il catalogo: ogni voce di `ramp.use_cases`

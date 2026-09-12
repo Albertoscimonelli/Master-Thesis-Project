@@ -75,8 +75,9 @@ Project/
 |   |   |-- riferimento_gse_nd.py       Forma oraria: profili standard GSE
 |   |   |-- leggi_quaderno_enea.py      Indici kWh/m2 dai PDF di benchmark
 |   |   |-- benchmark_letteratura.csv   Secondo parere, con fonte e pagina
+|   |   |-- valida_non_domestici.py     La misura: livello, forma, fasce, picco
 |   |   |-- collaudo_regimi.py          Non regressione dello strato dei regimi
-|   |   +-- dati/                       Cache ARERA non domestica (versionata)
+|   |   +-- dati/                       Cache ARERA non domestica + validazione
 |   +-- outputs/csv/
 |       |-- profili_aziende.csv         Profili individuali aziende (kWh/h)
 |       |-- profili_famiglie.csv        Profili individuali famiglie (kWh/h)
@@ -670,6 +671,34 @@ IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
                             calcolato da altri valori, mai stampato come tale
                             nella fonte (es. i 113,5 kWh/m2 degli uffici PA,
                             che sono un rapporto fra due righe di tabella).
+
+  valida_non_domestici.py   LA MISURA. Gemello non domestico di
+                            lpg_db/valida_domestici.py: confronta i profili
+                            RAMP con il bersaglio delle due fonti. Stampa, in
+                            ordine: livello annuo contro ARERA con kWh/m2;
+                            la soglia (rumore di fonte) con la classe
+                            adiacente; la forma mensile con la distanza L1;
+                            la TVD per stagione e tipo di giorno; le fasce
+                            F1/F2/F3 e l'ora di picco.
+                            Controlla in apertura che il CSV abbia 8760 righe
+                            orarie continue: in outputs/ e' sopravvissuto a
+                            lungo un file di 8759 righe, generato prima della
+                            correzione sull'ora legale, a cui mancava
+                            2025-03-30 02:00.
+                            Distingue 'spento' da zero: se l'archetipo non
+                            consuma in quei giorni la curva normalizzata non
+                            esiste e la TVD non e' calcolabile. La prima
+                            versione la stampava come 0,000, cioe' "forma
+                            perfetta", proprio dove il modello e' fermo.
+
+                            ESITO SU office PRIMA DELLA CORREZIONE: non passa.
+                            10.957 kWh/anno contro 6.951 attesi (1,58x, soglia
+                            +/-3,1%); L1 mensile 0,0866 contro 0,0407; TVD
+                            identica nelle tre stagioni. I 10.957 kWh
+                            coincidono quasi con il livello ARERA della classe
+                            BTA5 (11.126 kWh, oltre 10 kW) mentre office ha
+                            9,2 kW installati: consuma come una classe piu'
+                            grande di quella che dichiara.
 
   collaudo_regimi.py        COLLAUDO DELLO STRATO DEI REGIMI (§3.2). Due
                             domande, e la prima vale piu' della seconda.

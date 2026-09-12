@@ -208,7 +208,10 @@ CER_LoadProfiles/
     riferimento_gse_nd.py            # Forma oraria: profili standard GSE
     leggi_quaderno_enea.py           # Estrae gli indici kWh/m2 dai PDF di benchmark
     benchmark_letteratura.csv        # Secondo parere sul livello, con fonte e pagina
+    valida_non_domestici.py          # La misura: livello, forma, fasce, picco
+    collaudo_regimi.py               # Non regressione dello strato dei regimi
     dati/riferimento_arera_nd/       # Cache ARERA non domestica (versionata)
+    dati/validazione/                # Stdout catturati, un file per passo
   outputs/csv/                       # CSV generati
 ```
 
@@ -257,7 +260,39 @@ python riferimento_arera_nd.py --ispeziona          # struttura dei file grezzi
 python riferimento_arera_nd.py Milano --ateco 82.11 # livello e forma mensile
 python riferimento_gse_nd.py                        # forma oraria e controlli
 python leggi_quaderno_enea.py --elenca              # indici kWh/m2 nei PDF
+python valida_non_domestici.py ../outputs/csv/profili_tutti.csv   # la misura
 ```
+
+### Che cosa dice la misura oggi, su `office`
+
+Prima di qualunque correzione, l'archetipo **non passa** su tutte le grandezze
+che la soglia copre — evidenza completa in
+[`ramp_db/dati/validazione/02_office_prima_correzione.txt`](ramp_db/dati/validazione/02_office_prima_correzione.txt):
+
+| Grandezza | `office` | Riferimento | Soglia |
+|---|---|---|---|
+| livello annuo | 10.957 kWh | 6.951 kWh (ARERA BTA4, ATECO 82.11) | ±3,1% → **1,58x** |
+| forma mensile (L1) | 0,0866 | — | 0,0407 → **2,1 volte** |
+| TVD feriale vs GSE | 0,450 | — | — |
+| fasce F1/F2/F3 | 92,97 / 2,64 / 4,39 | 38,01 / 24,67 / 37,32 | — |
+| picco feriale | ore 15 | ore 11 | — |
+
+Il livello di 10.957 kWh coincide quasi con quello che ARERA attribuisce alla
+classe **BTA5** (11.126 kWh, potenza oltre 10 kW), mentre `office` ha 9,2 kW
+installati, cioe' BTA4: **l'archetipo consuma come una classe piu' grande di
+quella che dichiara**. La forma mensile e' piatta — la media giornaliera
+feriale sta fra 40,0 e 43,6 kWh in tutti e dodici i mesi, con agosto (41,5)
+indistinguibile da gennaio (42,4) — e i festivi nazionali sono giornate di
+lavoro piene: Natale 47,9 kWh, Ferragosto 40,6, Capodanno 44,8.
+
+Due letture da non sbagliare. Lo scarto sulle **fasce** e' in buona parte un
+artefatto della fonte: F1 e' lun-ven 8-19 e `office` e' acceso solo in quella
+finestra, mentre il profilo GSE aggrega anche le utenze attive h24. E la voce
+**`spento`** nelle colonne di sabato e domenica non e' uno zero: `office` ha
+`wd_we_type=0` e nel fine settimana vale 0,000 kWh su 2.496 ore, quindi la curva
+normalizzata non esiste e la TVD non e' calcolabile. Stamparla come 0,000 —
+come faceva la prima versione di questo modulo — avrebbe detto "forma perfetta"
+proprio dove il modello e' fermo.
 
 ### Le fonti, e da dove vengono i dati
 

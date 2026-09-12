@@ -6,9 +6,8 @@ NON REGRESSIONE. Lo strato dei regimi e' stato aggiunto a un generatore che
 produceva gia' risultati usati in tesi. Un archetipo che NON dichiara regimi
 deve percio' uscire identico bit per bit a come usciva prima: se cambia anche un
 solo minuto, la modifica ha toccato il percorso vecchio e va rifatta. Le
-impronte qui sotto sono state misurate PRIMA della modifica, con
-config/simulation_config.yaml, e vanno aggiornate SOLO quando si cambia
-deliberatamente il modello di un archetipo - mai per far passare il test.
+impronte si aggiornano SOLO quando si cambia deliberatamente il modello di un
+archetipo, sapendo perche' - mai per far passare il test.
 
 CORRETTEZZA DEL PERCORSO NUOVO. Il codice a regimi genera un anno pieno per
 ciascun regime e poi sceglie, giorno per giorno, quello dichiarato dallo use
@@ -42,12 +41,25 @@ sys.path.insert(0, str(BASE / "ramp_inputs" / "use_cases"))
 
 import ramp_runner  # noqa: E402
 
-# Impronte degli archetipi senza regimi, misurate prima dell'introduzione dello
-# strato. Chiave: nome di colonna -> (sha256 dei minuti in Watt, kWh/anno).
+# Impronte di riferimento: colonna -> (sha256 dei minuti in Watt, kWh/anno).
+# Due gruppi, con due ruoli diversi.
+#
+# small_industry e retail sono nella forma semplice e non sono mai stati
+# toccati: le loro impronte sono quelle misurate PRIMA che lo strato dei regimi
+# esistesse, e devono restare identiche per sempre. Se cambiano, lo strato ha
+# toccato il percorso vecchio ed e' un difetto.
+#
+# office e' stato riscritto nel Passo 5 - regimi stagionali, festivi, pausa
+# pranzo, chiusura estiva - e la sua impronta e' stata aggiornata
+# DELIBERATAMENTE al valore misurato dopo la correzione: da 10.956,520955 a
+# 4.780,840746 kWh/anno. Il percorso completo, con i numeri di ogni passaggio,
+# sta nei file 02..05 di dati/validazione/. Quando office ha cambiato forma, le
+# altre due impronte sono rimaste identiche al bit: e' la verifica che la
+# riscrittura ha toccato solo cio' che doveva.
 BASELINE = {
     "office_1": (
-        "d93218f82ae6c6e597f6ae4dc31ee7fe1c7a1af5bc2405fd30d41f8207fe09e6",
-        10956.520955),
+        "e75c9e196626d0d3b86b152a05d6a7268de10aefb701180598c62223f6ea1a9a",
+        4780.840746),
     "small_industry_1": (
         "e52920ac8a5644210f00bf1e87855e1e85800007a9b558eba8f2b957f3d2fae9",
         61692.091277),
@@ -61,10 +73,20 @@ RIGHE_ATTESE = 525_600
 
 
 def non_regressione() -> bool:
-    """Gli use case senza regimi devono uscire identici a prima."""
+    """Ogni archetipo deve combaciare con la sua impronta attesa.
+
+    Le impronte non hanno pero' tutte lo stesso significato, e confonderle
+    renderebbe il test una formalita': per small_industry e retail l'impronta e'
+    quella di PRIMA che lo strato dei regimi esistesse, e un cambiamento sarebbe
+    un difetto; per office e' quella misurata DOPO la correzione del Passo 5, ed
+    e' stata aggiornata di proposito.
+    """
     print("=" * 72)
-    print("1. NON REGRESSIONE - gli use case senza regimi restano identici")
+    print("1. NON REGRESSIONE - ogni archetipo combacia con la sua impronta")
     print("=" * 72)
+    print("  small_industry e retail: impronta di PRIMA dello strato dei regimi,")
+    print("  deve restare identica per sempre. office: impronta aggiornata")
+    print("  deliberatamente dopo la correzione del Passo 5.")
     config = yaml.safe_load(
         (BASE / "config" / "simulation_config.yaml").read_text(encoding="utf-8"))
     df = ramp_runner.run_ramp(config, BASE)
@@ -97,18 +119,21 @@ def percorso_a_regimi() -> bool:
     print("=" * 72)
     print("2. PERCORSO A REGIMI - un anno per regime, selezione giorno per giorno")
     print("=" * 72)
-    import office
+    # Si usa retail, non office: office dichiara ormai REGIMI e non ha piu' un
+    # create_user(), mentre qui serve proprio uno use case nella forma semplice
+    # da montare dentro un modulo finto.
+    import retail
 
     finto = types.ModuleType("finto")
-    finto.REGIMI = {"feriale": office.create_user, "chiuso": office.create_user}
+    finto.REGIMI = {"feriale": retail.create_user, "chiuso": retail.create_user}
     finto.regime = lambda giorno: "chiuso" if giorno.weekday() >= 5 else "feriale"
 
     composto = ramp_runner._genera_a_regimi(
         finto, "finto", 0, "finto_1", INIZIO, FINE)
     feriale = ramp_runner._genera_un_anno(
-        office.create_user, "finto_feriale", 0, "x", INIZIO, FINE)
+        retail.create_user, "finto_feriale", 0, "x", INIZIO, FINE)
     chiuso = ramp_runner._genera_un_anno(
-        office.create_user, "finto_chiuso", 0, "x", INIZIO, FINE)
+        retail.create_user, "finto_chiuso", 0, "x", INIZIO, FINE)
 
     minuti = ramp_runner.MINUTI_AL_GIORNO
     lunghezza_ok = len(composto) == RIGHE_ATTESE

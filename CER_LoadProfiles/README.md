@@ -263,36 +263,44 @@ python leggi_quaderno_enea.py --elenca              # indici kWh/m2 nei PDF
 python valida_non_domestici.py ../outputs/csv/profili_tutti.csv   # la misura
 ```
 
-### Che cosa dice la misura oggi, su `office`
+### La correzione di `office`, passaggio per passaggio
 
-Prima di qualunque correzione, l'archetipo **non passa** su tutte le grandezze
-che la soglia copre — evidenza completa in
-[`ramp_db/dati/validazione/02_office_prima_correzione.txt`](ramp_db/dati/validazione/02_office_prima_correzione.txt):
+Gli stdout di ogni passaggio stanno in `ramp_db/dati/validazione/`, numerati:
 
-| Grandezza | `office` | Riferimento | Soglia |
+| | livello annuo | L1 forma mensile | picco feriale |
 |---|---|---|---|
-| livello annuo | 10.957 kWh | 6.951 kWh (ARERA BTA4, ATECO 82.11) | ±3,1% → **1,58x** |
-| forma mensile (L1) | 0,0866 | — | 0,0407 → **2,1 volte** |
-| TVD feriale vs GSE | 0,450 | — | — |
-| fasce F1/F2/F3 | 92,97 / 2,64 / 4,39 | 38,01 / 24,67 / 37,32 | — |
-| picco feriale | ore 15 | ore 11 | — |
+| `02` originale | 10.957 kWh (**1,58x**) | 0,0866 | ore 15 |
+| `03` + regimi, festivi, pausa pranzo | 5.227 kWh (0,75x) | 0,2991 | ore 15 |
+| `04` + chiusura di agosto | 4.969 kWh (0,71x) | 0,2462 | ore 10 |
+| `05` + raffrescamento fino al 15 set | **4.781 kWh (0,69x)** | **0,2041** | **ore 10** |
+| *riferimento e soglia* | *6.951 kWh, ±3,1%* | *0,0407* | *ore 11 (GSE)* |
 
-Il livello di 10.957 kWh coincide quasi con quello che ARERA attribuisce alla
-classe **BTA5** (11.126 kWh, potenza oltre 10 kW), mentre `office` ha 9,2 kW
-installati, cioe' BTA4: **l'archetipo consuma come una classe piu' grande di
-quella che dichiara**. La forma mensile e' piatta — la media giornaliera
-feriale sta fra 40,0 e 43,6 kWh in tutti e dodici i mesi, con agosto (41,5)
-indistinguibile da gennaio (42,4) — e i festivi nazionali sono giornate di
-lavoro piene: Natale 47,9 kWh, Ferragosto 40,6, Capodanno 44,8.
+**Quattro difetti chiusi.** I festivi nazionali valgono ora 1,19 kWh — i soli
+carichi permanenti — contro i 47,9 kWh di Natale nell'originale. La media
+giornaliera infrasettimanale va da 11,3 kWh in maggio a 29,4 in luglio, mentre
+prima stava fra 40,0 e 43,6 in *tutti* e dodici i mesi. Agosto e' al 7,4%
+contro il 6,9% misurato da ARERA. Il picco feriale e' rientrato alle ore 10
+contro le 11 del profilo GSE — e da sola la pausa pranzo non era bastata a
+spostarlo: ci e' riuscita solo quando e' rientrato anche il peso dei mesi estivi.
 
-Due letture da non sbagliare. Lo scarto sulle **fasce** e' in buona parte un
-artefatto della fonte: F1 e' lun-ven 8-19 e `office` e' acceso solo in quella
-finestra, mentre il profilo GSE aggrega anche le utenze attive h24. E la voce
-**`spento`** nelle colonne di sabato e domenica non e' uno zero: `office` ha
-`wd_we_type=0` e nel fine settimana vale 0,000 kWh su 2.496 ore, quindi la curva
-normalizzata non esiste e la TVD non e' calcolabile. Stamparla come 0,000 —
-come faceva la prima versione di questo modulo — avrebbe detto "forma perfetta"
-proprio dove il modello e' fermo.
+**Due difetti aperti, che sono la stessa cosa vista due volte.** Il livello sta
+al 69% dell'atteso, e L1 resta cinque volte la soglia. Ma gli scarti mese per
+mese valgono **+9,7 punti d'estate e −9,6 fra inverno e maggio**: il
+raffrescamento non e' troppo grande in assoluto, e' troppo grande *rispetto
+alla base* — che e' esattamente il motivo per cui il livello annuo e' basso.
+Un solo difetto, non due.
+
+Il livello **non e' stato chiuso gonfiando apparecchi o potenze**: sarebbe stato
+inseguire la metrica invece di correggere il modello. Resta una questione
+aperta dichiarata, e il contesto che la spiega — perche' ARERA e' il bersaglio
+giusto, e perche' ENEA non la risolve — e' scritto in testa a
+[`office.py`](ramp_inputs/use_cases/office.py).
+
+Una lettura da non sbagliare: lo scarto sulle **fasce** (92,8% in F1 contro il
+38,0% del GSE) e' in buona parte un artefatto della fonte, non un difetto
+dell'archetipo. F1 e' lun-ven 8-19, `office` e' acceso solo in quella finestra,
+mentre il profilo GSE aggrega l'intera categoria "altri usi", comprese le
+utenze attive ventiquattr'ore su ventiquattro.
 
 ### Le fonti, e da dove vengono i dati
 

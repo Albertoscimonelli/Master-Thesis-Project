@@ -691,14 +691,26 @@ IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
                             versione la stampava come 0,000, cioe' "forma
                             perfetta", proprio dove il modello e' fermo.
 
-                            ESITO SU office PRIMA DELLA CORREZIONE: non passa.
-                            10.957 kWh/anno contro 6.951 attesi (1,58x, soglia
-                            +/-3,1%); L1 mensile 0,0866 contro 0,0407; TVD
-                            identica nelle tre stagioni. I 10.957 kWh
-                            coincidono quasi con il livello ARERA della classe
-                            BTA5 (11.126 kWh, oltre 10 kW) mentre office ha
-                            9,2 kW installati: consuma come una classe piu'
-                            grande di quella che dichiara.
+                            ESITO SU office, passaggio per passaggio (i file
+                            02..05 di dati/validazione/):
+                              02 originale      10.957 kWh 1,58x  L1 0,0866
+                              03 +regimi         5.227 kWh 0,75x  L1 0,2991
+                              04 +agosto         4.969 kWh 0,71x  L1 0,2462
+                              05 +settembre      4.781 kWh 0,69x  L1 0,2041
+                              soglia             +/-3,1%          L1 0,0407
+                            CHIUSI quattro difetti: festivi (Natale da 47,9 a
+                            1,19 kWh), stagionalita' (da 11,3 a 29,4 kWh al
+                            giorno secondo il mese, contro 40,0-43,6 piatti),
+                            chiusura di agosto (7,4% contro il 6,9% ARERA),
+                            picco feriale (da ore 15 a ore 10, GSE ore 11).
+                            APERTI livello e forma mensile, che pero' sono lo
+                            stesso difetto: gli scarti mensili valgono +9,7
+                            punti d'estate e -9,6 fra inverno e maggio, cioe'
+                            il raffrescamento e' troppo grande RISPETTO ALLA
+                            BASE, che e' la ragione del livello basso. Non si
+                            e' chiuso gonfiando apparecchi: sarebbe stato
+                            inseguire la metrica. Il contesto delle due fonti
+                            e' in testa a office.py.
 
   collaudo_regimi.py        COLLAUDO DELLO STRATO DEI REGIMI (§3.2). Due
                             domande, e la prima vale piu' della seconda.

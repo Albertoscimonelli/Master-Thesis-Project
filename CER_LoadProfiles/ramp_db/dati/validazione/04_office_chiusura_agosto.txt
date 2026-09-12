@@ -1,0 +1,89 @@
+# Passo 5 - office con la chiusura estiva di agosto (quarta correzione)
+#
+# Comando:  cd CER_LoadProfiles
+#           generazione RAMP del solo office, ricampionata in oraria, poi
+#           cd ramp_db && ../../venv/Scripts/python.exe \
+#               valida_non_domestici.py _office_agosto.csv
+# Data:     2026-09-12
+# Nota:     _office_agosto.csv e' un file di lavoro, generato con la sola parte
+#           RAMP della pipeline e non versionato.
+#
+# ESITO: la chiusura di agosto colpisce il bersaglio, il picco orario rientra,
+# ma la forma mensile resta fuori soglia e il livello peggiora.
+#
+#   CHIUSO   agosto: 11,7% -> 7,1% del consumo annuo, contro il 6,9% misurato
+#            da ARERA. Era il contributo singolo piu' grande alla distanza.
+#   CHIUSO   picco feriale: ore 15 -> ore 10, contro le ore 11 del profilo GSE.
+#            La pausa pranzo, che da sola non lo aveva spostato, lo sposta
+#            una volta che il peso dei mesi estivi rientra.
+#   MEGLIO   forma mensile: L1 = 0,2462 contro 0,2991 della versione a quattro
+#            regimi. Resta pero' sei volte la soglia di 0,0407.
+#   PEGGIO   livello: 4.969 kWh contro 5.227, cioe' 0,71x l'atteso ARERA.
+#            E' l'effetto diretto della chiusura: dieci giorni lavorativi in
+#            meno tolgono consumo a un archetipo che ne aveva gia' troppo poco.
+#
+# DIFETTO RESIDUO PRINCIPALE, ora identificato: SETTEMBRE. Il modello lo mette
+# al 13,4%, il suo mese piu' alto, mentre ARERA lo da' al 7,6%, sotto la media
+# annua. La stagione di raffrescamento dichiarata in office.py va da giugno a
+# settembre compreso, e il dato dice che a Milano un ufficio non raffresca per
+# tutto settembre. In secondo luogo l'inverno e' troppo leggero: 6,7-7,4%
+# contro 8,1-9,4% di ARERA, perche' del riscaldamento resta sul contatore
+# elettrico il solo ausiliario.
+
+Generazione 1x 'office' con RAMP...
+  Profilo office_1...
+  office_1: giorni per regime {'chiuso': 114, 'chiusura_agosto': 9, 'feriale_estate': 76, 'feriale_inverno': 126, 'feriale_mezza': 40}
+  office_1: 525600 campioni generati
+RAMP completato: 1 profili, 525600 campioni ciascuno
+Aggregazione oraria: 525600 campioni -> 8760 ore (kWh)
+
+ANNUO: 4969.0 kWh  (prima delle correzioni 10956,5; con 4 regimi 5226,9; bersaglio BTA4 6951)
+media giornaliera infrasettimanale per mese (kWh):
+  01: 15.3 02: 16.5 03: 16.9 04: 13.6 05: 11.3 06: 28.3 07: 29.4 08: 16.2 09: 29.8 10: 14.3 11: 16.1 12: 14.9
+===== VALIDAZIONE =====
+
+AVVISO: nessun --colonne indicato, si usa l'assegnazione predefinita.
+ATECO, classe di potenza e superficie sono IPOTESI DICHIARATE, non dati.
+
+VALIDAZIONE NON DOMESTICI - _office_agosto.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+office_1       82.11   BTA4         4,969      6,951    0.71x     27.6     0.467  0.099  0.099
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+82.11   BTA4               -3.1%       0.0407
+82.11   BTA5               -1.5%       0.0737  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  office_1
+    RAMP   7.3   6.8   7.4   6.2   5.2  12.2  13.8   7.1  13.4   6.8   6.7   7.1
+    ARERA  9.4   8.5   8.1   7.3   7.5   9.1  10.5   6.9   7.6   8.1   8.3   8.6   0.2462
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  office_1       estate         0.472     0.100     0.101
+  office_1       inverno        0.440     0.125     0.123
+  office_1       mezza          0.477     0.087     0.088
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  office_1
+    RAMP   F1 93.11  F2  3.01  F3  3.88   picco feriale ore 10
+    GSE    F1 38.01  F2 24.67  F3 37.32   picco feriale ore 11
+
+Come si leggono questi numeri:
+  - il profilo GSE degli altri usi e' UNO SOLO per tutti i non
+    domestici e IGNORA il giorno della settimana (TVD feriale contro
+    domenica = 0,001): le TVD per tipo di giorno vanno lette sapendolo,
+    e la chiusura nel fine settimana non e' validabile su questa fonte;
+  - 'spento' non e' uno zero: vuol dire che l'archetipo non consuma
+    nulla in quei giorni, quindi la curva normalizzata non esiste e
+    la TVD non e' calcolabile. Stamparla come 0,000 direbbe 'forma
+    perfetta' proprio dove il modello e' fermo;
+  - ATECO, classe di potenza e superficie sono ipotesi dichiarate:
+    per questo si riporta anche la classe adiacente;
+  - se la forma non combacia si corregge l'archetipo, mai l'uscita.

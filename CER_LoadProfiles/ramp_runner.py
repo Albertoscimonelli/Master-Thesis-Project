@@ -304,6 +304,16 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
 
     for uc_config in ramp_config["use_cases"]:
         use_case_name = uc_config["name"]
+
+        # Interruttore per archetipo. La chiave assente vale ACCESO, cosi' le
+        # configurazioni che non la dichiarano restano valide senza modifiche:
+        # spegnere per omissione avrebbe azzerato in silenzio baseline,
+        # campione20, lombardia20 e milano20.
+        if not uc_config.get("enabled", True):
+            logger.info("  '%s' disattivato nella configurazione, saltato.",
+                        use_case_name)
+            continue
+
         num_users = uc_config["num_users"]
 
         logger.info(

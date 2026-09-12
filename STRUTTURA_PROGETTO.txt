@@ -54,7 +54,8 @@ Project/
 |   |                                           post-stratificata sul comune
 |   +-- ramp_inputs/
 |   |   +-- use_cases/
-|   |       |-- office.py               Use case: ufficio medio
+|   |       |-- office.py               Use case: ufficio medio (a regimi)
+|   |       |-- scuola_superiore.py     Use case: istituto superiore (a regimi)
 |   |       |-- small_industry.py       Use case: piccola industria
 |   |       +-- retail.py               Use case: negozio al dettaglio
 |   +-- lpg_inputs/
@@ -420,6 +421,17 @@ COME FUNZIONA:
   dell'edificio e vuole una fonte citabile accanto.
   Il collaudo e' in ramp_db/collaudo_regimi.py (§3.11).
 
+  L'INTERRUTTORE enabled: ogni voce di ramp.use_cases puo' portare
+  enabled: true/false. Chi e' spento resta nel catalogo - documentato,
+  validabile, versionato - ma non entra nel run e non aggiunge la sua colonna
+  a profili_tutti.csv. Serve perche' accendere un archetipo ha una
+  conseguenza a valle: align_members_to_users.m si ferma con errore su ogni
+  colonna che non trova in [MEMBRI], quindi un archetipo nuovo richiede prima
+  una scheda CER che lo contempli.
+  LA CHIAVE ASSENTE VALE ACCESO, ed e' voluto: le configurazioni baseline,
+  campione20, lombardia20 e milano20 non la dichiarano, e spegnere per
+  omissione le avrebbe azzerate tutte in silenzio.
+
   NOTA SUI SEED: il seed viene da _seed_stabile(), cioe' zlib.crc32 sulla
   stringa "{nome}_{indice}". crc32 NON e' salato per processo, quindi il
   seed e' identico fra esecuzioni diverse e i profili sono riproducibili.
@@ -479,7 +491,18 @@ SEZIONI:
 
   ramp:
     date_start / date_end             Periodo di simulazione
-    use_cases: [office, small_industry, retail]   con num_users ciascuno
+    use_cases:                        CATALOGO degli archetipi, con num_users
+                                      e l'interruttore enabled per ciascuno.
+                                      Attivi: office, small_industry, retail.
+                                      Spento: scuola_superiore, che si accende
+                                      insieme alla scheda CER che lo contempla
+                                      (accendere un archetipo aggiunge una
+                                      colonna a profili_tutti.csv, e
+                                      align_members_to_users.m si ferma su
+                                      ogni colonna assente da [MEMBRI]).
+                                      LA CHIAVE enabled ASSENTE VALE ACCESO:
+                                      le altre configurazioni non la
+                                      dichiarano e restano valide. Vedi §3.2.
 
   lpg:
     households: [pensionati, coppia_lavoratori, famiglia_1figlio]  con count
@@ -490,13 +513,45 @@ SEZIONI:
     aggregate_total / individual_profiles
 
 --------------------------------------------------------------------------------
- 3.6-3.8  ramp_inputs/use_cases/{office,small_industry,retail}.py
+ 3.6-3.8  ramp_inputs/use_cases/  (GLI ARCHETIPI NON DOMESTICI)
 --------------------------------------------------------------------------------
 
-Definiscono gli elettrodomestici (nome, numero, potenza, ore di
-funzionamento, finestra oraria) di un ufficio, una piccola industria e un
-negozio al dettaglio italiani tipici. Vedi i docstring dei singoli file
-per il dettaglio orario di ciascun carico.
+Definiscono gli apparecchi (nome, numero, potenza, ore di funzionamento,
+finestra oraria) di ciascun archetipo. Due forme, entrambe valide (§3.2):
+
+  small_industry.py   FORMA SEMPLICE, create_user(): un solo comportamento per
+  retail.py           tutto l'anno. Sono gli archetipi originali, mai toccati,
+                      e le loro impronte servono da test di non regressione.
+
+  office.py           FORMA A REGIMI, REGIMI + regime(giorno). Ufficio medio
+                      milanese: raffrescamento estivo, ausiliari di
+                      riscaldamento d'inverno, pausa pranzo, festivi e
+                      chiusura delle due settimane attorno a Ferragosto.
+                      I gruppi di apparecchi seguono l'albero energetico degli
+                      usi finali di ENEA; la stagione di riscaldamento e'
+                      quella di legge per la zona climatica E, DPR 412/1993
+                      art. 9. Livello ancora aperto al 69% dell'atteso: il
+                      contesto delle due fonti e' nel docstring del file.
+
+  scuola_superiore.py FORMA A REGIMI. Istituto superiore di circa 6.470 m2,
+                      taglia ricavata incrociando DUE FONTI INDIPENDENTI CHE
+                      CONCORDANO: ARERA da' 96.991 kWh/anno a un POD di classe
+                      BTA6 con ATECO 85.31, il benchmark RSE/2010 da' 15
+                      kWh/m2 elettrici per gli edifici scolastici superiori.
+                      Il calendario non e' un'ipotesi: viene dal Calendario
+                      Scolastico Regionale di carattere permanente della
+                      Lombardia, DGR 3318/2012, e il minimo di 200 giorni di
+                      lezione del D.Lgs. 297/1994 art. 74 c. 3 serve a
+                      verificarlo, non a costruirlo.
+                      Il POD e' di un ente territoriale - l'edificio e' della
+                      Provincia o Citta' metropolitana, L. 23/1996 art. 3 -
+                      quindi categoria PA nella scheda CER, esente dal
+                      fattore F (§7.5 del README di progetto).
+                      NASCE SPENTO in simulation_config.yaml: si accende
+                      insieme alla scheda CER che lo contempla.
+
+Vedi i docstring dei singoli file per la fonte di ogni gruppo di apparecchi, e
+ramp_db/dati/validazione/ per le misure passaggio per passaggio.
 
 --------------------------------------------------------------------------------
  3.9  lpg_inputs/household_definitions.py  (CATALOGO FAMIGLIE)

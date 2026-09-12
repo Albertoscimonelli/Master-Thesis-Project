@@ -1,0 +1,47 @@
+# Passo 6 - Verifica dell'interruttore enabled e non regressione
+#
+# Comando:  cd CER_LoadProfiles/ramp_db
+#           ../../venv/Scripts/python.exe collaudo_regimi.py
+# Data:     2026-09-12
+#
+# COSA DIMOSTRA. simulation_config.yaml dichiara ora quattro archetipi, di cui
+# scuola_superiore con enabled: false. Nella tabella qui sotto compaiono TRE
+# colonne: scuola_superiore_1 non c'e'. E' la prova che l'interruttore spegne
+# davvero, e non e' soltanto scritto nel file - se il flag fosse stato ignorato,
+# la colonna sarebbe comparsa segnalata come "NON IN BASELINE".
+#
+# E le tre impronte restano identiche, office compreso: aggiungere il filtro non
+# ha perturbato il percorso di generazione.
+#
+# PERCHE' L'INTERRUTTORE ESISTE. Ogni archetipo acceso aggiunge una colonna a
+# profili_tutti.csv, e align_members_to_users.m si ferma con errore su ogni
+# colonna che non trova in [MEMBRI]. Un archetipo nuovo richiede quindi prima
+# una scheda CER che lo contempli: fino ad allora resta spento, ma documentato,
+# validato e versionato.
+#
+# LA CHIAVE ASSENTE VALE ACCESO, ed e' una scelta deliberata: le configurazioni
+# baseline, campione20, lombardia20 e milano20 non dichiarano enabled, e
+# spegnere per omissione le avrebbe azzerate tutte in silenzio.
+
+### Verifica dell'interruttore on/off e non regressione ###
+========================================================================
+1. NON REGRESSIONE - ogni archetipo combacia con la sua impronta
+========================================================================
+  small_industry e retail: impronta di PRIMA dello strato dei regimi,
+  deve restare identica per sempre. office: impronta aggiornata
+  deliberatamente dopo la correzione del Passo 5.
+  office_1             IDENTICO   e75c9e196626d0d3...  4780.840746 kWh (atteso 4780.840746)
+  small_industry_1     IDENTICO   e52920ac8a564421...  61692.091277 kWh (atteso 61692.091277)
+  retail_1             IDENTICO   b0837ae92b3b1123...  13630.753483 kWh (atteso 13630.753483)
+  indice 2025-01-01 00:00:00 -> 2025-12-31 23:59:00, 525600 righe (ok)
+
+========================================================================
+2. PERCORSO A REGIMI - un anno per regime, selezione giorno per giorno
+========================================================================
+  lunghezza 525600 (ok)
+  i due regimi hanno stocastiche diverse: si
+  giorni presi dal regime sbagliato: 0 su 365 (ok)
+  regime non dichiarato: rifiutato correttamente
+
+ESITO: TUTTO OK
+CODICE DI USCITA: 0

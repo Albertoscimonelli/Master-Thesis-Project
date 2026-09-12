@@ -333,6 +333,58 @@ sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
   monorario / F a fasce. Il documento precede il TIAD, ma la struttura dei codici
   nei file 2024 e 2025 e' invariata.
 
+### `scuola_superiore`: due fonti indipendenti che concordano
+
+A differenza di `office`, questo archetipo nasce ben ancorato. ARERA attribuisce
+a un punto di prelievo di classe **BTA6** con ATECO **85.31** (istruzione
+secondaria di secondo grado) 96.991 kWh/anno a Milano; il benchmark RSE/2010 da'
+**15 kWh/m²** elettrici per gli edifici scolastici superiori. Il rapporto fra i
+due vale ~6.470 m², la taglia di un istituto reale — ed e' la superficie su cui
+l'archetipo e' dimensionato. Le due fonti restano indipendenti fra loro.
+
+Il calendario **non e' un'ipotesi**: viene dal Calendario Scolastico Regionale
+di carattere permanente della Lombardia (DGR n. 3318 del 18 aprile 2012,
+confermato con Prot. E1.2025.0481857 del 12/05/2025) — lezioni dal 12 settembre
+all'8 giugno, vacanze natalizie, pasquali e di carnevale come regole da cui le
+date del 2025 si derivano. Il minimo di 200 giorni di lezione del D.Lgs.
+297/1994 art. 74 c. 3 serve a *verificarlo*, non a costruirlo.
+
+| | livello | kWh/m² | L1 | TVD fer. | F1 |
+|---|---|---|---|---|---|
+| prima stesura | 64.532 (0,67x) | 10,0 | 0,1635 | 0,300 | 63,07 |
+| + illuminazione a 8,1 W/m² | 76.939 (0,79x) | 11,9 | 0,1936 | 0,362 | 68,63 |
+| + base permanente a 8 kW | **107.103 (1,10x)** | **16,6** | **0,1579** | **0,262** | **58,02** |
+| *riferimento / soglia* | *96.991, −9,1%* | *15* | *0,1111* | — | *37,95* |
+
+**La lezione sta nel secondo passaggio.** Alzare l'illuminazione delle aule da
+3,9 a 8,1 W/m² ha alzato il livello ma **peggiorato tutto il resto**: aggiungeva
+consumo solo nei giorni di lezione, allontanando agosto dal vero. Il livello
+mancante non era nella didattica — e a dirlo e' ARERA, che ad agosto, senza
+lezioni, misura ancora il 6,2% del consumo annuo (circa 194 kWh al giorno a
+scuola chiusa) contro l'11,7% di gennaio: un rapporto inverno/estate di 1,9, non
+di dieci. Portando la **base permanente** da 4,5 a 8 kW tutte le metriche si
+sono mosse insieme. Non erano quattro difetti, era uno solo.
+
+Il livello resta a 1,10x contro una soglia di −9,1%: fuori di poco, e in una
+cella che ARERA campiona in modo rado — per l'ATECO 85.31 i livelli non sono
+nemmeno monotoni nella potenza (BTA3b 10.401 > BTA4 8.159 > BTA5 3.853) e il
+rumore di fonte arriva al 60%. Limare ancora vorrebbe dire tarare dentro il
+rumore della fonte.
+
+### Accendere e spegnere gli archetipi
+
+`config/simulation_config.yaml` e' il catalogo: ogni voce di `ramp.use_cases`
+porta un interruttore `enabled`, e chi e' spento resta documentato e validabile
+ma fuori dal run. **Se la chiave manca l'archetipo e' attivo**, cosi' le altre
+configurazioni (`baseline`, `campione20`, `lombardia20`, `milano20`) restano
+valide senza essere toccate.
+
+Prima di accenderne uno conviene sapere cosa comporta: ogni archetipo attivo
+aggiunge una colonna a `profili_tutti.csv`, e `align_members_to_users.m` si
+ferma con errore su ogni colonna che non trova in `[MEMBRI]`. Per questo
+`scuola_superiore` nasce **spento**: si accende insieme alla scheda CER che lo
+contempla.
+
 ### I benchmark di letteratura: l'albero energetico e il secondo parere
 
 ARERA e GSE dicono quanto consuma e quando, ma non **di che cosa** e' fatto quel

@@ -38,8 +38,32 @@ DIFFERENZE DI FORMATO RISPETTO AL LATO DOMESTICO, tutte verificate sui file:
   4. La classe BTA3 compare in DUE file, con due sottofasce diverse
      (3-4,5 kW e 4,5-6 kW). Sono trattate come due classi distinte.
 
-TRE LIMITI DA DICHIARARE IN TESI:
+LE DUE ANNUALITA' NON HANNO LO STESSO FORMATO, e nemmeno la stessa copertura:
 
+  5. Nomi di colonna diversi per gli stessi campi ('Tariffa potenza kW' nel
+     2025, 'TARIFFA_POTENZA_KW' nel 2024; 'Prelievo medio mensile' contro
+     'Prelievo medio (kWh)'), il 2024 non ha la colonna 'Regione' e ripete due
+     volte la colonna 'Anno'. Le ETICHETTE DI CLASSE sono invece identiche
+     ("BTA1: 0 <>= 1,5" ...), il che rende le due annualita' confrontabili.
+  6. Numeri scritti in modo diverso: il 2025 usa la virgola decimale con molte
+     cifre (15,82709464), il 2024 valori interi con il punto come separatore
+     delle migliaia (17.655 vale 17655). Letti con la sola convenzione del
+     2025 i valori del 2024 restano stringhe e ogni media fallisce.
+  7. Il mese e' un numero nel 2025 e un'abbreviazione nel 2024 ('Gen' ...
+     'Sett' con due t, che non e' l'abbreviazione di nessuna libreria).
+  8. Lo zip provinciale 2024 contiene DUE COPPIE di file byte-identici
+     (BTA5 e BTA6, pubblicati due volte con nomi diversi): vanno deduplicati
+     per contenuto, o le loro righe verrebbero contate due volte.
+
+QUATTRO LIMITI DA DICHIARARE IN TESI:
+
+  0. La pubblicazione provinciale 2024 copre le sole DODICI PROVINCE LOMBARDE
+     (Bergamo, Brescia, Como, Cremona, Lecco, Lodi, Mantova, Milano, Monza e
+     della Brianza, Pavia, Sondrio, Varese), mentre il 2025 copre tutte le 110
+     province italiane. Milano c'e' in entrambe, quindi il rumore di fonte fra
+     due anni resta calcolabile per la CER di questo progetto; per una
+     provincia fuori dalla Lombardia esiste il solo 2025, e rumore_fonte() lo
+     dice invece di restituire un numero costruito su un anno solo.
   1. Il dato e' mensile: la forma oraria non e' validabile su questa fonte.
   2. ARERA non pubblica il NUMERO di POD per classe e ATECO. Non si puo' quindi
      costruire una media pesata fra classi di potenza, ne' verificare a quale
@@ -75,6 +99,13 @@ RADICE_PREDEFINITA = Path(__file__).resolve().parents[1] / "File Non Domestici"
 
 QUI = Path(__file__).resolve().parent
 CACHE = QUI / "dati" / "riferimento_arera_nd"
+
+# Versione della logica di lettura. VA INCREMENTATA a ogni modifica del modo in
+# cui i file grezzi vengono interpretati (nomi di colonna, formato dei numeri,
+# codifica dei mesi, deduplicazione dei sorgenti): finisce nel manifesto della
+# cache e la invalida. Senza, una cache scritta da un parser sbagliato resta
+# valida per sempre, perche' i sorgenti da cui deriva non sono cambiati.
+VERSIONE_PARSER = 2
 
 # Le classi tariffarie come ARERA le scrive nella colonna 'Tariffa potenza kW'.
 # Sono la chiave canonica: gli alias servono solo alla riga di comando. BTA3
@@ -113,23 +144,32 @@ ADIACENTI = {
     CLASSI[6]: CLASSI[5],
 }
 
-# Nomi di colonna dei CSV ARERA non domestici -> chiavi interne.
+# Nomi di colonna dei CSV ARERA non domestici -> chiavi interne. Le due
+# annualita' scrivono gli stessi campi con nomi diversi, e il 2024 non ha
+# affatto la regione: la mappa copre entrambe le forme.
 RINOMINA = {
     "anno": "anno",
     "mese": "mese",
     "regione": "regione",
     "provincia": "provincia",
-    "tariffa potenza kw": "classe",
+    "tariffa potenza kw": "classe",       # 2025
+    "tariffa_potenza_kw": "classe",       # 2024
     "divisione ateco": "divisione",
     "gruppo ateco": "gruppo",
     "classe ateco": "ateco",
-    "prelievo medio mensile": "kwh",
+    "prelievo medio mensile": "kwh",      # 2025
+    "prelievo medio (kwh)": "kwh",        # 2024
 }
 
-COLONNE_USATE = [
-    "Anno", "Mese", "Regione", "Provincia", "Tariffa potenza kW",
-    "Divisione ATECO", "Gruppo ATECO", "Classe ATECO", "Prelievo medio mensile",
-]
+# Le sole colonne che sopravvivono alla normalizzazione. Tenere una lista
+# esplicita rende innocue le colonne che cambiano da un anno all'altro.
+COLONNE_INTERNE = ["anno", "mese", "classe", "divisione", "gruppo", "ateco", "kwh"]
+
+# Il 2024 scrive il mese come abbreviazione italiana invece che come numero.
+# "Sett" ha due t e non e' l'abbreviazione usata da nessuna libreria standard:
+# va mappata a mano o settembre sparisce in silenzio.
+MESI = {"gen": 1, "feb": 2, "mar": 3, "apr": 4, "mag": 5, "giu": 6,
+        "lug": 7, "ago": 8, "set": 9, "sett": 9, "ott": 10, "nov": 11, "dic": 12}
 
 
 def radice() -> Path:
@@ -166,7 +206,22 @@ def file_sorgenti() -> dict[str, Path]:
             f"Nessun CSV ARERA non domestico (BTA*.csv) trovato sotto {radice()}.\n"
             f"Eseguire prima: python riferimento_arera_nd.py --ispeziona"
         )
-    return {p.name: p for p in trovati}
+    # Lo zip provinciale 2024 pubblicato da ARERA contiene DUE COPPIE di file
+    # identici ("BTA5 potenza maggiore da 10" e "...di 0"; "BTA6 ... maggiore
+    # 16_5" e "..._16_5"), con lo stesso SHA-256. Leggerli tutti conterebbe due
+    # volte le stesse righe. Si deduplica per contenuto e non per nome, cosi' la
+    # guardia regge anche se un domani la coppia venisse rinominata. La chiave
+    # e' il percorso relativo alla radice, perche' due annualita' diverse
+    # possono contenere file omonimi.
+    unici: dict[str, Path] = {}
+    viste: set[str] = set()
+    for percorso in trovati:
+        firma = impronta(percorso)
+        if firma in viste:
+            continue
+        viste.add(firma)
+        unici[str(percorso.relative_to(radice()))] = percorso
+    return unici
 
 
 def _codice(valore: object) -> str:
@@ -192,20 +247,52 @@ def _normalizza_ateco(codice: str) -> str:
     return testo.lstrip("0") or "0"
 
 
+def _mese(valore: object) -> int:
+    """Numero del mese, sia che il file lo scriva come 1-12 sia come 'Gen'."""
+    testo = str(valore).strip().lower()
+    if testo.isdigit():
+        return int(testo)
+    if testo not in MESI:
+        sys.exit(f"Mese non riconosciuto nei file ARERA: '{valore}'.")
+    return MESI[testo]
+
+
+def _numero(serie: pd.Series) -> pd.Series:
+    """Converte i valori numerici scritti all'italiana, in entrambe le forme.
+
+    Il 2025 scrive la virgola decimale (15,82709464), il 2024 il punto come
+    separatore delle migliaia su valori interi (17.655 vale 17655). Togliere i
+    punti e poi portare la virgola a punto copre entrambi i casi, ed e' corretto
+    anche sulla forma mista 1.234,56 che i due file non usano ma che la
+    convenzione italiana ammette.
+    """
+    testo = serie.astype(str).str.strip()
+    testo = testo.str.replace(".", "", regex=False).str.replace(",", ".", regex=False)
+    return pd.to_numeric(testo, errors="coerce")
+
+
 def _normalizza(df: pd.DataFrame) -> pd.DataFrame:
     """Uniforma i nomi di colonna, ripulisce i valori testuali, estrae i codici.
 
     I valori testuali dei file ARERA hanno spazi in coda in modo non uniforme:
     senza lo strip un filtro su una provincia o su una classe restituisce zero
     righe in silenzio. E' la stessa trappola gia' nota sui file domestici.
+
+    Il file 2024 ripete inoltre la colonna 'Anno' due volte (pandas rinomina la
+    seconda 'Anno.1'): le duplicate si scartano subito, perche' in uscita si
+    tengono comunque le sole COLONNE_INTERNE.
     """
     df = df.copy()
     df.columns = [RINOMINA.get(c.strip().lower(), c.strip().lower())
                   for c in df.columns]
-    for col in ("regione", "provincia", "classe"):
+    df = df.loc[:, ~df.columns.duplicated()]
+    for col in ("provincia", "classe"):
         df[col] = df[col].astype(str).str.strip()
     for col in ("divisione", "gruppo", "ateco"):
         df[col] = [_codice(v) for v in df[col]]
+    df["mese"] = [_mese(v) for v in df["mese"]]
+    df["anno"] = df["anno"].astype(int)
+    df["kwh"] = _numero(df["kwh"])
     return df
 
 
@@ -220,13 +307,26 @@ def _normalizza(df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def _cache_valida(destinazione: Path, sorgenti: dict[str, Path]) -> bool:
+    """Vera se la cache e' stata scritta dalle stesse sorgenti E dallo stesso parser.
+
+    La seconda condizione non e' teorica: durante lo sviluppo una cache scritta
+    quando il punto delle migliaia del file 2024 veniva ancora letto come
+    separatore decimale e' sopravvissuta alla correzione del parser - gli
+    SHA-256 delle sorgenti non erano cambiati, quindi la cache risultava valida
+    e il livello annuo 2024 restava mille volte piu' piccolo del vero. Una cache
+    legata alla sola impronta dei sorgenti rende silenziosi proprio gli errori
+    di lettura.
+    """
     manifesto = destinazione.with_suffix(".json")
     if not (destinazione.exists() and manifesto.exists()):
         return False
     atteso = json.loads(manifesto.read_text(encoding="utf-8"))
-    if set(atteso) != set(sorgenti):
+    if atteso.get("versione_parser") != VERSIONE_PARSER:
         return False
-    return all(atteso[nome] == impronta(percorso)
+    firme = atteso.get("sorgenti", {})
+    if set(firme) != set(sorgenti):
+        return False
+    return all(firme[nome] == impronta(percorso)
                for nome, percorso in sorgenti.items())
 
 
@@ -235,7 +335,9 @@ def _scrivi_cache(destinazione: Path, df: pd.DataFrame,
     destinazione.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(destinazione, index=False)
     destinazione.with_suffix(".json").write_text(
-        json.dumps({n: impronta(p) for n, p in sorgenti.items()}, indent=2),
+        json.dumps({"versione_parser": VERSIONE_PARSER,
+                    "sorgenti": {n: impronta(p) for n, p in sorgenti.items()}},
+                   indent=2),
         encoding="utf-8",
     )
 
@@ -269,17 +371,27 @@ def mensili(provincia: str, verboso: bool = True) -> pd.DataFrame:
             print(f"  lettura dei CSV ARERA non domestici "
                   f"(a cache fredda richiede qualche decina di secondi)...")
         righe = []
+        assenti = []
         for nome, percorso in sorgenti.items():
             if verboso:
                 print(f"    {nome}")
-            d = pd.read_csv(percorso, sep=";", decimal=",", encoding="utf-8-sig",
-                            usecols=COLONNE_USATE)
+            d = pd.read_csv(percorso, sep=";", encoding="utf-8-sig", dtype=str)
             d = _normalizza(d)
             d = d[d["provincia"] == provincia]
             if d.empty:
-                sys.exit(f"Provincia '{provincia}' assente in {nome}.")
-            righe.append(d[["anno", "mese", "classe", "divisione", "gruppo",
-                            "ateco", "kwh"]])
+                # Non e' un errore: la pubblicazione provinciale 2024 copre le
+                # sole province lombarde, quindi per ogni altra provincia
+                # quell'annualita' semplicemente non esiste. Fermarsi qui
+                # renderebbe inutilizzabile anche l'anno che c'e'.
+                assenti.append(nome)
+                continue
+            righe.append(d[COLONNE_INTERNE])
+        if not righe:
+            sys.exit(f"Provincia '{provincia}' assente in tutti i file ARERA "
+                     f"sotto {radice()}.")
+        if assenti and verboso:
+            print(f"    provincia assente in {len(assenti)} file su "
+                  f"{len(sorgenti)}: quelle annualita' non la coprono")
         risultato = pd.concat(righe, ignore_index=True)
         _scrivi_cache(destinazione, risultato, sorgenti)
 
@@ -338,7 +450,7 @@ def _seleziona(provincia: str, ateco: str | None, classe: str,
 
 
 def livello_annuo(provincia: str, ateco: str | None, classe: str,
-                  anni: tuple[int, ...] = (2025,)) -> pd.Series:
+                  anni: tuple[int, ...] = (2024, 2025)) -> pd.Series:
     """Consumo medio annuo per POD, in kWh, per anno.
 
     Si somma il dettaglio mensile: se un mese mancasse, il totale annuo sarebbe
@@ -360,7 +472,7 @@ def livello_annuo(provincia: str, ateco: str | None, classe: str,
 
 
 def forma_mensile(provincia: str, ateco: str | None, classe: str,
-                  anni: tuple[int, ...] = (2025,)) -> pd.DataFrame:
+                  anni: tuple[int, ...] = (2024, 2025)) -> pd.DataFrame:
     """Quota di ciascun mese sul totale annuo, per anno. Somma 1 per riga.
 
     E' la metrica di testa della validazione non domestica: e' l'unica che vede
@@ -423,26 +535,41 @@ def ispeziona() -> None:
     """
     sorgenti = file_sorgenti()
     print(f"\nISPEZIONE DEI FILE ARERA NON DOMESTICI\nradice: {radice()}\n")
-    print(f"{'file':34} {'righe':>9}  {'classe tariffaria'}")
-    print("-" * 92)
+    print(f"{'file':48} {'righe':>9}  {'anni':8} {'classe tariffaria'}")
+    print("-" * 110)
+    per_anno: dict[int, dict] = {}
     for nome, percorso in sorgenti.items():
-        d = pd.read_csv(percorso, sep=";", decimal=",", encoding="utf-8-sig",
-                        usecols=COLONNE_USATE)
+        d = pd.read_csv(percorso, sep=";", encoding="utf-8-sig", dtype=str)
         d = _normalizza(d)
         classi = sorted(d["classe"].unique())
-        print(f"{nome:34} {len(d):>9,}  {' | '.join(classi)}")
+        anni = sorted(d["anno"].unique())
+        print(f"{percorso.name:48} {len(d):>9,}  {str(anni):8} {' | '.join(classi)}")
+        for anno in anni:
+            parte = d[d["anno"] == anno]
+            voce = per_anno.setdefault(anno, {"righe": 0, "province": set(),
+                                              "mesi": set(), "ateco": set(),
+                                              "vuote": 0, "colonne": list(d.columns)})
+            voce["righe"] += len(parte)
+            voce["province"] |= set(parte["provincia"])
+            voce["mesi"] |= set(parte["mese"])
+            voce["ateco"] |= set(parte["ateco"])
+            voce["vuote"] += int(((parte["ateco"] == "")
+                                  & (parte["divisione"] == "")).sum())
 
-    # L'ultimo file letto basta a descrivere la struttura: le colonne sono le
-    # stesse in tutti e sette.
-    print(f"\ncolonne: {', '.join(d.columns)}")
-    print(f"anni:      {sorted(d['anno'].unique())}")
-    print(f"mesi:      {sorted(d['mese'].unique())}")
-    print(f"regioni:   {d['regione'].nunique()}")
-    print(f"province:  {d['provincia'].nunique()}")
-    print(f"divisioni ATECO: {d['divisione'].nunique()}   "
-          f"gruppi: {d['gruppo'].nunique()}   classi: {d['ateco'].nunique()}")
-    vuote = int(((d['ateco'] == '') & (d['divisione'] == '')).sum())
-    print(f"righe con ATECO vuoto (aggregato di classe): {vuote:,}")
+    # Il riepilogo va tenuto per anno: le due annualita' non hanno ne' le stesse
+    # colonne ne' la stessa copertura provinciale, e un riepilogo unico le
+    # confonderebbe proprio sul punto che conta.
+    for anno in sorted(per_anno):
+        v = per_anno[anno]
+        print(f"\n--- {anno} ---")
+        print(f"  colonne:   {', '.join(v['colonne'])}")
+        print(f"  righe:     {v['righe']:,}")
+        print(f"  mesi:      {sorted(v['mesi'])}")
+        print(f"  province:  {len(v['province'])}"
+              + ("" if len(v["province"]) > 20
+                 else f"  {sorted(v['province'])}"))
+        print(f"  classi ATECO: {len(v['ateco'])}")
+        print(f"  righe con ATECO vuoto (aggregato di classe): {v['vuote']:,}")
 
 
 def main() -> None:
@@ -497,6 +624,20 @@ def main() -> None:
               f"livello non e'\ncalcolabile. Serve una seconda annualita' ARERA. "
               f"Il rumore di fonte sulla\nforma oraria e' invece gia' calcolabile "
               f"fra i profili GSE 2024 e 2025\n(riferimento_gse_nd.py).")
+    else:
+        print(f"\nRUMORE DELLA FONTE fra {anni[0]} e {anni[-1]} "
+              f"- e' la soglia di accettazione sul livello\n")
+        print(f"{'classe':30} {'scarto livello':>16} {'L1 forma mensile':>18}")
+        print("-" * 92)
+        for classe in classi:
+            try:
+                r = rumore_fonte(args.provincia, args.ateco, classe,
+                                 (anni[0], anni[-1]))
+            except SystemExit:
+                print(f"{SIGLA[classe]:30} {'(nessun dato)':>16}")
+                continue
+            print(f"{SIGLA[classe]:30} {r['scarto_livello_pct']:>15.1f}% "
+                  f"{r['l1_mensile']:>18.4f}")
 
     print("\nIl dato ARERA non domestico e' mensile: la forma oraria non e'")
     print("validabile su questa fonte. La classe di potenza di un archetipo e'")

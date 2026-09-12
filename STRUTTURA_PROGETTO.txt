@@ -608,11 +608,13 @@ IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
                             Espone livello_annuo(), forma_mensile(),
                             rumore_fonte() e il comando --ispeziona, che
                             stampa la struttura dei file grezzi.
-                            Cache in dati/riferimento_arera_nd/, invalidata
-                            per SHA-256 dei sorgenti, VERSIONATA in deroga:
-                            i sorgenti stanno fuori dal repository.
-                            Copertura verificata: 110 province, 20 regioni,
-                            12 mesi, 755 classi ATECO, anno 2025.
+                            Cache in dati/riferimento_arera_nd/, invalidata per
+                            SHA-256 dei sorgenti E per versione del parser,
+                            VERSIONATA in deroga: i sorgenti stanno fuori dal
+                            repository.
+                            Copertura verificata: 2025 = 110 province, 20
+                            regioni, 765 classi ATECO; 2024 = le sole 12
+                            province lombarde (Milano inclusa), 609 classi.
 
   riferimento_gse_nd.py     FORMA ORARIA. Legge i profili standard GSE 2024 e
                             2025 (prelievo e immissione). Espone
@@ -640,7 +642,13 @@ FONTI E BASE NORMATIVA - da citare in tesi:
     alla Delibera 318/2020/R/eel", v1 del 04/04/2022: decodifica i codici di
     colonna XZZY (X = P/M/I, ZZ = tipologia, Y = M monorario / F a fasce).
 
-QUATTRO TRAPPOLE DEI FILE - tutte verificate, non assunte:
+LA SOGLIA DI ACCETTAZIONE, MISURATA (Milano, ATECO 82.11, 2024 contro 2025):
+  livello annuo      da -4,5% a +3,8% secondo la classe BTA
+  forma mensile (L1) da 0,041 a 0,074
+  BTA4, la classe candidata di office: -3,1% e 0,0407, con bersaglio
+  7.062 kWh/anno nel 2024 e 6.840 nel 2025.
+
+SEI TRAPPOLE DEI FILE - tutte verificate, non assunte:
   1. ARERA non domestico e' SOLO MENSILE: la forma oraria non e' validabile su
      questa fonte. Per quello servono i profili GSE.
   2. I coefficienti GSE sono normalizzati DENTRO IL MESE: 1 per i profili
@@ -653,8 +661,23 @@ QUATTRO TRAPPOLE DEI FILE - tutte verificate, non assunte:
      mobile (ultimo istante 22:59:59,998 del 31 dicembre) e verso fine anno
      resta indietro di un'ora rispetto alla colonna "Ora". L'indice si
      ricostruisce dalle colonne intere Anno/Mese/Giorno/Ora.
+  5. Le due annualita' ARERA hanno formati diversi: nomi di colonna diversi,
+     niente "Regione" nel 2024, "Anno" ripetuta due volte, mese come numero
+     nel 2025 e come abbreviazione nel 2024 ("Gen" ... "Sett"), e numeri con
+     virgola decimale nel 2025 contro punto delle MIGLIAIA nel 2024 (17.655
+     vale 17655). Le etichette di classe sono invece identiche, ed e' cio' che
+     rende i due anni confrontabili. Lo zip 2024 contiene inoltre due coppie
+     di file byte-identici (BTA5 e BTA6), da deduplicare per contenuto.
+  6. La cache si invalida anche quando cambia il PARSER, non solo i sorgenti:
+     il manifesto porta un versione_parser accanto agli SHA-256. Una cache
+     scritta mentre il punto delle migliaia veniva letto come decimale era
+     sopravvissuta alla correzione - sorgenti immutati, cache "valida" - e
+     teneva il livello 2024 mille volte piu' basso del vero.
 
-DUE LIMITI DA DICHIARARE:
+TRE LIMITI DA DICHIARARE:
+  Il 2024 provinciale copre le sole province lombarde. Milano c'e', quindi la
+    soglia resta calcolabile per questo progetto; fuori dalla Lombardia esiste
+    il solo 2025 e rumore_fonte() si ferma invece di inventare un numero.
   Il profilo GSE dei non domestici e' UNO SOLO per tutta la categoria "altri
     usi": non distingue un ufficio da una scuola da un municipio.
   Non e' una misura ma una tabella di giorni tipo: 291 valori distinti in un

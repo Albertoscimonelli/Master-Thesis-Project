@@ -226,10 +226,11 @@ cosi' la validazione resta rieseguibile da chi clona il progetto. La radice si
 sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
 
 - **ARERA** — consumi provinciali dei clienti non domestici in bassa tensione,
-  "Dati provincia" parti 1-3, anno 2025: sette CSV, uno per classe tariffaria
-  BTA. Ogni riga e' il prelievo medio mensile per punto di prelievo di una terna
-  (provincia, classe di potenza, classe ATECO). Copertura verificata: 110
-  province, 20 regioni, 12 mesi, 755 classi ATECO.
+  sezione *Monitoraggio retail*, annualita' **2024 e 2025**: un CSV per classe
+  tariffaria BTA. Ogni riga e' il prelievo medio mensile per punto di prelievo
+  di una terna (provincia, classe di potenza, classe ATECO). Copertura
+  verificata: il **2025** ha 110 province, 20 regioni, 765 classi ATECO; il
+  **2024** ha le sole **12 province lombarde** (Milano compresa) e 609 classi.
 - **GSE** — "Modalita' di profilazione dei dati di misura: profili standard GSE
   in prelievo e immissione", annualita' 2024 e 2025, area CACER del portale GSE.
   I due xlsx del 2025 in cartella sono stati verificati identici per dimensione
@@ -247,7 +248,7 @@ sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
   monorario / F a fasce. Il documento precede il TIAD, ma la struttura dei codici
   nei file 2024 e 2025 e' invariata.
 
-### Quattro proprieta' dei dati, verificate e non assunte
+### Sei proprieta' dei dati, verificate e non assunte
 
 1. **ARERA non domestico e' solo mensile.** Non esiste la traccia oraria che sul
    lato domestico copre i clienti trattati orari: la forma oraria non e'
@@ -264,9 +265,48 @@ sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
    resta indietro di un'ora rispetto alla colonna `Ora`. L'indice si ricostruisce
    dalle colonne intere Anno/Mese/Giorno/Ora. Indicizzare su `Data ora` produce
    una curva giornaliera traslata di un'ora e somme mensili che non chiudono a 1.
+5. **Le due annualita' ARERA non hanno lo stesso formato.** Nomi di colonna
+   diversi per gli stessi campi, il 2024 senza la colonna `Regione` e con
+   `Anno` ripetuta due volte, il mese come numero nel 2025 e come abbreviazione
+   nel 2024 (`Gen` ... `Sett`, con due t), e soprattutto i numeri: virgola
+   decimale nel 2025 (`15,82709464`), punto come separatore delle **migliaia**
+   nel 2024 (`17.655` vale 17655). Le etichette di classe sono invece identiche
+   fra i due anni, ed e' cio' che li rende confrontabili. Lo zip 2024 contiene
+   inoltre **due coppie di file byte-identici** (BTA5 e BTA6 pubblicati due
+   volte): vengono deduplicati per contenuto, o le loro righe sarebbero contate
+   due volte.
+6. **La cache si invalida anche quando cambia il parser**, non solo quando
+   cambiano le sorgenti: il manifesto porta un `versione_parser` accanto agli
+   SHA-256. Non e' una precauzione teorica — una cache scritta mentre il punto
+   delle migliaia del 2024 veniva ancora letto come separatore decimale e'
+   sopravvissuta alla correzione, perche' i sorgenti non erano cambiati, e
+   teneva il livello 2024 mille volte piu' basso del vero.
 
-### Due limiti da dichiarare in tesi
+### La soglia di accettazione, misurata
 
+Il rumore della fonte fra le due annualita' ARERA e' la soglia contro cui si
+giudicheranno gli archetipi — lo stesso criterio del lato domestico, non un
+numero scelto a tavolino. Misurato su Milano, ATECO 82.11:
+
+| Classe | Scarto sul livello annuo | L1 sulla forma mensile |
+|---|---:|---:|
+| BTA1 | +1,0% | 0,0634 |
+| BTA2 | −3,0% | 0,0568 |
+| BTA3a | −4,5% | 0,0662 |
+| BTA3b | −3,1% | 0,0556 |
+| **BTA4** (classe candidata di `office`) | **−3,1%** | **0,0407** |
+| BTA5 | −1,5% | 0,0737 |
+| BTA6 | +3,8% | 0,0673 |
+
+In ordine di grandezza: **±3% sul livello annuo e ~0,05 di L1 sulla forma
+mensile**. Per `office` il bersaglio e' 7.062 kWh/anno nel 2024 e 6.840 nel 2025.
+
+### Tre limiti da dichiarare in tesi
+
+- **Il 2024 provinciale copre le sole province lombarde.** Milano c'e', quindi
+  per la CER di questo progetto la soglia resta calcolabile; per una provincia
+  fuori dalla Lombardia esiste il solo 2025, e `rumore_fonte()` si ferma con un
+  errore esplicito invece di restituire un numero costruito su un anno solo.
 - **Il profilo GSE dei non domestici e' uno solo** per tutta la categoria "altri
   usi": non distingue un ufficio da una scuola da un municipio. Uno scarto sulla
   forma di un archetipo con stagionalita' marcata e' quindi atteso anche se

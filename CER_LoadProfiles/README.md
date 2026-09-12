@@ -99,8 +99,47 @@ output:
 ### Aggiungere un nuovo use case RAMP
 
 1. Crea un file `ramp_inputs/use_cases/nome_use_case.py`
-2. Definisci una funzione `create_user() -> User` che configura elettrodomestici e finestre d'uso
+2. Dichiaralo in **una delle due forme** (vedi sotto)
 3. Aggiungi il nome in `simulation_config.yaml` sotto `ramp.use_cases`
+
+```python
+# forma semplice: un solo comportamento per tutto l'anno
+def create_user() -> User: ...
+
+# forma a regimi: il comportamento cambia nel corso dell'anno
+REGIMI: dict[str, Callable[[], User]] = {"lezione": ..., "chiusura_estiva": ...}
+def regime(giorno: datetime.date) -> str: ...
+```
+
+### Lo strato dei regimi di calendario
+
+RAMP 0.5.0 non ha ne' stagionalita' ne' festivita', e non le puo' avere: la
+finestra di un `Appliance` e' definita in **minuti del giorno**, non in giorni
+dell'anno. Una scuola chiusa da meta' giugno a meta' settembre non e' quindi
+rappresentabile con il solo RAMP.
+
+La forma a regimi la rende rappresentabile: `ramp_runner` genera **un anno
+intero per ogni regime** e poi sceglie, giorno per giorno, quello che
+`regime(giorno)` dichiara. Non si concatenano segmenti — con due o quattro
+regimi il costo sono due o quattro generazioni, e in cambio ogni regime pesca
+dalla propria stocastica su anno pieno, senza spezzare il flusso di numeri
+casuali a ogni cambio di stagione. Il seed resta `_seed_stabile()` con il nome
+del regime nella stringa, cosi' due regimi dello stesso archetipo non producono
+la stessa identica giornata.
+
+**Cosa mettere nel `regime()` e cosa no.** Le festivita' nazionali non sono una
+proprieta' dell'archetipo: sono il calendario civile italiano, gia' scritto in
+[`lpg_db/valida_domestici.py`](lpg_db/valida_domestici.py) (`festivi()`), e si
+importano da li'. Quello che va nel modulo dell'archetipo e' il suo **calendario
+di apertura** — la scuola chiusa d'estate, il municipio con agosto ridotto e il
+sabato di solo sportello — che e' una proprieta' dell'edificio e vuole una fonte
+citabile accanto, come ogni migrazione del catalogo LPG.
+
+Il collaudo sta in [`ramp_db/collaudo_regimi.py`](ramp_db/collaudo_regimi.py) e
+verifica due cose: che gli archetipi **senza** regimi escano identici bit per
+bit a prima dell'introduzione dello strato (impronte SHA-256 misurate prima
+della modifica), e che la selezione giorno per giorno prenda il giorno giusto
+dal regime giusto.
 
 ### Aggiungere un tipo di famiglia pyLPG
 

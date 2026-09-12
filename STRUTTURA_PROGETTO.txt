@@ -75,6 +75,7 @@ Project/
 |   |   |-- riferimento_gse_nd.py       Forma oraria: profili standard GSE
 |   |   |-- leggi_quaderno_enea.py      Indici kWh/m2 dai PDF di benchmark
 |   |   |-- benchmark_letteratura.csv   Secondo parere, con fonte e pagina
+|   |   |-- collaudo_regimi.py          Non regressione dello strato dei regimi
 |   |   +-- dati/                       Cache ARERA non domestica (versionata)
 |   +-- outputs/csv/
 |       |-- profili_aziende.csv         Profili individuali aziende (kWh/h)
@@ -393,10 +394,30 @@ COME FUNZIONA:
   1. All'import, applica 2 patch di compatibilita':
      - _patch_ramp_numpy2(): corregge int(np.diff()) per NumPy >= 2.0
      - _patch_ramp_pandas3(): corregge alias "T" -> "min" per Pandas >= 3.0
-  2. Per ogni use_case nel YAML (office, small_industry, retail), per ogni
-     istanza configurata: seed deterministico, create_user(), genera
-     profilo 1D in Watt a risoluzione 1 minuto (anno intero)
+  2. Per ogni use_case nel YAML, per ogni istanza configurata: seed
+     deterministico, poi genera un profilo 1D in Watt a risoluzione 1 minuto
+     (anno intero). Uno use case puo' dichiararsi in DUE FORME:
+       create_user() -> User                 forma semplice, un solo regime
+       REGIMI: dict[str, Callable] +         forma a regimi di calendario
+       regime(giorno) -> str
   3. Assembla tutti i profili in un DataFrame con DatetimeIndex
+
+  LO STRATO DEI REGIMI: RAMP 0.5.0 non ha ne' stagionalita' ne' festivita' e
+  non le puo' avere, perche' la finestra di un Appliance e' definita in MINUTI
+  DEL GIORNO e non in giorni dell'anno: una scuola chiusa da meta' giugno a
+  meta' settembre non e' rappresentabile con il solo RAMP.
+  _genera_a_regimi() genera UN ANNO PIENO PER OGNI REGIME e poi sceglie,
+  giorno per giorno, quello dichiarato dallo use case. Non concatena segmenti:
+  con due o quattro regimi il costo sono due o quattro generazioni, e in cambio
+  ogni regime pesca dalla propria stocastica su anno pieno senza spezzare il
+  flusso di numeri casuali a ogni cambio di stagione. Il seed include il nome
+  del regime, cosi' due regimi dello stesso archetipo non danno la stessa
+  identica giornata.
+  Le FESTIVITA' NAZIONALI non stanno qui: sono il calendario civile italiano,
+  gia' in lpg_db/valida_domestici.py (festivi()), e si importano. Nel modulo
+  dell'archetipo va solo il suo CALENDARIO DI APERTURA, che e' una proprieta'
+  dell'edificio e vuole una fonte citabile accanto.
+  Il collaudo e' in ramp_db/collaudo_regimi.py (§3.11).
 
   NOTA SUI SEED: il seed viene da _seed_stabile(), cioe' zlib.crc32 sulla
   stringa "{nome}_{indice}". crc32 NON e' salato per processo, quindi il
@@ -649,6 +670,23 @@ IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
                             calcolato da altri valori, mai stampato come tale
                             nella fonte (es. i 113,5 kWh/m2 degli uffici PA,
                             che sono un rapporto fra due righe di tabella).
+
+  collaudo_regimi.py        COLLAUDO DELLO STRATO DEI REGIMI (§3.2). Due
+                            domande, e la prima vale piu' della seconda.
+                            NON REGRESSIONE: un archetipo che non dichiara
+                            regimi deve uscire IDENTICO BIT PER BIT a come
+                            usciva prima che lo strato esistesse. Le impronte
+                            SHA-256 sono state misurate prima della modifica e
+                            vanno aggiornate solo quando si cambia
+                            deliberatamente il modello di un archetipo, mai per
+                            far passare il test.
+                            CORRETTEZZA: la selezione giorno per giorno prende
+                            il giorno giusto dal regime giusto. Il confronto
+                            usa due regimi con la stessa lista di apparecchi,
+                            che differiscono solo per il seed, e verifica che
+                            i due profili siano davvero diversi - altrimenti il
+                            confronto sarebbe vacuo.
+                            Esce con codice 1 se qualcosa non torna.
 
   dati/                     Cache ARERA non domestica (riferimento_arera_nd/),
                             un CSV per provincia con accanto il .json degli

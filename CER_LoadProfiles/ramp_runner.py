@@ -155,11 +155,23 @@ def _import_use_case(use_case_name: str, base_path: Path) -> Any:
         use_case_name: Nome del file use_case (senza .py).
         base_path: Percorso base del progetto CER_LoadProfiles.
 
+    Un modulo use_case puo' dichiararsi in due forme, entrambe valide:
+
+        create_user() -> User                    forma semplice, un solo regime
+        REGIMI: dict[str, Callable[[], User]]    forma a regimi di calendario
+        regime(giorno: date) -> str
+
+    La seconda serve agli archetipi che cambiano comportamento nel corso
+    dell'anno - una scuola chiusa d'estate, un ufficio senza climatizzazione in
+    mezza stagione - che RAMP 0.5.0 non sa rappresentare da solo: la finestra di
+    un Appliance e' definita in minuti del giorno, non in giorni dell'anno.
+
     Returns:
-        Il modulo importato contenente la funzione create_user().
+        Il modulo importato, in una delle due forme.
 
     Raises:
-        ImportError: Se il modulo non viene trovato o non contiene create_user().
+        ImportError: Se il modulo non viene trovato o non dichiara nessuna
+            delle due forme.
     """
     use_cases_dir = base_path / "ramp_inputs" / "use_cases"
     module_path = use_cases_dir / f"{use_case_name}.py"
@@ -176,12 +188,96 @@ def _import_use_case(use_case_name: str, base_path: Path) -> Any:
 
     module = importlib.import_module(use_case_name)
 
-    if not hasattr(module, "create_user"):
+    ha_semplice = hasattr(module, "create_user")
+    ha_regimi = hasattr(module, "REGIMI") and hasattr(module, "regime")
+
+    if not (ha_semplice or ha_regimi):
         raise ImportError(
-            f"Il modulo '{use_case_name}' non contiene la funzione create_user()"
+            f"Il modulo '{use_case_name}' non contiene ne' la funzione "
+            f"create_user() ne' la coppia REGIMI / regime()"
         )
 
     return module
+
+
+MINUTI_AL_GIORNO = 1440
+
+
+def _genera_un_anno(crea_utente, chiave_seed: str, indice: int, nome: str,
+                    date_start: str, date_end: str) -> np.ndarray:
+    """Un anno pieno di profilo, in Watt a un minuto.
+
+    Args:
+        crea_utente: funzione senza argomenti che restituisce uno User RAMP.
+        chiave_seed: stringa che identifica la sorgente di casualita'. Per uno
+            use case semplice e' il suo nome; per un regime e' nome_regime,
+            cosi' due regimi dello stesso archetipo non producono la stessa
+            identica giornata.
+        nome: etichetta passata a UseCase, usata solo per i messaggi.
+    """
+    from ramp.core.core import UseCase
+
+    # Seed per riproducibilita' (vedi _seed_stabile). Vanno seminati ENTRAMBI i
+    # generatori: ramp/core/core.py fa "import random" e pesca dalla libreria
+    # standard (random.uniform, randint, gauss, normalvariate, choice), mentre
+    # altrove usa np.random. Seminare solo numpy - com'era prima - lasciava
+    # scoperta la parte che decide finestre di accensione e durate, cioe' quasi
+    # tutto il profilo: i due run restavano diversi.
+    seed = _seed_stabile(chiave_seed, indice)
+    np.random.seed(seed)
+    random.seed(seed)
+
+    user = crea_utente()
+
+    # UseCase si auto-inizializza quando date_start e date_end sono forniti.
+    use_case = UseCase(
+        name=nome,
+        users=[user],
+        date_start=date_start,
+        date_end=date_end,
+        peak_enlarge=0.15,
+    )
+    return use_case.generate_daily_load_profiles(flat=True)
+
+
+def _genera_a_regimi(module: Any, use_case_name: str, indice: int,
+                     col_name: str, date_start: str, date_end: str) -> np.ndarray:
+    """Profilo annuale di un archetipo che cambia regime nel corso dell'anno.
+
+    Si genera UN ANNO INTERO PER OGNI REGIME e poi si sceglie, giorno per
+    giorno, quello che il modulo dichiara. Non si concatenano segmenti: con due
+    o quattro regimi il costo sono due o quattro generazioni, e in cambio ogni
+    regime pesca dalla propria stocastica su anno pieno, senza spezzare il
+    flusso di numeri casuali a ogni cambio di stagione ne' moltiplicare le
+    inizializzazioni di UseCase.
+    """
+    giorni = pd.date_range(start=date_start, end=date_end, freq="D")
+
+    per_regime = {
+        nome_regime: _genera_un_anno(
+            crea, f"{use_case_name}_{nome_regime}", indice,
+            f"{col_name}_{nome_regime}", date_start, date_end)
+        for nome_regime, crea in module.REGIMI.items()
+    }
+
+    lunghezza = len(giorni) * MINUTI_AL_GIORNO
+    profilo = np.zeros(lunghezza)
+    conteggio: dict[str, int] = {}
+    for numero_giorno, giorno in enumerate(giorni):
+        nome_regime = module.regime(giorno.date())
+        if nome_regime not in per_regime:
+            raise ValueError(
+                f"Lo use case '{use_case_name}' ha dichiarato il regime "
+                f"'{nome_regime}' per il {giorno.date()}, ma REGIMI contiene "
+                f"solo {sorted(per_regime)}"
+            )
+        inizio = numero_giorno * MINUTI_AL_GIORNO
+        fine = inizio + MINUTI_AL_GIORNO
+        profilo[inizio:fine] = per_regime[nome_regime][inizio:fine]
+        conteggio[nome_regime] = conteggio.get(nome_regime, 0) + 1
+
+    logger.info("  %s: giorni per regime %s", col_name, dict(sorted(conteggio.items())))
+    return profilo
 
 
 def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
@@ -217,36 +313,22 @@ def run_ramp(config: dict, base_path: Path) -> pd.DataFrame:
         # Importa il modulo use_case
         module = _import_use_case(use_case_name, base_path)
 
+        a_regimi = hasattr(module, "REGIMI")
+
         for i in range(num_users):
             col_name = f"{use_case_name}_{i + 1}"
             logger.info("  Profilo %s...", col_name)
 
-            # Seed per riproducibilita' (vedi _seed_stabile). Vanno seminati
-            # ENTRAMBI i generatori: ramp/core/core.py fa "import random" e
-            # pesca dalla libreria standard (random.uniform, randint, gauss,
-            # normalvariate, choice), mentre altrove usa np.random. Seminare
-            # solo numpy - com'era prima - lasciava scoperta la parte che
-            # decide finestre di accensione e durate, cioe' quasi tutto il
-            # profilo: i due run restavano diversi.
-            seed = _seed_stabile(use_case_name, i)
-            np.random.seed(seed)
-            random.seed(seed)
+            if a_regimi:
+                profile = _genera_a_regimi(module, use_case_name, i, col_name,
+                                           date_start, date_end)
+            else:
+                # Il percorso semplice resta identico a prima, seed compreso:
+                # gli archetipi senza regimi devono uscire bit per bit come
+                # uscivano, ed e' l'oracolo con cui si collauda questo strato.
+                profile = _genera_un_anno(module.create_user, use_case_name, i,
+                                          col_name, date_start, date_end)
 
-            # Crea utente fresco per ogni istanza
-            user = module.create_user()
-
-            # Crea e configura il UseCase
-            # UseCase si auto-inizializza quando date_start e date_end sono forniti
-            use_case = UseCase(
-                name=col_name,
-                users=[user],
-                date_start=date_start,
-                date_end=date_end,
-                peak_enlarge=0.15,
-            )
-
-            # Genera profilo: array 1D in Watt, risoluzione 1 minuto
-            profile = use_case.generate_daily_load_profiles(flat=True)
             all_profiles[col_name] = profile
 
             logger.info("  %s: %d campioni generati", col_name, len(profile))

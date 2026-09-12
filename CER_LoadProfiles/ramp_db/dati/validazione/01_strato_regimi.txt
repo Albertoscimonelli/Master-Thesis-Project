@@ -1,0 +1,29 @@
+# Passo 4 - Strato dei regimi di calendario in ramp_runner.py
+#
+# Comando:  cd CER_LoadProfiles/ramp_db
+#           ../../venv/Scripts/python.exe collaudo_regimi.py
+# Data:     2026-09-12
+#
+# ESITO: TUTTO OK. I tre archetipi che NON dichiarano regimi (office,
+# small_industry, retail) escono identici bit per bit a prima
+# dell'introduzione dello strato: stesso SHA-256 dei minuti in Watt e stessi
+# kWh/anno alla sesta cifra decimale. Il percorso nuovo prende 0 giorni su 365
+# dal regime sbagliato, e il regime non dichiarato viene rifiutato.
+
+========================================================================
+1. NON REGRESSIONE - gli use case senza regimi restano identici
+========================================================================
+  office_1             IDENTICO   d93218f82ae6c6e5...  10956.520955 kWh (atteso 10956.520955)
+  small_industry_1     IDENTICO   e52920ac8a564421...  61692.091277 kWh (atteso 61692.091277)
+  retail_1             IDENTICO   b0837ae92b3b1123...  13630.753483 kWh (atteso 13630.753483)
+  indice 2025-01-01 00:00:00 -> 2025-12-31 23:59:00, 525600 righe (ok)
+
+========================================================================
+2. PERCORSO A REGIMI - un anno per regime, selezione giorno per giorno
+========================================================================
+  lunghezza 525600 (ok)
+  i due regimi hanno stocastiche diverse: si
+  giorni presi dal regime sbagliato: 0 su 365 (ok)
+  regime non dichiarato: rifiutato correttamente
+
+ESITO: TUTTO OK

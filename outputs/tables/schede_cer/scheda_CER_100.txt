@@ -1,0 +1,228 @@
+SCHEDA CER - 100 FAMIGLIE (Lombardia, pesi AVQ originali)
+======================================================================
+
+Fonte: ISTAT Aspetti della vita quotidiana 2024 (microdati, Lombardia, 1.831
+famiglie) + Censimento permanente della popolazione 2021 (rilascio 2023).
+Allocazione gerarchica a resto maggiore: prima le classi di dimensione, poi le
+tipologie occupazionali entro ciascuna (tipologie_famiglie.py --famiglie 100).
+
+Composizione per dimensione x tipo occupazionale:
+  dim.  nessun occ.   pensionati    un adulto casa  tutti occ.  totale  
+  1     4             17            0               17          38      
+  2     4             9             8               8           29      
+  3     2             0             9               6           17      
+  4     1             0             6               5           12      
+  5+    0             0             3               1           4       
+                                                                --------
+  totale                                            100     
+
+Raffrescamento assunto: 54/100 famiglie (54% contro il 55,6% ISTAT, Dotazioni energetiche 2024,
+Tavola 3 - scostamento da arrotondamento cella per cella, dichiarato.
+
+-----------------------------------------------------------------------------------------------------------------
+#   template pyLPG                                            dim  tipo                          classe    clima 
+-----------------------------------------------------------------------------------------------------------------
+1   CHR06 Jak Jobless                                         1    nessun occupato               1,5-3 kW  si    
+2   CHR26 Single woman under 30, without work                 1    nessun occupato               1,5-3 kW  si    
+3   CHR28 Single man under 30, without work                   1    nessun occupato               1,5-3 kW  no    
+4   CHR36 Single woman, 30-64, without work                   1    nessun occupato               1,5-3 kW  no    
+5   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  si    
+6   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  si    
+7   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  si    
+8   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  no    
+9   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  no    
+10  CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  si    
+11  CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  si    
+12  CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  no    
+13  CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  no    
+14  CHR30 Single, Retired Man                                 1    pensionato/i (solo anziani)   1,5-3 kW  si    
+15  CHR30 Single, Retired Man                                 1    pensionato/i (solo anziani)   1,5-3 kW  si    
+16  CHR30 Single, Retired Man                                 1    pensionato/i (solo anziani)   1,5-3 kW  no    
+17  CHR30 Single, Retired Man                                 1    pensionato/i (solo anziani)   1,5-3 kW  no    
+18  CHR31 Single, Retired Woman                               1    pensionato/i (solo anziani)   1,5-3 kW  si    
+19  CHR31 Single, Retired Woman                               1    pensionato/i (solo anziani)   1,5-3 kW  si    
+20  CHR31 Single, Retired Woman                               1    pensionato/i (solo anziani)   1,5-3 kW  no    
+21  CHR31 Single, Retired Woman                               1    pensionato/i (solo anziani)   1,5-3 kW  no    
+22  CHR07 Single with work                                    1    tutti occupati                1,5-3 kW  si    
+23  CHR07 Single with work                                    1    tutti occupati                1,5-3 kW  no    
+24  CHR09 Single woman, 30-64, with work                      1    tutti occupati                1,5-3 kW  si    
+25  CHR09 Single woman, 30-64, with work                      1    tutti occupati                1,5-3 kW  no    
+26  CHR10 Single man, shift worker                            1    tutti occupati                1,5-3 kW  si    
+27  CHR10 Single man, shift worker                            1    tutti occupati                1,5-3 kW  no    
+28  CHR13 Student with Work                                   1    tutti occupati                1,5-3 kW  si    
+29  CHR13 Student with Work                                   1    tutti occupati                1,5-3 kW  no    
+30  CHR25 Single woman under 30, with work                    1    tutti occupati                1,5-3 kW  si    
+31  CHR25 Single woman under 30, with work                    1    tutti occupati                1,5-3 kW  no    
+32  CHR29 Single man under 30, with work                      1    tutti occupati                1,5-3 kW  si    
+33  CHR29 Single man under 30, with work                      1    tutti occupati                1,5-3 kW  no    
+34  CHR35 Single woman, 30-64, with work                      1    tutti occupati                1,5-3 kW  si    
+35  CHR35 Single woman, 30-64, with work                      1    tutti occupati                1,5-3 kW  no    
+36  CHR37 Single man, 30-64, with work                        1    tutti occupati                1,5-3 kW  si    
+37  CHR37 Single man, 30-64, with work                        1    tutti occupati                1,5-3 kW  no    
+38  OR01 Single Person Office                                 1    tutti occupati                1,5-3 kW  si    
+39  CHR32 Couple under 30, without work                       2    nessun occupato               1,5-3 kW  si    
+40  CHR40 Couple, 30-64, without work                         2    nessun occupato               1,5-3 kW  si    
+41  CHR12 Student 2, Male, Philosophy                         2    nessun occupato               1,5-3 kW  no    
+42  CHR46 Single woman, 1 child, without work                 2    nessun occupato               1,5-3 kW  no    
+43  CHR16 Couple over 65 years                                2    pensionato/i (solo anziani)   1,5-3 kW  si    
+44  CHR16 Couple over 65 years                                2    pensionato/i (solo anziani)   1,5-3 kW  no    
+45  CHR51 Couple over 65 years II                             2    pensionato/i (solo anziani)   1,5-3 kW  si    
+46  CHR51 Couple over 65 years II                             2    pensionato/i (solo anziani)   1,5-3 kW  no    
+47  CHR54 Retired Couple, no work                             2    pensionato/i (solo anziani)   1,5-3 kW  si    
+48  CHR54 Retired Couple, no work                             2    pensionato/i (solo anziani)   1,5-3 kW  no    
+49  CHR58 Retired Couple, no work, no cooking                 2    pensionato/i (solo anziani)   1,5-3 kW  si    
+50  CHR58 Retired Couple, no work, no cooking                 2    pensionato/i (solo anziani)   1,5-3 kW  no    
+51  CHS04 Retired Couple, no work                             2    pensionato/i (solo anziani)   1,5-3 kW  si    
+52  CHR04 Couple, 1 at work 1 at home                         2    un adulto in casa di giorno   1,5-3 kW  si    
+53  CHR04 Couple, 1 at work 1 at home                         2    un adulto in casa di giorno   1,5-3 kW  si    
+54  CHR04 Couple, 1 at work 1 at home                         2    un adulto in casa di giorno   1,5-3 kW  no    
+55  CHR04 Couple, 1 at work 1 at home                         2    un adulto in casa di giorno   1,5-3 kW  no    
+56  CHR34 Couple under 30, 1 at work 1 at home                2    un adulto in casa di giorno   1,5-3 kW  si    
+57  CHR34 Couple under 30, 1 at work 1 at home                2    un adulto in casa di giorno   1,5-3 kW  si    
+58  CHR34 Couple under 30, 1 at work 1 at home                2    un adulto in casa di giorno   1,5-3 kW  no    
+59  CHR34 Couple under 30, 1 at work 1 at home                2    un adulto in casa di giorno   1,5-3 kW  no    
+60  CHR01 Couple both at Work                                 2    tutti occupati                1,5-3 kW  si    
+61  CHR02 Couple, 30-64, with work                            2    tutti occupati                1,5-3 kW  si    
+62  CHR17 Shiftworker Couple                                  2    tutti occupati                1,5-3 kW  si    
+63  CHR19 Couple, both at work, with homehelp                 2    tutti occupati                1,5-3 kW  si    
+64  CHR33 Couple under 30, with work                          2    tutti occupati                1,5-3 kW  no    
+65  CHR39 Couple, 30-64, with work                            2    tutti occupati                1,5-3 kW  no    
+66  CHR55 Couple with work around 40                          2    tutti occupati                1,5-3 kW  no    
+67  CHS12 Shiftworker Couple                                  2    tutti occupati                1,5-3 kW  no    
+68  CHR47 Single woman, 2 children, without work              3    nessun occupato               3-4,5 kW  si    
+69  CHR49 Family, 1 child, without work                       3    nessun occupato               3-4,5 kW  no    
+70  CHR14 3 adults: couple both at work + senior at home      3    un adulto in casa di giorno   3-4,5 kW  si    
+71  CHR14 3 adults: couple both at work + senior at home      3    un adulto in casa di giorno   3-4,5 kW  si    
+72  CHR14 3 adults: couple both at work + senior at home      3    un adulto in casa di giorno   3-4,5 kW  no    
+73  CHR45 Family, 1 child, 1 at work 1 at home                3    un adulto in casa di giorno   3-4,5 kW  si    
+74  CHR45 Family, 1 child, 1 at work 1 at home                3    un adulto in casa di giorno   3-4,5 kW  si    
+75  CHR45 Family, 1 child, 1 at work 1 at home                3    un adulto in casa di giorno   3-4,5 kW  no    
+76  CHR60 Family, 1 toddler, 1 at work 1 at home              3    un adulto in casa di giorno   3-4,5 kW  si    
+77  CHR60 Family, 1 toddler, 1 at work 1 at home              3    un adulto in casa di giorno   3-4,5 kW  no    
+78  CHR60 Family, 1 toddler, 1 at work 1 at home              3    un adulto in casa di giorno   3-4,5 kW  no    
+79  CHR03 Family, 1 child, both at work                       3    tutti occupati                3-4,5 kW  si    
+80  CHR03 Family, 1 child, both at work                       3    tutti occupati                3-4,5 kW  no    
+81  CHR08 Single woman, 2 children, with work                 3    tutti occupati                3-4,5 kW  si    
+82  CHR08 Single woman, 2 children, with work                 3    tutti occupati                3-4,5 kW  no    
+83  CHR42 Single man, 2 children, with work                   3    tutti occupati                3-4,5 kW  si    
+84  CHR61 Family, 1 child, both at work (early pattern)       3    tutti occupati                3-4,5 kW  no    
+85  CHR18 Family, 2 children, parents without work            4    nessun occupato               3-4,5 kW  si    
+86  CHR44 Family, 2 children, 1 at work 1 at home             4    un adulto in casa di giorno   3-4,5 kW  si    
+87  CHR44 Family, 2 children, 1 at work 1 at home             4    un adulto in casa di giorno   3-4,5 kW  no    
+88  CHR53 2 Parents, 1 Working, 2 Children                    4    un adulto in casa di giorno   3-4,5 kW  si    
+89  CHR56 Couple, 2 children, husband at work                 4    un adulto in casa di giorno   3-4,5 kW  si    
+90  CHR57 Family, 2 children, man at work                     4    un adulto in casa di giorno   3-4,5 kW  no    
+91  CHS01 Couple, 2 children, dad employed                    4    un adulto in casa di giorno   3-4,5 kW  no    
+92  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  si    
+93  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  si    
+94  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  si    
+95  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  no    
+96  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  no    
+97  CHR20 one at work, one work from home, 3 children         5    un adulto in casa di giorno   3-4,5 kW  si    
+98  CHR20 one at work, one work from home, 3 children         5    un adulto in casa di giorno   3-4,5 kW  no    
+99  CHR15 Multigenerational: couple, 2 children, 2 seniors    5    un adulto in casa di giorno   3-4,5 kW  si    
+100 CHR05 Family, 3 children, both at work                    5    tutti occupati                3-4,5 kW  si    
+-----------------------------------------------------------------------------------------------------------------
+Totale: 100 famiglie (54 con raffrescamento)
+
+Riferimento pyLPG (household_ref, per generare/verificare i profili):
+  1. CHR06_Jak_Jobless
+  2. CHR26_Single_woman_under_30_years_without_work
+  3. CHR28_Single_man_under_30_years_without_work
+  4. CHR36_Single_woman_30_64_years_without_work
+  5. CHR23_Single_man_over_65_years
+  6. CHR23_Single_man_over_65_years
+  7. CHR23_Single_man_over_65_years
+  8. CHR23_Single_man_over_65_years
+  9. CHR23_Single_man_over_65_years
+  10. CHR24_Single_woman_over_65_years
+  11. CHR24_Single_woman_over_65_years
+  12. CHR24_Single_woman_over_65_years
+  13. CHR24_Single_woman_over_65_years
+  14. CHR30_Single_Retired_Man
+  15. CHR30_Single_Retired_Man
+  16. CHR30_Single_Retired_Man
+  17. CHR30_Single_Retired_Man
+  18. CHR31_Single_Retired_Woman
+  19. CHR31_Single_Retired_Woman
+  20. CHR31_Single_Retired_Woman
+  21. CHR31_Single_Retired_Woman
+  22. CHR07_Single_with_work
+  23. CHR07_Single_with_work
+  24. CHR09_Single_woman_30_64_years_with_work
+  25. CHR09_Single_woman_30_64_years_with_work
+  26. CHR10_Single_man_30_64_age_shift_worker
+  27. CHR10_Single_man_30_64_age_shift_worker
+  28. CHR13_Student_with_Work
+  29. CHR13_Student_with_Work
+  30. CHR25_Single_woman_under_30_years_with_work
+  31. CHR25_Single_woman_under_30_years_with_work
+  32. CHR29_Single_man_under_30_years_with_work
+  33. CHR29_Single_man_under_30_years_with_work
+  34. CHR35_Single_woman_30_64_years_with_work
+  35. CHR35_Single_woman_30_64_years_with_work
+  36. CHR37_Single_man_30_64_years_with_work
+  37. CHR37_Single_man_30_64_years_with_work
+  38. OR01_Single_Person_Office
+  39. CHR32_Couple_under_30_years_without_work
+  40. CHR40_Couple_30_64_years_without_work
+  41. CHR12_Student_2_Male_Philosophy
+  42. CHR46_Single_woman_1_child_without_work
+  43. CHR16_Couple_over_65_years
+  44. CHR16_Couple_over_65_years
+  45. CHR51_Couple_over_65_years_II
+  46. CHR51_Couple_over_65_years_II
+  47. CHR54_Retired_Couple_no_work
+  48. CHR54_Retired_Couple_no_work
+  49. CHR58_Retired_Couple_no_work_no_cooking
+  50. CHR58_Retired_Couple_no_work_no_cooking
+  51. CHS04_Retired_Couple_no_work
+  52. CHR04_Couple_30_64_years_1_at_work_1_at_home
+  53. CHR04_Couple_30_64_years_1_at_work_1_at_home
+  54. CHR04_Couple_30_64_years_1_at_work_1_at_home
+  55. CHR04_Couple_30_64_years_1_at_work_1_at_home
+  56. CHR34_Couple_under_30_years_one_at_work_one_at_home
+  57. CHR34_Couple_under_30_years_one_at_work_one_at_home
+  58. CHR34_Couple_under_30_years_one_at_work_one_at_home
+  59. CHR34_Couple_under_30_years_one_at_work_one_at_home
+  60. CHR01_Couple_both_at_Work
+  61. CHR02_Couple_30_64_age_with_work
+  62. CHR17_Shiftworker_Couple
+  63. CHR19_Couple_30_64_years_both_at_work_with_homehelp
+  64. CHR33_Couple_under_30_years_with_work
+  65. CHR39_Couple_30_64_years_with_work
+  66. CHR55_Couple_with_work_around_40
+  67. CHS12_Shiftworker_Couple
+  68. CHR47_Single_woman_2_children_without_work
+  69. CHR49_Family_with_1_child_without_work
+  70. CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home
+  71. CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home
+  72. CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home
+  73. CHR45_Family_with_1_child_1_at_work_1_at_home
+  74. CHR45_Family_with_1_child_1_at_work_1_at_home
+  75. CHR45_Family_with_1_child_1_at_work_1_at_home
+  76. CHR60_Family_1_toddler_one_at_work_one_at_home
+  77. CHR60_Family_1_toddler_one_at_work_one_at_home
+  78. CHR60_Family_1_toddler_one_at_work_one_at_home
+  79. CHR03_Family_1_child_both_at_work
+  80. CHR03_Family_1_child_both_at_work
+  81. CHR08_Single_woman_2_children_with_work
+  82. CHR08_Single_woman_2_children_with_work
+  83. CHR42_Single_man_with_2_children_with_work
+  84. CHR61_Family_1_child_both_at_work_early_living_pattern
+  85. CHR18_Family_2_children_parents_without_work
+  86. CHR44_Family_with_2_children_1_at_work_1_at_home
+  87. CHR44_Family_with_2_children_1_at_work_1_at_home
+  88. CHR53_2_Parents_1_Working_2_Children
+  89. CHR56_Couple_with_2_children_husband_at_work
+  90. CHR57_Family_with_2_Children_Man_at_work
+  91. CHS01_Couple_with_2_Children_Dad_Employed
+  92. CHR27_Family_both_at_work_2_children
+  93. CHR27_Family_both_at_work_2_children
+  94. CHR27_Family_both_at_work_2_children
+  95. CHR27_Family_both_at_work_2_children
+  96. CHR27_Family_both_at_work_2_children
+  97. CHR20_one_at_work_one_work_home_3_children
+  98. CHR20_one_at_work_one_work_home_3_children
+  99. CHR15_Multigenerational_Home_working_couple_2_children_2_seniors
+  100. CHR05_Family_3_children_both_with_work

@@ -1,0 +1,51 @@
+SCHEDA CER - 8 FAMIGLIE (Lombardia, pesi AVQ originali)
+======================================================================
+
+Fonte: ISTAT Aspetti della vita quotidiana 2024 (microdati, Lombardia, 1.831
+famiglie) + Censimento permanente della popolazione 2021 (rilascio 2023).
+Allocazione gerarchica a resto maggiore: prima le classi di dimensione, poi le
+tipologie occupazionali entro ciascuna (tipologie_famiglie.py --famiglie 8).
+
+Composizione per dimensione x tipo occupazionale:
+  dim.  nessun occ.   pensionati    un adulto casa  tutti occ.  totale  
+  1     0             2             0               1           3       
+  2     0             1             0               1           2       
+  3     0             0             1               1           2       
+  4     0             0             1               0           1       
+  5+    0             0             0               0           0       
+                                                                --------
+  totale                                            8       
+
+Raffrescamento assunto: 7/8 famiglie (88% contro il 55,6% ISTAT, Dotazioni energetiche 2024,
+Tavola 3 - a N=8 l'arrotondamento cella per cella puo' spingere la quota molto sopra
+o sotto il 55,6% atteso: e' un artefatto della scala piccola, non un dato,
+e va corretto a mano se conta per l'uso che ne fai.
+
+ASSUNZIONE DICHIARATA: a questa taglia non tutte le combinazioni dimensione x tipo
+della popolazione sono rappresentate (es. niente famiglie numerose se N e' piccolo): e'
+l'effetto atteso dell'allocazione a resto maggiore su un campione piccolo, non una
+scelta arbitraria - la tabella sopra mostra esattamente quali celle sono vuote.
+
+-----------------------------------------------------------------------------------------------------------------
+#   template pyLPG                                            dim  tipo                          classe    clima 
+-----------------------------------------------------------------------------------------------------------------
+1   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  si    
+2   CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  no    
+3   CHR07 Single with work                                    1    tutti occupati                1,5-3 kW  si    
+4   CHR16 Couple over 65 years                                2    pensionato/i (solo anziani)   1,5-3 kW  si    
+5   CHR01 Couple both at Work                                 2    tutti occupati                1,5-3 kW  si    
+6   CHR14 3 adults: couple both at work + senior at home      3    un adulto in casa di giorno   3-4,5 kW  si    
+7   CHR03 Family, 1 child, both at work                       3    tutti occupati                3-4,5 kW  si    
+8   CHR44 Family, 2 children, 1 at work 1 at home             4    un adulto in casa di giorno   3-4,5 kW  si    
+-----------------------------------------------------------------------------------------------------------------
+Totale: 8 famiglie (7 con raffrescamento)
+
+Riferimento pyLPG (household_ref, per generare/verificare i profili):
+  1. CHR23_Single_man_over_65_years
+  2. CHR24_Single_woman_over_65_years
+  3. CHR07_Single_with_work
+  4. CHR16_Couple_over_65_years
+  5. CHR01_Couple_both_at_Work
+  6. CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home
+  7. CHR03_Family_1_child_both_at_work
+  8. CHR44_Family_with_2_children_1_at_work_1_at_home

@@ -1,0 +1,562 @@
+# SOCIETA' LOMBARDA - cento famiglie, allocazione dimensione x tipo dal
+# censimento e da ISTAT AVQ 2024.
+#
+# NON ANCORA ESEGUITA. Questo file e' stato generato e sottoposto a revisione
+# prima del run: a 100 famiglie il tempo atteso e' ~2 minuti/famiglia, cioe'
+# 3-3,5 ore filate (contro i 40-45 minuti della versione da 20). Vedi
+# outputs/tables/composizione_cer_scalata.md per la tabella completa su tutte
+# le taglie intermedie (3-100) da cui questo file deriva la colonna Lombardia.
+#
+# DA DOVE VIENE LA COMPOSIZIONE.
+#   ISTAT, Aspetti della vita quotidiana 2024, microdati, Lombardia: 1.831
+#   famiglie, 4.139 individui, copertura 100% dei componenti. Pesi COEFIN
+#   originali (non ricalibrati): 4,56 milioni di famiglie contro 4,57 del
+#   censimento.
+#   ISTAT, Censimento permanente della popolazione 2021 (rilascio 2023), dati
+#   per sezione, aggregato Lombardia: famiglie per numero di componenti
+#   (PF3-PF8), popolazione 65+ (P27-P29).
+#   ISTAT, Dotazioni energetiche delle famiglie 2024, Tavola 3: 55,6% delle
+#   famiglie lombarde ha un impianto di raffrescamento.
+#
+# ALLOCAZIONE GERARCHICA (tipologie_famiglie.py --famiglie 100), risultato:
+#
+#   componenti  nessun occ.  pensionati  un adulto in casa  tutti occ.  tot.
+#   1                  4          17            0               17      38
+#   2                  4           9            8                8      29
+#   3                  2           0            9                6      17
+#   4                  1           0            6                5      12
+#   5+                 0           0            3                1       4
+#   -----------------------------------------------------------------------
+#   totale            11          26           26               37     100
+#
+# DA CELLA A FAMIGLIE: CATALOGO E RIPETIZIONI. Il catalogo italiano ha 66
+# template (interrogato da lpgdata.Households). Ogni cella e' stata riempita
+# con TUTTI i template distinti disponibili per quella combinazione
+# dimensione x tipo (classificati dal nome LPG, che codifica esplicitamente
+# eta', numero di componenti e stato occupazionale - stessa convenzione gia'
+# usata in simulation_config.lombardia20.yaml); quando la cella richiede piu'
+# famiglie dei template distinti disponibili, i template si RIPETONO con seed
+# diversi (_seed_stabile(label, indice) in lpg_runner.py). La Fase 4 ha
+# misurato che l'identita' dell'archetipo pesa 7,6 volte il seme: ripetere lo
+# stesso archetipo con semi diversi e' quindi una scelta dichiarata e non un
+# compromesso nascosto. Distribuzione dei ripetuti (il piu' possibile pari,
+# a resto maggiore):
+#   1 comp. pensionati:      17 su 4 template (CHR23,24,30,31)      5/4/4/4
+#   1 comp. tutti occupati:  17 su 9 template                        2 x8, 1 x1
+#   2 comp. pensionati:       9 su 5 template                        2 x4, 1 x1
+#   2 comp. un adulto in casa: 8 su 2 template (CHR04, CHR34)         4/4
+#   3 comp. un adulto in casa: 9 su 3 template                       3/3/3
+#   3 comp. tutti occupati:   6 su 4 template                        2/2/1/1
+#   4 comp. tutti occupati:   5 su 1 solo template (CHR27)            5x lo stesso
+#   4 comp. un adulto in casa: 6 su 5 template                       2/1/1/1/1
+#   5+ un adulto in casa:     3 su 2 template (CHR20, CHR15)          2/1
+#   Le altre celle hanno abbastanza template distinti da non ripetere affatto
+#   (1n, 2n, 2t, 3n, 3t parziale, 4n, 4u parziale, 5t).
+#
+# CLASSIFICAZIONE DEI TEMPLATE PER CELLA: ASSUNZIONE DICHIARATA. Non esiste
+# nel database pyLPG una colonna "numero componenti" o "stato occupazionale"
+# gia' pronta all'uso: la classificazione qui usata legge il nome del
+# template (che LPG assegna in modo sistematico, es. "1 at work, 1 at home",
+# "without work", "over 65 years") - stessa convenzione con cui
+# lombardia20.yaml aveva gia' scelto i suoi venti template. Non e' stata
+# verificata riga per riga contro tblTemplatePerson/tblTemplatePersonTrait del
+# .db3. Esclusi dal catalogo: CHR62 (casa vacanze, presenza di un mese solo:
+# non rappresentativo di un socio CER stabile) e CHR52 (Student Flatsharing,
+# dimensione del nucleo non dichiarata nel nome).
+#
+# RAFFRESCAMENTO: 54 famiglie su 100 (54,0%) contro il 55,6% ISTAT - il
+# residuo viene dall'arrotondamento a resto maggiore applicato CELLA PER
+# CELLA (non sul totale): stesso tipo di scostamento gia' dichiarato in
+# lombardia20.yaml per le famiglie con minori (25% contro 21,7% atteso).
+# Distribuito su tutte le celle e non concentrato su una tipologia.
+#
+# CLASSE DI POTENZA: stessa regola delle configurazioni sorelle - fino a due
+# componenti 1,5-3 kW, da tre in su 3-4,5 kW. Non e' letta dalla pipeline,
+# serve all'analisi a valle per la curva ARERA di confronto.
+#
+# RIPRODUCIBILITA'. Questo file e la tabella dei conteggi per cella sono
+# generati da uno script che riusa tipologie_famiglie.py
+# (famiglie_avq/marginali_censimento/allocazione) e interroga lpgdata.Households
+# per il catalogo. Nessun conteggio qui e' scritto a mano.
+#
+# Uso (~3-3,5 ore):
+#   python generate_load_profiles.py --config config/simulation_config.lombardia100.yaml
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+# RAMP resta al minimo: serve solo perche' la pipeline richiede almeno una
+# sorgente, e la sua colonna viene ignorata nel confronto con ARERA.
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+
+lpg:
+  households:
+    - label: "L100_1n_CHR06"
+      template: "CHR06 Jak Jobless"
+      household_ref: "CHR06_Jak_Jobless"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1n_CHR26"
+      template: "CHR26 Single woman under 30 years without work"
+      household_ref: "CHR26_Single_woman_under_30_years_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1n_CHR28"
+      template: "CHR28 Single man under 30 years without work"
+      household_ref: "CHR28_Single_man_under_30_years_without_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1n_CHR36"
+      template: "CHR36 Single woman, 30 - 64 years, without work"
+      household_ref: "CHR36_Single_woman_30_64_years_without_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1p_CHR23_clima"
+      template: "CHR23 Single man over 65 years"
+      household_ref: "CHR23_Single_man_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 3
+    - label: "L100_1p_CHR23_no_clima"
+      template: "CHR23 Single man over 65 years"
+      household_ref: "CHR23_Single_man_over_65_years"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR24_clima"
+      template: "CHR24 Single woman over 65 years"
+      household_ref: "CHR24_Single_woman_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR24_no_clima"
+      template: "CHR24 Single woman over 65 years"
+      household_ref: "CHR24_Single_woman_over_65_years"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR30_clima"
+      template: "CHR30 Single, Retired Man"
+      household_ref: "CHR30_Single_Retired_Man"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR30_no_clima"
+      template: "CHR30 Single, Retired Man"
+      household_ref: "CHR30_Single_Retired_Man"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR31_clima"
+      template: "CHR31 Single, Retired Woman"
+      household_ref: "CHR31_Single_Retired_Woman"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1p_CHR31_no_clima"
+      template: "CHR31 Single, Retired Woman"
+      household_ref: "CHR31_Single_Retired_Woman"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_1t_CHR07_clima"
+      template: "CHR07 Single with work"
+      household_ref: "CHR07_Single_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR07_no_clima"
+      template: "CHR07 Single with work"
+      household_ref: "CHR07_Single_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR09_clima"
+      template: "CHR09 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR09_Single_woman_30_64_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR09_no_clima"
+      template: "CHR09 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR09_Single_woman_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR10_clima"
+      template: "CHR10 Single man, 30 - 64 age, shift worker"
+      household_ref: "CHR10_Single_man_30_64_age_shift_worker"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR10_no_clima"
+      template: "CHR10 Single man, 30 - 64 age, shift worker"
+      household_ref: "CHR10_Single_man_30_64_age_shift_worker"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR13_clima"
+      template: "CHR13 Student with Work"
+      household_ref: "CHR13_Student_with_Work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR13_no_clima"
+      template: "CHR13 Student with Work"
+      household_ref: "CHR13_Student_with_Work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR25_clima"
+      template: "CHR25 Single woman under 30 years with work"
+      household_ref: "CHR25_Single_woman_under_30_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR25_no_clima"
+      template: "CHR25 Single woman under 30 years with work"
+      household_ref: "CHR25_Single_woman_under_30_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR29_clima"
+      template: "CHR29 Single man under 30 years with work"
+      household_ref: "CHR29_Single_man_under_30_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR29_no_clima"
+      template: "CHR29 Single man under 30 years with work"
+      household_ref: "CHR29_Single_man_under_30_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR35_clima"
+      template: "CHR35 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR35_Single_woman_30_64_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR35_no_clima"
+      template: "CHR35 Single woman, 30 - 64 years, with work"
+      household_ref: "CHR35_Single_woman_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR37_clima"
+      template: "CHR37 Single man, 30 - 64 years, with work"
+      household_ref: "CHR37_Single_man_30_64_years_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_CHR37_no_clima"
+      template: "CHR37 Single man, 30 - 64 years, with work"
+      household_ref: "CHR37_Single_man_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_1t_OR01"
+      template: "OR01 Single Person Office"
+      household_ref: "OR01_Single_Person_Office"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2n_CHR32"
+      template: "CHR32 Couple under 30 years without work"
+      household_ref: "CHR32_Couple_under_30_years_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2n_CHR40"
+      template: "CHR40 Couple, 30 - 64 years, without work"
+      household_ref: "CHR40_Couple_30_64_years_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2n_CHR12"
+      template: "CHR12 Student 2, Male, Philosophy"
+      household_ref: "CHR12_Student_2_Male_Philosophy"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2n_CHR46"
+      template: "CHR46 Single woman, 1 child, without work"
+      household_ref: "CHR46_Single_woman_1_child_without_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR16_clima"
+      template: "CHR16 Couple over 65 years"
+      household_ref: "CHR16_Couple_over_65_years"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR16_no_clima"
+      template: "CHR16 Couple over 65 years"
+      household_ref: "CHR16_Couple_over_65_years"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR51_clima"
+      template: "CHR51 Couple over 65 years II"
+      household_ref: "CHR51_Couple_over_65_years_II"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR51_no_clima"
+      template: "CHR51 Couple over 65 years II"
+      household_ref: "CHR51_Couple_over_65_years_II"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR54_clima"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR54_no_clima"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR58_clima"
+      template: "CHR58 Retired Couple, no work, no cooking"
+      household_ref: "CHR58_Retired_Couple_no_work_no_cooking"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHR58_no_clima"
+      template: "CHR58 Retired Couple, no work, no cooking"
+      household_ref: "CHR58_Retired_Couple_no_work_no_cooking"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2p_CHS04"
+      template: "CHS04 Retired Couple, no work"
+      household_ref: "CHS04_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2u_CHR04_clima"
+      template: "CHR04 Couple, 30 - 64 years, 1 at work, 1 at home"
+      household_ref: "CHR04_Couple_30_64_years_1_at_work_1_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_2u_CHR04_no_clima"
+      template: "CHR04 Couple, 30 - 64 years, 1 at work, 1 at home"
+      household_ref: "CHR04_Couple_30_64_years_1_at_work_1_at_home"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_2u_CHR34_clima"
+      template: "CHR34 Couple under 30 years, one at work, one at home"
+      household_ref: "CHR34_Couple_under_30_years_one_at_work_one_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_2u_CHR34_no_clima"
+      template: "CHR34 Couple under 30 years, one at work, one at home"
+      household_ref: "CHR34_Couple_under_30_years_one_at_work_one_at_home"
+      classe_potenza: "1.5-3"
+      count: 2
+    - label: "L100_2t_CHR01"
+      template: "CHR01 Couple both at Work"
+      household_ref: "CHR01_Couple_both_at_Work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR02"
+      template: "CHR02 Couple, 30 - 64 age, with work"
+      household_ref: "CHR02_Couple_30_64_age_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR17"
+      template: "CHR17 Shiftworker Couple"
+      household_ref: "CHR17_Shiftworker_Couple"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR19"
+      template: "CHR19 Couple, 30 - 64 years, both at work, with homehelp"
+      household_ref: "CHR19_Couple_30_64_years_both_at_work_with_homehelp"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR33"
+      template: "CHR33 Couple under 30 years with work"
+      household_ref: "CHR33_Couple_under_30_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR39"
+      template: "CHR39 Couple, 30 - 64 years, with work"
+      household_ref: "CHR39_Couple_30_64_years_with_work"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHR55"
+      template: "CHR55 Couple with work around 40"
+      household_ref: "CHR55_Couple_with_work_around_40"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_2t_CHS12"
+      template: "CHS12 Shiftworker Couple"
+      household_ref: "CHS12_Shiftworker_Couple"
+      classe_potenza: "1.5-3"
+      count: 1
+    - label: "L100_3n_CHR47"
+      template: "CHR47 Single woman, 2 children, without work"
+      household_ref: "CHR47_Single_woman_2_children_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3n_CHR49"
+      template: "CHR49 Family with 1 child, without work"
+      household_ref: "CHR49_Family_with_1_child_without_work"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3u_CHR14_clima"
+      template: "CHR14 3 adults: Couple, 30- 64 years, both at work + Senior at home"
+      household_ref: "CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 2
+    - label: "L100_3u_CHR14_no_clima"
+      template: "CHR14 3 adults: Couple, 30- 64 years, both at work + Senior at home"
+      household_ref: "CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3u_CHR45_clima"
+      template: "CHR45 Family with 1 child, 1 at work, 1 at home"
+      household_ref: "CHR45_Family_with_1_child_1_at_work_1_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 2
+    - label: "L100_3u_CHR45_no_clima"
+      template: "CHR45 Family with 1 child, 1 at work, 1 at home"
+      household_ref: "CHR45_Family_with_1_child_1_at_work_1_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3u_CHR60_clima"
+      template: "CHR60 Family, 1 toddler, one at work, one at home"
+      household_ref: "CHR60_Family_1_toddler_one_at_work_one_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3u_CHR60_no_clima"
+      template: "CHR60 Family, 1 toddler, one at work, one at home"
+      household_ref: "CHR60_Family_1_toddler_one_at_work_one_at_home"
+      classe_potenza: "3-4.5"
+      count: 2
+    - label: "L100_3t_CHR03_clima"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3t_CHR03_no_clima"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3t_CHR08_clima"
+      template: "CHR08 Single woman, 2 children, with work"
+      household_ref: "CHR08_Single_woman_2_children_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3t_CHR08_no_clima"
+      template: "CHR08 Single woman, 2 children, with work"
+      household_ref: "CHR08_Single_woman_2_children_with_work"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3t_CHR42"
+      template: "CHR42 Single man with 2 children, with work"
+      household_ref: "CHR42_Single_man_with_2_children_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_3t_CHR61"
+      template: "CHR61 Family, 1 child, both at work, early living pattern"
+      household_ref: "CHR61_Family_1_child_both_at_work_early_living_pattern"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4n_CHR18"
+      template: "CHR18 Family, 2 children, parents without work"
+      household_ref: "CHR18_Family_2_children_parents_without_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHR44_clima"
+      template: "CHR44 Family with 2 children, 1 at work, 1 at home"
+      household_ref: "CHR44_Family_with_2_children_1_at_work_1_at_home"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHR44_no_clima"
+      template: "CHR44 Family with 2 children, 1 at work, 1 at home"
+      household_ref: "CHR44_Family_with_2_children_1_at_work_1_at_home"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHR53"
+      template: "CHR53 2 Parents, 1 Working, 2 Children"
+      household_ref: "CHR53_2_Parents_1_Working_2_Children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHR56"
+      template: "CHR56 Couple with 2 children, husband at work"
+      household_ref: "CHR56_Couple_with_2_children_husband_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHR57"
+      template: "CHR57 Family with 2 Children, Man at work"
+      household_ref: "CHR57_Family_with_2_Children_Man_at_work"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4u_CHS01"
+      template: "CHS01 Couple with 2 Children, Dad Employed"
+      household_ref: "CHS01_Couple_with_2_Children_Dad_Employed"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_4t_CHR27_clima"
+      template: "CHR27 Family both at work, 2 children"
+      household_ref: "CHR27_Family_both_at_work_2_children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 3
+    - label: "L100_4t_CHR27_no_clima"
+      template: "CHR27 Family both at work, 2 children"
+      household_ref: "CHR27_Family_both_at_work_2_children"
+      classe_potenza: "3-4.5"
+      count: 2
+    - label: "L100_5u_CHR20_clima"
+      template: "CHR20 one at work, one work home, 3 children"
+      household_ref: "CHR20_one_at_work_one_work_home_3_children"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_5u_CHR20_no_clima"
+      template: "CHR20 one at work, one work home, 3 children"
+      household_ref: "CHR20_one_at_work_one_work_home_3_children"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_5u_CHR15"
+      template: "CHR15 Multigenerational Home: working couple, 2 children, 2 seniors"
+      household_ref: "CHR15_Multigenerational_Home_working_couple_2_children_2_seniors"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+    - label: "L100_5t_CHR05"
+      template: "CHR05 Family, 3 children, both with work"
+      household_ref: "CHR05_Family_3_children_both_with_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      classe_potenza: "3-4.5"
+      count: 1
+
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "EnergySaving"
+  database: "lpg_db/profilegenerator.IT.db3"
+  geographic_location: "Italy_Mailand"
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
+
+output:
+  folder: "outputs/csv_lombardia100"
+  combined_profiles: true
+  individual_profiles: false
+  dettaglio_domestici: true
+  aggregate_total: false
+  versioned: false
+  scheda_cer: false

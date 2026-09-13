@@ -1,0 +1,69 @@
+SCHEDA CER - 18 FAMIGLIE (Lombardia, pesi AVQ originali)
+======================================================================
+
+Fonte: ISTAT Aspetti della vita quotidiana 2024 (microdati, Lombardia, 1.831
+famiglie) + Censimento permanente della popolazione 2021 (rilascio 2023).
+Allocazione gerarchica a resto maggiore: prima le classi di dimensione, poi le
+tipologie occupazionali entro ciascuna (tipologie_famiglie.py --famiglie 18).
+
+Composizione per dimensione x tipo occupazionale:
+  dim.  nessun occ.   pensionati    un adulto casa  tutti occ.  totale  
+  1     1             3             0               3           7       
+  2     1             2             1               1           5       
+  3     0             0             2               1           3       
+  4     0             0             1               1           2       
+  5+    0             0             1               0           1       
+                                                                --------
+  totale                                            18      
+
+Raffrescamento assunto: 14/18 famiglie (78% contro il 55,6% ISTAT, Dotazioni energetiche 2024,
+Tavola 3 - scostamento da arrotondamento cella per cella, dichiarato.
+
+ASSUNZIONE DICHIARATA: a questa taglia non tutte le combinazioni dimensione x tipo
+della popolazione sono rappresentate (es. niente famiglie numerose se N e' piccolo): e'
+l'effetto atteso dell'allocazione a resto maggiore su un campione piccolo, non una
+scelta arbitraria - la tabella sopra mostra esattamente quali celle sono vuote.
+
+-----------------------------------------------------------------------------------------------------------------
+#   template pyLPG                                            dim  tipo                          classe    clima 
+-----------------------------------------------------------------------------------------------------------------
+1   CHR06 Jak Jobless                                         1    nessun occupato               1,5-3 kW  si    
+2   CHR23 Single man over 65 years                            1    pensionato/i (solo anziani)   1,5-3 kW  si    
+3   CHR24 Single woman over 65 years                          1    pensionato/i (solo anziani)   1,5-3 kW  si    
+4   CHR30 Single, Retired Man                                 1    pensionato/i (solo anziani)   1,5-3 kW  no    
+5   CHR07 Single with work                                    1    tutti occupati                1,5-3 kW  si    
+6   CHR09 Single woman, 30-64, with work                      1    tutti occupati                1,5-3 kW  si    
+7   CHR10 Single man, shift worker                            1    tutti occupati                1,5-3 kW  no    
+8   CHR32 Couple under 30, without work                       2    nessun occupato               1,5-3 kW  si    
+9   CHR16 Couple over 65 years                                2    pensionato/i (solo anziani)   1,5-3 kW  si    
+10  CHR51 Couple over 65 years II                             2    pensionato/i (solo anziani)   1,5-3 kW  no    
+11  CHR04 Couple, 1 at work 1 at home                         2    un adulto in casa di giorno   1,5-3 kW  si    
+12  CHR01 Couple both at Work                                 2    tutti occupati                1,5-3 kW  si    
+13  CHR14 3 adults: couple both at work + senior at home      3    un adulto in casa di giorno   3-4,5 kW  si    
+14  CHR45 Family, 1 child, 1 at work 1 at home                3    un adulto in casa di giorno   3-4,5 kW  no    
+15  CHR03 Family, 1 child, both at work                       3    tutti occupati                3-4,5 kW  si    
+16  CHR44 Family, 2 children, 1 at work 1 at home             4    un adulto in casa di giorno   3-4,5 kW  si    
+17  CHR27 Family both at work, 2 children                     4    tutti occupati                3-4,5 kW  si    
+18  CHR20 one at work, one work from home, 3 children         5    un adulto in casa di giorno   3-4,5 kW  si    
+-----------------------------------------------------------------------------------------------------------------
+Totale: 18 famiglie (14 con raffrescamento)
+
+Riferimento pyLPG (household_ref, per generare/verificare i profili):
+  1. CHR06_Jak_Jobless
+  2. CHR23_Single_man_over_65_years
+  3. CHR24_Single_woman_over_65_years
+  4. CHR30_Single_Retired_Man
+  5. CHR07_Single_with_work
+  6. CHR09_Single_woman_30_64_years_with_work
+  7. CHR10_Single_man_30_64_age_shift_worker
+  8. CHR32_Couple_under_30_years_without_work
+  9. CHR16_Couple_over_65_years
+  10. CHR51_Couple_over_65_years_II
+  11. CHR04_Couple_30_64_years_1_at_work_1_at_home
+  12. CHR01_Couple_both_at_Work
+  13. CHR14_3_adults_Couple_30_64_years_both_at_work_Senior_at_home
+  14. CHR45_Family_with_1_child_1_at_work_1_at_home
+  15. CHR03_Family_1_child_both_at_work
+  16. CHR44_Family_with_2_children_1_at_work_1_at_home
+  17. CHR27_Family_both_at_work_2_children
+  18. CHR20_one_at_work_one_work_home_3_children

@@ -91,11 +91,6 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
 %  una cartella per scheda; con .chiudi le finestre si chiudono dopo il
 %  salvataggio, cosi' il giro successivo parte pulito.
 %
-%  .esporta E' SPENTO IN QUESTA FASE DEL LAVORO, di proposito. L'export non e'
-%  gratuito: la §8 tiene i due cronometri separati proprio per farlo vedere, e
-%  un PDF vettoriale con migliaia di punti costa piu' di un'intera ripartizione.
-%  Finche' si sta lavorando sui NUMERI e non sulle figure e' costo puro. Si
-%  riaccende quando servono le tavole per la tesi.
 %  ========================================================================
 
 FIG = struct( ...
@@ -527,7 +522,9 @@ for iCER = 1:N_CER
     %  non e' energia condivisibile con la CER e va esclusa dal gioco.
     %  ========================================================================
 
+    T_metodo = tic;
     Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+    fprintf('  [cronometro] Shapley esatto: %s\n', format_duration(toc(T_metodo)));
 
     % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
     % tariffa lorda con esenzione applicata coalizione per coalizione (quella
@@ -585,7 +582,9 @@ for iCER = 1:N_CER
     %  quindi STABILE (nessuna sotto-coalizione conviene).
     %  ========================================================================
 
+    T_metodo = tic;
     Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+    fprintf('  [cronometro] Nucleolo: %s\n', format_duration(toc(T_metodo)));
 
     coreMsg = "fuori dal Core";
     if Nu.inCore, coreMsg = "nel Core (stabile)"; end
@@ -609,7 +608,9 @@ for iCER = 1:N_CER
     %  nash_bargaining_cer.m per i dettagli e i riferimenti.
     %  ========================================================================
 
+    T_metodo = tic;
     NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+    fprintf('  [cronometro] Nash Bargaining: %s\n', format_duration(toc(T_metodo)));
     report_allocation(NB, "Nash Bargaining");
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
@@ -634,8 +635,10 @@ for iCER = 1:N_CER
     %  Vedi variance_least_core_cer.m per i dettagli.
     %  ========================================================================
 
+    T_metodo = tic;
     VLC = variance_least_core_cer(genForShare, loadForShare, userNames, ...
                                   P_CER_lordo, optF);
+    fprintf('  [cronometro] Variance Least Core: %s\n', format_duration(toc(T_metodo)));
 
     coreMsgVLC = "fuori dal Core";
     if VLC.inCore, coreMsgVLC = "nel Core (stabile)"; end
@@ -985,16 +988,26 @@ for iCER = 1:N_CER
     SEV = stratified_expected_value_cer(genForShare, loadForShare, userNames, ...
                                         P_CER_lordo, optSEV);
 
-    interior   = 2:(nUsers-1);                       % strati intermedi (1..n-2)
-    relBiasMax = 100 * max(SEV.strataBias(:, interior) ./ ...
-                           max(SEV.muExact(:, interior), eps), [], 'all');
+    interior = 2:(nUsers-1);                         % strati intermedi (1..n-2)
+    % opts.validateStrata si autodisattiva dentro stratified_expected_value_cer
+    % quando n > 12 (l'enumerazione costerebbe quanto lo Shapley esatto): in tal
+    % caso muExact/strataBias tornano vuoti, e il confronto con l'eq. 8 esatta
+    % non e' calcolabile. Va distinto da un vero scarto, non taciuto.
+    if isempty(SEV.strataBias)
+        notaScarto = string(sprintf('  %-25s: non calcolato (validazione saltata, n=%d > 12)', ...
+                                     'Scarto vs eq. 8 esatta', nUsers));
+    else
+        relBiasMax = 100 * max(SEV.strataBias(:, interior) ./ ...
+                               max(SEV.muExact(:, interior), eps), [], 'all');
+        notaScarto = string(sprintf('  %-25s: nullo sugli strati 0 e n-1, fino a %+.0f%% su quelli intermedi', ...
+                                     'Scarto vs eq. 8 esatta', relBiasMax));
+    end
     report_allocation(SEV, "Stratified Expected Value", [ ...
         string(sprintf('  %-25s: %.4f  (v(N) / somma dei valori SEV grezzi)', ...
                        'Fattore di normalizz.', SEV.normFactor)), ...
         string(sprintf('  %-25s: %d strati per giocatore, %d valutazioni di v (contro %d coalizioni)', ...
                        'Costo di calcolo', nUsers, 2*nUsers^2, 2^nUsers)), ...
-        string(sprintf('  %-25s: nullo sugli strati 0 e n-1, fino a %+.0f%% su quelli intermedi', ...
-                       'Scarto vs eq. 8 esatta', relBiasMax))]);
+        notaScarto]);
 
     % Controllo incrociato forte: nel nostro gioco v dipende solo dai profili
     % AGGREGATI della coalizione, quindi n-1 copie dell'utente medio riproducono
@@ -1447,8 +1460,10 @@ for iCER = 1:N_CER
     % diversi e l'eccesso di coalizione non vorrebbe dire nulla.
     optEX = optF;
     optEX.quiet = true;
+    T_metodo = tic;
     EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
                           userNames, P_CER_lordo, optEX);
+    fprintf('  [cronometro] Coalition Excess: %s\n', format_duration(toc(T_metodo)));
 
     % --- Forza incentivante della regola (asse di virtuosita' di Bilardo) ----
     % La QUARTA domanda: non quanto e' uniforme la ripartizione, ne' quanto e'

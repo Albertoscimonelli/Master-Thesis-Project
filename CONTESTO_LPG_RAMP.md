@@ -343,7 +343,32 @@ esattamente sulle forme individuali.
 Avvertenza: il dato orario ARERA copre solo i clienti *trattati orari*, un
 sottoinsieme di cui va verificata la rappresentatività.
 
-### Punto 4 — validazione dei non domestici (RAMP vs GSE)
+### Punto 4 — validazione dei non domestici (RAMP vs GSE) — **FATTO**
+
+> **Chiuso.** L'impianto di validazione non domestico esiste
+> (`CER_LoadProfiles/ramp_db/`), i tre archetipi sono stati misurati e corretti,
+> e ne sono nati due nuovi — `scuola_superiore` e `comune`. Risultati, difetti
+> residui e riproducibilità in [REPORT_VALIDAZIONE_RAMP.md](REPORT_VALIDAZIONE_RAMP.md);
+> le misure passaggio per passaggio in `ramp_db/dati/validazione/`, dieci file
+> numerati.
+>
+> **La tabella qui sotto ha retto alla prova dei fatti**: ARERA per i non
+> domestici è davvero solo mensile — verificato sui file, non assunto — e la
+> forma oraria viene davvero dai profili standard GSE. Anche l'avvertenza sul
+> «metro, non sorgente» resta valida, ed è stata riconfermata: i profili GSE
+> sono una curva unica per tutta la categoria "altri usi" e ignorano il giorno
+> della settimana (distanza feriale/domenica 0,001), quindi non potrebbero
+> sostituire RAMP nemmeno volendo.
+>
+> Due cose che il punto non prevedeva e che i dati hanno imposto. La prima: la
+> base normativa corrente non è più la delibera 318/2020 citata dal documento
+> GSE del 2022, ma il **TIAD** (Testo Integrato Autoconsumo Diffuso, allegato
+> alla delibera ARERA 727/2022/R/eel) — ed è ciò che rende quei profili il
+> meccanismo reale del settlement, non un benchmark qualsiasi. La seconda: il
+> rumore di fonte fra due annualità GSE è praticamente nullo (le tabelle 2024 e
+> 2025 differiscono di 7,5e-5), quindi **la soglia di accettazione non può
+> venire da lì**: viene da ARERA fra 2024 e 2025, ed è per questo che è servito
+> scaricare anche l'annualità 2024.
 
 | Cosa | Fonte |
 |---|---|

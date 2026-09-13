@@ -54,7 +54,9 @@ Project/
 |   |                                           post-stratificata sul comune
 |   +-- ramp_inputs/
 |   |   +-- use_cases/
-|   |       |-- office.py               Use case: ufficio medio
+|   |       |-- office.py               Use case: ufficio medio (a regimi)
+|   |       |-- scuola_superiore.py     Use case: istituto superiore (a regimi)
+|   |       |-- comune.py               Use case: municipio (a regimi)
 |   |       |-- small_industry.py       Use case: piccola industria
 |   |       +-- retail.py               Use case: negozio al dettaglio
 |   +-- lpg_inputs/
@@ -70,6 +72,15 @@ Project/
 |   |   |-- curva_numerosita.py         Numerosita' contro modello; eterogeneita'
 |   |   |-- confronta_societa.py        Confronto fra due composizioni
 |   |   +-- dati/                       Cache ARERA (versionata) e rapporti
+|   +-- ramp_db/                        RIFERIMENTO NON DOMESTICO (§3.11)
+|   |   |-- riferimento_arera_nd.py     Livello: ARERA per ATECO e classe BTA
+|   |   |-- riferimento_gse_nd.py       Forma oraria: profili standard GSE
+|   |   |-- leggi_quaderno_enea.py      Indici kWh/m2 dai PDF di benchmark
+|   |   |-- benchmark_letteratura.csv   Secondo parere, con fonte e pagina
+|   |   |-- valida_non_domestici.py     La misura: livello, forma, fasce, picco
+|   |   |-- numerosita_nd.py           Errore di modello contro errore di campione
+|   |   |-- collaudo_regimi.py          Non regressione dello strato dei regimi
+|   |   +-- dati/                       Cache ARERA non domestica + validazione
 |   +-- outputs/csv/
 |       |-- profili_aziende.csv         Profili individuali aziende (kWh/h)
 |       |-- profili_famiglie.csv        Profili individuali famiglie (kWh/h)
@@ -387,10 +398,41 @@ COME FUNZIONA:
   1. All'import, applica 2 patch di compatibilita':
      - _patch_ramp_numpy2(): corregge int(np.diff()) per NumPy >= 2.0
      - _patch_ramp_pandas3(): corregge alias "T" -> "min" per Pandas >= 3.0
-  2. Per ogni use_case nel YAML (office, small_industry, retail), per ogni
-     istanza configurata: seed deterministico, create_user(), genera
-     profilo 1D in Watt a risoluzione 1 minuto (anno intero)
+  2. Per ogni use_case nel YAML, per ogni istanza configurata: seed
+     deterministico, poi genera un profilo 1D in Watt a risoluzione 1 minuto
+     (anno intero). Uno use case puo' dichiararsi in DUE FORME:
+       create_user() -> User                 forma semplice, un solo regime
+       REGIMI: dict[str, Callable] +         forma a regimi di calendario
+       regime(giorno) -> str
   3. Assembla tutti i profili in un DataFrame con DatetimeIndex
+
+  LO STRATO DEI REGIMI: RAMP 0.5.0 non ha ne' stagionalita' ne' festivita' e
+  non le puo' avere, perche' la finestra di un Appliance e' definita in MINUTI
+  DEL GIORNO e non in giorni dell'anno: una scuola chiusa da meta' giugno a
+  meta' settembre non e' rappresentabile con il solo RAMP.
+  _genera_a_regimi() genera UN ANNO PIENO PER OGNI REGIME e poi sceglie,
+  giorno per giorno, quello dichiarato dallo use case. Non concatena segmenti:
+  con due o quattro regimi il costo sono due o quattro generazioni, e in cambio
+  ogni regime pesca dalla propria stocastica su anno pieno senza spezzare il
+  flusso di numeri casuali a ogni cambio di stagione. Il seed include il nome
+  del regime, cosi' due regimi dello stesso archetipo non danno la stessa
+  identica giornata.
+  Le FESTIVITA' NAZIONALI non stanno qui: sono il calendario civile italiano,
+  gia' in lpg_db/valida_domestici.py (festivi()), e si importano. Nel modulo
+  dell'archetipo va solo il suo CALENDARIO DI APERTURA, che e' una proprieta'
+  dell'edificio e vuole una fonte citabile accanto.
+  Il collaudo e' in ramp_db/collaudo_regimi.py (§3.11).
+
+  L'INTERRUTTORE enabled: ogni voce di ramp.use_cases puo' portare
+  enabled: true/false. Chi e' spento resta nel catalogo - documentato,
+  validabile, versionato - ma non entra nel run e non aggiunge la sua colonna
+  a profili_tutti.csv. Serve perche' accendere un archetipo ha una
+  conseguenza a valle: align_members_to_users.m si ferma con errore su ogni
+  colonna che non trova in [MEMBRI], quindi un archetipo nuovo richiede prima
+  una scheda CER che lo contempli.
+  LA CHIAVE ASSENTE VALE ACCESO, ed e' voluto: le configurazioni baseline,
+  campione20, lombardia20 e milano20 non la dichiarano, e spegnere per
+  omissione le avrebbe azzerate tutte in silenzio.
 
   NOTA SUI SEED: il seed viene da _seed_stabile(), cioe' zlib.crc32 sulla
   stringa "{nome}_{indice}". crc32 NON e' salato per processo, quindi il
@@ -451,7 +493,18 @@ SEZIONI:
 
   ramp:
     date_start / date_end             Periodo di simulazione
-    use_cases: [office, small_industry, retail]   con num_users ciascuno
+    use_cases:                        CATALOGO degli archetipi, con num_users
+                                      e l'interruttore enabled per ciascuno.
+                                      Attivi: office, small_industry, retail.
+                                      Spento: scuola_superiore, che si accende
+                                      insieme alla scheda CER che lo contempla
+                                      (accendere un archetipo aggiunge una
+                                      colonna a profili_tutti.csv, e
+                                      align_members_to_users.m si ferma su
+                                      ogni colonna assente da [MEMBRI]).
+                                      LA CHIAVE enabled ASSENTE VALE ACCESO:
+                                      le altre configurazioni non la
+                                      dichiarano e restano valide. Vedi §3.2.
 
   lpg:
     households: [pensionati, coppia_lavoratori, famiglia_1figlio]  con count
@@ -462,13 +515,69 @@ SEZIONI:
     aggregate_total / individual_profiles
 
 --------------------------------------------------------------------------------
- 3.6-3.8  ramp_inputs/use_cases/{office,small_industry,retail}.py
+ 3.6-3.8  ramp_inputs/use_cases/  (GLI ARCHETIPI NON DOMESTICI)
 --------------------------------------------------------------------------------
 
-Definiscono gli elettrodomestici (nome, numero, potenza, ore di
-funzionamento, finestra oraria) di un ufficio, una piccola industria e un
-negozio al dettaglio italiani tipici. Vedi i docstring dei singoli file
-per il dettaglio orario di ciascun carico.
+Definiscono gli apparecchi (nome, numero, potenza, ore di funzionamento,
+finestra oraria) di ciascun archetipo. Due forme, entrambe valide (§3.2):
+
+  small_industry.py   FORMA SEMPLICE, create_user(): un solo comportamento per
+  retail.py           tutto l'anno. Sono gli archetipi originali, mai toccati,
+                      e le loro impronte servono da test di non regressione.
+
+  office.py           FORMA A REGIMI, REGIMI + regime(giorno). Ufficio medio
+                      milanese: raffrescamento estivo, ausiliari di
+                      riscaldamento d'inverno, pausa pranzo, festivi e
+                      chiusura delle due settimane attorno a Ferragosto.
+                      I gruppi di apparecchi seguono l'albero energetico degli
+                      usi finali di ENEA; la stagione di riscaldamento e'
+                      quella di legge per la zona climatica E, DPR 412/1993
+                      art. 9. Livello ancora aperto al 69% dell'atteso: il
+                      contesto delle due fonti e' nel docstring del file.
+
+  scuola_superiore.py FORMA A REGIMI. Istituto superiore di circa 6.470 m2,
+                      taglia ricavata incrociando DUE FONTI INDIPENDENTI CHE
+                      CONCORDANO: ARERA da' 96.991 kWh/anno a un POD di classe
+                      BTA6 con ATECO 85.31, il benchmark RSE/2010 da' 15
+                      kWh/m2 elettrici per gli edifici scolastici superiori.
+                      Il calendario non e' un'ipotesi: viene dal Calendario
+                      Scolastico Regionale di carattere permanente della
+                      Lombardia, DGR 3318/2012, e il minimo di 200 giorni di
+                      lezione del D.Lgs. 297/1994 art. 74 c. 3 serve a
+                      verificarlo, non a costruirlo.
+                      Il POD e' di un ente territoriale - l'edificio e' della
+                      Provincia o Citta' metropolitana, L. 23/1996 art. 3 -
+                      quindi categoria PA nella scheda CER, esente dal
+                      fattore F (§7.5 del README di progetto).
+                      NASCE SPENTO in simulation_config.yaml: si accende
+                      insieme alla scheda CER che lo contempla.
+
+  comune.py           FORMA A REGIMI. Municipio di un comune piccolo o medio.
+                      Bersaglio ARERA: ATECO 84.11, classe BTA5, 13.695
+                      kWh/anno - la cella MEGLIO CAMPIONATA fra quelle usate,
+                      con rumore di fonte -0,9%, il piu' basso della colonna.
+                      E' il meglio validato dei tre: livello 0,97x e forma
+                      mensile L1 0,0503 contro una soglia di 0,0504, cioe'
+                      DENTRO di un millesimo, con il picco feriale alle 11
+                      esattamente come il GSE. Riuscito al primo tentativo,
+                      senza ritocchi.
+                      Due tratti lo distinguono da un ufficio, ed entrambi si
+                      misurano: i SABATI (984 kWh, 7,4% dell'anno) per lo
+                      sportello di anagrafe e stato civile, ed e' l'unico
+                      archetipo non domestico che consuma di sabato; e la SALA
+                      CONSIGLIO di sera (1.298 kWh fra le 20 e le 24, 9,8%),
+                      unico carico serale non domestico della CER - cade in
+                      fascia F3 e in ore senza sole, quindi incide
+                      sull'energia condivisa piu' del suo peso in kWh.
+                      Agosto non e' chiusura ma organico ridotto: ARERA da'
+                      un rapporto massimo/minimo di 1,35, contro l'1,9 di una
+                      scuola.
+                      POD di ente territoriale in senso proprio (comune, primo
+                      degli enti locali del D.Lgs. 267/2000): categoria PA.
+                      NASCE SPENTO in simulation_config.yaml.
+
+Vedi i docstring dei singoli file per la fonte di ogni gruppo di apparecchi, e
+ramp_db/dati/validazione/ per le misure passaggio per passaggio.
 
 --------------------------------------------------------------------------------
  3.9  lpg_inputs/household_definitions.py  (CATALOGO FAMIGLIE)
@@ -581,6 +690,244 @@ TRE TRAPPOLE - il codice di uscita 0 non basta a dire che un run e' andato bene:
 
 DOCUMENTAZIONE: REPORT_VALIDAZIONE_LPG.md e' il documento di riferimento.
   Il §13 e' il registro modifica-per-modifica con la fonte di ciascuna.
+
+
+--------------------------------------------------------------------------------
+ 3.11  ramp_db/  (RIFERIMENTO NON DOMESTICO)
+--------------------------------------------------------------------------------
+
+SCOPO: costruire il bersaglio contro cui validare gli archetipi RAMP
+       (office, e i futuri scuola_superiore e comune). E' il gemello non
+       domestico di lpg_db/, e risponde alla stessa obiezione: i numeri di
+       office.py (20 plafoniere, 8 PC, 2 climatizzatori) non hanno oggi
+       alcuna fonte dichiarata.
+
+IL BERSAGLIO VIENE DA DUE FONTI, perche' nessuna lo fornisce per intero:
+  livello annuo e peso dei mesi -> ARERA per ATECO e classe BTA (solo mensile)
+  forma oraria dentro il mese   -> profili standard GSE
+  Un riferimento completo si ottiene componendo le due cose.
+
+  riferimento_arera_nd.py   LIVELLO. Legge i sette CSV provinciali ARERA per
+                            classe tariffaria BTA (BTA1 0-1,5 kW ... BTA6
+                            >16,5 kW; BTA3 e' pubblicata in due sottofasce).
+                            Espone livello_annuo(), forma_mensile(),
+                            rumore_fonte() e il comando --ispeziona, che
+                            stampa la struttura dei file grezzi.
+                            Cache in dati/riferimento_arera_nd/, invalidata per
+                            SHA-256 dei sorgenti E per versione del parser,
+                            VERSIONATA in deroga: i sorgenti stanno fuori dal
+                            repository.
+                            Copertura verificata: 2025 = 110 province, 20
+                            regioni, 765 classi ATECO; 2024 = le sole 12
+                            province lombarde (Milano inclusa), 609 classi.
+
+  riferimento_gse_nd.py     FORMA ORARIA. Legge i profili standard GSE 2024 e
+                            2025 (prelievo e immissione). Espone
+                            curva_giornaliera(), profilo_orario() - che
+                            compone la forma GSE con i pesi mensili ARERA -,
+                            fasce(), rumore_fonte_forma() e le diagnostiche
+                            strutturali.
+
+  leggi_quaderno_enea.py    ALBERO ENERGETICO E BENCHMARK. Percorre i PDF di
+                            benchmark e trova gli indici di consumo specifico
+                            con la loro pagina. Distingue le pagine dove valore
+                            e unita' sono attaccati da quelle con la SOLA
+                            unita', dove l'estrazione ha spezzato la tabella e
+                            il numero va letto a mano: nel report sulle scuole
+                            l'unita' sta nell'intestazione di colonna, quindi
+                            tutte le sue 50 pagine di indici cadono nel secondo
+                            gruppo e cercare i soli valori attaccati avrebbe
+                            concluso che il documento non ha benchmark.
+                            PROPONE righe, non le certifica: escono con
+                            verificato = no.
+
+  benchmark_letteratura.csv IL SECONDO PARERE sul livello, indipendente da
+                            ARERA. Colonne: fonte, anno, tipologia, indicatore,
+                            valore, deviazione, unita, campione, pagina, url,
+                            verificato. Separatore ';' perche' i valori usano
+                            la virgola decimale.
+                            La colonna verificato ha TRE valori: si = riletto
+                            sul documento alla pagina indicata; no = proposto
+                            dall'estrattore e non controllato; derivato =
+                            calcolato da altri valori, mai stampato come tale
+                            nella fonte (es. i 113,5 kWh/m2 degli uffici PA,
+                            che sono un rapporto fra due righe di tabella).
+
+  valida_non_domestici.py   LA MISURA. Gemello non domestico di
+                            lpg_db/valida_domestici.py: confronta i profili
+                            RAMP con il bersaglio delle due fonti. Stampa, in
+                            ordine: livello annuo contro ARERA con kWh/m2;
+                            la soglia (rumore di fonte) con la classe
+                            adiacente; la forma mensile con la distanza L1;
+                            la TVD per stagione e tipo di giorno; le fasce
+                            F1/F2/F3 e l'ora di picco.
+                            Controlla in apertura che il CSV abbia 8760 righe
+                            orarie continue: in outputs/ e' sopravvissuto a
+                            lungo un file di 8759 righe, generato prima della
+                            correzione sull'ora legale, a cui mancava
+                            2025-03-30 02:00.
+                            Distingue 'spento' da zero: se l'archetipo non
+                            consuma in quei giorni la curva normalizzata non
+                            esiste e la TVD non e' calcolabile. La prima
+                            versione la stampava come 0,000, cioe' "forma
+                            perfetta", proprio dove il modello e' fermo.
+
+                            ESITO SU office, passaggio per passaggio (i file
+                            02..05 di dati/validazione/):
+                              02 originale      10.957 kWh 1,58x  L1 0,0866
+                              03 +regimi         5.227 kWh 0,75x  L1 0,2991
+                              04 +agosto         4.969 kWh 0,71x  L1 0,2462
+                              05 +settembre      4.781 kWh 0,69x  L1 0,2041
+                              soglia             +/-3,1%          L1 0,0407
+                            CHIUSI quattro difetti: festivi (Natale da 47,9 a
+                            1,19 kWh), stagionalita' (da 11,3 a 29,4 kWh al
+                            giorno secondo il mese, contro 40,0-43,6 piatti),
+                            chiusura di agosto (7,4% contro il 6,9% ARERA),
+                            picco feriale (da ore 15 a ore 10, GSE ore 11).
+                            APERTI livello e forma mensile, che pero' sono lo
+                            stesso difetto: gli scarti mensili valgono +9,7
+                            punti d'estate e -9,6 fra inverno e maggio, cioe'
+                            il raffrescamento e' troppo grande RISPETTO ALLA
+                            BASE, che e' la ragione del livello basso. Non si
+                            e' chiuso gonfiando apparecchi: sarebbe stato
+                            inseguire la metrica. Il contesto delle due fonti
+                            e' in testa a office.py.
+
+  numerosita_nd.py          SEPARA L'ERRORE DI MODELLO DA QUELLO DI CAMPIONE.
+                            Con venti istanze per archetipo, generate da
+                            config/simulation_config.nd20.yaml, adatta
+                            TVD(N) = a + b/sqrt(N): b/sqrt(N) e' errore di
+                            campionamento, a e' quanto resterebbe con un
+                            campione infinito, cioe' l'errore di modello.
+                            ESITO: RISULTATO NULLO, ed e' il risultato. Per
+                            tutti e tre gli archetipi b ~ 0 e a ~ TVD(N=1):
+                            office 0,4652, scuola_superiore 0,2651, comune
+                            0,2527. La numerosita' spiega lo 0% dello scarto.
+                            Cio' che decresce come 1/sqrt(N) e' la DISPERSIONE
+                            (dev.std da 0,0035 a 0,0000), non la media:
+                            mediare venti istanze dello stesso archetipo
+                            converge alla curva media dell'archetipo, che una
+                            singola istanza gia' approssima.
+                            Diverso dal lato domestico, dove le venti famiglie
+                            erano di tipologie diverse e mediarle avvicinava
+                            davvero la media ARERA. Qui la curva e' MEGLIO
+                            POSTA - istanze dello stesso archetipo, semi
+                            indipendenti, che e' l'ipotesi di 1/sqrt(N) - e
+                            proprio per questo risponde in modo piu' netto.
+                            RISERVA: il riferimento GSE e' uno solo per tutta
+                            la categoria e ignora il giorno della settimana,
+                            quindi "a" contiene anche la distanza fra
+                            archetipo e media di categoria. E' un LIMITE
+                            SUPERIORE dell'errore di modello, non l'errore.
+                            N=1 si misura ma non entra nel fit: e' il punto in
+                            cui la forma funzionale e' meno affidabile.
+
+  collaudo_regimi.py        COLLAUDO DELLO STRATO DEI REGIMI (§3.2). Due
+                            domande, e la prima vale piu' della seconda.
+                            NON REGRESSIONE: un archetipo che non dichiara
+                            regimi deve uscire IDENTICO BIT PER BIT a come
+                            usciva prima che lo strato esistesse. Le impronte
+                            SHA-256 sono state misurate prima della modifica e
+                            vanno aggiornate solo quando si cambia
+                            deliberatamente il modello di un archetipo, mai per
+                            far passare il test.
+                            CORRETTEZZA: la selezione giorno per giorno prende
+                            il giorno giusto dal regime giusto. Il confronto
+                            usa due regimi con la stessa lista di apparecchi,
+                            che differiscono solo per il seed, e verifica che
+                            i due profili siano davvero diversi - altrimenti il
+                            confronto sarebbe vacuo.
+                            Esce con codice 1 se qualcosa non torna.
+
+  dati/                     Cache ARERA non domestica (riferimento_arera_nd/),
+                            un CSV per provincia con accanto il .json degli
+                            SHA-256. Circa 2 MB per provincia.
+
+FONTI E BASE NORMATIVA - da citare in tesi:
+  ARERA, consumi provinciali dei clienti non domestici in BT, "Dati provincia"
+    parti 1-3, anno 2025 (sette CSV per classe BTA).
+  GSE, "Modalita' di profilazione dei dati di misura: profili standard GSE in
+    prelievo e immissione", annualita' 2024 e 2025, area CACER.
+  TIAD (Testo Integrato Autoconsumo Diffuso), allegato alla delibera ARERA
+    727/2022/R/eel: quando il gestore di rete non puo' raccogliere i dati di
+    misura orari, il GSE profila per tipologia di utenza con i profili
+    standard. Per un socio di CER non trattato orario la curva che entra nel
+    settlement E' quella - per questo i profili GSE non sono un benchmark
+    qualsiasi.
+  GSE, "Modalita' di profilazione ... ai sensi dell'articolo 9 dell'Allegato A
+    alla Delibera 318/2020/R/eel", v1 del 04/04/2022: decodifica i codici di
+    colonna XZZY (X = P/M/I, ZZ = tipologia, Y = M monorario / F a fasce).
+
+  --- BENCHMARK DI LETTERATURA (l'albero energetico degli archetipi) ---
+  ENEA con Assoimmobiliare, "Uffici - Quaderni dell'Efficienza Energetica",
+    Ricerca di Sistema Elettrico 2022-2024 (MASE), guida alla diagnosi
+    energetica ex Allegato II del D.Lgs. 102/2014. Il §4.3 porta gli IPE di
+    secondo livello, cioe' l'albero energetico elettrico di un ufficio:
+      illuminazione            25,7 +/- 11,8 kWh/m2            (p. 75)
+      climatizzazione          126 +/- 53 kWh/m2 tutti i vettori
+                               ZONA E-F SOLO ELETTRICO 93 +/- 39 (p. 76-77)
+      infrastruttura ICT       21,4 +/- 11,8 kWh/m2, oppure
+                               534 +/- 253 kWh/utente          (p. 77-78)
+      data center              PUE 1,83 +/- 0,36               (p. 78)
+      indice globale di sito   201 +/- 79 kWh/m2, tutti i vettori (p. 73)
+    Milano e' in zona climatica E: per office vale la riga a solo elettrico,
+    non i 126 che sommano anche il gas.
+  Corgnati, Fabrizio, Ariaudo, Rollino, "Edifici tipo, indici di benchmark di
+    consumo ... ad uso scolastico (medie superiori e istituti tecnici)",
+    Report RSE/2010: per scuola_superiore, energia elettrica 15 kWh/m2 (rule
+    of thumb 30) contro 114 kWh/m2 di energia utile per la climatizzazione
+    invernale, breakdown 88% termico / 12% elettrico (p. 42). Da citare con
+    la sua data: e' del 2010.
+  RSE, "I consumi della Pubblica Amministrazione" (RSEview, ISBN
+    978-88-943145-5-7): il §3.3 copre gli uffici pubblici dall'amministrazione
+    centrale fino al livello comunale, quindi comprende il municipio di
+    comune.py. Tabella 3.8 (p. 47): 373,39 ktep elettrici su 38.248 migliaia
+    di m2 in Italia, 57,17 ktep su 5.553 in Lombardia.
+
+LA SOGLIA DI ACCETTAZIONE, MISURATA (Milano, ATECO 82.11, 2024 contro 2025):
+  livello annuo      da -4,5% a +3,8% secondo la classe BTA
+  forma mensile (L1) da 0,041 a 0,074
+  BTA4, la classe candidata di office: -3,1% e 0,0407, con bersaglio
+  7.062 kWh/anno nel 2024 e 6.840 nel 2025.
+
+SEI TRAPPOLE DEI FILE - tutte verificate, non assunte:
+  1. ARERA non domestico e' SOLO MENSILE: la forma oraria non e' validabile su
+     questa fonte. Per quello servono i profili GSE.
+  2. I coefficienti GSE sono normalizzati DENTRO IL MESE: 1 per i profili
+     monorari, 3 per quelli a fasce (una normalizzazione per fascia). Il peso
+     relativo dei mesi non e' nei file GSE e va preso da ARERA.
+  3. Il profilo predefinito e' il monorario PAUM, non PAUF: un profilo a fasce
+     richiederebbe il consumo mensile PER FASCIA, che il file ARERA non
+     domestico non pubblica.
+  4. La colonna "Data ora" del file GSE 2025 e' corrotta da errore di virgola
+     mobile (ultimo istante 22:59:59,998 del 31 dicembre) e verso fine anno
+     resta indietro di un'ora rispetto alla colonna "Ora". L'indice si
+     ricostruisce dalle colonne intere Anno/Mese/Giorno/Ora.
+  5. Le due annualita' ARERA hanno formati diversi: nomi di colonna diversi,
+     niente "Regione" nel 2024, "Anno" ripetuta due volte, mese come numero
+     nel 2025 e come abbreviazione nel 2024 ("Gen" ... "Sett"), e numeri con
+     virgola decimale nel 2025 contro punto delle MIGLIAIA nel 2024 (17.655
+     vale 17655). Le etichette di classe sono invece identiche, ed e' cio' che
+     rende i due anni confrontabili. Lo zip 2024 contiene inoltre due coppie
+     di file byte-identici (BTA5 e BTA6), da deduplicare per contenuto.
+  6. La cache si invalida anche quando cambia il PARSER, non solo i sorgenti:
+     il manifesto porta un versione_parser accanto agli SHA-256. Una cache
+     scritta mentre il punto delle migliaia veniva letto come decimale era
+     sopravvissuta alla correzione - sorgenti immutati, cache "valida" - e
+     teneva il livello 2024 mille volte piu' basso del vero.
+
+TRE LIMITI DA DICHIARARE:
+  Il 2024 provinciale copre le sole province lombarde. Milano c'e', quindi la
+    soglia resta calcolabile per questo progetto; fuori dalla Lombardia esiste
+    il solo 2025 e rumore_fonte() si ferma invece di inventare un numero.
+  Il profilo GSE dei non domestici e' UNO SOLO per tutta la categoria "altri
+    usi": non distingue un ufficio da una scuola da un municipio.
+  Non e' una misura ma una tabella di giorni tipo: 291 valori distinti in un
+    anno (12 x 24 = 288), scarto massimo fra 2024 e 2025 pari a 7,5e-5,
+    distanza feriale/domenica 0,001. Ignora il giorno della settimana e non
+    varia fra un anno e l'altro: la chiusura nel fine settimana di un
+    archetipo NON e' validabile su questa fonte, e lo scarto fra due
+    annualita' non puo' fare da soglia come sul lato domestico.
 
 
 ================================================================================

@@ -1,0 +1,76 @@
+# Passo 5 - Validazione di office DOPO le tre correzioni autorizzate
+#
+# Comando:  cd CER_LoadProfiles/ramp_db
+#           ../../venv/Scripts/python.exe valida_non_domestici.py _office_corretto.csv
+# Data:     2026-09-12
+# Nota:     _office_corretto.csv e' un file di lavoro, generato con la sola
+#           parte RAMP della pipeline e non versionato.
+#
+# ESITO: due difetti su tre sono chiusi, ma l'archetipo NON passa ancora, e su
+# una grandezza e' PEGGIORATO. Va riportato cosi'.
+#
+#   CHIUSO   festivi: Natale, Ferragosto e Capodanno valgono 1,19 kWh ciascuno
+#            (i soli carichi permanenti) contro 47,9 / 40,6 / 44,8 di prima.
+#   CHIUSO   stagionalita': la media giornaliera feriale passa da 10,9 kWh in
+#            maggio a 29,0 in luglio, mentre prima stava fra 40,0 e 43,6 in
+#            tutti e dodici i mesi.
+#   APERTO   livello: 5.227 kWh contro i 6.951 attesi (0,75x). Prima era 1,58x:
+#            l'errore ha cambiato segno e si e' ridotto, ma resta ben fuori
+#            dalla soglia di +/-3,1%.
+#   PEGGIORE forma mensile: L1 = 0,2991 contro 0,0866 di prima, con una soglia
+#            di 0,0407. La stagionalita' introdotta e' fisicamente giusta ma
+#            troppo marcata e con il mese sbagliato: il modello tiene agosto
+#            all'11,7% mentre ARERA lo da' al 6,9%, perche' non rappresenta la
+#            chiusura estiva degli uffici italiani. E' il caso gia' descritto
+#            in NOTE_per_report.md: una correzione piu' realistica di un
+#            parametro puo' peggiorare l'indicatore aggregato finche' il resto
+#            del modello e' sbagliato.
+#   APERTO   picco feriale: resta alle 15, contro le 11 del profilo GSE. La
+#            pausa pranzo non lo ha spostato.
+
+
+AVVISO: nessun --colonne indicato, si usa l'assegnazione predefinita.
+ATECO, classe di potenza e superficie sono IPOTESI DICHIARATE, non dati.
+
+VALIDAZIONE NON DOMESTICI - _office_corretto.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+office_1       82.11   BTA4         5,227      6,951    0.75x     29.0     0.468  0.099  0.099
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+82.11   BTA4               -3.1%       0.0407
+82.11   BTA5               -1.5%       0.0737  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  office_1
+    RAMP   6.9   6.5   7.0   5.9   5.0  11.6  13.1  11.7  12.7   6.5   6.4   6.8
+    ARERA  9.4   8.5   8.1   7.3   7.5   9.1  10.5   6.9   7.6   8.1   8.3   8.6   0.2991
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  office_1       estate         0.475     0.100     0.101
+  office_1       inverno        0.440     0.125     0.123
+  office_1       mezza          0.477     0.087     0.088
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  office_1
+    RAMP   F1 93.43  F2  2.87  F3  3.69   picco feriale ore 15
+    GSE    F1 38.01  F2 24.67  F3 37.32   picco feriale ore 11
+
+Come si leggono questi numeri:
+  - il profilo GSE degli altri usi e' UNO SOLO per tutti i non
+    domestici e IGNORA il giorno della settimana (TVD feriale contro
+    domenica = 0,001): le TVD per tipo di giorno vanno lette sapendolo,
+    e la chiusura nel fine settimana non e' validabile su questa fonte;
+  - 'spento' non e' uno zero: vuol dire che l'archetipo non consuma
+    nulla in quei giorni, quindi la curva normalizzata non esiste e
+    la TVD non e' calcolabile. Stamparla come 0,000 direbbe 'forma
+    perfetta' proprio dove il modello e' fermo;
+  - ATECO, classe di potenza e superficie sono ipotesi dichiarate:
+    per questo si riporta anche la classe adiacente;
+  - se la forma non combacia si corregge l'archetipo, mai l'uscita.

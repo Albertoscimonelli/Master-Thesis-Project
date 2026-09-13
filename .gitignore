@@ -218,6 +218,13 @@ CER_LoadProfiles/lpg_db/*.db3
 # domestici non sarebbe rieseguibile da chi clona il progetto. I file .json
 # accanto a ciascun CSV portano lo SHA-256 dei sorgenti da cui derivano, cosi'
 # resta verificabile su quali dati sono stati calcolati i risultati in tesi.
+#
+# Stessa deroga, stessa ragione, per il lato NON domestico:
+# CER_LoadProfiles/ramp_db/dati/riferimento_arera_nd/ SI VERSIONA. I sorgenti
+# sono i CSV provinciali ARERA per classe BTA sotto
+# CER_LoadProfiles/File Non Domestici/, che qui sopra e' gia' escluso per
+# dimensione (~692 MB). Anche qui ogni CSV di cache ha accanto un .json con lo
+# SHA-256 dei sorgenti da cui deriva.
 
 # Storico dei profili generati (output.versioned nella configurazione).
 # Cresce di ~500 KB a ogni run e resta locale: i CSV dal nome fisso in
@@ -270,6 +277,11 @@ PV_Generation/*
 # cronologia: una volta dentro ci resta per sempre.
 Paper/
 
+# Fonti grezze per i profili non domestici (PDF, xlsx, zip dai dati
+# provinciali e dai profili GSE prelievo/immissione): ~692 MB, non e' codice
+# e non va nella cronologia per lo stesso motivo di Paper/ qui sopra.
+CER_LoadProfiles/File Non Domestici/
+
 # Run di controllo per i confronti A/B (es. generazione senza profilo di
 # temperatura). Dati derivati, si rigenerano con la configurazione
 # corrispondente in CER_LoadProfiles/config/.
@@ -283,6 +295,18 @@ CER_LoadProfiles/outputs/csv_baseline/
 # a parita' di catalogo produce gli stessi profili. Quello che si versiona sono
 # la configurazione che li descrive e i numeri misurati nel report.
 CER_LoadProfiles/outputs/csv_campione20/
+
+# Campione allargato dei non domestici: 20 istanze per archetipo, generate da
+# config/simulation_config.nd20.yaml. Stessa regola di csv_campione20 qui
+# sopra: dati derivati, riproducibili dai seed deterministici, non si
+# versionano. Quello che si versiona sono la configurazione che li descrive e
+# i numeri misurati in ramp_db/dati/validazione/.
+CER_LoadProfiles/outputs/csv_nd20/
+
+# Run a nove membri per preparare la scheda CER che contempla anche
+# scuola_superiore e comune (config/simulation_config.scheda9.yaml). Stessa
+# regola: dati derivati, si rigenerano. Quello che si versiona e' la scheda.
+CER_LoadProfiles/outputs/csv_scheda9/
 CER_LoadProfiles/outputs/csv_lombardia20/
 CER_LoadProfiles/outputs/csv_milano20/
 

@@ -11,13 +11,39 @@ simulation:
 ramp:
   date_start: "2025-01-01"
   date_end: "2025-12-31"
+
+  # CATALOGO DEGLI ARCHETIPI, con l'interruttore che decide quali entrano in
+  # questa simulazione. Chi non compare qui non esiste; chi compare con
+  # enabled: false esiste, e' documentato e validabile, ma resta fuori dal run.
+  #
+  # Se la chiave enabled manca, l'archetipo e' ATTIVO. E' voluto: le altre
+  # configurazioni (baseline, campione20, lombardia20, milano20) non la
+  # dichiarano e devono continuare a funzionare senza essere toccate.
+  #
+  # PRIMA DI ACCENDERNE UNO, sapere cosa comporta: ogni archetipo acceso
+  # aggiunge una colonna a profili_tutti.csv, e align_members_to_users.m si
+  # ferma con errore su ogni colonna che non trova in [MEMBRI]. Accendere
+  # scuola_superiore o comune richiede quindi prima una scheda aggiornata in
+  # CER_configuration/, con i membri corrispondenti.
   use_cases:
     - name: "office"
       num_users: 1
+      enabled: true
     - name: "small_industry"
       num_users: 1
+      enabled: true
     - name: "retail"
       num_users: 1
+      enabled: true
+    # Archetipi non domestici nuovi: validati contro ARERA e GSE
+    # (ramp_db/), ma ancora spenti perche' la scheda CER a nove membri non
+    # esiste. Si accendono insieme a quella.
+    - name: "scuola_superiore"
+      num_users: 1
+      enabled: false
+    - name: "comune"
+      num_users: 1
+      enabled: false
 
 lpg:
   households:

@@ -1,0 +1,63 @@
+# Passo 5 - Validazione di office PRIMA della correzione
+#
+# Comando:  cd CER_LoadProfiles/ramp_db
+#           ../../venv/Scripts/python.exe valida_non_domestici.py \
+#               ../outputs/csv/profili_tutti.csv
+# Data:     2026-09-12
+#
+# ESITO: office NON passa, su tutte le grandezze che la soglia copre.
+#   livello annuo  10.957 kWh contro 6.951 attesi da ARERA (BTA4, ATECO 82.11),
+#                  cioe' 1,58x, contro una soglia di +/-3,1%;
+#   forma mensile  L1 = 0,0866 contro una soglia di 0,0407 (2,1 volte);
+#   stagionalita'  TVD praticamente identica fra estate, inverno e mezza
+#                  stagione: il modello non distingue le stagioni.
+# Nota: 10.957 kWh coincide quasi con il livello ARERA della classe BTA5
+# (11.126 kWh, potenza >10 kW), mentre office ha 9,2 kW installati, cioe' BTA4.
+# L'archetipo consuma come una classe piu' grande di quella che dichiara.
+
+
+AVVISO: nessun --colonne indicato, si usa l'assegnazione predefinita.
+ATECO, classe di potenza e superficie sono IPOTESI DICHIARATE, non dati.
+
+VALIDAZIONE NON DOMESTICI - profili_tutti.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+office_1       82.11   BTA4        10,957      6,951    1.58x     60.9     0.450 spento spento
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+82.11   BTA4               -3.1%       0.0407
+82.11   BTA5               -1.5%       0.0737  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  office_1
+    RAMP   8.9   7.9   8.2   8.0   8.6   8.0   8.7   7.9   8.2   8.5   8.0   9.0
+    ARERA  9.4   8.5   8.1   7.3   7.5   9.1  10.5   6.9   7.6   8.1   8.3   8.6   0.0866
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  office_1       estate         0.449    spento    spento
+  office_1       inverno        0.444    spento    spento
+  office_1       mezza          0.455    spento    spento
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  office_1
+    RAMP   F1 92.97  F2  2.64  F3  4.39   picco feriale ore 15
+    GSE    F1 38.01  F2 24.67  F3 37.32   picco feriale ore 11
+
+Come si leggono questi numeri:
+  - il profilo GSE degli altri usi e' UNO SOLO per tutti i non
+    domestici e IGNORA il giorno della settimana (TVD feriale contro
+    domenica = 0,001): le TVD per tipo di giorno vanno lette sapendolo,
+    e la chiusura nel fine settimana non e' validabile su questa fonte;
+  - 'spento' non e' uno zero: vuol dire che l'archetipo non consuma
+    nulla in quei giorni, quindi la curva normalizzata non esiste e
+    la TVD non e' calcolabile. Stamparla come 0,000 direbbe 'forma
+    perfetta' proprio dove il modello e' fermo;
+  - ATECO, classe di potenza e superficie sono ipotesi dichiarate:
+    per questo si riporta anche la classe adiacente;
+  - se la forma non combacia si corregge l'archetipo, mai l'uscita.

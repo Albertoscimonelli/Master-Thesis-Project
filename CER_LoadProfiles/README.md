@@ -99,8 +99,47 @@ output:
 ### Aggiungere un nuovo use case RAMP
 
 1. Crea un file `ramp_inputs/use_cases/nome_use_case.py`
-2. Definisci una funzione `create_user() -> User` che configura elettrodomestici e finestre d'uso
+2. Dichiaralo in **una delle due forme** (vedi sotto)
 3. Aggiungi il nome in `simulation_config.yaml` sotto `ramp.use_cases`
+
+```python
+# forma semplice: un solo comportamento per tutto l'anno
+def create_user() -> User: ...
+
+# forma a regimi: il comportamento cambia nel corso dell'anno
+REGIMI: dict[str, Callable[[], User]] = {"lezione": ..., "chiusura_estiva": ...}
+def regime(giorno: datetime.date) -> str: ...
+```
+
+### Lo strato dei regimi di calendario
+
+RAMP 0.5.0 non ha ne' stagionalita' ne' festivita', e non le puo' avere: la
+finestra di un `Appliance` e' definita in **minuti del giorno**, non in giorni
+dell'anno. Una scuola chiusa da meta' giugno a meta' settembre non e' quindi
+rappresentabile con il solo RAMP.
+
+La forma a regimi la rende rappresentabile: `ramp_runner` genera **un anno
+intero per ogni regime** e poi sceglie, giorno per giorno, quello che
+`regime(giorno)` dichiara. Non si concatenano segmenti — con due o quattro
+regimi il costo sono due o quattro generazioni, e in cambio ogni regime pesca
+dalla propria stocastica su anno pieno, senza spezzare il flusso di numeri
+casuali a ogni cambio di stagione. Il seed resta `_seed_stabile()` con il nome
+del regime nella stringa, cosi' due regimi dello stesso archetipo non producono
+la stessa identica giornata.
+
+**Cosa mettere nel `regime()` e cosa no.** Le festivita' nazionali non sono una
+proprieta' dell'archetipo: sono il calendario civile italiano, gia' scritto in
+[`lpg_db/valida_domestici.py`](lpg_db/valida_domestici.py) (`festivi()`), e si
+importano da li'. Quello che va nel modulo dell'archetipo e' il suo **calendario
+di apertura** — la scuola chiusa d'estate, il municipio con agosto ridotto e il
+sabato di solo sportello — che e' una proprieta' dell'edificio e vuole una fonte
+citabile accanto, come ogni migrazione del catalogo LPG.
+
+Il collaudo sta in [`ramp_db/collaudo_regimi.py`](ramp_db/collaudo_regimi.py) e
+verifica due cose: che gli archetipi **senza** regimi escano identici bit per
+bit a prima dell'introduzione dello strato (impronte SHA-256 misurate prima
+della modifica), e che la selezione giorno per giorno prenda il giorno giusto
+dal regime giusto.
 
 ### Aggiungere un tipo di famiglia pyLPG
 
@@ -148,7 +187,9 @@ CER_LoadProfiles/
     simulation_config.lombardia20.yaml  # Societa' lombarda: 20 famiglie, 20 template
     simulation_config.milano20.yaml     # Societa' milanese: idem, comune di Milano
   ramp_inputs/use_cases/
-    office.py                        # Ufficio medio (illuminazione, PC, clima, stampante, caffe)
+    office.py                        # Ufficio medio - a regimi (stagioni, festivi, agosto)
+    scuola_superiore.py              # Istituto superiore - a regimi (calendario scolastico)
+    comune.py                        # Municipio - a regimi (sabato, agosto, sala consiglio)
     small_industry.py                # Piccola industria (CNC, compressore, illuminazione, ufficio)
     retail.py                        # Negozio (illuminazione, cassa, frigo, clima)
   lpg_inputs/
@@ -164,6 +205,15 @@ CER_LoadProfiles/
     curva_numerosita.py              # Numerosita' vs modello; eterogeneita' di forma
     confronta_societa.py             # Confronto fra due composizioni familiari
     dati/                            # Cache ARERA (versionata) e rapporti per passo
+  ramp_db/                           # Riferimento non domestico (vedi sotto)
+    riferimento_arera_nd.py          # Livello: ARERA per ATECO e classe BTA, mensile
+    riferimento_gse_nd.py            # Forma oraria: profili standard GSE
+    leggi_quaderno_enea.py           # Estrae gli indici kWh/m2 dai PDF di benchmark
+    benchmark_letteratura.csv        # Secondo parere sul livello, con fonte e pagina
+    valida_non_domestici.py          # La misura: livello, forma, fasce, picco
+    collaudo_regimi.py               # Non regressione dello strato dei regimi
+    dati/riferimento_arera_nd/       # Cache ARERA non domestica (versionata)
+    dati/validazione/                # Stdout catturati, un file per passo
   outputs/csv/                       # CSV generati
 ```
 
@@ -192,6 +242,353 @@ coerenza semantica del catalogo. Un catalogo che passa il check puo' comunque
 essere rifiutato dal motore con `DataIntegrityException`: ogni migrazione
 richiede uno smoke run.
 
+## Riferimento non domestico (`ramp_db/`)
+
+Il gemello non domestico di `lpg_db/`: costruisce il bersaglio contro cui validare
+gli archetipi RAMP (`office`, e i futuri `scuola_superiore` e `comune`). A
+differenza del lato domestico il bersaglio viene da **due fonti diverse**, perche'
+nessuna delle due lo fornisce per intero:
+
+| Cosa | Fonte | Modulo |
+|---|---|---|
+| livello annuo e peso di ciascun mese | ARERA, per ATECO e classe di potenza (solo mensile) | `riferimento_arera_nd.py` |
+| forma oraria dentro il mese | profili standard GSE | `riferimento_gse_nd.py` |
+
+Un profilo di riferimento completo si ottiene componendo le due cose:
+
+```bash
+cd ramp_db
+python riferimento_arera_nd.py --ispeziona          # struttura dei file grezzi
+python riferimento_arera_nd.py Milano --ateco 82.11 # livello e forma mensile
+python riferimento_gse_nd.py                        # forma oraria e controlli
+python leggi_quaderno_enea.py --elenca              # indici kWh/m2 nei PDF
+python valida_non_domestici.py ../outputs/csv/profili_tutti.csv   # la misura
+```
+
+### La correzione di `office`, passaggio per passaggio
+
+Gli stdout di ogni passaggio stanno in `ramp_db/dati/validazione/`, numerati:
+
+| | livello annuo | L1 forma mensile | picco feriale |
+|---|---|---|---|
+| `02` originale | 10.957 kWh (**1,58x**) | 0,0866 | ore 15 |
+| `03` + regimi, festivi, pausa pranzo | 5.227 kWh (0,75x) | 0,2991 | ore 15 |
+| `04` + chiusura di agosto | 4.969 kWh (0,71x) | 0,2462 | ore 10 |
+| `05` + raffrescamento fino al 15 set | **4.781 kWh (0,69x)** | **0,2041** | **ore 10** |
+| *riferimento e soglia* | *6.951 kWh, ±3,1%* | *0,0407* | *ore 11 (GSE)* |
+
+**Quattro difetti chiusi.** I festivi nazionali valgono ora 1,19 kWh — i soli
+carichi permanenti — contro i 47,9 kWh di Natale nell'originale. La media
+giornaliera infrasettimanale va da 11,3 kWh in maggio a 29,4 in luglio, mentre
+prima stava fra 40,0 e 43,6 in *tutti* e dodici i mesi. Agosto e' al 7,4%
+contro il 6,9% misurato da ARERA. Il picco feriale e' rientrato alle ore 10
+contro le 11 del profilo GSE — e da sola la pausa pranzo non era bastata a
+spostarlo: ci e' riuscita solo quando e' rientrato anche il peso dei mesi estivi.
+
+**Due difetti aperti, che sono la stessa cosa vista due volte.** Il livello sta
+al 69% dell'atteso, e L1 resta cinque volte la soglia. Ma gli scarti mese per
+mese valgono **+9,7 punti d'estate e −9,6 fra inverno e maggio**: il
+raffrescamento non e' troppo grande in assoluto, e' troppo grande *rispetto
+alla base* — che e' esattamente il motivo per cui il livello annuo e' basso.
+Un solo difetto, non due.
+
+Il livello **non e' stato chiuso gonfiando apparecchi o potenze**: sarebbe stato
+inseguire la metrica invece di correggere il modello. Resta una questione
+aperta dichiarata, e il contesto che la spiega — perche' ARERA e' il bersaglio
+giusto, e perche' ENEA non la risolve — e' scritto in testa a
+[`office.py`](ramp_inputs/use_cases/office.py).
+
+Una lettura da non sbagliare: lo scarto sulle **fasce** (92,8% in F1 contro il
+38,0% del GSE) e' in buona parte un artefatto della fonte, non un difetto
+dell'archetipo. F1 e' lun-ven 8-19, `office` e' acceso solo in quella finestra,
+mentre il profilo GSE aggrega l'intera categoria "altri usi", comprese le
+utenze attive ventiquattr'ore su ventiquattro.
+
+### Le fonti, e da dove vengono i dati
+
+I file grezzi stanno in `CER_LoadProfiles/File Non Domestici/`, **non versionati**
+per dimensione (~692 MB, vedi `.gitignore`); si versiona la cache in
+`ramp_db/dati/riferimento_arera_nd/`, con accanto lo SHA-256 di ogni sorgente,
+cosi' la validazione resta rieseguibile da chi clona il progetto. La radice si
+sovrascrive con la variabile d'ambiente `CER_DATI_ESTERNI`.
+
+- **ARERA** — consumi provinciali dei clienti non domestici in bassa tensione,
+  sezione *Monitoraggio retail*, annualita' **2024 e 2025**: un CSV per classe
+  tariffaria BTA. Ogni riga e' il prelievo medio mensile per punto di prelievo
+  di una terna (provincia, classe di potenza, classe ATECO). Copertura
+  verificata: il **2025** ha 110 province, 20 regioni, 765 classi ATECO; il
+  **2024** ha le sole **12 province lombarde** (Milano compresa) e 609 classi.
+- **GSE** — "Modalita' di profilazione dei dati di misura: profili standard GSE
+  in prelievo e immissione", annualita' 2024 e 2025, area CACER del portale GSE.
+  I due xlsx del 2025 in cartella sono stati verificati identici per dimensione
+  a quelli dello zip ufficiale `profili GSE_prelievo e immissione_2025.zip`.
+- **Base normativa dell'applicazione dei profili** — Testo Integrato Autoconsumo
+  Diffuso (TIAD), allegato alla delibera ARERA 727/2022/R/eel: quando il gestore
+  di rete non e' tecnicamente in grado di raccogliere i dati di misura orari, il
+  GSE profila i dati per tipologia di utenza secondo i profili standard. Per un
+  socio di CER non trattato orario la curva che entra nel settlement **e'** quella.
+- **Decodifica dei codici di colonna** (`PAUM`, `PDMF`, `IFVM`, ...) — GSE,
+  "Modalita' di profilazione dei dati di misura e relative modalita' di utilizzo
+  ai sensi dell'articolo 9 dell'Allegato A alla Delibera 318/2020/R/eel",
+  versione 1 del 04/04/2022 (`Autoconsumatori.pdf`). Codice `XZZY`: X = P
+  prelievo puro / M misto / I immissione; ZZ = tipologia di utenza; Y = M
+  monorario / F a fasce. Il documento precede il TIAD, ma la struttura dei codici
+  nei file 2024 e 2025 e' invariata.
+
+### `scuola_superiore`: due fonti indipendenti che concordano
+
+A differenza di `office`, questo archetipo nasce ben ancorato. ARERA attribuisce
+a un punto di prelievo di classe **BTA6** con ATECO **85.31** (istruzione
+secondaria di secondo grado) 96.991 kWh/anno a Milano; il benchmark RSE/2010 da'
+**15 kWh/m²** elettrici per gli edifici scolastici superiori. Il rapporto fra i
+due vale ~6.470 m², la taglia di un istituto reale — ed e' la superficie su cui
+l'archetipo e' dimensionato. Le due fonti restano indipendenti fra loro.
+
+Il calendario **non e' un'ipotesi**: viene dal Calendario Scolastico Regionale
+di carattere permanente della Lombardia (DGR n. 3318 del 18 aprile 2012,
+confermato con Prot. E1.2025.0481857 del 12/05/2025) — lezioni dal 12 settembre
+all'8 giugno, vacanze natalizie, pasquali e di carnevale come regole da cui le
+date del 2025 si derivano. Il minimo di 200 giorni di lezione del D.Lgs.
+297/1994 art. 74 c. 3 serve a *verificarlo*, non a costruirlo.
+
+| | livello | kWh/m² | L1 | TVD fer. | F1 |
+|---|---|---|---|---|---|
+| prima stesura | 64.532 (0,67x) | 10,0 | 0,1635 | 0,300 | 63,07 |
+| + illuminazione a 8,1 W/m² | 76.939 (0,79x) | 11,9 | 0,1936 | 0,362 | 68,63 |
+| + base permanente a 8 kW | **107.103 (1,10x)** | **16,6** | **0,1579** | **0,262** | **58,02** |
+| *riferimento / soglia* | *96.991, −9,1%* | *15* | *0,1111* | — | *37,95* |
+
+**La lezione sta nel secondo passaggio.** Alzare l'illuminazione delle aule da
+3,9 a 8,1 W/m² ha alzato il livello ma **peggiorato tutto il resto**: aggiungeva
+consumo solo nei giorni di lezione, allontanando agosto dal vero. Il livello
+mancante non era nella didattica — e a dirlo e' ARERA, che ad agosto, senza
+lezioni, misura ancora il 6,2% del consumo annuo (circa 194 kWh al giorno a
+scuola chiusa) contro l'11,7% di gennaio: un rapporto inverno/estate di 1,9, non
+di dieci. Portando la **base permanente** da 4,5 a 8 kW tutte le metriche si
+sono mosse insieme. Non erano quattro difetti, era uno solo.
+
+Il livello resta a 1,10x contro una soglia di −9,1%: fuori di poco, e in una
+cella che ARERA campiona in modo rado — per l'ATECO 85.31 i livelli non sono
+nemmeno monotoni nella potenza (BTA3b 10.401 > BTA4 8.159 > BTA5 3.853) e il
+rumore di fonte arriva al 60%. Limare ancora vorrebbe dire tarare dentro il
+rumore della fonte.
+
+### `comune`: il meglio validato dei tre
+
+Bersaglio ARERA: ATECO **84.11**, classe **BTA5**, 13.695 kWh/anno. E' la cella
+meglio campionata fra quelle usate — i livelli sono monotoni nella potenza e il
+rumore di fonte vale **−0,9%**, il piu' basso dell'intera colonna — quindi qui
+la soglia e' stretta davvero, al contrario dell'istruzione.
+
+| Grandezza | `comune` | Riferimento | Esito |
+|---|---|---|---|
+| livello annuo | 13.274 kWh (0,97x) | 13.695 kWh | −3,1% contro una soglia di −0,9%: **fuori di poco** |
+| forma mensile (L1) | **0,0503** | soglia 0,0504 | **dentro**, di un millesimo |
+| picco feriale | ore 11 | ore 11 (GSE) | coincide |
+| TVD feriale | 0,261 | — | in linea con la scuola (0,262) |
+
+Riuscito **al primo tentativo**, senza ritocchi: i tre punti che mancano sul
+livello starebbero dentro il rumore, e limarli sarebbe tarare sul bersaglio.
+
+**I due tratti che distinguono un municipio da un ufficio**, entrambi misurati:
+i **sabati** valgono 984 kWh, il 7,4% dell'anno — e' l'unico archetipo non
+domestico della comunita' che consuma di sabato, per lo sportello di anagrafe e
+stato civile; le **sere fra le 20 e le 24** valgono 1.298 kWh, il 9,8%, ed e'
+l'unico carico serale non domestico dell'intera CER. Quest'ultimo conta piu'
+del suo peso in kWh: cade in fascia F3 e in ore senza sole, quindi incide
+sull'energia condivisa in modo sproporzionato.
+
+**Agosto non e' chiusura, e' organico ridotto.** ARERA lo conferma: agosto e' il
+minimo dell'anno al 7,2%, ma il rapporto fra massimo e minimo e' appena 1,35
+contro l'1,9 di una scuola. Il modello fa 6,2%, quindi chiude un po' troppo:
+e' l'unico scarto mensile di rilievo rimasto.
+
+Il secondo parere **non torna, e non e' stato forzato**: RSEview da' 113,5
+kWh/m² per gli uffici della PA, che applicati a un POD da 13.695 kWh darebbero
+un edificio di ~120 m² — implausibile per un municipio con sala consiglio. O
+l'indicatore aggrega ministeri e data center, o un municipio reale ha piu' di un
+POD e BTA5 ne descrive uno solo. La superficie resta un'ipotesi dichiarata.
+
+### Quanto dello scarto e' numerosita' del campione? Zero
+
+Uno scarto dal riferimento puo' venire da due cose diverse: il modello e'
+sbagliato, oppure una sola istanza non e' una media. `numerosita_nd.py` le
+separa generando **venti istanze per archetipo**
+(`config/simulation_config.nd20.yaml`, 47 minuti) e adattando
+`TVD(N) = a + b/√N`: il termine `b/√N` e' errore di campionamento, `a` e'
+l'errore che resterebbe con un campione infinito.
+
+| archetipo | `a` | TVD a N=1 | `b` | quota spiegata dalla numerosita' |
+|---|---|---|---|---|
+| `office` | 0,4652 | 0,4652 | 0,0000 | **0%** |
+| `scuola_superiore` | 0,2651 | 0,2655 | 0,0004 | **0%** |
+| `comune` | 0,2527 | 0,2529 | −0,0000 | **0%** |
+
+**Cosa decresce davvero:** non la media, ma la **dispersione** — la deviazione
+standard fra sottoinsiemi passa da 0,0035 a N=1 a 0,0000 a N=20, esattamente
+come 1/√N prevede. Mediare venti istanze dello stesso archetipo converge alla
+curva media *dell'archetipo*, che una singola istanza gia' approssima: il
+campionamento sposta la varianza attorno al centro, non il centro.
+
+**Perche' qui e' diverso dal lato domestico.** La' le venti famiglie erano di
+tipologie diverse, e mediarle avvicinava davvero la curva alla media di
+popolazione ARERA. Qui le venti istanze sono cloni in distribuzione: stesse
+finestre, stessa lista di apparecchi, solo semi diversi. La curva e' **meglio
+posta** — e' l'ipotesi che 1/√N presuppone — e proprio per questo la sua
+risposta e' piu' netta.
+
+**Una riserva sul significato di `a`.** Il riferimento GSE e' uno solo per tutta
+la categoria "altri usi" e ignora il giorno della settimana, quindi `a` contiene
+anche la distanza fra l'archetipo e quella media di categoria, che non e' un
+difetto dell'archetipo. `a` e' percio' un **limite superiore** dell'errore di
+modello. Lo conferma l'ordine dei valori: `office` ha il piu' alto, ed e' anche
+quello con la finestra oraria piu' stretta rispetto a una media che comprende
+utenze attive ventiquattr'ore su ventiquattro.
+
+**Il livello non e' in discussione**, e lo dice la generazione stessa: su venti
+istanze il consumo annuo varia di ±4,5% (`office`), ±0,8% (`scuola_superiore`) e
+±1,1% (`comune`). Gli scarti di livello dei passi 5-7 non sono quindi artefatti
+di campionamento — sono proprieta' del modello.
+
+### Accendere e spegnere gli archetipi
+
+`config/simulation_config.yaml` e' il catalogo: ogni voce di `ramp.use_cases`
+porta un interruttore `enabled`, e chi e' spento resta documentato e validabile
+ma fuori dal run. **Se la chiave manca l'archetipo e' attivo**, cosi' le altre
+configurazioni (`baseline`, `campione20`, `lombardia20`, `milano20`) restano
+valide senza essere toccate.
+
+Prima di accenderne uno conviene sapere cosa comporta: ogni archetipo attivo
+aggiunge una colonna a `profili_tutti.csv`, e `align_members_to_users.m` si
+ferma con errore su ogni colonna che non trova in `[MEMBRI]`. Per questo
+`scuola_superiore` nasce **spento**: si accende insieme alla scheda CER che lo
+contempla.
+
+### I benchmark di letteratura: l'albero energetico e il secondo parere
+
+ARERA e GSE dicono quanto consuma e quando, ma non **di che cosa** e' fatto quel
+consumo. Il difetto piu' grave degli archetipi RAMP non e' che i numeri di
+`office.py` siano sbagliati: e' che non hanno una fonte. Gli indici di
+prestazione energetica per uso finale ce l'hanno, e ogni ramo diventa un gruppo
+di `Appliance`. `benchmark_letteratura.csv` li raccoglie con fonte, pagina e
+stato di verifica; `leggi_quaderno_enea.py` li ritrova nei PDF.
+
+**ENEA con Assoimmobiliare, *Uffici — Quaderni dell'Efficienza Energetica***
+(Ricerca di Sistema Elettrico 2022-2024, MASE), guida alla diagnosi energetica
+ex Allegato II del D.Lgs. 102/2014. Il §4.3 porta gli IPE di secondo livello,
+cioe' l'albero energetico elettrico di un ufficio:
+
+| Uso finale | Indice | Pagina |
+|---|---|---|
+| Illuminazione | 25,7 ± 11,8 kWh/m² (≤1.000 m²: 29,1; >1.000 m²: 23,7) | 75 |
+| Climatizzazione, trattamento aria e ACS | 126 ± 53 kWh/m² tutti i vettori; **zona E-F solo elettrico 93 ± 39** | 76-77 |
+| Infrastruttura informatica (PC, monitor, stampanti, router) | 21,4 ± 11,8 kWh/m², oppure 534 ± 253 kWh/utente | 77-78 |
+| Data center | PUE 1,83 ± 0,36 | 78 |
+| *Indice globale di sito, tutti i vettori* | *201 ± 79 kWh/m²* | *73* |
+
+Milano e' in **zona climatica E**: la riga da usare per `office` e' quella dei
+93 ± 39 kWh/m² a impianto solo elettrico, non i 126 che sommano anche il gas.
+
+**Corgnati, Fabrizio, Ariaudo, Rollino, *Edifici tipo, indici di benchmark di
+consumo ... ad uso scolastico (medie superiori e istituti tecnici)***, Report
+RSE/2010: per `scuola_superiore`, **energia elettrica 15 kWh/m²** (rule of thumb
+30) contro 114 kWh/m² di energia utile per la climatizzazione invernale, con un
+breakdown 88% termico / 12% elettrico (p. 42). Da citare con la sua data: e' del
+2010.
+
+**RSE, *I consumi della Pubblica Amministrazione* (RSEview**, ISBN
+978-88-943145-5-7): il §3.3 copre gli uffici pubblici "dall'amministrazione
+centrale a quelli dell'amministrazione regionale sino al livello comunale",
+quindi comprende il municipio di `comune`. La Tabella 3.8 (p. 47) da' 373,39
+ktep elettrici su 38.248 migliaia di m² in Italia, e 57,17 ktep su 5.553 in
+Lombardia.
+
+**La colonna `verificato` ha tre valori, e la distinzione e' il punto della
+tabella**: `si` per un numero **riletto sul documento** alla pagina indicata;
+`no` per una riga proposta dall'estrattore e non ancora controllata; `derivato`
+per un valore **calcolato da altri**, mai stampato come tale nella fonte — i
+113,5 kWh/m² degli uffici PA italiani sono il rapporto fra le due grandezze
+della Tabella 3.8, non una citazione, e in tesi vanno presentati come tali.
+
+`leggi_quaderno_enea.py` distingue le pagine in cui valore e unita' sono
+attaccati (leggibili in automatico) da quelle con la **sola unita'**, dove
+l'estrazione ha spezzato la tabella e il numero va letto a mano con `--pagine`.
+Non e' un dettaglio: nel report sulle scuole l'unita' sta nell'intestazione di
+colonna e i valori su una riga a parte, quindi **tutte** le sue 50 pagine di
+indici cadono nel secondo gruppo. Una ricerca dei soli valori attaccati
+all'unita' avrebbe concluso che quel documento non contiene benchmark.
+
+### Sei proprieta' dei dati, verificate e non assunte
+
+1. **ARERA non domestico e' solo mensile.** Non esiste la traccia oraria che sul
+   lato domestico copre i clienti trattati orari: la forma oraria non e'
+   validabile su questa fonte, e per quello servono i profili GSE.
+2. **I coefficienti GSE sono normalizzati dentro il mese**, non sull'anno: 1 per
+   i profili monorari, 3 per quelli a fasce (una normalizzazione per fascia). Il
+   profilo piatto `IAFM` vale 1/744 in ogni ora di gennaio. Ne segue che il peso
+   relativo dei mesi va preso da ARERA: GSE non lo contiene.
+3. **Il profilo predefinito e' il monorario `PAUM`**, non la variante a fasce.
+   Non e' una preferenza sul misuratore: un profilo a fasce richiederebbe il
+   consumo mensile *per fascia*, che il file ARERA non domestico non pubblica.
+4. **La colonna `Data ora` del file GSE 2025 e' corrotta** da errore di virgola
+   mobile (l'ultimo istante e' `22:59:59,998` del 31 dicembre) e verso fine anno
+   resta indietro di un'ora rispetto alla colonna `Ora`. L'indice si ricostruisce
+   dalle colonne intere Anno/Mese/Giorno/Ora. Indicizzare su `Data ora` produce
+   una curva giornaliera traslata di un'ora e somme mensili che non chiudono a 1.
+5. **Le due annualita' ARERA non hanno lo stesso formato.** Nomi di colonna
+   diversi per gli stessi campi, il 2024 senza la colonna `Regione` e con
+   `Anno` ripetuta due volte, il mese come numero nel 2025 e come abbreviazione
+   nel 2024 (`Gen` ... `Sett`, con due t), e soprattutto i numeri: virgola
+   decimale nel 2025 (`15,82709464`), punto come separatore delle **migliaia**
+   nel 2024 (`17.655` vale 17655). Le etichette di classe sono invece identiche
+   fra i due anni, ed e' cio' che li rende confrontabili. Lo zip 2024 contiene
+   inoltre **due coppie di file byte-identici** (BTA5 e BTA6 pubblicati due
+   volte): vengono deduplicati per contenuto, o le loro righe sarebbero contate
+   due volte.
+6. **La cache si invalida anche quando cambia il parser**, non solo quando
+   cambiano le sorgenti: il manifesto porta un `versione_parser` accanto agli
+   SHA-256. Non e' una precauzione teorica — una cache scritta mentre il punto
+   delle migliaia del 2024 veniva ancora letto come separatore decimale e'
+   sopravvissuta alla correzione, perche' i sorgenti non erano cambiati, e
+   teneva il livello 2024 mille volte piu' basso del vero.
+
+### La soglia di accettazione, misurata
+
+Il rumore della fonte fra le due annualita' ARERA e' la soglia contro cui si
+giudicheranno gli archetipi — lo stesso criterio del lato domestico, non un
+numero scelto a tavolino. Misurato su Milano, ATECO 82.11:
+
+| Classe | Scarto sul livello annuo | L1 sulla forma mensile |
+|---|---:|---:|
+| BTA1 | +1,0% | 0,0634 |
+| BTA2 | −3,0% | 0,0568 |
+| BTA3a | −4,5% | 0,0662 |
+| BTA3b | −3,1% | 0,0556 |
+| **BTA4** (classe candidata di `office`) | **−3,1%** | **0,0407** |
+| BTA5 | −1,5% | 0,0737 |
+| BTA6 | +3,8% | 0,0673 |
+
+In ordine di grandezza: **±3% sul livello annuo e ~0,05 di L1 sulla forma
+mensile**. Per `office` il bersaglio e' 7.062 kWh/anno nel 2024 e 6.840 nel 2025.
+
+### Tre limiti da dichiarare in tesi
+
+- **Il 2024 provinciale copre le sole province lombarde.** Milano c'e', quindi
+  per la CER di questo progetto la soglia resta calcolabile; per una provincia
+  fuori dalla Lombardia esiste il solo 2025, e `rumore_fonte()` si ferma con un
+  errore esplicito invece di restituire un numero costruito su un anno solo.
+- **Il profilo GSE dei non domestici e' uno solo** per tutta la categoria "altri
+  usi": non distingue un ufficio da una scuola da un municipio. Uno scarto sulla
+  forma di un archetipo con stagionalita' marcata e' quindi atteso anche se
+  l'archetipo e' corretto.
+- **Non e' una misura, e' una tabella di giorni tipo.** Misurato: 291 valori
+  distinti in un anno (12 mesi x 24 ore = 288), differenza massima fra le tabelle
+  2024 e 2025 pari a 7,5e-5, distanza fra giornata feriale e domenicale pari a
+  0,001. Il profilo ignora quindi il giorno della settimana, e non varia
+  praticamente da un anno all'altro: la chiusura nel fine settimana di un
+  archetipo **non e' validabile** su questa fonte, e lo scarto fra due annualita'
+  non puo' fare da soglia di accettazione come sul lato domestico.
+
 ## Pipeline di Esecuzione
 
 ```
@@ -215,5 +612,5 @@ richiede uno smoke run.
 - **Patch di compatibilita**: `ramp_runner.py` include patch per RAMP 0.5.0 con NumPy >= 2.0 e Pandas >= 3.0
 - **Fallback sintetico**: se pyLPG non e installato, `lpg_runner.py` genera profili basati su pattern tipici italiani (pensionati, lavoratori, famiglie con figli)
 - **Seed random**: calcolati da `_seed_stabile(label, indice)`, che usa `zlib.crc32` e non `hash()`. `hash()` sulle stringhe e' randomizzato a ogni avvio dell'interprete (PEP 456) e rendeva i profili diversi a ogni esecuzione; con crc32 il seed e' deterministico. La riproducibilita' e' il prerequisito per poter attribuire una differenza fra due run a una modifica del modello invece che al generatore casuale
-- **Profili stocastici**: RAMP genera profili diversi ad ogni esecuzione grazie alla variabilita integrata nel modello
+- **Profili stocastici, ma esecuzioni riproducibili**: RAMP e' un modello stocastico, e due *istanze* dello stesso archetipo escono diverse fra loro. Due *esecuzioni* no: da quando i seed vengono da `_seed_stabile()` (riga sopra), a parita' di configurazione la generazione e' deterministica e produce gli stessi profili byte per byte. E' la premessa che rende possibile attribuire una differenza fra due run a una modifica del modello — ed e' verificata dal collaudo in `ramp_db/collaudo_regimi.py`
 - **Unita interne**: tutti i profili sono generati in Watt a 1 minuto, poi aggregati in energia (kWh) su base oraria nel postprocessing

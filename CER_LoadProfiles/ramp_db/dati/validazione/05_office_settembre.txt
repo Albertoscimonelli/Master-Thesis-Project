@@ -1,0 +1,103 @@
+# Passo 5 - office con la stagione di raffrescamento accorciata al 15 settembre
+#
+# Comando:  cd CER_LoadProfiles
+#           generazione RAMP del solo office, ricampionata in oraria, poi
+#           cd ramp_db && ../../venv/Scripts/python.exe \
+#               valida_non_domestici.py _office_lavoro.csv
+# Data:     2026-09-12
+# Nota:     _office_lavoro.csv e' un file di lavoro, generato con la sola parte
+#           RAMP della pipeline e non versionato.
+#
+# E' lo stato finale di office al termine del Passo 5. Il percorso completo:
+#
+#   file  versione                     livello        L1 mensile   picco
+#   02    originale                    10.957 (1,58x)   0,0866      ore 15
+#   03    +regimi, festivi, pausa       5.227 (0,75x)   0,2991      ore 15
+#   04    +chiusura di agosto           4.969 (0,71x)   0,2462      ore 10
+#   05    +raffrescamento al 15 set     4.781 (0,69x)   0,2041      ore 10
+#   soglia / riferimento                +/-3,1%         0,0407      ore 11
+#
+# CHIUSI: i quattro difetti di calendario e di forma oraria.
+#   festivi         Natale, Ferragosto e Capodanno valgono 1,19 kWh, i soli
+#                   carichi permanenti, contro 47,9 / 40,6 / 44,8 dell'originale.
+#   stagionalita'   la media giornaliera infrasettimanale va da 11,3 kWh in
+#                   maggio a 29,4 in luglio; nell'originale stava fra 40,0 e
+#                   43,6 in tutti e dodici i mesi.
+#   agosto          7,4% del consumo annuo contro il 6,9% misurato da ARERA.
+#   picco feriale   ore 10 contro le ore 11 del profilo GSE.
+#
+# APERTI, e sono la stessa cosa vista due volte:
+#   livello         4.781 kWh contro 6.951, cioe' 0,69x. Fuori soglia.
+#   forma mensile   L1 = 0,2041, cinque volte la soglia. Gli scarti mese per
+#                   mese valgono +9,7 punti d'estate (giugno +3,5, luglio +3,8,
+#                   settembre +2,4) e -9,6 punti fra inverno e maggio. Cioe' il
+#                   raffrescamento non e' troppo grande in assoluto: e' troppo
+#                   grande RISPETTO ALLA BASE, che e' la stessa ragione per cui
+#                   il livello annuo e' basso del 31%.
+#
+# Il livello non e' stato chiuso gonfiando apparecchi o potenze: sarebbe stato
+# inseguire la metrica. Resta una questione aperta dichiarata, e il contesto che
+# la spiega e' scritto in testa a office.py - in sintesi, ARERA misura POD reali
+# ed e' il bersaglio giusto, mentre ENEA non la risolve perche' il suo campione
+# viene dalle diagnosi obbligatorie ex art. 8 D.Lgs. 102/2014, con il grosso dei
+# siti fra 3.000 e 10.000 m2. Chiuderla richiede un dato che nessuna delle due
+# fonti pubblica: quante persone e quanti metri quadri stiano dietro a un POD
+# di classe BTA4.
+
+Generazione 1x 'office' con RAMP...
+  Profilo office_1...
+  office_1: giorni per regime {'chiuso': 114, 'chiusura_agosto': 9, 'feriale_estate': 65, 'feriale_inverno': 126, 'feriale_mezza': 51}
+  office_1: 525600 campioni generati
+RAMP completato: 1 profili, 525600 campioni ciascuno
+Aggregazione oraria: 525600 campioni -> 8760 ore (kWh)
+
+ANNUO: 4780.8 kWh  (originale 10956,5 | 4 regimi 5226,9 | +agosto 4969,0 | bersaglio BTA4 6951)
+media giornaliera infrasettimanale per mese (kWh):
+  01: 15.3 02: 16.5 03: 16.9 04: 13.6 05: 11.3 06: 28.3 07: 29.4 08: 16.2 09: 21.3 10: 14.3 11: 16.1 12: 14.9
+===== VALIDAZIONE =====
+
+AVVISO: nessun --colonne indicato, si usa l'assegnazione predefinita.
+ATECO, classe di potenza e superficie sono IPOTESI DICHIARATE, non dati.
+
+VALIDAZIONE NON DOMESTICI - _office_lavoro.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+office_1       82.11   BTA4         4,781      6,951    0.69x     26.6     0.464  0.099  0.099
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+82.11   BTA4               -3.1%       0.0407
+82.11   BTA5               -1.5%       0.0737  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  office_1
+    RAMP   7.6   7.1   7.7   6.5   5.4  12.6  14.3   7.4  10.0   7.1   7.0   7.4
+    ARERA  9.4   8.5   8.1   7.3   7.5   9.1  10.5   6.9   7.6   8.1   8.3   8.6   0.2041
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  office_1       estate         0.472     0.100     0.101
+  office_1       inverno        0.440     0.125     0.123
+  office_1       mezza          0.471     0.087     0.088
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  office_1
+    RAMP   F1 92.81  F2  3.15  F3  4.04   picco feriale ore 10
+    GSE    F1 38.01  F2 24.67  F3 37.32   picco feriale ore 11
+
+Come si leggono questi numeri:
+  - il profilo GSE degli altri usi e' UNO SOLO per tutti i non
+    domestici e IGNORA il giorno della settimana (TVD feriale contro
+    domenica = 0,001): le TVD per tipo di giorno vanno lette sapendolo,
+    e la chiusura nel fine settimana non e' validabile su questa fonte;
+  - 'spento' non e' uno zero: vuol dire che l'archetipo non consuma
+    nulla in quei giorni, quindi la curva normalizzata non esiste e
+    la TVD non e' calcolabile. Stamparla come 0,000 direbbe 'forma
+    perfetta' proprio dove il modello e' fermo;
+  - ATECO, classe di potenza e superficie sono ipotesi dichiarate:
+    per questo si riporta anche la classe adiacente;
+  - se la forma non combacia si corregge l'archetipo, mai l'uscita.

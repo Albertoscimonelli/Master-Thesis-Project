@@ -1,0 +1,94 @@
+# Passo 7 - comune (municipio), dimensionamento e validazione
+#
+# Comando:  cd CER_LoadProfiles
+#           generazione RAMP del solo comune, ricampionata in oraria, poi
+#           cd ramp_db && ../../venv/Scripts/python.exe valida_non_domestici.py \
+#               _comune_lavoro.csv --colonne comune_1:84.11:BTA5:300
+# Data:     2026-09-12
+# Nota:     _comune_lavoro.csv e' un file di lavoro, non versionato.
+#
+# ESITO: riuscito al primo tentativo, ed e' il meglio validato dei tre
+# archetipi non domestici. Nessun ritocco dopo la prima stesura.
+#
+#   livello annuo   13.274 kWh contro 13.695 attesi, cioe' 0,97x. La soglia e'
+#                   -0,9%, quindi lo scarto di -3,1% resta formalmente fuori:
+#                   va detto cosi', senza arrotondarlo a "dentro".
+#   forma mensile   L1 = 0,0503 contro una soglia di 0,0504. E' il PRIMO
+#                   archetipo che passa la forma mensile - di un millesimo,
+#                   quindi al limite, ma passa.
+#   picco feriale   ore 11, esattamente l'ora di picco del profilo GSE.
+#   TVD feriale     0,261, in linea con scuola_superiore (0,262) e molto
+#                   meglio di office (0,464).
+#
+# PERCHE' QUI LA SOGLIA E' STRETTA. L'ATECO 84.11 e' la cella meglio campionata
+# fra quelle usate: i livelli ARERA sono monotoni nella potenza (515, 1.367,
+# 2.632, 3.920, 7.208, 13.695, 58.138) e il rumore di fonte di BTA5 e' -0,9%,
+# il piu' basso dell'intera colonna. Il contrario dell'istruzione, dove i
+# livelli non sono nemmeno monotoni e il rumore arriva al 60%.
+#
+# I DUE TRATTI CHE DISTINGUONO UN MUNICIPIO DA UN UFFICIO, misurati:
+#   sabati         984 kWh, il 7,4% dell'anno. E' l'unico archetipo non
+#                  domestico della comunita' che consuma di sabato, per lo
+#                  sportello di anagrafe e stato civile.
+#   sere 20-24     1.298 kWh, il 9,8%. E' l'unico carico serale non domestico
+#                  dell'intera CER: cade in fascia F3 e in ore senza sole,
+#                  quindi incide sull'energia condivisa piu' di quanto il suo
+#                  peso in kWh suggerisca.
+#
+# AGOSTO NON E' CHIUSURA. Un municipio riduce l'organico, non chiude, e ARERA
+# lo conferma: agosto e' il minimo dell'anno al 7,2% ma il rapporto fra massimo
+# e minimo e' appena 1,35, contro l'1,9 di una scuola. Il modello fa 6,2%,
+# quindi chiude un po' troppo: e' l'unico scarto mensile di rilievo rimasto.
+#
+# IL SECONDO PARERE NON TORNA, e non e' stato forzato. RSEview da' 113,5
+# kWh/m2 per gli uffici della PA (valore DERIVATO, non citato); applicato a un
+# POD da 13.695 kWh darebbe un edificio di ~120 m2, implausibile per un
+# municipio con sala consiglio. O l'indicatore aggrega ministeri e data center
+# e sovrastima un municipio di provincia, o un municipio reale ha piu' di un
+# POD e la classe BTA5 ne descrive uno solo. La superficie di 300 m2 usata per
+# la colonna kWh/m2 resta un'ipotesi dichiarata.
+
+=== CALENDARIO 2025 ===
+  giorni per regime: {'agosto': 20, 'chiuso': 63, 'feriale_inverno': 126, 'feriale_mezza': 105, 'sabato': 51} totale 365
+  2025-08-12  mar di agosto          -> agosto           ok
+  2025-08-16  sabato di agosto       -> sabato           ok
+  2025-08-15  Ferragosto             -> chiuso           ok
+  2025-01-11  sabato di gennaio      -> sabato           ok
+  2025-10-15  inizio riscaldamento   -> feriale_inverno  ok
+  2025-05-06  mar di maggio          -> feriale_mezza    ok
+  2025-06-01  domenica               -> chiuso           ok
+CALENDARIO OK
+
+ANNUO: 13274 kWh   bersaglio ARERA 84.11 BTA5: 13.695
+  sabati: 984 kWh (7.4%) | sere 20-24: 1298 kWh (9.8%) | agosto 6.2% (ARERA 7,2)
+===== VALIDAZIONE =====
+
+VALIDAZIONE NON DOMESTICI - _comune_lavoro.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+comune_1       84.11   BTA5        13,274     13,695    0.97x     44.2     0.261  0.099  0.100
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+84.11   BTA5               -0.9%       0.0504
+84.11   BTA6              -23.7%       0.0547  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  comune_1
+    RAMP   9.1   8.5   9.1   8.0   7.9   7.8   8.4   6.2   8.3   9.1   8.7   8.9
+    ARERA  8.8   8.7   8.9   8.0   7.7   7.5   8.0   7.2   7.6   8.8   9.1   9.7   0.0503
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  comune_1       estate         0.237     0.100     0.100
+  comune_1       inverno        0.265     0.122     0.124
+  comune_1       mezza          0.269     0.088     0.088
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  comune_1
+    RAMP   F1 62.23  F2 14.23  F3 23.54   picco feriale ore 11
+    GSE    F1 37.87  F2 24.67  F3 37.46   picco feriale ore 11

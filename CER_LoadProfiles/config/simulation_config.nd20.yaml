@@ -1,0 +1,49 @@
+# Campione allargato dei soli archetipi NON DOMESTICI: 20 istanze ciascuno.
+#
+# A cosa serve. La validazione confronta un archetipo con una media ARERA, ma
+# uno scarto puo' venire da due cose diverse: il modello e' sbagliato, oppure
+# una sola istanza non e' una media. Con venti istanze indipendenti si adatta
+# TVD(N) = a + b/sqrt(N): il termine b/sqrt(N) e' errore di CAMPIONAMENTO e si
+# annulla al crescere di N, mentre l'intercetta "a" e' l'errore che resterebbe
+# con un campione infinito, cioe' l'errore di MODELLO. E' l'unico dei due
+# attribuibile all'archetipo, ed e' il numero da riportare in tesi.
+#
+# Perche' qui la curva e' ben posta, mentre sul lato domestico non lo era. In
+# lpg_db/curva_numerosita.py i sottoinsiemi si estraggono da quattro famiglie di
+# tipologie diverse, che condividono i time limit del catalogo: campioni piu'
+# grandi mescolano archetipi differenti invece di ripetere lo stesso. Qui
+# num_users: 20 produce venti istanze genuinamente indipendenti DELLO STESSO
+# archetipo, che e' esattamente cio' che la formula presuppone.
+#
+# I profili prodotti NON si versionano: sono dati derivati e si rigenerano da
+# questo file. La generazione e' riproducibile, perche' i seed vengono da
+# _seed_stabile() (crc32, non hash()), quindi un run ripetuto a parita' di
+# catalogo produce gli stessi profili.
+#
+# Uso:
+#   cd CER_LoadProfiles/ramp_db
+#   ../../venv/Scripts/python.exe numerosita_nd.py ../outputs/csv_nd20/profili_nd20.csv
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+
+  # Tutti e tre accesi: qui servono proprio i non domestici, e questo file non
+  # alimenta la catena MATLAB, quindi nessuna scheda CER da allineare.
+  use_cases:
+    - name: "office"
+      num_users: 20
+      enabled: true
+    - name: "scuola_superiore"
+      num_users: 20
+      enabled: true
+    - name: "comune"
+      num_users: 20
+      enabled: true
+
+output:
+  folder: "outputs/csv_nd20"

@@ -1,0 +1,84 @@
+# Comunita' a NOVE membri: le cinque utenze non domestiche piu' le quattro
+# famiglie. Serve a produrre la bozza di scheda CER che contempla anche
+# scuola_superiore e comune.
+#
+# PERCHE' UNA CONFIGURAZIONE A PARTE invece di accendere gli interruttori in
+# simulation_config.yaml. Accenderli li' rigenererebbe outputs/csv/
+# profili_tutti.csv con nove colonne, e align_members_to_users.m si fermerebbe
+# su CER_5_2_0.txt, che di membri ne dichiara sette: la catena MATLAB
+# smetterebbe di funzionare prima ancora che la scheda nuova esista. Con una
+# cartella di output separata il file che MATLAB legge resta intatto, e la
+# scheda nuova si prepara con calma.
+#
+# La sezione lpg e' identica a quella di simulation_config.yaml: le quattro
+# famiglie devono essere le stesse, altrimenti la scheda descriverebbe una
+# comunita' diversa da quella di riferimento.
+#
+# Uso:
+#   cd CER_LoadProfiles
+#   ../venv/Scripts/python.exe generate_load_profiles.py \
+#       --config config/simulation_config.scheda9.yaml
+
+simulation:
+  year: 2025
+  timezone: "Europe/Rome"
+
+ramp:
+  date_start: "2025-01-01"
+  date_end: "2025-12-31"
+  use_cases:
+    - name: "office"
+      num_users: 1
+      enabled: true
+    - name: "small_industry"
+      num_users: 1
+      enabled: true
+    - name: "retail"
+      num_users: 1
+      enabled: true
+    - name: "scuola_superiore"
+      num_users: 1
+      enabled: true
+    - name: "comune"
+      num_users: 1
+      enabled: true
+
+lpg:
+  households:
+    - label: "pensionati"
+      template: "CHR54 Retired Couple, no work"
+      household_ref: "CHR54_Retired_Couple_no_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      count: 1
+    - label: "coppia_lavoratori"
+      template: "CHR02 Couple, 30 - 64 age, with work"
+      household_ref: "CHR02_Couple_30_64_age_with_work"
+      count: 1
+    - label: "famiglia_1figlio"
+      template: "CHR03 Family, 1 child, both at work"
+      household_ref: "CHR03_Family_1_child_both_at_work"
+      house_type: "HT07_Normal_house_with_15_000_kWh_Heating_and_5_000_kWh_Cooling_Electric_Air_Conditioning_Continuous_Flow_Gas_Heating"
+      count: 1
+    - label: "famiglia_3figli"
+      template: "CHR05 Family, 3 children, both with work"
+      household_ref: "CHR05_Family_3_children_both_with_work"
+      count: 1
+  house_type: "HT06_Normal_house_with_15_000_kWh_Heating_Continuous_Flow_Gas_Heating"
+  energy_intensity: "EnergySaving"
+  database: "lpg_db/profilegenerator.IT.db3"
+  geographic_location: "Italy_Mailand"
+  temperature_profile: "Milano, Italia - PVGIS TMY 2005-2023"
+
+output:
+  folder: "outputs/csv_scheda9"
+  combined_profiles: true
+  individual_profiles: false
+  dettaglio_domestici: false
+  aggregate_total: false
+  versioned: false
+
+  # E' il motivo per cui questa configurazione esiste: deposita in
+  # CER_configuration/ una bozza di scheda con [MEMBRI] gia' allineata alle nove
+  # colonne. Il prefisso 'bozza_' la tiene fuori dal glob CER_*.txt di MAIN.m,
+  # quindi finche' non la si completa e rinomina MATLAB la ignora.
+  scheda_cer: true

@@ -1,0 +1,88 @@
+# Passo 6 - scuola_superiore, dimensionamento e validazione
+#
+# Comando:  cd CER_LoadProfiles
+#           generazione RAMP del solo scuola_superiore, ricampionata in oraria,
+#           cd ramp_db && ../../venv/Scripts/python.exe valida_non_domestici.py \
+#               _scuola_lavoro.csv --colonne scuola_superiore_1:85.31:BTA6:6470
+# Data:     2026-09-12
+# Nota:     _scuola_lavoro.csv e' un file di lavoro, non versionato.
+#
+# DUE FONTI INDIPENDENTI CHE CONCORDANO, al contrario del caso office. ARERA da'
+# 96.991 kWh/anno a un POD di classe BTA6 con ATECO 85.31 a Milano; il benchmark
+# RSE/2010 da' 15 kWh/m2 elettrici per gli edifici scolastici superiori. Il loro
+# rapporto e' circa 6.470 m2, la taglia di un istituto reale, ed e' la
+# superficie su cui l'archetipo e' dimensionato.
+#
+# IL DIMENSIONAMENTO, in tre passaggi, tutti misurati:
+#
+#   stesura   livello            kWh/m2   L1      TVD fer.  fasce F1
+#   prima     64.532 (0,67x)     10,0     0,1635  0,300     63,07
+#   +luci     76.939 (0,79x)     11,9     0,1936  0,362     68,63
+#   +base    107.103 (1,10x)     16,6     0,1579  0,262     58,02
+#   ARERA/GSE 96.991             15       0,1111  -         37,95
+#
+# LA LEZIONE DEL SECONDO PASSAGGIO. Alzare l'illuminazione delle aule da 3,9 a
+# 8,1 W/m2 ha alzato il livello ma PEGGIORATO tutto il resto: aggiungeva consumo
+# solo nei giorni di lezione, allontanando agosto dal vero e concentrando ancora
+# di piu' il profilo in fascia F1. Il livello mancante non era nella didattica.
+#
+# DOVE ERA DAVVERO, e lo dice ARERA. Ad agosto, senza lezioni, un POD scolastico
+# BTA6 consuma ancora il 6,2% del totale annuo - circa 194 kWh al giorno a
+# scuola chiusa - contro l'11,7% di gennaio: il rapporto inverno/estate e' 1,9,
+# non dieci. La prima stesura aveva 4,5 kW di base e faceva 4,2% ad agosto.
+# Portando la base a 8 kW (CED, ausiliari continui, videosorveglianza e luci di
+# sicurezza) TUTTE le metriche si sono mosse insieme: livello, forma mensile,
+# fasce e TVD. Non erano quattro difetti, era uno solo.
+#   agosto ora: 186 kWh/giorno a scuola chiusa, contro i ~194 di ARERA.
+#
+# ESITO. Il livello sta a 1,10x contro una soglia di -9,1%: fuori di poco, e in
+# una cella che ARERA campiona in modo rado - per l'ATECO 85.31 i livelli non
+# sono nemmeno monotoni nella potenza (BTA3b 10.401 > BTA4 8.159 > BTA5 3.853) e
+# il rumore di fonte arriva al 60%. Limare ancora l'archetipo vorrebbe dire
+# tararlo dentro il rumore della fonte, quindi ci si ferma qui e lo si dichiara.
+# L1 resta a 0,1579 contro 0,1111, cioe' 1,4 volte la soglia: molto meglio del
+# lato office, dove dopo quattro correzioni era ancora cinque volte.
+#
+# CALENDARIO VERIFICATO su tredici date di confine, tutte corrette: avvio 12
+# settembre, termine 8 giugno, natalizie, pasquali (17-19 aprile piu' martedi'
+# 22), carnevale (3-4 marzo), inizio riscaldamento 15 ottobre. Giorni per regime
+# nel 2025: chiuso 126, chiusura_estiva 68, lezione_inverno 117, lezione_mezza
+# 54. I giorni di lezione dell'anno solare sono 171, che non si confronta con il
+# minimo di 200 del D.Lgs. 297/1994 art. 74 c. 3 perche' quello e' per anno
+# SCOLASTICO, e un anno solare ne contiene due meta'.
+
+ANNUO: 107103 kWh  (64.532 -> 76.939 -> ora | bersaglio 96.991)
+kWh/m2 su 6.470 m2: 16.6  (benchmark RSE 15)
+agosto 5.4% (ARERA 6,2) | gennaio 9.4% (ARERA 11,7) | rapporto inverno/estate 1.74 (ARERA 1,9)
+agosto: 186 kWh/giorno a scuola chiusa (ARERA ~194)
+===== VALIDAZIONE =====
+
+VALIDAZIONE NON DOMESTICI - _scuola_lavoro.csv
+livello e forma mensile: ARERA Milano, anni 2024 e 2025
+forma oraria: profili standard GSE 2025, codice PAUM (altri usi (non domestico BT), monorario)
+
+colonna        ATECO   classe    kWh/anno     atteso   scarto   kWh/m2  TVD fer.   sab.   dom.
+--------------------------------------------------------------------------------------------------------
+scuola_superiore_1 85.31   BTA6       107,103     96,991    1.10x     16.6     0.262  0.100  0.099
+
+SOGLIA DI ACCETTAZIONE - rumore della fonte ARERA fra i due anni
+ATECO   classe    scarto livello   L1 mensile
+85.31   BTA6               -9.1%       0.1111
+85.31   BTA5               40.3%       0.2126  <- adiacente
+
+FORMA MENSILE - quota di ciascun mese sul totale annuo (%)
+      1     2     3     4     5     6     7     8     9    10    11    12       L1
+  scuola_superiore_1
+    RAMP   9.4   9.4   9.6   8.7   9.4   6.0   5.5   5.4   8.0  10.3   9.7   8.5
+    ARERA 11.7   9.8   8.8   7.0   7.2   7.8   6.9   6.2   6.6   8.4  10.0   9.5   0.1579
+
+TVD PER STAGIONE E TIPO DI GIORNO - dove il modello sbaglia
+  colonna        stagione     lun-ven    sabato  domenica
+  scuola_superiore_1 estate         0.080     0.101     0.099
+  scuola_superiore_1 inverno        0.295     0.123     0.126
+  scuola_superiore_1 mezza          0.305     0.089     0.087
+
+FASCE ORARIE (% del consumo annuo) E ORA DI PICCO
+  scuola_superiore_1
+    RAMP   F1 58.02  F2 15.28  F3 26.69   picco feriale ore 10
+    GSE    F1 37.95  F2 24.63  F3 37.42   picco feriale ore 11

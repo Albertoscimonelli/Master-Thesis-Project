@@ -1,0 +1,87 @@
+# =============================================================================
+# BOZZA di scheda CER - PIANIFICAZIONE, nessun profilo ancora generato
+#
+# Composizione domestica derivata da ISTAT AVQ 2024 (microdati Lombardia,
+# 1.831 famiglie) + Censimento permanente della popolazione 2021 (rilascio
+# 2023), allocazione a resto maggiore su 3 famiglie
+# (tipologie_famiglie.py --famiglie 3).
+#
+# MEMBRO 'office' aggiunto come da indicazione esplicita: terziario,
+# BIORARIA, 10 kW impegnati, prosumer con impianto PV04 (35 kWp, PV4.CSV).
+# kWp di PV04 NON e' un dato fornito: e' una stima dichiarata da due indizi
+# indipendenti (quota_inv_EUR/~1000 EUR-kWp; picco orario di PV4.CSV a
+# 39,2 kW) - da correggere quando si conosce l'impianto reale.
+#
+# PV01 (small_industry) OMESSO: quella scheda non ha un membro
+# small_industry, quindi la riga sarebbe stata un riferimento a vuoto.
+#
+# PENETRAZIONE PROSUMER: 1/4 membri (25.0%),
+# target ~25%. Le famiglie prosumer sono scelte con passo costante lungo
+# la lista (stesso principio del resto maggiore usato per la composizione),
+# non a caso: nessuna.
+# Ciascuna: 12 kWp, PV2.CSV, 13000 EUR -
+# stessi valori dell'unica famiglia prosumer gia' presente nel progetto
+# (household_4/PV02 in CER_configuration/CER_5_2_0.txt e CER_7_2_0.txt).
+#
+# ATTENZIONE MODELLO: load_cer_data.m legge ogni file_produzione come
+# export PVsyst ASSOLUTO (kWh orari), non normalizzato per kWp. Piu'
+# famiglie con lo stesso PV2.CSV sommano quindi N volte la stessa curva:
+# e' corretto SOLO se si intende N impianti realmente identici (stessa
+# taglia, stesso orientamento) - non N impianti scalati proporzionalmente
+# a un kWp diverso. Qui e' cosi' per costruzione (12 kWp fisso ovunque).
+#
+# NON e' ancora caricabile. DA COMPILARE A MANO PRIMA DI ATTIVARLA:
+#
+#   [FILE]      profili_carico: percorso del CSV con questi membri,
+#               nell'ORDINE elencato qui sotto
+#   [CER]       nome, comune, provincia, zona_mercato (nord|centro|sud)
+#   [IMPIANTI]  tilt, azimut, capex_EUR, opex_EUR_anno per ogni impianto
+#
+# PER ATTIVARLA: rinominare in CER_<C>_<P>_<E>.txt (consumatori, prosumer,
+#                produttori puri), stessa cartella. MAIN.m carica i soli
+#                file che iniziano per 'CER_', quindi finche' si chiama
+#                'bozza_' questa scheda viene ignorata e non puo' rompere
+#                nulla.
+#
+# Le sezioni [MERCATO], [INVESTIMENTO] e [POVERTA_ENERGETICA] non stanno
+# qui: le innesta il loader da scenario_economico.txt.
+# =============================================================================
+[CER]
+nome            = ?
+comune          = ?
+provincia       = ?
+zona_mercato    = nord
+cabina_primaria = ?
+forma_giuridica = ?
+anno            = 2025
+n_ore           = 8760
+[RIEPILOGO]
+membri_totali             = 4
+consumatori               = 3
+prosumer                  = 1
+produttori_puri           = 0
+penetrazione_prosumer_pct = 25.00
+potenza_installata_kWp    = 35
+impianti_totali           = 1
+[FILE]
+profili_carico     = ../CER_LoadProfiles/outputs/csv_lombardia100/3_utenti.xlsx
+prezzi_zonali      = ../20250101_20251231_MGP_PrezziZonali_Nord.xlsx
+cartella_pv        = ../PV_Generation
+scenario_economico = scenario_economico.txt
+[GOVERNANCE]
+ct_riserva        = 0.00
+ct_quota_fissa    = 0.30
+ct_quota_prelievi = 0.50
+ct_quota_prosumer = 0.60
+psk_alpha         = 0.50
+as_campioni       = 1000
+as_seed           = 42
+[MEMBRI]
+id | nome_csv        | ruolo | categoria | archetipo                           | tariffa   | P_prel_kW | n_comp | n_perc | reddito_EUR | gas_kWh | quota_inv_EUR | mutuo_EUR_anno | impianto
+ 1 | office_1_kWh    | P     | terziario | office                              | BIORARIA  |        10 |      - |      - |           - |       - |         35000 |              0 | PV04
+ 2 | household_1_kWh | C     | domestico | CHR23_uomo_over65_solo              | MONORARIA |         3 |      1 |      ? |           ? |       ? |             ? |              0 | -
+ 3 | household_2_kWh | C     | domestico | CHR16_coppia_over65                 | MONORARIA |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
+ 4 | household_3_kWh | C     | domestico | CHR14_coppia_lavoratori_con_anziano | MONORARIA |         3 |      3 |      ? |           ? |       ? |             ? |              0 | -
+[IMPIANTI]
+  id | proprietario | kWp | file_produzione | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
+PV04 | office_1_kWh |  35 | PV4.CSV         |    ? |      ? |           2025 |         ? |             ?

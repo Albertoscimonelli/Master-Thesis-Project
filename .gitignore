@@ -310,6 +310,12 @@ CER_LoadProfiles/outputs/csv_scheda9/
 CER_LoadProfiles/outputs/csv_lombardia20/
 CER_LoadProfiles/outputs/csv_milano20/
 
+# Societa' lombarda a cento famiglie (config/simulation_config.lombardia100.yaml),
+# stessa regola dei run sopra: dati derivati, riproducibili dai seed
+# deterministici, non si versionano. Quello che si versiona sono la
+# configurazione e i numeri misurati in outputs/report/validazione_lombardia100.md.
+CER_LoadProfiles/outputs/csv_lombardia100/
+
 # Scomposizione del POD nelle due meta' del contatore (output.dettaglio_domestici).
 # Viene riscritta a ogni run e nessun file a valle la legge: e' diagnostica,
 # serve a capire se uno scarto viene dagli elettrodomestici o dagli impianti.

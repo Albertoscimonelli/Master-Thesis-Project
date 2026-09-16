@@ -54,6 +54,16 @@ metodi (calcolarla una volta, passarla ai tre) e' un'ottimizzazione reale ma
 piu' invasiva di quanto richiesto in questa sessione — segnalata qui per una
 fase futura.
 
+> **Aggiornamento 2026-09-15 — il bypass, non l'ottimizzazione.** `MAIN.m` ora
+> salta i tre metodi sopra i **18 utenti** (`skipGameTheory = nUsers > 18`,
+> calcolato in §1 e stampato come `[BYPASS]`), insieme all'**eccesso di
+> coalizione**, che enumera `2^n` per conto proprio e senza il quale il giro si
+> sarebbe fermato lo stesso sulle schede oltre i 20 membri. Gli altri tredici
+> metodi proseguono e il giro arriva in fondo. L'ottimizzazione descritta qui
+> sopra resta **aperta**: servirebbe ancora per accorciare la fascia 16-18
+> membri, dove i tre metodi girano ma costano. Dettagli in
+> [README §14.1](../../README.md).
+
 ## 2. Bug trovato e corretto in MAIN.m
 
 `stratified_expected_value_cer.m` (SEV) si autodisattiva quando n > 12
@@ -143,13 +153,45 @@ N) ma la dimensione dello scarto va aggiornata per composizioni realistiche.
   (`PV4.CSV`, `3_utenti.xlsx`) riammessi di conseguenza — altrimenti un clone
   pulito del progetto non avrebbe piu' nessuna scheda eseguibile.
 
+## 7. Dopo il bypass: il collo di bottiglia e' il Variance Least Core
+
+Misure del 2026-09-15 sulle schede `CER_13_5_0` (18 membri) e `CER_15_5_0`
+(20 membri), `MAIN.m` con la soglia attiva, stessa macchina:
+
+| Metodo | 18 membri (sotto soglia) | 20 membri (sopra soglia) |
+|---|---:|---:|
+| Shapley esatto | 52,6 s | *saltato* |
+| Nucleolo | 54,2 s | *saltato* |
+| Nash Bargaining | 55,0 s | *saltato* |
+| Eccesso di coalizione | 1 min 04 s | *saltato* |
+| **Variance Least Core** | **8 min 51 s** | **13 min 30 s** |
+| Totale del giro | 12 min 48 s | 13 min 42 s |
+
+Due letture, entrambe utili.
+
+**La prima**: a 18 membri i tre metodi "impraticabili" costano insieme meno di
+tre minuti, contro i 9+18+25 min misurati a 21 (§1). E' la crescita `2^n` vista
+dal basso — `2^18` sono 262 mila coalizioni, `2^21` oltre due milioni — e
+conferma che 18 e' una soglia con margine, non tirata al limite.
+
+**La seconda, meno attesa**: tolti i tre metodi, a dominare il tempo resta il
+**Variance Least Core**, che da solo vale il 98% del giro a 20 membri. Il §1 lo
+dava per applicabile "a comunita' di decine o centinaia di membri per
+costruzione" — vero come ordine di complessita' (row-generation, non `2^n`), ma
+finora senza numeri misurati. Questi sono i primi. **Sulle schede da 26, 51, 76
+e 101 membri sara' lui a decidere i tempi**, e quanto costi a quelle taglie non
+e' ancora stato misurato: e' il prossimo dato da prendere, prima di dare per
+scontato che il bypass da solo renda quelle schede eseguibili in tempi pratici.
+
 ## Raccomandazione pratica
 
 - Fino a ~15-16 membri: Shapley esatto e' ancora praticabile per un'analisi
   puntuale (ordine dei minuti).
 - Oltre ~18-20 membri: **Shapley esatto, Nucleolo e Nash Bargaining diventano
   insostenibili** per un uso iterativo. Usare **Adaptive Sampling Shapley**
-  come proxy (scarto 1-2%, costo O(n·M) con M = `as_campioni`).
+  come proxy (scarto 1-2%, costo O(n·M) con M = `as_campioni`). Dal 2026-09-15
+  non e' piu' una raccomandazione ma il comportamento del codice: sopra i 18
+  utenti i tre vengono saltati da `MAIN.m` (§1, aggiornamento).
 - Il Variance Least Core resta applicabile a qualunque N per costruzione
   (row-generation), e puo' quindi accompagnare l'Adaptive Sampling anche
   sulle comunita' piu' grandi (26-101 membri) senza il problema qui descritto.

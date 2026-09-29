@@ -955,7 +955,13 @@ Pipeline a sezioni indipendenti, RIPETUTA PER OGNI CER:
   2) Energia condivisa/venduta (al netto dell'autoconsumo del proprietario)
   3) Analisi economica (ricavi mensili/annuali, incentivo orario P_CER_h)
   3b/3c/3d/3e) Ripartizione dell'incentivo CER: Shapley value, Nucleolo,
-     Nash Bargaining, Variance Least Core (modelli di teoria dei giochi)
+     Nash Bargaining, Variance Least Core (modelli di teoria dei giochi).
+     SOGLIA: i primi tre enumerano 2^n coalizioni, e sopra i 18 utenti
+     vengono SALTATI con un messaggio [BYPASS] (flag skipGameTheory,
+     calcolato nella 1). Con loro salta anche l'eccesso di coalizione
+     della 3t, che enumera per conto suo, e la 3q, che senza lo Shapley
+     esatto non ha riferimento. Il Variance Least Core gira a ogni taglia
+     (row-generation). Vedi README 14.1.
   3f/3g) Ripartizione dell'incentivo CER: Equal Split, Proportional to
      Consumption (benchmark elementari, senza teoria dei giochi)
   3h/3i/3j) Ripartizione dell'incentivo CER: Remuneration Model 1, Cascading

@@ -258,6 +258,22 @@ for iCER = 1:N_CER
     loadForShare      = D.loadForShare;
     loadTotalForShare = D.loadTotalForShare;
 
+    % --- Soglia oltre la quale i metodi a enumerazione 2^n vengono saltati ---
+    % Shapley, Nucleolo, Nash Bargaining (via cer_coalition_values) e l'eccesso
+    % di coalizione (che enumera per conto suo) costano tutti 2^n valutazioni.
+    % Il test di scala in outputs/report/scaling_metodi_ripartizione.md misura
+    % 9 min per lo Shapley, 18 per il Nucleolo e oltre 25 per il Nash a n = 21:
+    % oltre questa soglia non e' lentezza, e' impraticabilita'. Gli altri tredici
+    % metodi scalano (il Variance Least Core per row-generation, gli altri in
+    % O(H*n)) e proseguono normalmente. Vedi README §14.1.
+    skipGameTheory = nUsers > 18;
+    if skipGameTheory
+        fprintf(['\n  [BYPASS] %d utenti (> 18): Shapley, Nucleolo, Nash Bargaining\n' ...
+                 '  ed Eccesso di coalizione richiederebbero 2^%d valutazioni e vengono\n' ...
+                 '  SALTATI. Si prosegue con i 13 metodi scalabili (README §14.1).\n'], ...
+                nUsers, nUsers);
+    end
+
     % --- Membri della scheda, riordinati sull'ordine delle colonne del CSV ---
     % L'identita' dei giocatori nasce dal CSV (una colonna = un utente); la
     % scheda e' scritta a mano e puo' elencarli in altro ordine. Da qui in poi
@@ -522,52 +538,56 @@ for iCER = 1:N_CER
     %  non e' energia condivisibile con la CER e va esclusa dal gioco.
     %  ========================================================================
 
-    T_metodo = tic;
-    Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
-    fprintf('  [cronometro] Shapley esatto: %s\n', format_duration(toc(T_metodo)));
+    if skipGameTheory
+        fprintf('  [BYPASS] Shapley esatto non calcolato (2^%d coalizioni).\n', nUsers);
+    else
+        T_metodo = tic;
+        Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+        fprintf('  [cronometro] Shapley esatto: %s\n', format_duration(toc(T_metodo)));
 
-    % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
-    % tariffa lorda con esenzione applicata coalizione per coalizione (quella
-    % che percorrono Shapley, Nucleolo, Nash, VLC e le tre approssimazioni) e
-    % tariffa efficace di comunita' (quella che ricevono gli altri metodi e il
-    % ricavo della §3). Se divergono, il fattore F si sta applicando due volte
-    % da una parte o sparendo dall'altra - ed e' un errore che senza questo
-    % assert si vedrebbe solo come uno scarto inspiegabile fra i metodi.
-    vGrandEff = sum(min(sum(genForShare, 2), sum(loadForShare, 2)) .* P_CER_h);
-    assert(abs(Sh.vGrand - vGrandEff) <= 1e-6 * max(1, abs(vGrandEff)), ...
-           ['v(N) incoerente fra le due strade del fattore F: EUR %.6f con la ' ...
-            'tariffa lorda piu'' esenzione per coalizione, EUR %.6f con la ' ...
-            'tariffa efficace di comunita''.'], Sh.vGrand, vGrandEff);
-    report_allocation(Sh, "Shapley");
+        % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
+        % tariffa lorda con esenzione applicata coalizione per coalizione (quella
+        % che percorrono Shapley, Nucleolo, Nash, VLC e le tre approssimazioni) e
+        % tariffa efficace di comunita' (quella che ricevono gli altri metodi e il
+        % ricavo della §3). Se divergono, il fattore F si sta applicando due volte
+        % da una parte o sparendo dall'altra - ed e' un errore che senza questo
+        % assert si vedrebbe solo come uno scarto inspiegabile fra i metodi.
+        vGrandEff = sum(min(sum(genForShare, 2), sum(loadForShare, 2)) .* P_CER_h);
+        assert(abs(Sh.vGrand - vGrandEff) <= 1e-6 * max(1, abs(vGrandEff)), ...
+               ['v(N) incoerente fra le due strade del fattore F: EUR %.6f con la ' ...
+                'tariffa lorda piu'' esenzione per coalizione, EUR %.6f con la ' ...
+                'tariffa efficace di comunita''.'], Sh.vGrand, vGrandEff);
+        report_allocation(Sh, "Shapley");
 
-    % Coerenza con l'analisi economica: il valore distribuito coincide con il
-    % ricavo annuo da energia condivisa calcolato nella sezione 3.
-    assert(abs(Sh.vGrand - sum(rev_shared_monthly)) < 1e-6, ...
-           'Shapley: valore distribuito incoerente con il ricavo da condivisa');
+        % Coerenza con l'analisi economica: il valore distribuito coincide con il
+        % ricavo annuo da energia condivisa calcolato nella sezione 3.
+        assert(abs(Sh.vGrand - sum(rev_shared_monthly)) < 1e-6, ...
+               'Shapley: valore distribuito incoerente con il ricavo da condivisa');
 
-    % --- Grafico distribuzione ----------------------------------------------
-    % Ogni colonna e' un utente e si divide in due colori: la quota CER (Shapley)
-    % e il ricavo dalla vendita diretta dell'eccedenza sul mercato, che non passa
-    % dal gioco cooperativo e spetta ai soli prosumer.
-    %
-    % Sta sotto FIG.dettaglio con i grafici a rete, ed e' la stessa ragione: e'
-    % il dettaglio di UN metodo, e quello che dice per lo Shapley il confronto
-    % della §3s lo dice per tutti e sedici insieme.
-    if FIG.dettaglio
-        figure('Name', 'Distribuzione Shapley', 'Color', 'w');
-        hBar = bar([Sh.phi, revSoldPerPlayer], 'stacked');
-        hBar(1).FaceColor = method_color("Shapley");
-        hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
-        grid on; box on;
-        xticks(1:numel(Sh.players));
-        xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
-        ylabel('Ricavo [€/anno]');
-        legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
-        title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
+        % --- Grafico distribuzione ------------------------------------------
+        % Ogni colonna e' un utente e si divide in due colori: la quota CER
+        % (Shapley) e il ricavo dalla vendita diretta dell'eccedenza sul mercato,
+        % che non passa dal gioco cooperativo e spetta ai soli prosumer.
+        %
+        % Sta sotto FIG.dettaglio con i grafici a rete, ed e' la stessa ragione:
+        % e' il dettaglio di UN metodo, e quello che dice per lo Shapley il
+        % confronto della §3s lo dice per tutti e sedici insieme.
+        if FIG.dettaglio
+            figure('Name', 'Distribuzione Shapley', 'Color', 'w');
+            hBar = bar([Sh.phi, revSoldPerPlayer], 'stacked');
+            hBar(1).FaceColor = method_color("Shapley");
+            hBar(2).FaceColor = [0.90 0.45 0.15];   % vendita energia eccedente (mercato)
+            grid on; box on;
+            xticks(1:numel(Sh.players));
+            xticklabels(strrep(Sh.players, '_', '\_')); xtickangle(45);
+            ylabel('Ricavo [€/anno]');
+            legend(hBar, {'Quota CER (Shapley)', 'Vendita energia eccedente'}, 'Location', 'northeast');
+            title(sprintf('Ripartizione incentivo CER condivisa  |  Totale CER = €%.0f', Sh.vGrand));
+        end
+
+        % --- Grafico a rete: cabina primaria + benefici + verso del flusso ---
+        if FIG.dettaglio, plot_benefit_network(Sh.players, Sh.phi, "Shapley", revSoldPerPlayer); end
     end
-
-    % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    if FIG.dettaglio, plot_benefit_network(Sh.players, Sh.phi, "Shapley", revSoldPerPlayer); end
 
 
     %% ========================================================================
@@ -582,17 +602,21 @@ for iCER = 1:N_CER
     %  quindi STABILE (nessuna sotto-coalizione conviene).
     %  ========================================================================
 
-    T_metodo = tic;
-    Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
-    fprintf('  [cronometro] Nucleolo: %s\n', format_duration(toc(T_metodo)));
+    if skipGameTheory
+        fprintf('  [BYPASS] Nucleolo non calcolato (2^%d coalizioni).\n', nUsers);
+    else
+        T_metodo = tic;
+        Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+        fprintf('  [cronometro] Nucleolo: %s\n', format_duration(toc(T_metodo)));
 
-    coreMsg = "fuori dal Core";
-    if Nu.inCore, coreMsg = "nel Core (stabile)"; end
-    report_allocation(Nu, "Nucleolo", ...
-        sprintf('  %-25s: EUR %9.2f  ->  %s', 'Surplus min (theta)', Nu.thetaMin, coreMsg));
+        coreMsg = "fuori dal Core";
+        if Nu.inCore, coreMsg = "nel Core (stabile)"; end
+        report_allocation(Nu, "Nucleolo", ...
+            sprintf('  %-25s: EUR %9.2f  ->  %s', 'Surplus min (theta)', Nu.thetaMin, coreMsg));
 
-    % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    if FIG.dettaglio, plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", revSoldPerPlayer); end
+        % --- Grafico a rete: cabina primaria + benefici + verso del flusso ---
+        if FIG.dettaglio, plot_benefit_network(Nu.players, Nu.phi, "Nucleolo", revSoldPerPlayer); end
+    end
 
 
     %% ========================================================================
@@ -608,13 +632,17 @@ for iCER = 1:N_CER
     %  nash_bargaining_cer.m per i dettagli e i riferimenti.
     %  ========================================================================
 
-    T_metodo = tic;
-    NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
-    fprintf('  [cronometro] Nash Bargaining: %s\n', format_duration(toc(T_metodo)));
-    report_allocation(NB, "Nash Bargaining");
+    if skipGameTheory
+        fprintf('  [BYPASS] Nash Bargaining non calcolato (2^%d coalizioni).\n', nUsers);
+    else
+        T_metodo = tic;
+        NB = nash_bargaining_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+        fprintf('  [cronometro] Nash Bargaining: %s\n', format_duration(toc(T_metodo)));
+        report_allocation(NB, "Nash Bargaining");
 
-    % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    if FIG.dettaglio, plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer); end
+        % --- Grafico a rete: cabina primaria + benefici + verso del flusso ---
+        if FIG.dettaglio, plot_benefit_network(NB.players, NB.phi, "Nash Bargaining", revSoldPerPlayer); end
+    end
 
 
     %% ========================================================================
@@ -661,8 +689,17 @@ for iCER = 1:N_CER
     % cadesse su una scheda nuova, il primo sospetto NON e' un bug in uno dei
     % due risolutori: e' che quel vincolo abbia iniziato a mordere. Si verifica
     % guardando se min(Nu.phi) < 0.
-    assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
-           'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
+    %
+    % Sopra la soglia di §1 il Nucleolo non e' stato calcolato: il VLC gira lo
+    % stesso (la row-generation e' nata per queste taglie), resta senza il suo
+    % controllo incrociato.
+    if skipGameTheory
+        fprintf(['  [BYPASS] Controllo incrociato theta_LC vs Nucleolo saltato:\n' ...
+                 '  richiede il Nucleolo, non calcolato a %d utenti.\n'], nUsers);
+    else
+        assert(abs(VLC.thetaLC - Nu.thetaMin) < 1e-6 * max(1, abs(VLC.vGrand)), ...
+               'Variance Least Core: theta_LC diverso dal surplus minimo del Nucleolo');
+    end
 
     % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
     if FIG.dettaglio, plot_benefit_network(VLC.players, VLC.phi, "Variance Least Core", revSoldPerPlayer); end
@@ -1084,32 +1121,45 @@ for iCER = 1:N_CER
     %  una comunita' con un unico prosumer pivotale.
     %  ========================================================================
 
-    approxPhi = [MC.phi, SEV.phi, AS.phi];
+    % Senza lo Shapley esatto non c'e' termine di paragone: sopra la soglia di §1
+    % questa sezione non ha un riferimento da misurare e viene saltata per intero.
+    % E' anche il motivo per cui le tre approssimazioni esistono - a queste taglie
+    % sono l'unico modo di avere un valore di Shapley, non un'alternativa piu'
+    % rapida a un valore che si potrebbe comunque calcolare.
+    if skipGameTheory
+        fprintf(['\n=== Accuratezza delle approssimazioni dello Shapley ===\n' ...
+                 '  [BYPASS] Confronto saltato: richiede lo Shapley ESATTO come\n' ...
+                 '  riferimento, non calcolato a %d utenti. Le tre approssimazioni\n' ...
+                 '  restano nel confronto della §3s, senza misura dello scarto.\n'], nUsers);
+    else
+        approxPhi = [MC.phi, SEV.phi, AS.phi];
 
-    % Un giocatore con Shapley nullo non ha una differenza RELATIVA definita:
-    % si riporta NaN invece di dividere per zero.
-    okShapley = abs(Sh.phi) > 1e-9 * max(1, abs(Sh.vGrand));
-    RD = nan(size(approxPhi));
-    RD(okShapley, :) = 100 * abs(approxPhi(okShapley, :) - Sh.phi(okShapley)) ...
-                           ./ abs(Sh.phi(okShapley));
+        % Un giocatore con Shapley nullo non ha una differenza RELATIVA definita:
+        % si riporta NaN invece di dividere per zero.
+        okShapley = abs(Sh.phi) > 1e-9 * max(1, abs(Sh.vGrand));
+        RD = nan(size(approxPhi));
+        RD(okShapley, :) = 100 * abs(approxPhi(okShapley, :) - Sh.phi(okShapley)) ...
+                               ./ abs(Sh.phi(okShapley));
 
-    Trd = table(Sh.players(:), Sh.phi, MC.phi, SEV.phi, AS.phi, ...
-                RD(:,1), RD(:,2), RD(:,3), ...
-                'VariableNames', {'Giocatore', 'ShapleyEsatto_EUR', ...
-                                  'MarginalContribution_EUR', 'StratifiedExpValue_EUR', ...
-                                  'AdaptiveSampling_EUR', 'MC_RD_pct', 'SEV_RD_pct', ...
-                                  'AS_RD_pct'});
-    fprintf('\n=== Accuratezza delle approssimazioni dello Shapley (eq. 16 del paper) ===\n');
-    disp(Trd);
-    fprintf('  %-25s: MC %.4f%%   SEV %.4f%%   AS %.4f%%\n', ...
-            'RD media (eq. 17)', mean(RD(:,1), 'omitnan'), ...
-            mean(RD(:,2), 'omitnan'), mean(RD(:,3), 'omitnan'));
+        Trd = table(Sh.players(:), Sh.phi, MC.phi, SEV.phi, AS.phi, ...
+                    RD(:,1), RD(:,2), RD(:,3), ...
+                    'VariableNames', {'Giocatore', 'ShapleyEsatto_EUR', ...
+                                      'MarginalContribution_EUR', 'StratifiedExpValue_EUR', ...
+                                      'AdaptiveSampling_EUR', 'MC_RD_pct', 'SEV_RD_pct', ...
+                                      'AS_RD_pct'});
+        fprintf('\n=== Accuratezza delle approssimazioni dello Shapley (eq. 16 del paper) ===\n');
+        disp(Trd);
+        fprintf('  %-25s: MC %.4f%%   SEV %.4f%%   AS %.4f%%\n', ...
+                'RD media (eq. 17)', mean(RD(:,1), 'omitnan'), ...
+                mean(RD(:,2), 'omitnan'), mean(RD(:,3), 'omitnan'));
 
-    % I tre approssimatori giocano lo stesso gioco degli altri metodi: se il
-    % montepremi non coincide con quello dello Shapley esatto, il confronto della
-    % §3q non sta misurando l'errore di approssimazione ma un errore di modello.
-    assert(max(abs([MC.vGrand, SEV.vGrand, AS.vGrand] - Sh.vGrand)) < 1e-6 * max(1, abs(Sh.vGrand)), ...
-           'Approssimazioni Shapley: v(N) diverso da quello dello Shapley esatto');
+        % I tre approssimatori giocano lo stesso gioco degli altri metodi: se il
+        % montepremi non coincide con quello dello Shapley esatto, il confronto
+        % della §3q non sta misurando l'errore di approssimazione ma un errore di
+        % modello.
+        assert(max(abs([MC.vGrand, SEV.vGrand, AS.vGrand] - Sh.vGrand)) < 1e-6 * max(1, abs(Sh.vGrand)), ...
+               'Approssimazioni Shapley: v(N) diverso da quello dello Shapley esatto');
+    end
 
 
     %% ========================================================================
@@ -1279,31 +1329,52 @@ for iCER = 1:N_CER
     %  montepremi resta in TL.phi, riportato nella §3r.
     %  ========================================================================
 
-    Tcmp = table(Sh.players(:), Sh.phi, Nu.phi, NB.phi, VLC.phi, ES.phi, PC.phi, ...
+    % I tre metodi a enumerazione 2^n entrano in tabella e in `metodi` SOLO se
+    % sono stati calcolati (soglia di §1). Sopra la soglia le loro colonne
+    % spariscono invece di riempirsi di NaN: gli indici di equita' della §3t
+    % rifiutano per contratto qualunque NaN in [metodi.phi] (fairness_index_bm,
+    % coalition_excess, compute_incentive_strength), quindi un segnaposto
+    % silenzioso non passerebbe comunque, e fallirebbe lontano dalla causa.
+    % Il confronto FRA le CER a valle regge un insieme di metodi diverso da
+    % comunita' a comunita': interseca i nomi comuni, non assume le sedici
+    % colonne (plot_cer_comparison/local_metodi_comuni, compute_indicator_agreement).
+    Tcmp = table(userNames(:), VLC.phi, ES.phi, PC.phi, ...
                  RM1.phi, CT.phi, WS.phi, PK.phi, PSK.phi, SU.phi, ...
                  MC.phi, SEV.phi, AS.phi, TL.phiFromShared, ...
-                 'VariableNames', {'Giocatore', 'Shapley_EUR', 'Nucleolo_EUR', ...
-                                   'NashBargaining_EUR', 'VarianceLeastCore_EUR', ...
+                 'VariableNames', {'Giocatore', 'VarianceLeastCore_EUR', ...
                                    'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
                                    'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
                                    'WeightedSolidarity_EUR', 'PearsonKey_EUR', ...
                                    'PearsonSharingRate_EUR', 'SimilarityUtilization_EUR', ...
                                    'MarginalContribution_EUR', 'StratifiedExpValue_EUR', ...
                                    'AdaptiveSampling_EUR', 'TriLevelEP_EUR'});
-    fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
-    disp(Tcmp);
 
-    metodi = struct( ...
-        'nome', {"Shapley", "Nucleolo", "Nash Bargaining", "Variance Least Core", ...
+    % I tre a enumerazione: vuoti sopra soglia, in testa sotto - cosi' tabella,
+    % grafici e indici restano identici a prima quando la CER e' piccola.
+    if skipGameTheory
+        metodiGT = struct('nome', {}, 'phi', {});
+    else
+        metodiGT = struct('nome', {"Shapley", "Nucleolo", "Nash Bargaining"}, ...
+                          'phi',  {Sh.phi,    Nu.phi,     NB.phi});
+        Tcmp = addvars(Tcmp, Sh.phi, Nu.phi, NB.phi, 'After', 'Giocatore', ...
+                       'NewVariableNames', {'Shapley_EUR', 'Nucleolo_EUR', ...
+                                            'NashBargaining_EUR'});
+    end
+
+    metodi = [metodiGT, struct( ...
+        'nome', {"Variance Least Core", ...
                   "Equal Split", "Proportional to Consumption", ...
                   "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity", ...
                   "Pearson Key", "Pearson-Sharing Rate", "Similarity-Utilization", ...
                   "Marginal Contribution", "Stratified Expected Value", ...
                   "Adaptive Sampling Shapley", "Tri-level EP"}, ...
-        'phi',  {Sh.phi,    Nu.phi,     NB.phi,            VLC.phi, ...
+        'phi',  {VLC.phi, ...
                   ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi, ...
                   PK.phi,    PSK.phi,   SU.phi, ...
-                  MC.phi,    SEV.phi,   AS.phi,  TL.phiFromShared});
+                  MC.phi,    SEV.phi,   AS.phi,  TL.phiFromShared})];
+
+    fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
+    disp(Tcmp);
 
     % --- Due grafici, due domande diverse ------------------------------------
     % Il grafico a barre tiene gli EURO e impila la vendita di eccedenza, che
@@ -1312,11 +1383,20 @@ for iCER = 1:N_CER
     % questa ripartizione", ed e' l'unica delle due che regga sedici metodi -
     % con sedici barre per giocatore ciascuna e' larga 0.05 tick.
     if FIG.metodi
-        plot_allocation_comparison(metodi, Sh.players, revSoldPerPlayer, ...
-            sprintf('Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
-                    Nu.vGrand, Nu.thetaMin));
+        % Il theta_min nel titolo lo porta il Nucleolo: senza di lui resta il
+        % solo montepremi. ES.vGrand e' lo stesso v(N) di Sh.vGrand - stessa
+        % formula, senza enumerare le coalizioni - ed e' disponibile a ogni taglia.
+        if skipGameTheory
+            titoloConfronto = sprintf( ...
+                'Confronto modelli di ripartizione  |  Totale CER = €%.0f', ES.vGrand);
+        else
+            titoloConfronto = sprintf( ...
+                'Confronto modelli di ripartizione  |  Totale CER = €%.0f  |  \\theta_{min}=%.0f €', ...
+                Nu.vGrand, Nu.thetaMin);
+        end
+        plot_allocation_comparison(metodi, userNames, revSoldPerPlayer, titoloConfronto);
 
-        plot_allocation_heatmap(metodi, Sh.players, Sh.vGrand, ...
+        plot_allocation_heatmap(metodi, userNames, ES.vGrand, ...
             sprintf('Quote di ripartizione dei %d modelli  -  %s', ...
                     numel(metodi), CFG.cer.nome));
     end
@@ -1449,7 +1529,7 @@ for iCER = 1:N_CER
     % --- Fairness Index rispetto alla distribuzione per contributo (eq. 12-14)
     % BC_i = v(N) - v(N\{i}) e' gia' calcolato: e' MC.mcRaw della §3n.
     BM = fairness_index_bm([metodi.phi], MC.mcRaw, [metodi.nome], ...
-                           struct('playerNames', Sh.players, 'quiet', true));
+                           struct('playerNames', userNames, 'quiet', true));
 
     % --- Stabilita': eccesso di coalizione (Volpato eq. 23) ------------------
     % Unica colonna che non guarda l'uniformita' della ripartizione ne' la sua
@@ -1458,12 +1538,32 @@ for iCER = 1:N_CER
     % La stessa tariffa lorda e la stessa esenzione dei metodi: se qui si
     % passasse la tariffa efficace, le quote e i v(S) starebbero su due giochi
     % diversi e l'eccesso di coalizione non vorrebbe dire nulla.
-    optEX = optF;
-    optEX.quiet = true;
-    T_metodo = tic;
-    EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
-                          userNames, P_CER_lordo, optEX);
-    fprintf('  [cronometro] Coalition Excess: %s\n', format_duration(toc(T_metodo)));
+    %
+    % Anche questo indicatore enumera le 2^n coalizioni, e per conto suo: il costo
+    % sta nel numero di UTENTI, non di metodi, quindi non basta aver saltato
+    % Shapley, Nucleolo e Nash - sopra la soglia di §1 va saltato pure lui, o si
+    % fermerebbe qui (coalition_excess impone opts.maxPlayers, default 20). La
+    % domanda "questa ripartizione REGGE?" resta senza risposta a queste taglie:
+    % e' una proprieta' della definizione (guarda TUTTI i sottogruppi), non una
+    % rinuncia implementativa. Le colonne restano in tabella, a NaN, per non far
+    % credere che l'eccesso sia nullo.
+    if skipGameTheory
+        fprintf(['  [BYPASS] Eccesso di coalizione non calcolato: 2^%d sottogruppi\n' ...
+                 '  da valutare. Le colonne EccessoMax_EUR e CoalizioniInstabili\n' ...
+                 '  restano NaN.\n'], nUsers);
+        EX = struct('maxExcess',   nan(numel(metodi), 1), ...
+                    'nUnstable',   nan(numel(metodi), 1), ...
+                    'nCoalitions', NaN, ...
+                    'vGrand',      ES.vGrand, ...
+                    'table',       table());
+    else
+        optEX = optF;
+        optEX.quiet = true;
+        T_metodo = tic;
+        EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
+                              userNames, P_CER_lordo, optEX);
+        fprintf('  [cronometro] Coalition Excess: %s\n', format_duration(toc(T_metodo)));
+    end
 
     % --- Forza incentivante della regola (asse di virtuosita' di Bilardo) ----
     % La QUARTA domanda: non quanto e' uniforme la ripartizione, ne' quanto e'
@@ -1488,7 +1588,7 @@ for iCER = 1:N_CER
     SUl = similarity_utilization_cer(genForShare, loadForShare, userNames, P_CER_h, ...
               struct('loadForFactors', loadUsers, 'genForFactors', genPV_raw));
 
-    optFZ = struct('playerNames', Sh.players, 'quiet', true);
+    optFZ = struct('playerNames', userNames, 'quiet', true);
     FZ    = compute_incentive_strength([metodi.phi], SU,  [metodi.nome], optFZ);
     FZl   = compute_incentive_strength([metodi.phi], SUl, [metodi.nome], optFZ);
 
@@ -1523,10 +1623,15 @@ for iCER = 1:N_CER
 
     % --- Stabilita' della coalizione, in dettaglio ---------------------------
     fprintf('\n=== Stabilita'': eccesso di coalizione (eq. 23) ===\n');
-    fprintf(['  e_S = v(S) - somma delle quote di S. POSITIVO = quel sottogruppo\n' ...
-             '  guadagnerebbe di piu'' uscendo dalla CER. Esaminate %d coalizioni proprie.\n'], ...
-            EX.nCoalitions);
-    disp(sortrows(EX.table, 'EccessoMax_EUR'));
+    if skipGameTheory
+        fprintf('  [BYPASS] Non calcolato a %d utenti (2^%d sottogruppi).\n', ...
+                nUsers, nUsers);
+    else
+        fprintf(['  e_S = v(S) - somma delle quote di S. POSITIVO = quel sottogruppo\n' ...
+                 '  guadagnerebbe di piu'' uscendo dalla CER. Esaminate %d coalizioni proprie.\n'], ...
+                EX.nCoalitions);
+        disp(sortrows(EX.table, 'EccessoMax_EUR'));
+    end
 
     fprintf('\n=== Distribuzione di riferimento per contributo (eq. 13) ===\n');
     disp(BM.tablePlayers);
@@ -1603,27 +1708,34 @@ for iCER = 1:N_CER
     % diversa da quella del gioco, oppure il Nucleolo non sta risolvendo il suo
     % problema. Il Variance Least Core deve dare lo stesso valore, avendo lo stesso
     % livello di Least Core (gia' confrontato in §3e).
-    iNu  = find([metodi.nome] == "Nucleolo", 1);
-    iVLC = find([metodi.nome] == "Variance Least Core", 1);
-    tolEx = 1e-6 * max(1, abs(EX.vGrand));
-    assert(abs(EX.maxExcess(iNu) + Nu.thetaMin) < tolEx, ...
-           'Indici di equita'': eccesso massimo del Nucleolo diverso da -thetaMin');
     %
-    % Il VLC va verificato con la SUA tolleranza, non con tolEx. Nucleolo ed
-    % eccessi sono esatti; il VLC no, per costruzione: la row-generation
-    % rilassa i vincoli del master di tolConv, quindi la sua allocazione si
-    % appoggia al bordo rilassato del Least Core e l'eccesso massimo risulta
-    % piu' alto di -thetaLC di esattamente quel rilassamento. Confrontarlo con
-    % tolEx (= meta' di tolConv) faceva fallire l'assert su qualunque CER in
-    % cui il vincolo di Least Core e' attivo, cioe' quasi sempre: era la
-    % soglia a essere sbagliata, non l'allocazione. Lo scarto residuo vale
-    % frazioni di centesimo di euro e non tocca nessun risultato economico.
-    assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < max(tolEx, VLC.tolConv), ...
-           'Indici di equita'': eccesso massimo del VLC diverso da -thetaLC');
+    % Le tre verifiche sotto vivono tutte sull'eccesso di coalizione: sopra la
+    % soglia di §1 non e' stato calcolato (e due delle tre vogliono comunque il
+    % Nucleolo), quindi si saltano insieme. Il VLC resta verificato dal suo
+    % report e dalla §3e.
+    if ~skipGameTheory
+        iNu  = find([metodi.nome] == "Nucleolo", 1);
+        iVLC = find([metodi.nome] == "Variance Least Core", 1);
+        tolEx = 1e-6 * max(1, abs(EX.vGrand));
+        assert(abs(EX.maxExcess(iNu) + Nu.thetaMin) < tolEx, ...
+               'Indici di equita'': eccesso massimo del Nucleolo diverso da -thetaMin');
+        %
+        % Il VLC va verificato con la SUA tolleranza, non con tolEx. Nucleolo ed
+        % eccessi sono esatti; il VLC no, per costruzione: la row-generation
+        % rilassa i vincoli del master di tolConv, quindi la sua allocazione si
+        % appoggia al bordo rilassato del Least Core e l'eccesso massimo risulta
+        % piu' alto di -thetaLC di esattamente quel rilassamento. Confrontarlo con
+        % tolEx (= meta' di tolConv) faceva fallire l'assert su qualunque CER in
+        % cui il vincolo di Least Core e' attivo, cioe' quasi sempre: era la
+        % soglia a essere sbagliata, non l'allocazione. Lo scarto residuo vale
+        % frazioni di centesimo di euro e non tocca nessun risultato economico.
+        assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < max(tolEx, VLC.tolConv), ...
+               'Indici di equita'': eccesso massimo del VLC diverso da -thetaLC');
 
-    % ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.
-    assert(EX.maxExcess(iNu) <= min(EX.maxExcess) + tolEx, ...
-           'Indici di equita'': il Nucleolo non e'' il metodo con eccesso minimo');
+        % ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.
+        assert(EX.maxExcess(iNu) <= min(EX.maxExcess) + tolEx, ...
+               'Indici di equita'': il Nucleolo non e'' il metodo con eccesso minimo');
+    end
 
     % --- Le due ancore della forza incentivante ------------------------------
     % Sono esatte per costruzione, quindi sono il test piu' netto sulla metrica:
@@ -1663,9 +1775,9 @@ for iCER = 1:N_CER
            'Forza incentivante: le quote di qualche metodo non sommano a uno');
     % I pesi giornalieri esauriscono il montepremi: se non lo facessero, l'asse
     % sarebbe costruito su una frazione dell'anno senza che nulla lo segnali.
-    assert(abs(sum(SU.dailyIncentive) - Sh.vGrand) < 1e-6 * max(1, Sh.vGrand), ...
+    assert(abs(sum(SU.dailyIncentive) - ES.vGrand) < 1e-6 * max(1, ES.vGrand), ...
            'Forza incentivante: l''incentivo giornaliero non somma a v(N)');
-    assert(isequal(FZ.players, string(Sh.players(:).')), ...
+    assert(isequal(FZ.players, string(userNames(:).')), ...
            'Forza incentivante: l''ordine dei membri non coincide con quello del gioco');
 
     % --- Quanto costa la convenzione sui profili -----------------------------
@@ -1723,7 +1835,7 @@ for iCER = 1:N_CER
         % La mappa qui sopra del Fairness Index tiene solo lo scalare: dice
         % QUANTO un metodo si discosta dal merito, non da che parte. BM.deviation
         % e' gia' calcolato e porta il segno membro per membro.
-        plot_merit_deviation(BM, Sh.players, [metodi.nome]);
+        plot_merit_deviation(BM, userNames, [metodi.nome]);
 
         % --- La sintesi: uniformita' contro stabilita' ------------------------
         % Le tre domande della §3t possono dare risposte opposte, e nella mappa
@@ -1731,8 +1843,17 @@ for iCER = 1:N_CER
         % colonna: il rapporto fra loro va ricostruito a mente. Sul piano si
         % vede, e con esso quali metodi sono scelte difendibili e quali sono
         % dominati da un altro su entrambi i criteri.
-        plot_fairness_tradeoff(Tfair, Sh.vGrand, ...
-            sprintf('Uniformita'' contro stabilita''  -  %s', CFG.cer.nome));
+        %
+        % Uno dei due assi e' l'eccesso di coalizione: sopra la soglia di §1 non
+        % esiste, e il piano avrebbe una sola dimensione. Meglio non disegnarlo
+        % che disegnarne uno mezzo vuoto.
+        if skipGameTheory
+            fprintf(['  [BYPASS] Piano uniformita'' x stabilita'' non disegnato:\n' ...
+                     '  manca l''asse della stabilita'' (eccesso di coalizione).\n']);
+        else
+            plot_fairness_tradeoff(Tfair, ES.vGrand, ...
+                sprintf('Uniformita'' contro stabilita''  -  %s', CFG.cer.nome));
+        end
     end
 
 
@@ -1787,7 +1908,7 @@ for iCER = 1:N_CER
     SOG = premium_excess_threshold([metodi.phi], [metodi.nome], M.categoria, ...
                                    shared_annual, E_immessa_annual, ...
                                    struct('contoCapitale', contoCapitale, ...
-                                          'playerNames',   Sh.players));
+                                          'playerNames',   userNames));
 
 
     %% ========================================================================
@@ -2036,7 +2157,7 @@ for iCER = 1:N_CER
     % la scelta del metodo conti davvero, e isProsumer e' l'unico modo di
     % sommare le quote per categoria quando i membri cambiano da una CER
     % all'altra.
-    RESULTS(iCER).vGrand           = Sh.vGrand;
+    RESULTS(iCER).vGrand           = ES.vGrand;
     RESULTS(iCER).contendibleShare = FIND{1}.contendibleShare;
     RESULTS(iCER).isProsumer       = FIND{1}.isProsumer;
 

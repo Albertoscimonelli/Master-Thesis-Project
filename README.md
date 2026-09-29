@@ -523,6 +523,11 @@ quasi costanti non vengano scambiate per un errore di calcolo.
 - **Il Nucleolo ha l'eccesso minimo** fra i sedici — è ciò che minimizza per costruzione.
 - Tutti gli indicatori di Dynge **dentro `[0,1]`**.
 
+Le tre verifiche che passano dall'eccesso di coalizione — le ultime due dell'elenco più
+quella incrociata di §3e (`VLC.thetaLC = Nu.thetaMin`) — **non girano sopra i 18 utenti**,
+dove né il Nucleolo né l'eccesso vengono calcolati (§14.1). Le altre quattro valgono a
+ogni taglia.
+
 Inoltre `fairness_index_bm.m` ha un auto-test analitico (`opts.validateSelf`, attivo di
 default): la Tab. 7 del paper **non** è riproducibile — i `Dᵢ` per membro stanno solo in un
 grafico — quindi si verifica la formula su casi costruiti a penna, contributi negativi
@@ -1177,6 +1182,24 @@ lentezza, è irrealizzabile su qualsiasi hardware. `shapley_cer.m` emette già u
 sopra i 20 giocatori; oltre quella soglia `MAIN.m` §3b fallirebbe in allocazione di
 memoria.
 
+> **Dal 15 settembre 2026 `MAIN.m` non ci prova nemmeno: sopra i 18 utenti li salta.** La soglia è
+> un `skipGameTheory = nUsers > 18` calcolato in §1, appena i profili sono caricati, e
+> stampato in chiaro (`[BYPASS] ... 2^n ...`). Non è una stima prudenziale, è misurata:
+> a `n = 21` lo Shapley costa 9 min 13 s, il Nucleolo 18 min, il Nash Bargaining supera
+> i 25 minuti senza finire ([scaling_metodi_ripartizione.md](outputs/report/scaling_metodi_ripartizione.md)).
+> Insieme a loro viene saltato l'**eccesso di coalizione** (§7), che enumera per conto
+> suo — il suo costo sta nel numero di *utenti*, non di metodi, quindi non basta aver
+> saltato i primi tre. Tutto il resto della pipeline prosegue: gli altri **tredici**
+> metodi girano, le tabelle e i grafici si costruiscono su quei tredici, e il confronto
+> fra CER a valle regge già un insieme di metodi diverso da comunità a comunità (ne
+> interseca i nomi comuni). Sotto soglia non cambia **nulla**: stessa tabella a sedici
+> colonne, stessi numeri.
+>
+> Cosa si perde sopra i 18 utenti, e non per una rinuncia implementativa: la domanda
+> *«questa ripartizione regge?»* non ha risposta, perché per definizione guarda **tutti**
+> i sottogruppi. Le colonne `EccessoMax_EUR` e `CoalizioniInstabili` restano a `NaN` —
+> deliberatamente, perché uno zero si leggerebbe come «nessuno vuole uscire».
+
 > **Con `F > 0` diventano quattro.** Il Variance Least Core sfugge a questo limite grazie
 > alla row-generation, ma solo finché il suo Separation Problem è un MILP — e con il
 > fattore di riduzione non lo è più (§7.5). In quel caso ripiega sull'enumerazione e
@@ -1210,8 +1233,12 @@ classiche, complementari a queste:
   ([GUIDA §16.10](GUIDA_modelli_distribuzione.md)).
 - **Campionamento Monte Carlo** delle permutazioni per lo Shapley (stimatore standard).
 
-Restano invece scoperti **Nucleolo e Nash Bargaining**, che passano ancora da
-`cer_coalition_values.m` e per i quali il progetto non ha oggi un'alternativa scalabile.
+Restano invece scoperti **Nucleolo e Nash Bargaining**: passano ancora da
+`cer_coalition_values.m`, e il progetto non ha oggi un'alternativa scalabile — sopra i
+18 utenti vengono saltati, non sostituiti. Per lo Shapley il sostituto c'è ed è
+l'Adaptive Sampling (scarto 1-2% a ogni taglia testata); per questi due, chi guarda una
+CER grande resta senza una lettura di stabilità e senza il Nash, e va detto nei
+risultati invece che lasciato dedurre da una colonna assente.
 
 Il **Variance Least Core non ha questo problema**: la row-generation è nata esattamente
 per comunità da decine o centinaia di membri e valuta `v(K)` solo sulle poche coalizioni

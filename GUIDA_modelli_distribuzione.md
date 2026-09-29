@@ -2362,7 +2362,10 @@ il suo stesso metodo.
 
 Le sezioni §2-§17 spiegano **come** i sedici metodi ripartiscono. Questa spiega **come si
 giudica** una ripartizione. È l'unica sezione che non descrive un modello: descrive dieci
-misure, tutte calcolate in `MAIN.m` §3t su tutti e sedici i metodi.
+misure, tutte calcolate in `MAIN.m` §3t su tutti e sedici i metodi — su **tredici** sopra
+i 18 utenti, dove Shapley, Nucleolo e Nash Bargaining non vengono calcolati e l'**eccesso
+di coalizione** (§18.6), che enumera anch'esso `2^n` sottogruppi, resta a `NaN`
+([README §14.1](README.md)).
 
 Fonti:
 

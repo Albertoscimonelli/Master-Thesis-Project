@@ -781,6 +781,86 @@ prosumer. Il che è, di per sé, la risposta alla terza clausola della domanda d
 > ancora coperti — non per un limite del codice, che è agnostico rispetto alla scheda, ma
 > perché le schede non esistono. Vedi §12.
 
+#### 7.6 Due assi: taglia × penetrazione
+
+Con le schede della griglia (5, 8, 10, 15, 18, 20, 25 membri × quattro livelli di
+penetrazione) l'asse unico non regge più: la stessa penetrazione ricorre a taglie diverse
+(50% a 8, 10, 18 e 20 membri), e `extract_ranking_reversals` si ferma, giustamente,
+perché fra due configurazioni alla stessa penetrazione "prima" e "dopo" sarebbero
+arbitrari. Ordinare tutto per penetrazione mescolerebbe poi l'effetto della taglia con
+quello della composizione. La griglia si legge quindi **un fattore alla volta**, più una
+vista **congiunta**:
+
+| Vista | Funzione | Cosa risponde |
+|---|---|---|
+| sweep di **penetrazione** a taglia fissa | `reversals_by_axis.m` | una scansione per taglia, lungo le sue fasce: quanto la graduatoria dipende dai prosumer a parità di membri |
+| sweep di **taglia** a fascia fissa | `reversals_by_axis.m` | una scansione per fascia, lungo le taglie: quanto dipende dal numero di membri a parità di penetrazione |
+| **heatmap congiunta** | `ranking_grid.m` + `plot_ranking_grid.m` | il metodo primo in ogni cella (n, ρ), un pannello per dimensione della domanda di ricerca, e se i due fattori interagiscano |
+
+`reversals_by_axis` non reimplementa la scansione: passa a `extract_ranking_reversals`
+sottoinsiemi della griglia su cui l'asse è strettamente crescente, quindi stessi punteggi
+e stesse tolleranze di sempre. Con una taglia sola — lo studio a sette comunità — produce
+esattamente la scansione di prima.
+
+**Le fasce sono ranghi, non soglie.** A 5 membri la penetrazione sale a passi di 20 punti,
+a 25 di 4: arrotondare a 25/50/75/100% farebbe collidere 40% e 60% a n = 5. La fascia *k*
+è la *k*-esima penetrazione in ordine crescente dentro la taglia; ogni cella della heatmap
+riporta il valore esatto. Lo sweep di taglia tiene quindi fermo il rango, non il valore
+(20% a 5 membri, 28% a 25), e porta con sé quello scarto residuo.
+
+**L'interazione in un numero.** Per ogni indicatore si prende, taglia per taglia, la
+sequenza dei vincitori lungo le fasce. `QuotaModale` è la quota di taglie che segue la
+sequenza più frequente: 1 vuol dire che l'effetto della penetrazione sul vincitore è lo
+stesso a ogni taglia, valori bassi che i due fattori interagiscono. Guarda il solo primo
+classificato, non l'intera graduatoria. Quando i primi due sono entro la tolleranza di
+pareggio la cella è "pari" e dice fra chi (per il `FairnessIndex`, Marginal Contribution e
+Nash Bargaining coincidono per costruzione col riferimento di merito).
+
+**Risultati sulla griglia a 28 comunità** (run del 29 settembre 2026, 3 h 01 min; 13
+metodi, 18 indicatori, 1404 serie per sottoinsieme):
+
+| Sweep | Fisso | Coppie che si invertono | Invertite agli estremi |
+|---|---|---:|---:|
+| penetrazione | n = 5 | 649 (46%) | 440 |
+| penetrazione | n = 8 | 645 (46%) | 496 |
+| penetrazione | n = 10 | 572 (41%) | 466 |
+| penetrazione | n = 15 | 557 (40%) | 461 |
+| penetrazione | n = 18 | 531 (38%) | 423 |
+| penetrazione | n = 20 | 476 (34%) | 357 |
+| penetrazione | n = 25 | 434 (31%) | 288 |
+| taglia | fascia 1 (~27%) | 445 (32%) | 335 |
+| taglia | fascia 2 (~50%) | 357 (25%) | 292 |
+| taglia | fascia 3 (~75%) | 330 (24%) | 203 |
+| taglia | fascia 4 (100%) | 279 (20%) | 190 |
+
+- **La sensibilità alla penetrazione cala con la taglia**, in modo monotono: dal 46% delle
+  coppie a 5 membri al 31% a 25. **La sensibilità alla taglia cala con la penetrazione**:
+  dal 32% a bassa penetrazione al 20% al 100%. È un'interazione fra i due fattori letta
+  sull'intera graduatoria. I due sweep non vanno confrontati fra loro in valore assoluto:
+  uno ha 4 configurazioni per sottoinsieme, l'altro 7, e più passi danno più occasioni di
+  invertirsi.
+- **Il primo classificato, invece, non si muove.** Sui cinque indicatori di testa la
+  `QuotaModale` è 1.00: Equal Split sull'uniformità, Marginal Contribution sul merito,
+  Variance Least Core sulla stabilità (fino a 18 membri, poi non calcolabile),
+  Similarity-Utilization sulla forza incentivante sotto il 100% di penetrazione. Al 100%
+  la forza incentivante passa a Tri-level EP **a ogni taglia**: effetto della sola
+  penetrazione, senza interazione, ma su un metodo che gira su dati segnaposto (§6).
+- **L'interazione sul vincitore compare sugli indicatori secondari**: `EI_new`,
+  `ForzaIncentivante_lordo` e `AllineamentoVirtu_lordo` a 0.43, `QoS_orig` e `Jain` a 0.71,
+  `CoalizioniInstabili` a 0.80 (su 5 taglie).
+
+> ⚠ **Quattro limiti da tenere presenti leggendo la griglia.**
+> 1. `compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità.
+>    Sopra i 18 membri Shapley, Nucleolo e Nash Bargaining sono saltati (§14.1), quindi su
+>    una griglia che arriva a 25 spariscono **anche dalle celle a 5-18 membri**: il
+>    confronto è fra tredici metodi.
+> 2. L'eccesso di coalizione (stabilità) non è calcolato sopra i 18 membri: le celle a 20 e
+>    25 del pannello di stabilità sono "n.d.".
+> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`: nelle schede attuali, le sole
+>    a penetrazione 100%. La sostenibilità economica non è confrontabile lungo le fasce.
+> 4. Jain e MinMax hanno un pavimento 1/n: le loro inversioni nello sweep di taglia possono
+>    venire dal pavimento e non dai metodi.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -933,8 +1013,11 @@ quello delle figure, perché le figure sono un servizio e queste tabelle sono un
 | File | Cosa contiene |
 |---|---|
 | `accordo_indicatori.csv` | il **τ-b di Kendall** fra ogni coppia di indicatori, una configurazione alla volta, con il conteggio di coppie concordi e discordi e se ciascuno dei due discrimini |
-| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari |
+| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale sweep (`Sweep`, `Fisso`), quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari. L'asse sta in `AsseDa`/`AsseA`: penetrazione in % se `Sweep = penetrazione`, membri se `Sweep = taglia` (§7.6) |
 | `inversioni_sommario.csv` | una riga per serie: quante inversioni, e se la graduatoria sia **invertita fra i due estremi** dell'asse — che non è deducibile dal conteggio, perché un numero pari di inversioni riporta all'ordine di partenza |
+| `inversioni_per_sweep.csv` | una riga per sottoinsieme della griglia: quante coppie si invertono e quante agli estremi, per ogni taglia (sweep di penetrazione) e ogni fascia (sweep di taglia) |
+| `griglia_vincitori.csv` | una riga per (indicatore, cella): il metodo primo, i metodi a pari merito e il distacco dal secondo — i dati della heatmap congiunta |
+| `griglia_interazione.csv` | una riga per indicatore: `QuotaModale` e numero di sequenze distinte di vincitori lungo la penetrazione (§7.6) |
 | `orientamenti.csv` | **da che parte sta il meglio**, indicatore per indicatore, con il motivo e se il verso sia normativo. È il primo file da aprire quando un risultato non torna |
 
 Questi CSV **si versionano**, a differenza delle figure: sono ASCII, pesano poche decine di

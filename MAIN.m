@@ -2306,7 +2306,20 @@ for c = 1:numel(AGR.schede)
 end
 
 if N_CER > 1
-    REV = extract_ranking_reversals(AGR);
+    % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e
+    % un asse unico non e' ordinabile: la griglia taglia x penetrazione si legge
+    % un fattore alla volta, con l'altro fermo. Con una taglia sola resta lo
+    % sweep di penetrazione, cioe' la scansione di sempre.
+    GRID = ranking_grid(AGR, RESULTS);
+    REV  = reversals_by_axis(AGR, GRID);
+
+    if FIG.confrontoCER
+        plot_ranking_grid(GRID);
+        if FIG.esporta
+            save_figures(fullfile(FIG.cartella, "confronto"), ...
+                         struct('chiudi', FIG.chiudi));
+        end
+    end
 
     % Il dettaglio e il sommario devono contare la stessa cosa: sono due viste
     % della stessa scansione, e uno scarto vorrebbe dire che una delle due perde
@@ -2327,11 +2340,12 @@ if N_CER > 1
     if numel(unique([RESULTS.nUsers])) > 1
         fprintf(['\n  ATTENZIONE: le comunita'' hanno un numero di membri DIVERSO.\n' ...
                  '  Jain e MinMax hanno un pavimento che dipende da n, quindi le loro\n' ...
-                 '  inversioni mescolano l''effetto della composizione con quello della\n' ...
-                 '  taglia. Le colonne normalizzate restano confrontabili.\n']);
+                 '  inversioni nello sweep di TAGLIA possono venire dal pavimento e\n' ...
+                 '  non dai metodi. Lo sweep di penetrazione, a taglia fissa, non ne soffre.\n']);
     end
 else
-    REV = struct('inversioni', table(), 'sommario', table());
+    GRID = [];
+    REV  = struct('inversioni', table(), 'sommario', table(), 'perSweep', table());
     fprintf('\n  Una sola comunita'': le inversioni non sono definite.\n');
 end
 
@@ -2344,6 +2358,9 @@ if CSV.esporta
     if N_CER > 1
         daScrivere.inversioni_di_graduatoria = REV.inversioni;
         daScrivere.inversioni_sommario       = REV.sommario;
+        daScrivere.inversioni_per_sweep      = REV.perSweep;
+        daScrivere.griglia_vincitori         = GRID.table;
+        daScrivere.griglia_interazione       = GRID.interazione;
     end
     save_tables(cartellaCSV, daScrivere);
 end

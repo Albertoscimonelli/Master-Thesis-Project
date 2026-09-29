@@ -331,3 +331,8 @@ CER_LoadProfiles/outputs/csv_lombardia100/*
 # Viene riscritta a ogni run e nessun file a valle la legge: e' diagnostica,
 # serve a capire se uno scarto viene dagli elettrodomestici o dagli impianti.
 CER_LoadProfiles/outputs/csv/profili_famiglie_dettaglio.csv
+
+# Run di prova HT07 (EnergySaving e ES_gas_cooling1400): dati derivati di
+# esplorazione, non referenziati da nessuna scheda CER_configuration/. Stessa
+# regola dei run sopra: si rigenerano dalla configurazione, non si versionano.
+CER_LoadProfiles/outputs/csv/profili_famiglie_HT07_*.csv

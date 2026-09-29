@@ -85,7 +85,7 @@ rho_g = 0.3;     % Albedo del suolo [-] (usato per irradianza riflessa)
 % --- Modulo fotovoltaico (comune ai due scenari) ------------------------
 L_m           = 2.382;      % Lunghezza modulo [m]
 W_m           = 1.114;     % Larghezza modulo [m]
-P_stc_mod     = 605;       % Potenza nominale STC [Wp]
+P_stc_mod     = 500;       % Potenza nominale STC [Wp]
 V_oc          = 48.48;      % Tensione a circuito aperto a STC [V]
 V_mpp         = 40.31;      % Tensione al MPP a STC [V]
 I_sc          = 15.9;      % Corrente di corto circuito a STC [A]
@@ -172,8 +172,8 @@ else
     tilt_roof = NaN;  % Non usato con MOUNT=0
 
     % Geometria copertura (piano orizzontale)
-    L_r    = 35;     % Lunghezza copertura [m]
-    W_r    = 30;     % Larghezza copertura [m]
+    L_r    = 70;     % Lunghezza copertura [m]
+    W_r    = 40;     % Larghezza copertura [m]
     d_edge = 1.4;    % Margine perimetrale libero [m]
 
     % Inverter di stringa commerciale

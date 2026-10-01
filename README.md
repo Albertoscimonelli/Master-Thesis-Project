@@ -117,6 +117,9 @@ quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`li
 [`CER_input.txt`](CER_input.txt) è la guida commentata alla compilazione: spiega sezione
 per sezione cosa scrivere nelle due schede, e non viene letta da `MAIN.m`.
 
+**Tempi.** Con le sette schede originali `MAIN` impiega pochi minuti (§11.2); sulla griglia a
+28 comunità fino a 25 membri il run completo è durato circa 3 ore (§7.6, §11.2).
+
 `optimizer_PV.m` si esegue separatamente ed è pensato per test occasionali di
 dimensionamento, non fa parte del flusso principale.
 
@@ -164,6 +167,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_fairness_tradeoff.m` | **Uniformità × stabilità** dei sedici metodi su un piano, con frontiera di Pareto (§11.1) |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m` | Grafici energetici **orari**: mappa 24×365 con le ore sature, curve di durata, TIP_h vs prezzo zonale (§11.1) |
+| `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -322,7 +326,7 @@ Vanno quindi giudicati sull'**errore**, non sull'equità: con `n = 6` lo Shapley
 disponibile come *ground truth*, e `MAIN.m` §3q ne misura lo scarto (eq. 16-17 del paper).
 
 > ⚠ **Risultato: la graduatoria del paper si rovescia.** Scarto relativo medio dallo
-> Shapley esatto (`RD` dell'eq. 17, media sui 7 membri × 7 comunità): **Adaptive Sampling
+> Shapley esatto (`RD` dell'eq. 17, media sui 7 membri × 7 comunità del set originale a 7 membri): **Adaptive Sampling
 > 1,34%**, **Marginal Contribution 16,20%**, **Stratified Expected Value 21,79%** —
 > mentre nel paper è quest'ultima la più accurata.
 >
@@ -457,7 +461,7 @@ misurerebbe sé stessa.
 > (§7.2). Per questo `MAIN.m` calcola la colonna su **entrambi** gli assi e stampa il coseno
 > fra i due.
 >
-> Sulle sette comunità l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
+> Sulle sette comunità originali (7 membri, penetrazione variabile) l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
 >
 > | CER | prosumer | cos(assi) | Shapley netto | Shapley lordo |
 > |---|:---:|:---:|---:|---:|
@@ -583,7 +587,7 @@ anche l'ordine in cui la norma stessa opera: il GSE verifica il superamento dell
 configurazione energetica, non dei meccanismi. Solo se è **binding** ha senso chiedersi
 quale metodo assegni alle imprese più del consentito (tetto: `(1 − %E_ACI,ecc) · C_ACI`).
 
-**Sulle sette CER attuali il vincolo non morde, e con ampio margine.** Il rapporto
+**Sulle sette CER originali (7 membri) il vincolo non morde, e con ampio margine.** Non è stato rimisurato sulle schede più grandi. Il rapporto
 `E_ACI/E_immessa` va dal 2,2% (`CER_0_7_0`) al 25,7% (`CER_6_1_0`), cioè da 52,8 a 29,3
 punti *sotto* la soglia del 55% — e resterebbe non binding anche nel regime al 45%:
 
@@ -799,7 +803,7 @@ vista **congiunta**:
 
 `reversals_by_axis` non reimplementa la scansione: passa a `extract_ranking_reversals`
 sottoinsiemi della griglia su cui l'asse è strettamente crescente, quindi stessi punteggi
-e stesse tolleranze di sempre. Con una taglia sola — lo studio a sette comunità — produce
+e stesse tolleranze di sempre. Con una taglia sola — il vecchio studio a sette comunità — produce
 esattamente la scansione di prima.
 
 **Le fasce sono ranghi, non soglie.** A 5 membri la penetrazione sale a passi di 20 punti,
@@ -1100,10 +1104,14 @@ quindi la cartella si legge senza aprire le immagini. `outputs/figures/` è in
   TOTALE                  5 min 51 s
 ```
 
+(Il blocco è l'esempio del run a sette comunità. Sulla griglia a 28 comunità, fino a
+25 membri, il run del 29 settembre 2026 è durato **3 h 01 min**: Shapley, Nucleolo e Nash
+Bargaining sopra i 18 utenti sono saltati (§14.1), ma il resto cresce con `n`.)
+
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
 alleggerisce con `FIG.dettaglio` (§11.1). Sapere quale delle due voci pesa è l'unico modo
-per decidere cosa togliere quando l'esecuzione è lenta — e sulle sette schede attuali
+per decidere cosa togliere quando l'esecuzione è lenta — e sulle sette schede originali
 **le figure costano più dell'analisi** (3 min contro 2 min 40 s), soprattutto per i PDF
 vettoriali con molti punti.
 
@@ -1121,16 +1129,16 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
-- **L'asse di composizione variato è uno solo.** Tutte e sette le schede hanno **7 membri**
-  e la stessa ripartizione per categoria (1 terziario, 1 industriale, 1 commerciale, 4
-  domestici): varia solo chi possiede l'impianto, dal 14.3% al 100% di penetrazione. Le
-  inversioni della §7.6 misurano quindi la dipendenza dalla **penetrazione prosumer** e da
-  nient'altro. Servono schede che varino anche il **numero di membri** e la **composizione
-  per categoria**. Non è un limite del codice — aggiungere una comunità significa aggiungere
-  un file in `CER_configuration/`, e `cer_config_writer.py` ne redige la bozza — ma delle
-  configurazioni disponibili, e serve il corrispondente set di profili dallo stadio Python.
-  È la voce più pesante di questa lista, perché è quella che la domanda di ricerca chiede
-  esplicitamente.
+- **La griglia ora varia due assi, ma non la composizione per categoria.** Le schede in
+  `CER_configuration/` coprono taglie da 5 a 100 membri e livelli diversi di penetrazione
+  prosumer; la §7.6 legge le 28 comunità fino a 25 membri, un fattore alla volta più la
+  vista congiunta. Resta **non variata la composizione per categoria** (la quota di
+  famiglie, terziario, industria): i risultati non separano l'effetto della taglia o della
+  penetrazione da quello del mix di categorie. Le schede oltre i 25 membri (50, 75, 100)
+  non sono nella griglia della §7.6: lì sono saltati anche Shapley, Nucleolo, Nash e
+  l'eccesso di coalizione (§14.1), quindi manca la lettura di stabilità. Aggiungere una
+  comunità significa aggiungere un file in `CER_configuration/` (`cer_config_writer.py` ne
+  redige la bozza) e il corrispondente set di profili dallo stadio Python.
 - **`CER_6_1_0` non ha `quota_inv_EUR`**: sei membri su sette sono a `?`, quindi quella
   comunità non produce VAN e la colonna `VAN_min_EUR` della §7.6 vale `NaN` lì. Le altre sei
   ce l'hanno, e la colonna resta utile: `compute_indicator_agreement` dichiara la comunità
@@ -1252,10 +1260,11 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 14. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
 
-Il progetto è oggi calibrato su **6 utenti**. È previsto di testare i modelli fino a
-**~100 utenti**: questa sezione elenca i punti che si romperanno o degraderanno a quella
-scala, così da affrontarli consapevolmente invece di scoprirli a metà lavoro. Nessuno di
-questi è un problema *oggi* — sono tutti conseguenze della crescita di `n`.
+Il progetto nasce calibrato su **6-7 utenti**; oggi gira su taglie da 5 a 25 membri (la
+griglia della §7.6) e dispone di una società lombarda da **100 famiglie** con relative
+schede (da `CER_0_50_0` a `CER_0_100_0`). Questa sezione elenca i punti che si rompono o
+degradano al crescere di `n`: alcuni sono già stati affrontati (lo skip sopra i 18 utenti,
+la scheda per membro), altri restano aperti.
 
 ### 14.1 Tre modelli diventano matematicamente impossibili — BLOCCANTE
 
@@ -1381,7 +1390,8 @@ implementa: dichiara le potenze.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
   `count`. I seed sono deterministici (§12), quindi la varianza fra run non è un problema;
   lo diventa il **tempo**, perché pyLPG simula un nucleo alla volta — quattro famiglie
-  costano ~21 minuti, cento ne costerebbero ore.
+  costano ~21 minuti, cento ne costano ore. I cento profili lombardi sono stati generati e
+  validati (`CER_LoadProfiles/outputs/csv_lombardia100/`, `lpg_db/confronta_societa.py`).
 
 #### 14.4.1 Lo scaglione della TIP: cosa fa il modello e cosa no
 

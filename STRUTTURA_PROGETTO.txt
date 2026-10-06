@@ -26,6 +26,19 @@ Project/
 |-- 20250101_20251231_MGP_PrezziZonali_Nord.xlsx   Prezzo zonale orario MGP 2025 (GME, zona Nord)
 |-- CER_input.txt                       GUIDA ALLA COMPILAZIONE della scheda dati (commentata,
 |                                       non letta da MAIN.m)
+|-- DATA_SOURCES.md                     Fonti esterne usate per compilare le schede (Istat,
+|                                       ARERA), assunzioni e limiti noti
+|
++-- data/
+|   |-- external/                       Dati esterni versionati, fonte per riga (source_id)
+|   |   |-- istat_eusilc_reddito_nordovest_2024.csv   Reddito netto medio/mediano per tipologia
+|   |   |-- arera_quote_gas_2023_24.csv               Quote punti di prelievo gas per classe
+|   |   +-- parametri_arricchimento.yaml              Jitter, soglie, Smc rappresentativi, seed
+|   +-- mapping_archetipo_istat.csv     Archetipo LPG -> tipologia familiare Istat
+|
++-- docs/
+|   +-- mapping_household_istat.md      Motivazione della mappatura, casi dubbi, incoerenze
+|
 |
 +-- CER_configuration/                  SCHEDE DATI OPERATIVE - quelle che MAIN.m legge davvero,
 |                                       TUTTE: una per giro del ciclo di MAIN.m 0
@@ -41,6 +54,9 @@ Project/
 |   |-- ramp_runner.py                  Modulo generazione profili aziende (RAMP)
 |   |-- lpg_runner.py                   Modulo generazione profili famiglie (pyLPG)
 |   |-- postprocessing.py               Modulo aggregazione oraria ed export CSV
+|   |-- arricchisci_schede.py           Compila reddito_EUR ed euro_gas nelle schede CER
+|   |                                   (Istat EU-SILC + ARERA), con colonne di provenienza
+|   |-- tests/test_arricchisci_schede.py   Test (unittest) dell'arricchimento
 |   |
 |   +-- config/
 |   |   |-- simulation_config.yaml      Configurazione principale (4 famiglie)

@@ -137,6 +137,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
 | `CER_configuration/` | **Schede dati lette da `MAIN.m`**, tutte, una per giro di ciclo — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
 | `CER_input.txt` | **Guida alla compilazione** — le stesse sezioni, spiegate riga per riga su una CER di esempio. Non viene letta da `MAIN.m` (§9) |
+| `CER_LoadProfiles/arricchisci_schede.py` | **Compila reddito e spesa gas dei membri domestici** nelle schede (`reddito_EUR`, `euro_gas` più le colonne di provenienza), da Istat EU-SILC e ARERA. Test in `CER_LoadProfiles/tests/` |
+| `data/external/` | Dati esterni versionati con la fonte riga per riga (reddito Istat, quote gas ARERA) e i parametri dell'arricchimento. Fonti in [DATA_SOURCES.md](DATA_SOURCES.md) |
+| `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica. Non contiene dati |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -918,6 +921,22 @@ tutte le colonne socio-economiche sono a `?`, e le 11 ipotesi del Tri-level EP r
 tutte attive; compilandole scendono a 3 — le sole tre che sono correzioni dichiarate
 (ipotesi 6, 7, 9) e non dati mancanti.
 
+**Reddito e spesa gas nelle schede operative.** Nelle schede di `CER_configuration/` le
+colonne `reddito_EUR` ed `euro_gas` dei membri domestici non sono più a `?`. Le compila
+[`CER_LoadProfiles/arricchisci_schede.py`](CER_LoadProfiles/arricchisci_schede.py):
+- il reddito è la media Istat EU-SILC (netto, Nord-ovest, redditi 2024) della tipologia
+  familiare dell'archetipo, perturbata per utente con una gaussiana troncata a ±15%;
+- la spesa gas viene da una categoria d'uso estratta dalle quote ARERA dei punti di
+  prelievo domestici lombardi 2023-24.
+
+`euro_gas` è già in euro e ha sostituito `gas_kWh`: `MAIN.m`/`MAIN2.m` la passano
+direttamente come spesa gas, e accettano ancora `gas_kWh` per le schede del vecchio
+formato. Accanto a ogni valore la scheda conserva valore base, fattore di perturbazione e
+fonte. Le perturbazioni e le soglie del gas sono **ASSUNZIONI** dell'autore, elencate con
+le fonti e i limiti in [DATA_SOURCES.md](DATA_SOURCES.md). Con questi dati il Tri-level EP
+non dichiara più attive le ipotesi 1 (reddito) e 2 (gas). Le schede sono escluse da git:
+dopo una modifica a dati, parametri o prezzo del gas si rigenerano con
+`python CER_LoadProfiles/arricchisci_schede.py`.
 **Le sezioni.** Le tre marcate *scenario* stanno in `scenario_economico.txt`, le altre
 sei nella scheda della comunità.
 
@@ -930,7 +949,7 @@ sei nella scheda della comunità.
 | `[INVESTIMENTO]` | *scenario* — WACC, vita utile, costi specifici CAPEX/OPEX. **Trasportati, non ancora usati**: `MAIN.m` si ferma al flusso di cassa annuo |
 | `[POVERTA_ENERGETICA]` | *scenario* — soglie dell'indice LIHC e taratura della quota di solidarietà |
 | `[GOVERNANCE]` | scelte deliberate dalla CER: pesi del Cascading Tree, α della Pearson-Sharing, M e seed dell'Adaptive Sampling |
-| `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, gas, quota di investimento, mutuo, impianto posseduto |
+| `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, spesa gas (`euro_gas`), quota di investimento, mutuo, impianto posseduto |
 | `[IMPIANTI]` | **una riga per impianto**: proprietario, kWp, export PVsyst, tilt/azimut, CAPEX/OPEX |
 
 **Community di default:** 6 membri (`office_1`, `small_industry_1`, `retail_1`,
@@ -1129,6 +1148,11 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
+- **Reddito e spesa gas sono stime statistiche, non dati dei membri.** Reddito medio
+  Istat del Nord-ovest (non della sola Lombardia, e netto) e quote gas ARERA uguali per
+  ogni tipologia, entrambi perturbati in modo sintetico. Sotto i 100 membri l'archetipo
+  dichiarato nelle schede non coincide con il profilo simulato. L'elenco completo è in
+  [DATA_SOURCES.md](DATA_SOURCES.md) §Limiti noti.
 - **La griglia ora varia due assi, ma non la composizione per categoria.** Le schede in
   `CER_configuration/` coprono taglie da 5 a 100 membri e livelli diversi di penetrazione
   prosumer; la §7.6 legge le 28 comunità fino a 25 membri, un fattore alla volta più la
@@ -1252,6 +1276,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | Documento | Quando consultarlo |
 |---|---|
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Serve il dettaglio di un file/funzione specifico, o la mappa completa di cartelle e CSV |
+| [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
+| [docs/mapping_household_istat.md](docs/mapping_household_istat.md) | Serve sapere perché un archetipo LPG ha quella tipologia familiare Istat (età e componenti dal catalogo LPG) |
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei sedici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |

@@ -1148,9 +1148,13 @@ for iCER = 1:N_CER
     if M.noto.n_perc,         optTL.nIncomeEarners  = M.n_perc;         end
     if M.noto.mutuo_EUR_anno, optTL.mortgagePerUser = M.mutuo_EUR_anno; end
 
-    % La spesa gas si costruisce da due dati distinti: i kWh del membro e il
-    % prezzo di comunita'. Serve che siano noti entrambi.
-    if M.noto.gas_kWh && CFG.noto.mercato.prezzo_gas_EUR_kWh
+    % La spesa gas e' gia' in euro nella colonna euro_gas, compilata da
+    % CER_LoadProfiles/arricchisci_schede.py (fonti in DATA_SOURCES.md). Le
+    % schede col vecchio formato hanno invece gas_kWh: lo si valorizza al prezzo
+    % di comunita', e servono noti entrambi.
+    if M.noto.euro_gas
+        optTL.gasExpense = M.euro_gas;
+    elseif M.noto.gas_kWh && CFG.noto.mercato.prezzo_gas_EUR_kWh
         optTL.gasExpense = M.gas_kWh * CFG.mercato.prezzo_gas_EUR_kWh;
     end
 

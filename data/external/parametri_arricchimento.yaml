@@ -5,8 +5,8 @@
 # dato delle fonti: e' scritto qui proprio per poterlo cambiare senza toccare
 # il codice.
 
-seed_base: 42          # entra nell'hash (nome_csv, archetipo, campo): stesso
-                       # seed -> stesse schede, al byte
+seed_base: 42          # entra nell'hash (nome_csv, campo): stesso household,
+                       # stessi fattori in ogni scheda; stesso seed -> stesso output
 
 reddito:
   file: istat_eusilc_reddito_nordovest_2024.csv

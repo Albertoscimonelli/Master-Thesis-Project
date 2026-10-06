@@ -1,0 +1,7 @@
+area,gruppo,uso_assunto,smc_min,smc_max,quota_pct,anno_termico,source_id,nota
+lombardia,fino_250,cottura,0,250,32.0,2023-24,ARERA-CONSUMI-GAS,media su 12 mesi dei punti di prelievo domestici
+lombardia,da_250_a_500,cottura_acqua_calda,250,500,16.1,2023-24,ARERA-CONSUMI-GAS,media su 12 mesi dei punti di prelievo domestici
+lombardia,oltre_500,riscaldamento,500,,51.9,2023-24,ARERA-CONSUMI-GAS,media su 12 mesi dei punti di prelievo domestici
+milano,fino_250,cottura,0,250,49.2,2023-24,ARERA-CONSUMI-GAS,provincia di Milano; somma delle tre quote 100.1% per arrotondamento della fonte
+milano,da_250_a_500,cottura_acqua_calda,250,500,16.4,2023-24,ARERA-CONSUMI-GAS,provincia di Milano
+milano,oltre_500,riscaldamento,500,,34.5,2023-24,ARERA-CONSUMI-GAS,provincia di Milano; la classe 1000-1250 Smc ha un'anomalia nella fonte che non incide sul gruppo

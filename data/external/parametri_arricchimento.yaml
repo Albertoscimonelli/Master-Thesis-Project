@@ -1,0 +1,43 @@
+# Parametri dell'arricchimento socio-economico delle schede CER
+# (CER_LoadProfiles/arricchisci_schede.py). Fonti in DATA_SOURCES.md.
+#
+# Tutto cio' che qui e' marcato ASSUNZIONE e' una scelta dell'autore, non un
+# dato delle fonti: e' scritto qui proprio per poterlo cambiare senza toccare
+# il codice.
+
+seed_base: 42          # entra nell'hash (nome_csv, archetipo, campo): stesso
+                       # seed -> stesse schede, al byte
+
+reddito:
+  file: istat_eusilc_reddito_nordovest_2024.csv
+  source_id: ISTAT-EUSILC
+  INCOME_JITTER_PCT: 0.15   # R: troncamento a [1-R, 1+R]
+  SIGMA_FRACTION: 0.5       # sigma = SIGMA_FRACTION * R = 0.075
+  # ASSUNZIONE: perturbazione sintetica per diversificare gli utenti della
+  # stessa classe, non una dispersione misurata da Istat.
+
+gas:
+  file: arera_quote_gas_2023_24.csv
+  source_id: ARERA-CONSUMI-GAS
+  area: lombardia           # lombardia | milano
+  GAS_JITTER_PCT: 0.05      # J: fattore U(1-J, 1+J) su ciascuna quota
+  # ASSUNZIONE (euristica dell'autore, non definizione ARERA): soglie che
+  # separano i tre usi. Devono coincidere con smc_min/smc_max del file dati,
+  # che e' gia' aggregato a queste soglie: per spostarle servono i dati ARERA
+  # per singola classe di consumo, e il codice si ferma se non coincidono.
+  soglie_smc: [250, 500]
+  # ASSUNZIONE: consumo annuo rappresentativo di ciascun uso, da cui la spesa.
+  # 120 e 480 sono i profili "cottura e/o acqua calda sanitaria" di
+  # [ARERA-PROFILI]; 1400 e' il consumo della famiglia tipo per riscaldamento
+  # dei comunicati ARERA e coincide con i 15.000 kWh (~1.402 Smc) del house
+  # type LPG HT06/HT07 che il modello usava come default.
+  smc_rappresentativi:
+    cottura: 120
+    cottura_acqua_calda: 480
+    riscaldamento: 1400
+  # Conversione Smc -> kWh col potere calorifico superiore convenzionale
+  # 0,03852 GJ/Smc usato da ARERA (38,52 MJ / 3,6 = 10,70 kWh).
+  kWh_per_Smc: 10.70
+  # Prezzo: si legge da qui, per non avere due prezzi del gas nel progetto.
+  scenario_economico: CER_configuration/scenario_economico.txt
+  chiave_prezzo: prezzo_gas_EUR_kWh

@@ -8,7 +8,15 @@ close all;
 %    - Fase 2: rimossi Nash Bargaining (= Marginal Contribution con d_i = 0),
 %      Stratified Expected Value (scarto ~23% dallo Shapley esatto) e
 %      Pearson-Sharing Rate (quasi identico alla Pearson Key); fuori da Tfair
-%      MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new.
+%      MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new. Poi tolti anche la
+%      Marginal Contribution come metodo (resta il calcolo dei contributi
+%      marginali, riferimento del Fairness Index) e Jain.
+%    - Fase 1: Shapley esatto e Adaptive Sampling Shapley, due set di
+%      risultati per regime (fase1_shapley_vs_as.m).
+%    - Fase 5: soglia di rilevanza del 5% di v(N) sulle inversioni di
+%      graduatoria degli indicatori in euro annui (§7b).
+%    - Fase 7a: v(S) calcolata una volta e passata a Shapley, Nucleolo ed
+%      eccesso di coalizione (shapley_cer_cached, nucleolus_cer_cached).
 %    - §0: variabile d'ambiente MAIN2_SCHEDE (facoltativa) per analizzare
 %      solo alcune schede; vuota = tutte, come MAIN.
 %
@@ -560,11 +568,29 @@ for iCER = 1:N_CER
     %  non e' energia condivisibile con la CER e va esclusa dal gioco.
     %  ========================================================================
 
+    % --- MAIN2, Fase 7a: v(S) una volta sola ---------------------------------
+    % Shapley, Nucleolo ed eccesso di coalizione (§3t) enumerano le stesse 2^n
+    % coalizioni con gli stessi argomenti. Si calcola qui una volta e si passa
+    % ai tre: shapley_cer_cached e nucleolus_cer_cached sono copie identiche
+    % degli originali che accettano opts.v, coalition_excess lo accetta gia'.
+    % Risultati identici bit per bit: test_regressione_cache_v.m.
+    if ~skipGameTheory
+        T_metodo = tic;
+        [vCache, playersCache, AincCache] = cer_coalition_values( ...
+            genForShare, loadForShare, userNames, P_CER_lordo, optF.esente, optF.F);
+        fprintf('  [cronometro] v(S) per 2^%d coalizioni (una volta sola): %s\n', ...
+                nUsers, format_duration(toc(T_metodo)));
+        optGT         = optF;
+        optGT.v       = vCache;
+        optGT.players = playersCache;
+        optGT.A_inc   = AincCache;
+    end
+
     if skipGameTheory
         fprintf('  [BYPASS] Shapley esatto non calcolato (2^%d coalizioni).\n', nUsers);
     else
         T_metodo = tic;
-        Sh = shapley_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+        Sh = shapley_cer_cached(genForShare, loadForShare, userNames, P_CER_lordo, optGT);
         fprintf('  [cronometro] Shapley esatto: %s\n', format_duration(toc(T_metodo)));
 
         % Le due strade per arrivare a v(N) devono coincidere per COSTRUZIONE:
@@ -628,7 +654,7 @@ for iCER = 1:N_CER
         fprintf('  [BYPASS] Nucleolo non calcolato (2^%d coalizioni).\n', nUsers);
     else
         T_metodo = tic;
-        Nu = nucleolus_cer(genForShare, loadForShare, userNames, P_CER_lordo, optF);
+        Nu = nucleolus_cer_cached(genForShare, loadForShare, userNames, P_CER_lordo, optGT);
         fprintf('  [cronometro] Nucleolo: %s\n', format_duration(toc(T_metodo)));
 
         coreMsg = "fuori dal Core";
@@ -932,37 +958,17 @@ for iCER = 1:N_CER
 
 
     %% ========================================================================
-    %  3n) DISTRIBUZIONE DEI BENEFICI - MARGINAL CONTRIBUTION
+    %  3n) CONTRIBUTI MARGINALI - SOLO COME RIFERIMENTO DI MERITO
     %
-    %  Tredicesimo modello, e primo dei tre di Cremers, Robu, Zhang, Andoni,
-    %  Norbu, Flynn, "Efficient methods for approximating the Shapley value for
-    %  asset sharing in energy communities", Applied Energy 331 (2023) 120328.
-    %
-    %  I tre metodi che seguono NON sono regole di ripartizione alternative allo
-    %  Shapley: sono APPROSSIMAZIONI dello Shapley stesso, pensate per comunita'
-    %  in cui le 2^n coalizioni non si possono enumerare (il paper arriva a 200
-    %  prosumer). Con i nostri 6 giocatori lo Shapley esatto e' istantaneo, quindi
-    %  qui servono a misurare QUANTO le approssimazioni si discostino dal valore
-    %  esatto - il confronto della §3q, che riproduce le Tabelle E.3-E.4 del
-    %  paper sui nostri dati.
-    %
-    %  Questo primo metodo tiene un solo contributo marginale, l'ultimo:
-    %    MC_i = v(N) - v(N\{i}),  poi normalizzato a v(N)  (eq. 9-10).
-    %  Costa O(n) valutazioni di v invece di O(2^n). Vedi
-    %  marginal_contribution_cer.m, in particolare la nota sul comportamento
-    %  degenere quando un consumatore e' superfluo (MC = 0 -> quota nulla).
+    %  MAIN2: la Marginal Contribution NON e' piu' un metodo di ripartizione
+    %  (fuori da Tcmp, da metodi e dagli indicatori). Resta il calcolo, perche'
+    %  il Fairness Index della §3t misura la distanza di ogni metodo dalla
+    %  distribuzione per contributo BC_i = v(N) - v(N\{i}), che e' MC.mcRaw.
+    %  Nessuna stampa e nessun grafico: e' un ingrediente, non un risultato.
     %  ========================================================================
 
     MC = marginal_contribution_cer(genForShare, loadForShare, userNames, ...
                                    P_CER_lordo, optF);
-    report_allocation(MC, "Marginal Contribution", [ ...
-        string(sprintf('  %-25s: %.4f  (v(N) / somma dei contributi grezzi)', ...
-                       'Fattore di normalizz.', MC.normFactor)), ...
-        string(sprintf('  %-25s: %d su %d giocatori con MC = 0, quindi quota nulla', ...
-                       'Giocatori superflui', MC.nullPlayers, numel(MC.players)))]);
-
-    % --- Grafico a rete: cabina primaria + benefici + verso del flusso -------
-    if FIG.dettaglio, plot_benefit_network(MC.players, MC.phi, "Marginal Contribution", revSoldPerPlayer); end
 
 
     %  3o) STRATIFIED EXPECTED VALUE - RIMOSSO IN MAIN2 (Fase 2)
@@ -1041,10 +1047,11 @@ for iCER = 1:N_CER
     if skipGameTheory
         fprintf(['\n=== Accuratezza delle approssimazioni dello Shapley ===\n' ...
                  '  [BYPASS] Confronto saltato: richiede lo Shapley ESATTO come\n' ...
-                 '  riferimento, non calcolato a %d utenti. Le due approssimazioni\n' ...
-                 '  restano nel confronto della §3s, senza misura dello scarto.\n'], nUsers);
+                 '  riferimento, non calcolato a %d utenti. L''Adaptive Sampling\n' ...
+                 '  resta nel confronto della §3s, senza misura dello scarto.\n'], nUsers);
     else
-        approxPhi = [MC.phi, AS.phi];
+        % MAIN2: la Marginal Contribution non e' piu' un metodo, resta il solo AS.
+        approxPhi = AS.phi;
 
         % Un giocatore con Shapley nullo non ha una differenza RELATIVA definita:
         % si riporta NaN invece di dividere per zero.
@@ -1053,17 +1060,13 @@ for iCER = 1:N_CER
         RD(okShapley, :) = 100 * abs(approxPhi(okShapley, :) - Sh.phi(okShapley)) ...
                                ./ abs(Sh.phi(okShapley));
 
-        Trd = table(Sh.players(:), Sh.phi, MC.phi, AS.phi, ...
-                    RD(:,1), RD(:,2), ...
+        Trd = table(Sh.players(:), Sh.phi, AS.phi, RD(:,1), ...
                     'VariableNames', {'Giocatore', 'ShapleyEsatto_EUR', ...
-                                      'MarginalContribution_EUR', ...
-                                      'AdaptiveSampling_EUR', 'MC_RD_pct', ...
-                                      'AS_RD_pct'});
+                                      'AdaptiveSampling_EUR', 'AS_RD_pct'});
         fprintf('\n=== Accuratezza delle approssimazioni dello Shapley (eq. 16 del paper) ===\n');
         disp(Trd);
-        fprintf('  %-25s: MC %.4f%%   AS %.4f%%\n', ...
-                'RD media (eq. 17)', mean(RD(:,1), 'omitnan'), ...
-                mean(RD(:,2), 'omitnan'));
+        fprintf('  %-25s: AS %.4f%%\n', ...
+                'RD media (eq. 17)', mean(RD(:,1), 'omitnan'));
 
         % I tre approssimatori giocano lo stesso gioco degli altri metodi: se il
         % montepremi non coincide con quello dello Shapley esatto, il confronto
@@ -1269,13 +1272,12 @@ for iCER = 1:N_CER
     % colonne (plot_cer_comparison/local_metodi_comuni, compute_indicator_agreement).
     Tcmp = table(userNames(:), VLC.phi, ES.phi, PC.phi, ...
                  RM1.phi, CT.phi, WS.phi, PK.phi, SU.phi, ...
-                 MC.phi, AS.phi, TL.phiFromShared, ...
+                 AS.phi, TL.phiFromShared, ...
                  'VariableNames', {'Giocatore', 'VarianceLeastCore_EUR', ...
                                    'EqualSplit_EUR', 'ProportionalConsumption_EUR', ...
                                    'RemunerationModel1_EUR', 'CascadingTree_EUR', ...
                                    'WeightedSolidarity_EUR', 'PearsonKey_EUR', ...
                                    'SimilarityUtilization_EUR', ...
-                                   'MarginalContribution_EUR', ...
                                    'AdaptiveSampling_EUR', 'TriLevelEP_EUR'});
 
     % I due a enumerazione: vuoti sopra soglia, in testa sotto - cosi' tabella,
@@ -1294,12 +1296,11 @@ for iCER = 1:N_CER
                   "Equal Split", "Proportional to Consumption", ...
                   "Remuneration Model 1", "Cascading Tree", "Weighted Solidarity", ...
                   "Pearson Key", "Similarity-Utilization", ...
-                  "Marginal Contribution", ...
                   "Adaptive Sampling Shapley", "Tri-level EP"}, ...
         'phi',  {VLC.phi, ...
                   ES.phi,     PC.phi,   RM1.phi,           CT.phi,  WS.phi, ...
                   PK.phi,    SU.phi, ...
-                  MC.phi,    AS.phi,  TL.phiFromShared})];
+                  AS.phi,  TL.phiFromShared})];
 
     fprintf('\n=== Confronto tra i modelli di ripartizione [€/anno] ===\n');
     disp(Tcmp);
@@ -1487,6 +1488,8 @@ for iCER = 1:N_CER
     else
         optEX = optF;
         optEX.quiet = true;
+        optEX.v     = vCache;        % MAIN2, Fase 7a: la stessa v(S) della §3b
+        optEX.A_inc = AincCache;
         T_metodo = tic;
         EX = coalition_excess([metodi.phi], [metodi.nome], genForShare, loadForShare, ...
                               userNames, P_CER_lordo, optEX);
@@ -1521,16 +1524,17 @@ for iCER = 1:N_CER
     FZl   = compute_incentive_strength([metodi.phi], SUl, [metodi.nome], optFZ);
 
     % --- Tabella di confronto -------------------------------------------------
-    % MAIN2 (Fase 2): fuori MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new.
-    % EI_orig resta perche' lo usano plot_cer_comparison e l'ancora tau(EI,Gini)
-    % della §7b; CoalizioniInstabili perche' la usa plot_fairness_tradeoff.
+    % MAIN2 (Fase 2): fuori MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new
+    % e Jain. EI_orig resta perche' lo usano plot_cer_comparison_main2 e
+    % l'ancora tau(EI,Gini) della §7b; CoalizioniInstabili perche' la usa
+    % plot_fairness_tradeoff.
     Tfair = table([metodi.nome].', ...
                   cellfun(@(F) F.eiOrig,    FIND), ...
-                  cellfun(@(F) F.jain,      FIND), cellfun(@(F) F.gini,      FIND), ...
+                  cellfun(@(F) F.gini,      FIND), ...
                   BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
                   FZ.IS, FZ.align, FZl.IS, FZl.align, ...
                   'VariableNames', {'Metodo', 'EI_orig', ...
-                                    'Jain', 'Gini', 'FairnessIndex', 'Sigma', ...
+                                    'Gini', 'FairnessIndex', 'Sigma', ...
                                     'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili', ...
                                     'ForzaIncentivante', 'AllineamentoVirtu', ...
                                     'ForzaIncentivante_lordo', 'AllineamentoVirtu_lordo'});
@@ -1599,8 +1603,7 @@ for iCER = 1:N_CER
     % quindi stanno in [0,1]. Un valore fuori significa formula sbagliata, non
     % mercato strano.
     inDomain = @(v) all(isnan(v) | (v >= -1e-12 & v <= 1 + 1e-12));
-    assert(inDomain(Tfair.EI_orig)    && ...
-           inDomain(Tfair.Jain)       && inDomain(Tfair.Gini), ...
+    assert(inDomain(Tfair.EI_orig)    && inDomain(Tfair.Gini), ...
            'Indici di equita'': un indicatore e'' uscito da [0,1]');
 
     % L'Equal Split distribuisce parti uguali: il Gini di un vettore uniforme e'
@@ -1614,12 +1617,15 @@ for iCER = 1:N_CER
     % Casalicchio: MC.phi/v(N) E' la distribuzione di riferimento. Quindi la
     % Marginal Contribution ha FI nullo se tutti i contributi sono positivi, e
     % altrimenti cade nella branca degli interi con FI = numero di quote nulle.
-    iMC = find([metodi.nome] == "Marginal Contribution", 1);
+    % MAIN2: la Marginal Contribution non e' piu' fra i metodi, quindi la
+    % verifica gira su una chiamata a parte, che non entra in nessuna tabella.
+    BMmc = fairness_index_bm(MC.phi, MC.mcRaw, "Marginal Contribution", ...
+                             struct('playerNames', userNames, 'quiet', true));
     if all(MC.mcRaw > 0)
-        assert(abs(BM.FI(iMC)) < 1e-9, ...
+        assert(abs(BMmc.FI) < 1e-9, ...
                'Indici di equita'': la Marginal Contribution non ha FI = 0');
     else
-        assert(BM.FI(iMC) == nUsers - sum(BM.D(:,iMC) > 1e-9), ...
+        assert(BMmc.FI == nUsers - sum(BMmc.D(:,1) > 1e-9), ...
                'Indici di equita'': branca degli interi dell''eq. 14 incoerente');
     end
 
@@ -1743,8 +1749,8 @@ for iCER = 1:N_CER
     % basso possibile, anche molto sotto zero.
     pannelli = struct( ...
         'nome',       {'Allocazione ed equita''',                         'Disuguaglianza e distanza dal merito',            'Stabilita'' della coalizione'}, ...
-        'indicatori', {["EI_{orig}", "Jain"],                             ["Gini", "Fairness Index", "\sigma"],              ["Eccesso max [€]", "Coalizioni instabili"]}, ...
-        'valori',     {[Tfair.EI_orig, Tfair.Jain], ...
+        'indicatori', {"EI_{orig}",                                       ["Gini", "Fairness Index", "\sigma"],              ["Eccesso max [€]", "Coalizioni instabili"]}, ...
+        'valori',     {Tfair.EI_orig, ...
                                                                           [Tfair.Gini, Tfair.FairnessIndex, Tfair.Sigma],    [Tfair.EccessoMax_EUR, Tfair.CoalizioniInstabili]}, ...
         'bestIsOne',  {true,                                              false,                                             false}, ...
         'etichettaVerso', {'',                                            '',                                                'piu'' basso = piu'' stabile'});
@@ -2170,7 +2176,7 @@ end
 %  ========================================================================
 
 if FIG.confrontoCER && N_CER > 1
-    plot_cer_comparison(RESULTS);
+    plot_cer_comparison_main2(RESULTS);   % MAIN2: copia senza Jain
 
     % Il Gini su tre assi: comunita' x metodo x indice. Il pannello (d) del
     % grafico qui sopra riassume in un numero per CER quanto la scelta del
@@ -2257,6 +2263,30 @@ for c = 1:numel(AGR.schede)
            'Accordo fra indicatori: un tau e'' uscito da [-1,1] su %s', AGR.schede(c));
 end
 
+% --- MAIN2, Fase 5: soglia di rilevanza pratica ---------------------------
+% Due metodi sono A PARI su un indicatore in euro annui se distano meno del
+% 5% del montepremi v(N) di quella comunita': una differenza piu' piccola non
+% cambia in modo apprezzabile la convenienza di nessuno. Prima la tolleranza
+% era solo numerica (1e-6 dell'escursione, indicator_tie_tol.m).
+%
+% Agisce su cio' che legge AGR.tolTie, cioe' inversioni di graduatoria
+% (extract_ranking_reversals) e vincitori della griglia (ranking_grid). NON
+% sul tau di Kendall, gia' calcolato dentro compute_indicator_agreement con
+% la tolleranza numerica.
+%
+% Oggi si applica al solo EccessoMax_EUR, l'unico indicatore in euro annui
+% confrontabili con v(N). Gli indicatori adimensionali e il VAN (euro su 20
+% anni) restano con la tolleranza numerica finche' non si decide come
+% tradurre per loro il 5% di v(N).
+SOGLIA_RILEVANZA = 0.05;                       % frazione di v(N)
+vN_cer = [RESULTS.vGrand];                     % stesso ordine di AGR.schede
+jEuro  = find(AGR.indicators == "EccessoMax_EUR");
+for j = jEuro
+    AGR.tolTie(j, :) = max(AGR.tolTie(j, :), SOGLIA_RILEVANZA * vN_cer);
+end
+fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro annui (%s)\n', ...
+        100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(jEuro), ', '));
+
 if N_CER > 1
     % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e
     % un asse unico non e' ordinabile: la griglia taglia x penetrazione si legge
@@ -2287,14 +2317,8 @@ if N_CER > 1
     assert(max(abs(AGR.penetrazione - contata)) <= 0.5, ...
            'Inversioni: penetrazione dichiarata e contata divergono di piu'' di 0.5 punti');
 
-    % Il pavimento del Jain e' 1/n: uno scarto di Jain non e' confrontabile fra
-    % comunita' di taglia diversa, e "composizione" verrebbe confusa con "taglia".
-    if numel(unique([RESULTS.nUsers])) > 1
-        fprintf(['\n  ATTENZIONE: le comunita'' hanno un numero di membri DIVERSO.\n' ...
-                 '  Jain e MinMax hanno un pavimento che dipende da n, quindi le loro\n' ...
-                 '  inversioni nello sweep di TAGLIA possono venire dal pavimento e\n' ...
-                 '  non dai metodi. Lo sweep di penetrazione, a taglia fissa, non ne soffre.\n']);
-    end
+    % MAIN2: l'avviso sul pavimento 1/n di Jain e MinMax non serve piu', perche'
+    % entrambi sono fuori da Tfair.
 else
     GRID = [];
     REV  = struct('inversioni', table(), 'sommario', table(), 'perSweep', table());

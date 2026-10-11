@@ -171,6 +171,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m` | Grafici energetici **orari**: mappa 24×365 con le ore sature, curve di durata, TIP_h vs prezzo zonale (§11.1) |
 | `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
+| `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -855,6 +856,21 @@ metodi, 18 indicatori, 1404 serie per sottoinsieme):
 - **L'interazione sul vincitore compare sugli indicatori secondari**: `EI_new`,
   `ForzaIncentivante_lordo` e `AllineamentoVirtu_lordo` a 0.43, `QoS_orig` e `Jain` a 0.71,
   `CoalizioniInstabili` a 0.80 (su 5 taglie).
+
+#### 7.6 Soglia di rilevanza sulle inversioni
+
+Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra due metodi conta come inversione, anche se i due differiscono di un millesimo di Gini. `apply_relevance_threshold.m` estende a **tutti** gli indicatori la soglia che MAIN2 applicava al solo `EccessoMax_EUR` (5% di v(N)): sugli indicatori in euro resta il 5% di v(N); sugli altri (adimensionali, VAN, forza incentivante) due metodi sono a pari se distano meno del **10% dell'escursione** osservata fra i metodi di quella comunità. La percentuale è una scelta di modello, un parametro (`opts.fracEscursione`): va riportata la sensibilità. Il tau-b di Kendall non cambia, resta calcolato con la tolleranza numerica.
+
+`ricalcola_inversioni_soglia.m` rifà il solo post-processing di §7b da `RESULTS` e `AGR`, senza rilanciare Shapley e Nucleolo. **Verifica**: a soglia 0% riproduce il log di MAIN2 (1554 serie invertite su 12 comunità fino a 10 membri); crescendo la soglia il conteggio scende così:
+
+| Soglia sull'escursione | Serie invertite | Invertite agli estremi |
+|---:|---:|---:|
+| 0% (MAIN2 attuale) | 1554 | 1231 |
+| 5% | 1118 | 956 |
+| 10% | 910 | 808 |
+| 20% | 639 | 584 |
+
+> ⚠ Il collegamento in `MAIN2.m` §7b (sostituire il blocco della soglia sul solo `EccessoMax_EUR` con la chiamata a `apply_relevance_threshold`) non è ancora fatto: finché non lo è, il run completo usa la vecchia regola. Misura su 12 comunità; da ripetere sul run completo.
 
 > ⚠ **Quattro limiti da tenere presenti leggendo la griglia.**
 > 1. `compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità.

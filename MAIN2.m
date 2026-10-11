@@ -2268,28 +2268,23 @@ for c = 1:numel(AGR.schede)
 end
 
 % --- MAIN2, Fase 5: soglia di rilevanza pratica ---------------------------
-% Due metodi sono A PARI su un indicatore in euro annui se distano meno del
-% 5% del montepremi v(N) di quella comunita': una differenza piu' piccola non
-% cambia in modo apprezzabile la convenienza di nessuno. Prima la tolleranza
-% era solo numerica (1e-6 dell'escursione, indicator_tie_tol.m).
+% Due metodi sono A PARI su un indicatore se distano meno della soglia di
+% rilevanza: una differenza piu' piccola non cambia in modo apprezzabile la
+% convenienza di nessuno. Indicatori in euro annui (EccessoMax_EUR): 5% di
+% v(N). Tutti gli altri: 10% dell'escursione fra i metodi della comunita'.
+% Prima la tolleranza era solo numerica (indicator_tie_tol.m) e la soglia
+% valeva per il solo EccessoMax_EUR. Dettagli: help apply_relevance_threshold.
 %
 % Agisce su cio' che legge AGR.tolTie, cioe' inversioni di graduatoria
 % (extract_ranking_reversals) e vincitori della griglia (ranking_grid). NON
 % sul tau di Kendall, gia' calcolato dentro compute_indicator_agreement con
 % la tolleranza numerica.
-%
-% Oggi si applica al solo EccessoMax_EUR, l'unico indicatore in euro annui
-% confrontabili con v(N). Gli indicatori adimensionali e il VAN (euro su 20
-% anni) restano con la tolleranza numerica finche' non si decide come
-% tradurre per loro il 5% di v(N).
-SOGLIA_RILEVANZA = 0.05;                       % frazione di v(N)
-vN_cer = [RESULTS.vGrand];                     % stesso ordine di AGR.schede
-jEuro  = find(AGR.indicators == "EccessoMax_EUR");
-for j = jEuro
-    AGR.tolTie(j, :) = max(AGR.tolTie(j, :), SOGLIA_RILEVANZA * vN_cer);
-end
-fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro annui (%s)\n', ...
-        100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(jEuro), ', '));
+SOGLIA_RILEVANZA = 0.05;                       % frazione di v(N), indicatori in euro
+SOGLIA_ESCURSIONE = 0.10;                      % frazione dell'escursione, gli altri
+AGR = apply_relevance_threshold(AGR, [RESULTS.vGrand], struct( ...
+          'fracVN', SOGLIA_RILEVANZA, 'fracEscursione', SOGLIA_ESCURSIONE));
+fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro (%s), %.0f%% dell''escursione sugli altri\n', ...
+        100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(AGR.regolaSoglia == "vN"), ', '), 100 * SOGLIA_ESCURSIONE);
 
 if N_CER > 1
     % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e

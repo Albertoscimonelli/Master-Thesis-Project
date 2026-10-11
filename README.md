@@ -172,6 +172,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m` | Grafici energetici **orari**: mappa 24×365 con le ore sature, curve di durata, TIP_h vs prezzo zonale (§11.1) |
 | `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
 | `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
+| `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -871,6 +872,16 @@ Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra
 | 20% | 639 | 584 |
 
 > ⚠ Il collegamento in `MAIN2.m` §7b (sostituire il blocco della soglia sul solo `EccessoMax_EUR` con la chiamata a `apply_relevance_threshold`) non è ancora fatto: finché non lo è, il run completo usa la vecchia regola. Misura su 12 comunità; da ripetere sul run completo.
+
+#### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
+
+Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva), e non sulla griglia a 28 comunità delle tabelle di `confronto/`: vanno rigenerate insieme quando si rifà il run completo.
+
+- **Accordo per fascia e taglia** (`tau_per_fascia`, `tau_per_taglia`, `tau_per_cella`): il tau-b medio, minimo e massimo per coppia di indicatori, con il segno che cambia o no fra le fasce. La fascia è il rango della penetrazione dentro la taglia. Esempio: tau(Gini, Fairness Index) vale +0,39 alla fascia 1 e fra −0,16 e −0,33 nelle altre; tau(Gini, forza incentivante) va da −0,08 a −0,92.
+- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 7,4 su equità + incentivo + VAN. Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
+- **Quote ai prosumer** (`quote_prosumer`, `quote_prosumer_fascia`): quota di v(N) ricevuta dai prosumer e suo rapporto con la quota di membri. Lo Shapley passa da 1,73 (pochi prosumer) a 0,44 (fascia 3): premia il lato scarso, e cambia lato con la penetrazione. Pearson Key e Similarity-Utilization restano sotto 0,2 a ogni fascia (premiano chi consuma, non chi produce). Alla fascia 4 (100% prosumer) il rapporto vale 1 per costruzione.
+
+> ⚠ Il fronte dice quanto i criteri siano in conflitto, non quale metodo sia migliore. La scelta dell'insieme dei criteri e la soglia del 10% sono scelte di modello: riportare la sensibilità.
 
 > ⚠ **Quattro limiti da tenere presenti leggendo la griglia.**
 > 1. `compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità.

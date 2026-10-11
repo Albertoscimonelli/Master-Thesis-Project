@@ -2341,6 +2341,24 @@ if CSV.esporta
 end
 
 %% ========================================================================
+%  7c) SINTESI: ACCORDO PER FASCIA E TAGLIA, FRONTE DI PARETO, QUOTE AI PROSUMER
+%
+%  Le tabelle di §7b sono in formato lungo e rispondono alla domanda di ricerca
+%  solo dopo una rilettura. Queste tre la riassumono: come cambia il tau-b fra
+%  indicatori con la penetrazione e con la taglia, quali metodi restano non
+%  dominati guardando piu' criteri insieme (con la stessa soglia di rilevanza
+%  delle inversioni), quanto premio va ai prosumer rispetto alla loro quota di
+%  membri. Dettagli: help sintesi_risultati. Si scrive sotto CSV.cartella/sintesi.
+%  ========================================================================
+
+if N_CER > 1
+    cartellaSintesi = "";
+    if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
+    fprintf('\n=== Sintesi dei risultati ===\n');
+    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi));
+end
+
+%% ========================================================================
 %  8) TEMPO DI ESECUZIONE
 %
 %  Il conto si chiude qui, e si chiude DAVVERO: la somma dei tempi per

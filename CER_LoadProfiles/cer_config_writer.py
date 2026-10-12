@@ -84,7 +84,7 @@ GOVERNANCE: list[tuple[str, str]] = [
 
 INTESTAZIONE_MEMBRI = [
     "id", "nome_csv", "ruolo", "categoria", "archetipo", "tariffa",
-    "P_prel_kW", "n_comp", "n_perc", "reddito_EUR", "gas_kWh",
+    "P_prel_kW", "n_comp", "n_perc", "reddito_EUR", "euro_gas",
     "quota_inv_EUR", "mutuo_EUR_anno", "impianto",
 ]
 
@@ -97,7 +97,7 @@ INTESTAZIONE_IMPIANTI = [
 # leggono confrontandole fra loro, e allineate a destra si confrontano a colpo
 # d'occhio. Il resto va a sinistra, come il testo.
 COLONNE_A_DESTRA = {
-    "id", "P_prel_kW", "n_comp", "n_perc", "reddito_EUR", "gas_kWh",
+    "id", "P_prel_kW", "n_comp", "n_perc", "reddito_EUR", "euro_gas",
     "quota_inv_EUR", "mutuo_EUR_anno", "kWp", "tilt", "azimut",
     "anno_esercizio", "capex_EUR", "opex_EUR_anno",
 }

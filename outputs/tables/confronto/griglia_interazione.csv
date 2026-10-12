@@ -1,0 +1,19 @@
+Indicatore,TaglieValide,SequenzeDistinte,QuotaModale,SequenzaModale
+MinMax_pro,0,0,NaN,
+MinMax_con,0,0,NaN,
+QoS_orig,7,3,0.714286,Similarity-Utilization > Weighted Solidarity > Weighted Solidarity > Equal Split
+QoS_new,0,0,NaN,
+EI_orig,7,1,1,Equal Split > Equal Split > Equal Split > Equal Split
+EI_new,7,3,0.428571,Equal Split > Equal Split > Cascading Tree > Cascading Tree
+Jain,7,3,0.714286,Similarity-Utilization > Weighted Solidarity > Weighted Solidarity > Equal Split
+Gini,7,1,1,Equal Split > Equal Split > Equal Split > Equal Split
+FairnessIndex,7,1,1,Marginal Contribution > Marginal Contribution > Marginal Contribution > Marginal Contribution
+Sigma,7,1,1,Marginal Contribution > Marginal Contribution > Marginal Contribution > Marginal Contribution
+QuoteNulle,0,0,NaN,
+EccessoMax_EUR,5,1,1,Variance Least Core > Variance Least Core > Variance Least Core > Variance Least Core
+CoalizioniInstabili,5,2,0.8,(pari) > (pari) > (pari) > (pari)
+ForzaIncentivante,7,1,1,Similarity-Utilization > Similarity-Utilization > Similarity-Utilization > Tri-level EP
+AllineamentoVirtu,7,1,1,Similarity-Utilization > Similarity-Utilization > Similarity-Utilization > Similarity-Utilization
+ForzaIncentivante_lordo,7,3,0.428571,Similarity-Utilization > Similarity-Utilization > Similarity-Utilization > Equal Split
+AllineamentoVirtu_lordo,7,4,0.428571,Similarity-Utilization > Similarity-Utilization > Similarity-Utilization > Equal Split
+VAN_min_EUR,0,0,NaN,

@@ -1,0 +1,56 @@
+codice_lpg,template_lpg,eta_componenti,classe_istat,criterio
+CHR01,Couple both at Work,25;23,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR02,"Couple, 30 - 64 age, with work",38;37,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR03,"Family, 1 child, both at work",43;40;10,coppia_1_figlio,coppia con un figlio di 10 anni
+CHR04,"Couple, 30 - 64 years, 1 at work, 1 at home",50;45,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR05,"Family, 3 children, both with work",40;35;13;6;4,coppia_3piu_figli,coppia con tre figli
+CHR06,Jak Jobless,30,persona_sola_under65,persona sola di 30 anni
+CHR07,Single with work,23,persona_sola_under65,persona sola di 23 anni
+CHR08,"Single woman, 2 children, with work",30;11;7,monogenitore,madre sola con due figli
+CHR09,"Single woman, 30 - 64 years, with work",34,persona_sola_under65,persona sola di 34 anni
+CHR10,"Single man, 30 - 64 age, shift worker",40,persona_sola_under65,persona sola di 40 anni
+CHR12,"Student 2, Male, Philosophy",22,persona_sola_under65,studente di 22 anni; LPG simula una sola persona (tag Flatsharing: i coinquilini non sono modellati)
+CHR13,Student with Work,22,persona_sola_under65,studentessa di 22 anni; LPG simula una sola persona (tag Flatsharing: i coinquilini non sono modellati)
+CHR14,"3 adults: Couple, 30- 64 years, both at work + Senior at home",46;45;80,altra_tipologia,coppia con un anziano convivente (80 anni): famiglia con membro aggregato
+CHR15,"Multigenerational Home: working couple, 2 children, 2 seniors",40;32;15;4;70;68,altra_tipologia,famiglia multigenerazionale: due nuclei (coppia con figli + coppia anziana)
+CHR16,Couple over 65 years,80;75,coppia_senza_figli_PR_65piu,coppia senza figli; entrambi oltre i 65
+CHR17,Shiftworker Couple,31;29,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR18,"Family, 2 children, parents without work",37;35;12;8,coppia_2_figli,coppia con due figli
+CHR19,"Couple, 30 - 64 years, both at work, with homehelp",42;38;50,altra_tipologia,coppia con una collaboratrice domestica che LPG conta tra i componenti (n_comp = 3): membro aggregato
+CHR20,"one at work, one work home, 3 children",45;40;12;8;4,coppia_3piu_figli,coppia con tre figli
+CHR23,Single man over 65 years,68,persona_sola_65piu,persona sola di 68 anni
+CHR24,Single woman over 65 years,68,persona_sola_65piu,persona sola di 68 anni
+CHR25,Single woman under 30 years with work,28,persona_sola_under65,persona sola di 28 anni
+CHR26,Single woman under 30 years without work,27,persona_sola_under65,persona sola di 27 anni
+CHR27,"Family both at work, 2 children",43;39;13;9,coppia_2_figli,coppia con due figli
+CHR28,Single man under 30 years without work,24,persona_sola_under65,persona sola di 24 anni
+CHR29,Single man under 30 years with work,26,persona_sola_under65,persona sola di 26 anni
+CHR30,"Single, Retired Man",70,persona_sola_65piu,persona sola di 70 anni
+CHR31,"Single, Retired Woman",68,persona_sola_65piu,persona sola di 68 anni
+CHR32,Couple under 30 years without work,25;23,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR33,Couple under 30 years with work,28;27,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR34,"Couple under 30 years, one at work, one at home",26;25,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR35,"Single woman, 30 - 64 years, with work",42,persona_sola_under65,persona sola di 42 anni
+CHR36,"Single woman, 30 - 64 years, without work",51,persona_sola_under65,persona sola di 51 anni
+CHR37,"Single man, 30 - 64 years, with work",48,persona_sola_under65,persona sola di 48 anni
+CHR39,"Couple, 30 - 64 years, with work",44;38,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR40,"Couple, 30 - 64 years, without work",51;48,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR42,"Single man with 2 children, with work",42;10;7,monogenitore,padre solo con due figli
+CHR44,"Family with 2 children, 1 at work, 1 at home",45;43;16;14,coppia_2_figli,coppia con due figli
+CHR45,"Family with 1 child, 1 at work, 1 at home",48;45;16,coppia_1_figlio,coppia con un figlio di 16 anni
+CHR46,"Single woman, 1 child, without work",38;8,monogenitore,madre sola con un figlio
+CHR47,"Single woman, 2 children, without work",39;10;7,monogenitore,madre sola con due figli
+CHR49,"Family with 1 child, without work",45;37;13,coppia_1_figlio,coppia con un figlio di 13 anni
+CHR51,Couple over 65 years II,69;67,coppia_senza_figli_PR_65piu,coppia senza figli; entrambi oltre i 65
+CHR53,"2 Parents, 1 Working, 2 Children",45;40;15;11,coppia_2_figli,coppia con due figli
+CHR54,"Retired Couple, no work",71;68,coppia_senza_figli_PR_65piu,coppia senza figli; entrambi oltre i 65
+CHR55,Couple with work around 40,45;40,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+CHR56,"Couple with 2 children, husband at work",50;45;16;14,coppia_2_figli,coppia con due figli
+CHR57,"Family with 2 Children, Man at work",45;43;20;14,coppia_2_figli,coppia con due figli (uno di 20 anni: Istat conta i figli conviventi di ogni eta')
+CHR58,"Retired Couple, no work, no cooking",71;68,coppia_senza_figli_PR_65piu,coppia senza figli; entrambi oltre i 65
+CHR60,"Family, 1 toddler, one at work, one at home",32;30;2,coppia_1_figlio,coppia con un figlio di 2 anni
+CHR61,"Family, 1 child, both at work, early living pattern",43;40;10,coppia_1_figlio,coppia con un figlio di 10 anni
+CHS01,"Couple with 2 Children, Dad Employed",45;40;15;11,coppia_2_figli,coppia con due figli
+CHS04,"Retired Couple, no work",71;68,coppia_senza_figli_PR_65piu,coppia senza figli; entrambi oltre i 65
+CHS12,Shiftworker Couple,31;29,coppia_senza_figli_PR_under65,coppia senza figli; entrambi sotto i 65
+OR01,Single Person Office,26,persona_sola_under65,persona sola di 26 anni

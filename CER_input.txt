@@ -139,9 +139,11 @@ markup_retail          = ?       # da PUN all'ingrosso a prezzo finale in
                                  # reale non e' ne' moltiplicativo ne'
                                  # costante: si sostituisce con la tariffa di
                                  # fornitura reale, non con un numero migliore.
-prezzo_gas_EUR_kWh     = 0.120   # converte i kWh di [MEMBRI].gas_kWh in
-                                 # spesa. Non e' il dato che manca: quello e'
-                                 # la bolletta gas, colonna gas_kWh.
+prezzo_gas_EUR_kWh     = 0.120   # prezzo con cui arricchisci_schede.py
+                                 # calcola [MEMBRI].euro_gas (Smc x 10,70
+                                 # kWh/Smc x prezzo): se cambia, rilanciare
+                                 # lo script. Valorizza anche il vecchio
+                                 # gas_kWh, se una scheda lo ha ancora.
 tip_potenza_rif_kW     = ?       # potenza che seleziona lo scaglione
                                  # TP_base/CAP della TIP: <=200 | <=600 | >600
                                  # Fallback: la potenza installata totale di
@@ -281,12 +283,18 @@ as_seed           = 42     # unico metodo stocastico del progetto: il seed
 #             GENERAZIONE non sta qui: appartiene all'impianto ([IMPIANTI].kWp).
 # n_comp      componenti del nucleo;  n_perc  quanti PERCEPISCONO reddito
 #             (non quanti sono: sta al denominatore dell'indice di poverta')
-# reddito_EUR reddito familiare annuo lordo
-# gas_kWh     consumo annuo di gas per riscaldamento [kWh], da BOLLETTA.
+# reddito_EUR reddito familiare annuo NETTO. Nelle schede operative lo
+#             compila CER_LoadProfiles/arricchisci_schede.py: media Istat
+#             EU-SILC della tipologia familiare (Nord-ovest, redditi 2024)
+#             perturbata per utente. Fonti e limiti in DATA_SOURCES.md.
+# euro_gas    spesa gas annua [EUR]; ha sostituito gas_kWh. La compila lo
+#             stesso script: categoria d'uso estratta dalle quote ARERA,
+#             consumo tipico della categoria, prezzo di scenario.
 #             Senza, l'indice di poverta' energetica si spegne: la sola
 #             elettricita' non supera mai la mediana nazionale. Finche' vale
 #             '?' il modello usa 15000 kWh, la taglia del template HT06 con
-#             cui i profili sono stati simulati.
+#             cui i profili sono stati simulati. Le schede del vecchio
+#             formato possono ancora dichiarare gas_kWh [kWh] al suo posto.
 # quota_inv_EUR   quanto quel membro ha messo nell'impianto [EUR]. Finche'
 #                 sono tutti '?' o 0, la proprieta' viene dedotta dalla
 #                 produzione (chi produce possiede), che con un impianto solo
@@ -303,16 +311,18 @@ as_seed           = 42     # unico metodo stocastico del progetto: il seed
 #                           comune della CER, incrociati con le classi d'eta'
 #                           ISTAT. Sono le due voci che decidono da sole chi
 #                           risulta vulnerabile.
-#   gas_kWh              -> bollette gas reali
+#   euro_gas             -> bollette gas reali
+#   (nelle schede operative entrambe le voci sono stimate da
+#   arricchisci_schede.py finche' non arrivano i dati veri: DATA_SOURCES.md)
 #   quota_inv_EUR        -> atto costitutivo / piano di cofinanziamento
 # =============================================================================
-id | nome_csv             | ruolo | categoria   | archetipo         | tariffa          | P_prel_kW | n_comp | n_perc | reddito_EUR | gas_kWh | quota_inv_EUR | mutuo_EUR_anno | impianto
- 1 | office_1_kWh         | C     | terziario   | office            | BIORARIA         |        10 |      - |      - |           - |       - |             ? |              0 | -
- 2 | small_industry_1_kWh | P     | industriale | small_industry    | ORARIO_VARIABILE |        50 |      - |      - |           - |       - |             ? |              0 | PV01
- 3 | retail_1_kWh         | C     | commerciale | retail            | MONORARIA        |        15 |      - |      - |           - |       - |             ? |              0 | -
- 4 | household_1_kWh      | C     | domestico   | CHR54_pensionati  | MONORARIA        |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
- 5 | household_2_kWh      | C     | domestico   | CHR02_coppia_lav  | MONORARIA        |         3 |      2 |      ? |           ? |       ? |             ? |              0 | -
- 6 | household_3_kWh      | C     | domestico   | CHR03_fam_1figlio | MONORARIA        |         3 |      3 |      ? |           ? |       ? |             ? |              0 | -
+id | nome_csv             | ruolo | categoria   | archetipo         | tariffa          | P_prel_kW | n_comp | n_perc | reddito_EUR | euro_gas | quota_inv_EUR | mutuo_EUR_anno | impianto
+ 1 | office_1_kWh         | C     | terziario   | office            | BIORARIA         |        10 |      - |      - |           - |        - |             ? |              0 | -
+ 2 | small_industry_1_kWh | P     | industriale | small_industry    | ORARIO_VARIABILE |        50 |      - |      - |           - |        - |             ? |              0 | PV01
+ 3 | retail_1_kWh         | C     | commerciale | retail            | MONORARIA        |        15 |      - |      - |           - |        - |             ? |              0 | -
+ 4 | household_1_kWh      | C     | domestico   | CHR54_pensionati  | MONORARIA        |         3 |      2 |      ? |           ? |        ? |             ? |              0 | -
+ 5 | household_2_kWh      | C     | domestico   | CHR02_coppia_lav  | MONORARIA        |         3 |      2 |      ? |           ? |        ? |             ? |              0 | -
+ 6 | household_3_kWh      | C     | domestico   | CHR03_fam_1figlio | MONORARIA        |         3 |      3 |      ? |           ? |        ? |             ? |              0 | -
 
 # --- Come si estende (esempio, non attivo) ----------------------------------
 # Aggiungere righe. Perche' una riga nuova funzioni servono due cose:
@@ -322,8 +332,8 @@ id | nome_csv             | ruolo | categoria   | archetipo         | tariffa   
 #   2. se il ruolo e' P o E, una riga corrispondente in [IMPIANTI].
 # Poi aggiornare [RIEPILOGO], che altrimenti blocca l'esecuzione.
 #
-#  7 | household_4_kWh    | P     | domestico   | CHR03_fam_1figlio | BIORARIA         |         6 |      4 |      2 |       31000 |   15000 |          6000 |            420 | PV02
-#  8 | comune_1_kWh       | C     | PA          | office            | ORARIO_VARIABILE |        30 |      - |      - |           - |       0 |             0 |              0 | -
+#  7 | household_4_kWh    | P     | domestico   | CHR03_fam_1figlio | BIORARIA         |         6 |      4 |      2 |       31000 |     1798 |          6000 |            420 | PV02
+#  8 | comune_1_kWh       | C     | PA          | office            | ORARIO_VARIABILE |        30 |      - |      - |           - |        0 |             0 |              0 | -
 
 
 # =============================================================================

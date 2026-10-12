@@ -117,6 +117,9 @@ quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`li
 [`CER_input.txt`](CER_input.txt) è la guida commentata alla compilazione: spiega sezione
 per sezione cosa scrivere nelle due schede, e non viene letta da `MAIN.m`.
 
+**Tempi.** Con le sette schede originali `MAIN` impiega pochi minuti (§11.2); sulla griglia a
+28 comunità fino a 25 membri il run completo è durato circa 3 ore (§7.6, §11.2).
+
 `optimizer_PV.m` si esegue separatamente ed è pensato per test occasionali di
 dimensionamento, non fa parte del flusso principale.
 
@@ -134,6 +137,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `20250101_20251231_MGP_PrezziZonali_Nord.xlsx` | Prezzo zonale orario MGP 2025 (GME, zona Nord) |
 | `CER_configuration/` | **Schede dati lette da `MAIN.m`**, tutte, una per giro di ciclo — `CER_C_P_E.txt`, una per comunità (membri, categorie, tariffe, potenze, impianti, dati socio-economici, governance), e `scenario_economico.txt`, uno per tutte (prezzi, costi di investimento, soglie di povertà) (§9) |
 | `CER_input.txt` | **Guida alla compilazione** — le stesse sezioni, spiegate riga per riga su una CER di esempio. Non viene letta da `MAIN.m` (§9) |
+| `CER_LoadProfiles/arricchisci_schede.py` | **Compila reddito e spesa gas dei membri domestici** nelle schede (`reddito_EUR`, `euro_gas` più le colonne di provenienza), da Istat EU-SILC e ARERA. Test in `CER_LoadProfiles/tests/` |
+| `data/external/` | Dati esterni versionati con la fonte riga per riga (reddito Istat, quote gas ARERA) e i parametri dell'arricchimento. Fonti in [DATA_SOURCES.md](DATA_SOURCES.md) |
+| `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `MAIN.m` | **Entry point MATLAB** — orchestra l'intera analisi energetico-economica. Non contiene dati |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -164,6 +170,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `plot_fairness_tradeoff.m` | **Uniformità × stabilità** dei sedici metodi su un piano, con frontiera di Pareto (§11.1) |
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_load_profiles.m` | Grafici energetici (mensili, annuali, profili tipo) |
 | `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m` | Grafici energetici **orari**: mappa 24×365 con le ore sature, curve di durata, TIP_h vs prezzo zonale (§11.1) |
+| `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
+| `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
+| `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -322,7 +331,7 @@ Vanno quindi giudicati sull'**errore**, non sull'equità: con `n = 6` lo Shapley
 disponibile come *ground truth*, e `MAIN.m` §3q ne misura lo scarto (eq. 16-17 del paper).
 
 > ⚠ **Risultato: la graduatoria del paper si rovescia.** Scarto relativo medio dallo
-> Shapley esatto (`RD` dell'eq. 17, media sui 7 membri × 7 comunità): **Adaptive Sampling
+> Shapley esatto (`RD` dell'eq. 17, media sui 7 membri × 7 comunità del set originale a 7 membri): **Adaptive Sampling
 > 1,34%**, **Marginal Contribution 16,20%**, **Stratified Expected Value 21,79%** —
 > mentre nel paper è quest'ultima la più accurata.
 >
@@ -457,7 +466,7 @@ misurerebbe sé stessa.
 > (§7.2). Per questo `MAIN.m` calcola la colonna su **entrambi** gli assi e stampa il coseno
 > fra i due.
 >
-> Sulle sette comunità l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
+> Sulle sette comunità originali (7 membri, penetrazione variabile) l'effetto è **misurato e grande**, e cresce al calare dei prosumer:
 >
 > | CER | prosumer | cos(assi) | Shapley netto | Shapley lordo |
 > |---|:---:|:---:|---:|---:|
@@ -583,7 +592,7 @@ anche l'ordine in cui la norma stessa opera: il GSE verifica il superamento dell
 configurazione energetica, non dei meccanismi. Solo se è **binding** ha senso chiedersi
 quale metodo assegni alle imprese più del consentito (tetto: `(1 − %E_ACI,ecc) · C_ACI`).
 
-**Sulle sette CER attuali il vincolo non morde, e con ampio margine.** Il rapporto
+**Sulle sette CER originali (7 membri) il vincolo non morde, e con ampio margine.** Non è stato rimisurato sulle schede più grandi. Il rapporto
 `E_ACI/E_immessa` va dal 2,2% (`CER_0_7_0`) al 25,7% (`CER_6_1_0`), cioè da 52,8 a 29,3
 punti *sotto* la soglia del 55% — e resterebbe non binding anche nel regime al 45%:
 
@@ -781,6 +790,111 @@ prosumer. Il che è, di per sé, la risposta alla terza clausola della domanda d
 > ancora coperti — non per un limite del codice, che è agnostico rispetto alla scheda, ma
 > perché le schede non esistono. Vedi §12.
 
+#### 7.6 Due assi: taglia × penetrazione
+
+Con le schede della griglia (5, 8, 10, 15, 18, 20, 25 membri × quattro livelli di
+penetrazione) l'asse unico non regge più: la stessa penetrazione ricorre a taglie diverse
+(50% a 8, 10, 18 e 20 membri), e `extract_ranking_reversals` si ferma, giustamente,
+perché fra due configurazioni alla stessa penetrazione "prima" e "dopo" sarebbero
+arbitrari. Ordinare tutto per penetrazione mescolerebbe poi l'effetto della taglia con
+quello della composizione. La griglia si legge quindi **un fattore alla volta**, più una
+vista **congiunta**:
+
+| Vista | Funzione | Cosa risponde |
+|---|---|---|
+| sweep di **penetrazione** a taglia fissa | `reversals_by_axis.m` | una scansione per taglia, lungo le sue fasce: quanto la graduatoria dipende dai prosumer a parità di membri |
+| sweep di **taglia** a fascia fissa | `reversals_by_axis.m` | una scansione per fascia, lungo le taglie: quanto dipende dal numero di membri a parità di penetrazione |
+| **heatmap congiunta** | `ranking_grid.m` + `plot_ranking_grid.m` | il metodo primo in ogni cella (n, ρ), un pannello per dimensione della domanda di ricerca, e se i due fattori interagiscano |
+
+`reversals_by_axis` non reimplementa la scansione: passa a `extract_ranking_reversals`
+sottoinsiemi della griglia su cui l'asse è strettamente crescente, quindi stessi punteggi
+e stesse tolleranze di sempre. Con una taglia sola — il vecchio studio a sette comunità — produce
+esattamente la scansione di prima.
+
+**Le fasce sono ranghi, non soglie.** A 5 membri la penetrazione sale a passi di 20 punti,
+a 25 di 4: arrotondare a 25/50/75/100% farebbe collidere 40% e 60% a n = 5. La fascia *k*
+è la *k*-esima penetrazione in ordine crescente dentro la taglia; ogni cella della heatmap
+riporta il valore esatto. Lo sweep di taglia tiene quindi fermo il rango, non il valore
+(20% a 5 membri, 28% a 25), e porta con sé quello scarto residuo.
+
+**L'interazione in un numero.** Per ogni indicatore si prende, taglia per taglia, la
+sequenza dei vincitori lungo le fasce. `QuotaModale` è la quota di taglie che segue la
+sequenza più frequente: 1 vuol dire che l'effetto della penetrazione sul vincitore è lo
+stesso a ogni taglia, valori bassi che i due fattori interagiscono. Guarda il solo primo
+classificato, non l'intera graduatoria. Quando i primi due sono entro la tolleranza di
+pareggio la cella è "pari" e dice fra chi (per il `FairnessIndex`, Marginal Contribution e
+Nash Bargaining coincidono per costruzione col riferimento di merito).
+
+**Risultati sulla griglia a 28 comunità** (run del 29 settembre 2026, 3 h 01 min; 13
+metodi, 18 indicatori, 1404 serie per sottoinsieme):
+
+| Sweep | Fisso | Coppie che si invertono | Invertite agli estremi |
+|---|---|---:|---:|
+| penetrazione | n = 5 | 649 (46%) | 440 |
+| penetrazione | n = 8 | 645 (46%) | 496 |
+| penetrazione | n = 10 | 572 (41%) | 466 |
+| penetrazione | n = 15 | 557 (40%) | 461 |
+| penetrazione | n = 18 | 531 (38%) | 423 |
+| penetrazione | n = 20 | 476 (34%) | 357 |
+| penetrazione | n = 25 | 434 (31%) | 288 |
+| taglia | fascia 1 (~27%) | 445 (32%) | 335 |
+| taglia | fascia 2 (~50%) | 357 (25%) | 292 |
+| taglia | fascia 3 (~75%) | 330 (24%) | 203 |
+| taglia | fascia 4 (100%) | 279 (20%) | 190 |
+
+- **La sensibilità alla penetrazione cala con la taglia**, in modo monotono: dal 46% delle
+  coppie a 5 membri al 31% a 25. **La sensibilità alla taglia cala con la penetrazione**:
+  dal 32% a bassa penetrazione al 20% al 100%. È un'interazione fra i due fattori letta
+  sull'intera graduatoria. I due sweep non vanno confrontati fra loro in valore assoluto:
+  uno ha 4 configurazioni per sottoinsieme, l'altro 7, e più passi danno più occasioni di
+  invertirsi.
+- **Il primo classificato, invece, non si muove.** Sui cinque indicatori di testa la
+  `QuotaModale` è 1.00: Equal Split sull'uniformità, Marginal Contribution sul merito,
+  Variance Least Core sulla stabilità (fino a 18 membri, poi non calcolabile),
+  Similarity-Utilization sulla forza incentivante sotto il 100% di penetrazione. Al 100%
+  la forza incentivante passa a Tri-level EP **a ogni taglia**: effetto della sola
+  penetrazione, senza interazione, ma su un metodo che gira su dati segnaposto (§6).
+- **L'interazione sul vincitore compare sugli indicatori secondari**: `EI_new`,
+  `ForzaIncentivante_lordo` e `AllineamentoVirtu_lordo` a 0.43, `QoS_orig` e `Jain` a 0.71,
+  `CoalizioniInstabili` a 0.80 (su 5 taglie).
+
+#### 7.6 Soglia di rilevanza sulle inversioni
+
+Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra due metodi conta come inversione, anche se i due differiscono di un millesimo di Gini. `apply_relevance_threshold.m` estende a **tutti** gli indicatori la soglia che MAIN2 applicava al solo `EccessoMax_EUR` (5% di v(N)): sugli indicatori in euro resta il 5% di v(N); sugli altri (adimensionali, VAN, forza incentivante) due metodi sono a pari se distano meno del **10% dell'escursione** osservata fra i metodi di quella comunità. La percentuale è una scelta di modello, un parametro (`opts.fracEscursione`): va riportata la sensibilità. Il tau-b di Kendall non cambia, resta calcolato con la tolleranza numerica.
+
+`ricalcola_inversioni_soglia.m` rifà il solo post-processing di §7b da `RESULTS` e `AGR`, senza rilanciare Shapley e Nucleolo. **Verifica**: a soglia 0% riproduce il log di MAIN2 (1554 serie invertite su 12 comunità fino a 10 membri); crescendo la soglia il conteggio scende così:
+
+| Soglia sull'escursione | Serie invertite | Invertite agli estremi |
+|---:|---:|---:|
+| 0% (MAIN2 attuale) | 1554 | 1231 |
+| 5% | 1118 | 956 |
+| 10% | 910 | 808 |
+| 20% | 639 | 584 |
+
+> ⚠ Il collegamento in `MAIN2.m` §7b (sostituire il blocco della soglia sul solo `EccessoMax_EUR` con la chiamata a `apply_relevance_threshold`) non è ancora fatto: finché non lo è, il run completo usa la vecchia regola. Misura su 12 comunità; da ripetere sul run completo.
+
+#### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
+
+Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva), e non sulla griglia a 28 comunità delle tabelle di `confronto/`: vanno rigenerate insieme quando si rifà il run completo.
+
+- **Accordo per fascia e taglia** (`tau_per_fascia`, `tau_per_taglia`, `tau_per_cella`): il tau-b medio, minimo e massimo per coppia di indicatori, con il segno che cambia o no fra le fasce. La fascia è il rango della penetrazione dentro la taglia. Esempio: tau(Gini, Fairness Index) vale +0,39 alla fascia 1 e fra −0,16 e −0,33 nelle altre; tau(Gini, forza incentivante) va da −0,08 a −0,92.
+- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 7,4 su equità + incentivo + VAN. Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
+- **Quote ai prosumer** (`quote_prosumer`, `quote_prosumer_fascia`): quota di v(N) ricevuta dai prosumer e suo rapporto con la quota di membri. Lo Shapley passa da 1,73 (pochi prosumer) a 0,44 (fascia 3): premia il lato scarso, e cambia lato con la penetrazione. Pearson Key e Similarity-Utilization restano sotto 0,2 a ogni fascia (premiano chi consuma, non chi produce). Alla fascia 4 (100% prosumer) il rapporto vale 1 per costruzione.
+
+> ⚠ Il fronte dice quanto i criteri siano in conflitto, non quale metodo sia migliore. La scelta dell'insieme dei criteri e la soglia del 10% sono scelte di modello: riportare la sensibilità.
+
+> ⚠ **Quattro limiti da tenere presenti leggendo la griglia.**
+> 1. `compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità.
+>    Sopra i 18 membri Shapley, Nucleolo e Nash Bargaining sono saltati (§14.1), quindi su
+>    una griglia che arriva a 25 spariscono **anche dalle celle a 5-18 membri**: il
+>    confronto è fra tredici metodi.
+> 2. L'eccesso di coalizione (stabilità) non è calcolato sopra i 18 membri: le celle a 20 e
+>    25 del pannello di stabilità sono "n.d.".
+> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`: nelle schede attuali, le sole
+>    a penetrazione 100%. La sostenibilità economica non è confrontabile lungo le fasce.
+> 4. Jain e MinMax hanno un pavimento 1/n: le loro inversioni nello sweep di taglia possono
+>    venire dal pavimento e non dai metodi.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -834,6 +948,22 @@ tutte le colonne socio-economiche sono a `?`, e le 11 ipotesi del Tri-level EP r
 tutte attive; compilandole scendono a 3 — le sole tre che sono correzioni dichiarate
 (ipotesi 6, 7, 9) e non dati mancanti.
 
+**Reddito e spesa gas nelle schede operative.** Nelle schede di `CER_configuration/` le
+colonne `reddito_EUR` ed `euro_gas` dei membri domestici non sono più a `?`. Le compila
+[`CER_LoadProfiles/arricchisci_schede.py`](CER_LoadProfiles/arricchisci_schede.py):
+- il reddito è la media Istat EU-SILC (netto, Nord-ovest, redditi 2024) della tipologia
+  familiare dell'archetipo, perturbata per utente con una gaussiana troncata a ±15%;
+- la spesa gas viene da una categoria d'uso estratta dalle quote ARERA dei punti di
+  prelievo domestici lombardi 2023-24.
+
+`euro_gas` è già in euro e ha sostituito `gas_kWh`: `MAIN.m`/`MAIN2.m` la passano
+direttamente come spesa gas, e accettano ancora `gas_kWh` per le schede del vecchio
+formato. Accanto a ogni valore la scheda conserva valore base, fattore di perturbazione e
+fonte. Le perturbazioni e le soglie del gas sono **ASSUNZIONI** dell'autore, elencate con
+le fonti e i limiti in [DATA_SOURCES.md](DATA_SOURCES.md). Con questi dati il Tri-level EP
+non dichiara più attive le ipotesi 1 (reddito) e 2 (gas). Le schede sono escluse da git:
+dopo una modifica a dati, parametri o prezzo del gas si rigenerano con
+`python CER_LoadProfiles/arricchisci_schede.py`.
 **Le sezioni.** Le tre marcate *scenario* stanno in `scenario_economico.txt`, le altre
 sei nella scheda della comunità.
 
@@ -846,7 +976,7 @@ sei nella scheda della comunità.
 | `[INVESTIMENTO]` | *scenario* — WACC, vita utile, costi specifici CAPEX/OPEX. **Trasportati, non ancora usati**: `MAIN.m` si ferma al flusso di cassa annuo |
 | `[POVERTA_ENERGETICA]` | *scenario* — soglie dell'indice LIHC e taratura della quota di solidarietà |
 | `[GOVERNANCE]` | scelte deliberate dalla CER: pesi del Cascading Tree, α della Pearson-Sharing, M e seed dell'Adaptive Sampling |
-| `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, gas, quota di investimento, mutuo, impianto posseduto |
+| `[MEMBRI]` | **una riga per membro**: nome della colonna nel CSV, ruolo (C/P/E), categoria, archetipo, tariffa, potenza impegnata, componenti e percettori, reddito, spesa gas (`euro_gas`), quota di investimento, mutuo, impianto posseduto |
 | `[IMPIANTI]` | **una riga per impianto**: proprietario, kWp, export PVsyst, tilt/azimut, CAPEX/OPEX |
 
 **Community di default:** 6 membri (`office_1`, `small_industry_1`, `retail_1`,
@@ -933,8 +1063,11 @@ quello delle figure, perché le figure sono un servizio e queste tabelle sono un
 | File | Cosa contiene |
 |---|---|
 | `accordo_indicatori.csv` | il **τ-b di Kendall** fra ogni coppia di indicatori, una configurazione alla volta, con il conteggio di coppie concordi e discordi e se ciascuno dei due discrimini |
-| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari |
+| `inversioni_di_graduatoria.csv` | una riga per **cambio di segno**: quale sweep (`Sweep`, `Fisso`), quale coppia di metodi, quale indicatore, fra quali due configurazioni, con i due divari. L'asse sta in `AsseDa`/`AsseA`: penetrazione in % se `Sweep = penetrazione`, membri se `Sweep = taglia` (§7.6) |
 | `inversioni_sommario.csv` | una riga per serie: quante inversioni, e se la graduatoria sia **invertita fra i due estremi** dell'asse — che non è deducibile dal conteggio, perché un numero pari di inversioni riporta all'ordine di partenza |
+| `inversioni_per_sweep.csv` | una riga per sottoinsieme della griglia: quante coppie si invertono e quante agli estremi, per ogni taglia (sweep di penetrazione) e ogni fascia (sweep di taglia) |
+| `griglia_vincitori.csv` | una riga per (indicatore, cella): il metodo primo, i metodi a pari merito e il distacco dal secondo — i dati della heatmap congiunta |
+| `griglia_interazione.csv` | una riga per indicatore: `QuotaModale` e numero di sequenze distinte di vincitori lungo la penetrazione (§7.6) |
 | `orientamenti.csv` | **da che parte sta il meglio**, indicatore per indicatore, con il motivo e se il verso sia normativo. È il primo file da aprire quando un risultato non torna |
 
 Questi CSV **si versionano**, a differenza delle figure: sono ASCII, pesano poche decine di
@@ -1017,10 +1150,14 @@ quindi la cartella si legge senza aprire le immagini. `outputs/figures/` è in
   TOTALE                  5 min 51 s
 ```
 
+(Il blocco è l'esempio del run a sette comunità. Sulla griglia a 28 comunità, fino a
+25 membri, il run del 29 settembre 2026 è durato **3 h 01 min**: Shapley, Nucleolo e Nash
+Bargaining sopra i 18 utenti sono saltati (§14.1), ma il resto cresce con `n`.)
+
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
 alleggerisce con `FIG.dettaglio` (§11.1). Sapere quale delle due voci pesa è l'unico modo
-per decidere cosa togliere quando l'esecuzione è lenta — e sulle sette schede attuali
+per decidere cosa togliere quando l'esecuzione è lenta — e sulle sette schede originali
 **le figure costano più dell'analisi** (3 min contro 2 min 40 s), soprattutto per i PDF
 vettoriali con molti punti.
 
@@ -1038,16 +1175,21 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
   difficile, non per tenerne il conto: quello si legge dall'output.
-- **L'asse di composizione variato è uno solo.** Tutte e sette le schede hanno **7 membri**
-  e la stessa ripartizione per categoria (1 terziario, 1 industriale, 1 commerciale, 4
-  domestici): varia solo chi possiede l'impianto, dal 14.3% al 100% di penetrazione. Le
-  inversioni della §7.6 misurano quindi la dipendenza dalla **penetrazione prosumer** e da
-  nient'altro. Servono schede che varino anche il **numero di membri** e la **composizione
-  per categoria**. Non è un limite del codice — aggiungere una comunità significa aggiungere
-  un file in `CER_configuration/`, e `cer_config_writer.py` ne redige la bozza — ma delle
-  configurazioni disponibili, e serve il corrispondente set di profili dallo stadio Python.
-  È la voce più pesante di questa lista, perché è quella che la domanda di ricerca chiede
-  esplicitamente.
+- **Reddito e spesa gas sono stime statistiche, non dati dei membri.** Reddito medio
+  Istat del Nord-ovest (non della sola Lombardia, e netto) e quote gas ARERA uguali per
+  ogni tipologia, entrambi perturbati in modo sintetico. Sotto i 100 membri l'archetipo
+  dichiarato nelle schede non coincide con il profilo simulato. L'elenco completo è in
+  [DATA_SOURCES.md](DATA_SOURCES.md) §Limiti noti.
+- **La griglia ora varia due assi, ma non la composizione per categoria.** Le schede in
+  `CER_configuration/` coprono taglie da 5 a 100 membri e livelli diversi di penetrazione
+  prosumer; la §7.6 legge le 28 comunità fino a 25 membri, un fattore alla volta più la
+  vista congiunta. Resta **non variata la composizione per categoria** (la quota di
+  famiglie, terziario, industria): i risultati non separano l'effetto della taglia o della
+  penetrazione da quello del mix di categorie. Le schede oltre i 25 membri (50, 75, 100)
+  non sono nella griglia della §7.6: lì sono saltati anche Shapley, Nucleolo, Nash e
+  l'eccesso di coalizione (§14.1), quindi manca la lettura di stabilità. Aggiungere una
+  comunità significa aggiungere un file in `CER_configuration/` (`cer_config_writer.py` ne
+  redige la bozza) e il corrispondente set di profili dallo stadio Python.
 - **`CER_6_1_0` non ha `quota_inv_EUR`**: sei membri su sette sono a `?`, quindi quella
   comunità non produce VAN e la colonna `VAN_min_EUR` della §7.6 vale `NaN` lì. Le altre sei
   ce l'hanno, e la colonna resta utile: `compute_indicator_agreement` dichiara la comunità
@@ -1161,6 +1303,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | Documento | Quando consultarlo |
 |---|---|
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Serve il dettaglio di un file/funzione specifico, o la mappa completa di cartelle e CSV |
+| [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
+| [docs/mapping_household_istat.md](docs/mapping_household_istat.md) | Serve sapere perché un archetipo LPG ha quella tipologia familiare Istat (età e componenti dal catalogo LPG) |
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei sedici modelli di ripartizione |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
 | [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md) | Serve il dettaglio del pacchetto Python di generazione profili |
@@ -1169,10 +1313,11 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 14. Scaling a comunità grandi (~100 utenti): cosa va risolto prima
 
-Il progetto è oggi calibrato su **6 utenti**. È previsto di testare i modelli fino a
-**~100 utenti**: questa sezione elenca i punti che si romperanno o degraderanno a quella
-scala, così da affrontarli consapevolmente invece di scoprirli a metà lavoro. Nessuno di
-questi è un problema *oggi* — sono tutti conseguenze della crescita di `n`.
+Il progetto nasce calibrato su **6-7 utenti**; oggi gira su taglie da 5 a 25 membri (la
+griglia della §7.6) e dispone di una società lombarda da **100 famiglie** con relative
+schede (da `CER_0_50_0` a `CER_0_100_0`). Questa sezione elenca i punti che si rompono o
+degradano al crescere di `n`: alcuni sono già stati affrontati (lo skip sopra i 18 utenti,
+la scheda per membro), altri restano aperti.
 
 ### 14.1 Tre modelli diventano matematicamente impossibili — BLOCCANTE
 
@@ -1298,7 +1443,8 @@ implementa: dichiara le potenze.
 - **Generazione dei profili**: `simulation_config.yaml` scala aumentando `num_users` e
   `count`. I seed sono deterministici (§12), quindi la varianza fra run non è un problema;
   lo diventa il **tempo**, perché pyLPG simula un nucleo alla volta — quattro famiglie
-  costano ~21 minuti, cento ne costerebbero ore.
+  costano ~21 minuti, cento ne costano ore. I cento profili lombardi sono stati generati e
+  validati (`CER_LoadProfiles/outputs/csv_lombardia100/`, `lpg_db/confronta_societa.py`).
 
 #### 14.4.1 Lo scaglione della TIP: cosa fa il modello e cosa no
 

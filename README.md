@@ -871,7 +871,7 @@ Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra
 | 10% | 910 | 808 |
 | 20% | 639 | 584 |
 
-> ⚠ Il collegamento in `MAIN2.m` §7b (sostituire il blocco della soglia sul solo `EccessoMax_EUR` con la chiamata a `apply_relevance_threshold`) non è ancora fatto: finché non lo è, il run completo usa la vecchia regola. Misura su 12 comunità; da ripetere sul run completo.
+> `MAIN2.m` §7b chiama `apply_relevance_threshold` (commit c1e0901): le inversioni e i vincitori del run completo usano già la soglia. La tabella qui sopra è misurata su 12 comunità fino a 10 membri; sulle 20 fino a 18 le inversioni a 5 membri, penetrazione, scendono dal 46% al 33% con la soglia di default (5% di v(N) sugli indicatori in euro, 10% dell'escursione sugli altri).
 
 #### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
 

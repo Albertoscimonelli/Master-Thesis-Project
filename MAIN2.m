@@ -419,12 +419,25 @@ for iCER = 1:N_CER
     %  2) ELABORAZIONE ENERGETICA (CER)
     %
     %  Per ogni ora:
-    %    energia condivisa = min(produzione_PV, richiesta_totale)
-    %    energia venduta   = max(0, produzione_PV - richiesta_totale)
+    %    energia immessa       = eccedenza PV dopo l'autoconsumo dei proprietari
+    %    energia condivisa     = min(immessa, richiesta residua)
+    %    energia non condivisa = max(0, immessa - richiesta residua)
+    %
+    %  Condivisa e non condivisa sono le due PARTI dell'energia immessa, non due
+    %  destinazioni alternative: la condivisione e' virtuale (Regole Operative
+    %  GSE 16/07/2025, Appendice A, p. 155: l'energia condivisa e' "il minimo tra
+    %  l'energia elettrica immessa ai fini della condivisione e l'energia
+    %  elettrica prelevata"). Il produttore vende TUTTA l'immessa (§3). La
+    %  variabile sold conserva il nome storico ma e' la sola parte NON condivisa:
+    %  serve al bilancio energetico e agli indicatori di Dynge, non al ricavo.
     %  ========================================================================
 
-    shared = min(genPVSurplus, loadTotalForShare);      % energia condivisa CER   [kWh/h]
-    sold   = max(0, genPVSurplus - loadTotalForShare);  % surplus immesso in rete [kWh/h]
+    shared = min(genPVSurplus, loadTotalForShare);      % energia condivisa CER      [kWh/h]
+    sold   = max(0, genPVSurplus - loadTotalForShare);  % immessa NON condivisa      [kWh/h]
+
+    % Identita' del bilancio: le due parti ricompongono l'immessa, ora per ora.
+    assert(max(abs(shared + sold - genPVSurplus)) < 1e-9 * max(1, max(genPVSurplus)), ...
+           'Bilancio: condivisa + non condivisa diversa dall''energia immessa');
 
     % Riorganizzazione in matrici 24 x 365 (riga = ora 0..23, colonna = giorno)
     % Nota: demand_24x365/gen_24x365 usano i valori "grezzi" (intera comunita' e
@@ -446,7 +459,9 @@ for iCER = 1:N_CER
 
     fprintf('\n=== Bilancio CER annuale ===\n');
     fprintf('  Energia condivisa: %9.1f kWh\n', shared_annual);
-    fprintf('  Energia venduta:   %9.1f kWh\n', sold_annual);
+    fprintf('  Energia non condivisa: %9.1f kWh\n', sold_annual);
+    fprintf('  Energia immessa:   %9.1f kWh  (venduta per intero, §3)\n', ...
+            shared_annual + sold_annual);
 
 
     %% ========================================================================
@@ -456,39 +471,52 @@ for iCER = 1:N_CER
     % Incentivo orario (TIP_h): il ricavo condiviso si somma ora per ora prima
     % di aggregare per mese, non piu' come prodotto di uno scalare costante.
     rev_shared_monthly = accumarray(monthOfHour, shared .* P_CER_h, [12 1]);  % [€]
-    rev_sold_monthly   = sold_monthly * P_SELL;                                % ricavo da energia venduta [€]
+    % --- Vendita: su TUTTA l'energia immessa ---------------------------------
+    % Fino al 13/10/2026 la vendita si calcolava sulla sola parte NON condivisa,
+    % come se il kWh condiviso fosse ceduto al vicino invece che venduto. Nella
+    % CER italiana non e' cosi': la messa a disposizione dell'impianto "rileva
+    % esclusivamente ai fini della erogazione dei benefici economici connessi
+    % alla condivisione dell'energia e, come previsto dal TIAD, non rileva ai
+    % fini della valorizzazione economica dell'energia immessa in rete che
+    % rimane liberamente definibile dal produttore" (Regole Operative GSE
+    % 16/07/2025, par. 1.2.2, p. 17). Il produttore vende quindi tutta
+    % l'immessa, e sulla parte condivisa la CER riceve in PIU' la TIP.
+    %
+    % Il lato dei consumi era gia' coerente con questa lettura: costUser (§3a)
+    % e' calcolato sul carico pieno, senza sconti per l'energia condivisa.
+    %
+    % Esempio, CER_4_1_0: 1819 kWh condivisi e 1811 non condivisi. Prima la
+    % vendita valeva 1811 x 0,11 = 199 EUR, ora (1819 + 1811) x 0,11 = 399 EUR.
+    % v(S) e le quote dei metodi non cambiano: ripartiscono la sola TIP.
+    injected_monthly   = accumarray(monthOfHour, genPVSurplus, [12 1]);       % energia immessa [kWh]
+    rev_sold_monthly   = injected_monthly * P_SELL;                           % ricavo da vendita dell'immessa [€]
     rev_tot_monthly    = rev_shared_monthly + rev_sold_monthly;
     rev_tot_annual     = sum(rev_tot_monthly);
     rev_sold_annual    = sum(rev_sold_monthly);
 
-    % ricavo da vendita diretta dell'eccedenza sul mercato: NON passa per il gioco
-    % cooperativo, va ai proprietari degli impianti (vedi §3b-§3f e
-    % plot_benefit_network.m)
+    % ricavo da vendita sul mercato: NON passa per il gioco cooperativo, va ai
+    % proprietari degli impianti (vedi §3b-§3f e plot_benefit_network.m)
 
-    % --- Vendita eccedenza attribuita a ciascun prosumer ---------------------
-    % L'eccedenza venduta e' una grandezza di comunita': si ripartisce fra i
-    % prosumer PRO-QUOTA sulla produzione oraria, che e' l'unica regola coerente
-    % col fatto che l'invenduto nasce dal surplus aggregato. Con un solo impianto
-    % si riduce esattamente ad attribuire tutto al suo proprietario.
-
-    shareGen = zeros(size(genForShare));
-    hasGen   = genPVSurplus > 0;
-    shareGen(hasGen, :) = genForShare(hasGen, :) ./ genPVSurplus(hasGen);
-    soldPerUser        = (sold(:).' * shareGen).';        % [nUsers x 1]  [kWh/anno]
-    revSoldPerPlayer   = soldPerUser * P_SELL;            % [nUsers x 1]  [EUR/anno]
+    % --- Vendita attribuita a ciascun prosumer --------------------------------
+    % Ognuno vende la PROPRIA immissione: l'eccedenza dietro il suo contatore,
+    % ora per ora. Con un solo impianto e' tutto del suo proprietario, come prima.
+    revSoldPerPlayer   = sum(genForShare, 1).' * P_SELL;  % [nUsers x 1]  [EUR/anno]
 
     assert(abs(sum(revSoldPerPlayer) - rev_sold_annual) < 1e-6 * max(1, rev_sold_annual), ...
-           'Vendita eccedenza: la ripartizione per utente non somma al totale annuo');
+           'Vendita: la ripartizione per utente non somma al totale annuo');
 
     % --- Tabella riepilogativa (12 mesi + riga totale annuo) -----------------
+    % E_venduta_kWh e' la parte NON condivisa (nome storico); Ric_venduta_E e'
+    % la vendita dell'intera immessa, quindi non e' E_venduta_kWh x P_SELL.
     Mese            = [meseNomi;                "TOTALE ANNO"];
     E_condivisa_kWh = [shared_monthly;          shared_annual];
     E_venduta_kWh   = [sold_monthly;            sold_annual];
+    E_immessa_kWh   = [injected_monthly;        sum(injected_monthly)];
     Ric_condivisa_E = [rev_shared_monthly;      sum(rev_shared_monthly)];
     Ric_venduta_E   = [rev_sold_monthly;        sum(rev_sold_monthly)];
     Ric_totale_E    = [rev_tot_monthly;         rev_tot_annual];
 
-    Treport = table(Mese, E_condivisa_kWh, E_venduta_kWh, ...
+    Treport = table(Mese, E_condivisa_kWh, E_venduta_kWh, E_immessa_kWh, ...
                     Ric_condivisa_E, Ric_venduta_E, Ric_totale_E);
 
     fprintf('\n=== Riepilogo economico mensile/annuale ===\n');
@@ -1869,7 +1897,8 @@ for iCER = 1:N_CER
     %
     %    Il flusso e' quindi:
     %      + risparmio in bolletta da autoconsumo dietro contatore
-    %      + ricavo dalla vendita dell'eccedenza          (revSoldPerPlayer, §3)
+    %      + ricavo dalla vendita dell'energia immessa    (revSoldPerPlayer, §3:
+    %        tutta l'immessa, condivisa compresa)
     %      + quota di incentivo CER                       (metodi(k).phi, §3b-3r)
     %      - OPEX degli impianti posseduti
     %      - rata del mutuo                               ([MEMBRI].mutuo_EUR_anno)

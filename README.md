@@ -243,6 +243,60 @@ da 25, che si compensano): `load_zonal_price` lo allinea **per posizione**, come
 > prosumer (+4,4% con un impianto solo, +8,1% con sette). Tutti i risultati numerici di
 > questo README sono posteriori alla correzione.
 
+### 5.2 La vendita: tutta l'energia immessa, non solo quella non condivisa
+
+**La regola.** Nella CER italiana la condivisione è **virtuale**. L'energia condivisa è «il
+minimo tra l'energia elettrica immessa ai fini della condivisione e l'energia elettrica
+prelevata» (Regole Operative GSE del 16 luglio 2025, Appendice A, p. 155): è una *parte*
+dell'energia immessa, non una sua destinazione alternativa. E la messa a disposizione
+dell'impianto verso la comunità «rileva esclusivamente ai fini della erogazione dei benefici
+economici connessi alla condivisione dell'energia e, come previsto dal TIAD, non rileva ai
+fini della valorizzazione economica dell'energia immessa in rete che rimane liberamente
+definibile dal produttore» (ivi, §1.2.2, p. 17). Il produttore vende quindi **tutta**
+l'energia immessa, e sulla parte condivisa la CER incassa **in più** la tariffa premio.
+
+**Cosa faceva il codice fino al 13 ottobre 2026.** La vendita si calcolava sulla sola parte
+non condivisa, `max(0, immessa − prelievo)`, come se il kWh condiviso fosse ceduto al vicino
+invece che venduto. Il lato dei consumi era già corretto (`costUser` è sul carico pieno,
+nessuno sconto per l'energia condivisa): i due lati non erano coerenti fra loro.
+
+| CER_4_1_0, un prosumer da 3,4 kWp | prima | dopo |
+|---|---:|---:|
+| energia immessa | 3 630 kWh | 3 630 kWh |
+| di cui condivisa / non condivisa | 1 819 / 1 811 kWh | 1 819 / 1 811 kWh |
+| vendita (0,11 €/kWh) | 1 811 × 0,11 = **199 €** | 3 630 × 0,11 = **399 €** |
+| incentivo da ripartire, `v(N)` | 233 € | 233 € |
+
+Al prosumer mancavano 200 € l'anno, cioè 2 719 € di VAN (fattore di annualità 13,59 a 4% e
+20 anni). L'errore era piccolo sulle sette comunità originali, dove la condivisa era il
+2-26% dell'immessa, ed è diventato grande sulla griglia di famiglie a bassa penetrazione,
+dove arriva al 50%.
+
+**Cosa cambia, e cosa no** (verificato sulle 20 comunità fino a 18 membri, confronto per
+chiave prima/dopo):
+
+- **non cambia** nulla di ciò che ripartisce l'incentivo: `v(S)`, le quote dei sedici
+  metodi, `Tcmp`, tutte le colonne di `Tfair`, la soglia regolatoria (che usava già
+  `immessa = condivisa + non condivisa`), la forza incentivante, le tabelle `fase1/` e
+  `quote_prosumer*`. Identici al bit;
+- **cambiano** il ricavo totale (di esattamente `condivisa × 0,11`), la vendita per membro,
+  il VAN dei prosumer (di `Δvendita × 13,59`, uguale con ogni metodo; i consumatori non
+  cambiano), il montepremi di proprietà del Tri-level EP (`TL.phiFromSold`; la colonna del
+  confronto `phiFromShared` resta identica) e quindi le righe di `VAN_min_EUR` nelle tabelle
+  di `confronto/` e `sintesi/`.
+
+| Prosumer (141 in 20 comunità) | prima | dopo |
+|---|---:|---:|
+| con VAN negativo | 103 | 48 |
+| VAN medio, fascia 1 → 4 | −1 750 → +323 € | +896 → +410 € |
+
+`VAN_min_EUR` diventa più stabile (meno inversioni lungo la penetrazione: a 18 membri da 18
+a 2 coppie) e più vicino all'uniformità: τ(VAN_min, Gini) passa da 0,58 a 0,80, e il
+metodo che lo massimizza è l'Equal Split in tutte e 20 le comunità.
+
+**Dove.** Solo in `MAIN2.m` §2-§3. `MAIN.m` resta il riferimento storico e **conserva la
+convenzione vecchia**: i suoi VAN non vanno citati.
+
 ## 6. I sedici modelli di ripartizione dei benefici
 
 L'incentivo CER `v(N)` viene ripartito tra i giocatori secondo sedici modelli,
@@ -875,10 +929,10 @@ Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra
 
 #### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
 
-Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva), e non sulla griglia a 28 comunità delle tabelle di `confronto/`: vanno rigenerate insieme quando si rifà il run completo.
+Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva). Dal 13 ottobre 2026 anche le tabelle di `outputs/tables_main2/confronto/` vengono dallo stesso run a 20 comunità (prima erano della griglia a 28, con un set di metodi più vecchio); la griglia a 28 di `outputs/tables/confronto/` è quella di `MAIN.m`. Vendita corretta come in §5.2.
 
 - **Accordo per fascia e taglia** (`tau_per_fascia`, `tau_per_taglia`, `tau_per_cella`): il tau-b medio, minimo e massimo per coppia di indicatori, con il segno che cambia o no fra le fasce. La fascia è il rango della penetrazione dentro la taglia. Esempio: tau(Gini, Fairness Index) vale +0,39 alla fascia 1 e fra −0,16 e −0,33 nelle altre; tau(Gini, forza incentivante) va da −0,08 a −0,92.
-- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 7,4 su equità + incentivo + VAN. Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
+- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 6,2 su equità + incentivo + VAN (7,4 prima della correzione della vendita, §5.2). Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
 - **Quote ai prosumer** (`quote_prosumer`, `quote_prosumer_fascia`): quota di v(N) ricevuta dai prosumer e suo rapporto con la quota di membri. Lo Shapley passa da 1,73 (pochi prosumer) a 0,44 (fascia 3): premia il lato scarso, e cambia lato con la penetrazione. Pearson Key e Similarity-Utilization restano sotto 0,2 a ogni fascia (premiano chi consuma, non chi produce). Alla fascia 4 (100% prosumer) il rapporto vale 1 per costruzione.
 
 > ⚠ Il fronte dice quanto i criteri siano in conflitto, non quale metodo sia migliore. La scelta dell'insieme dei criteri e la soglia del 10% sono scelte di modello: riportare la sensibilità.

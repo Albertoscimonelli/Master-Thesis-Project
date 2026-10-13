@@ -146,6 +146,22 @@ CSV = struct( ...
     'esporta',  true, ...
     'cartella', "outputs/tables_main2");   % MAIN2: non sovrascrive MAIN
 
+% MAIN2: cartella di uscita facoltativa da fuori, come MAIN2_SCHEDE. Serve a
+% tenere separati due run sullo stesso codice: le comunita' fino a 18 membri
+% (tutti i metodi, stabilita' compresa) e la griglia fino a 25 (solo i metodi
+% che scalano, perche' compute_indicator_agreement tiene i metodi comuni a
+% TUTTE le comunita'). Per esempio MAIN2_CARTELLA="griglia25" scrive in
+% outputs/tables_main2_griglia25 e outputs/figures_main2_griglia25. Vuota =
+% le cartelle di sempre.
+SUFFISSO = strtrim(string(getenv("MAIN2_CARTELLA")));
+if strlength(SUFFISSO) > 0
+    assert(~isempty(regexp(SUFFISSO, '^[A-Za-z0-9_-]+$', 'once')), ...
+           'MAIN2_CARTELLA: solo lettere, cifre, _ e - (ricevuto "%s")', SUFFISSO);
+    CSV.cartella = CSV.cartella + "_" + SUFFISSO;
+    FIG.cartella = FIG.cartella + "_" + SUFFISSO;
+end
+fprintf('  Tabelle in %s\n', CSV.cartella);
+
 
 % --- Cronometro dell'intera esecuzione ------------------------------------
 %  tic con un identificatore esplicito, non il tic/toc globale: quello e' uno
@@ -2467,6 +2483,19 @@ if N_CER > 1
     PERD = tradeoff_losses(AGR, RESULTS);
     CLUS = indicator_clusters(AGR);
 
+    % Sensibilita' alla soglia di rilevanza (0, 5, 10, 20% dell'escursione,
+    % con la meta' in % di v(N) sugli indicatori in euro): stessi RESULTS e
+    % stesse esclusioni di §7b, soglia diversa. Vedi help sensibilita_soglia.
+    SENS = sensibilita_soglia(RESULTS, struct( ...
+               'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
+    fprintf('\n=== Sensibilita'' alla soglia di rilevanza (quota di coppie invertite) ===\n');
+    for s = unique(SENS.perSweep.FracEscursione).'
+        q = SENS.perSweep.QuotaInvertite(SENS.perSweep.FracEscursione == s & ...
+                                         SENS.perSweep.Sweep == "penetrazione");
+        fprintf('  soglia %4.1f%% dell''escursione: penetrazione %3.0f%% - %3.0f%%\n', ...
+                100 * s, 100 * min(q), 100 * max(q));
+    end
+
     fprintf('\n=== Sottoinsieme minimo di indicatori (tau medio >= 0.5) ===\n');
     gP = CLUS.gruppi(CLUS.gruppi.TaglioTau == 0.5, :);
     for g = 1:height(gP)
@@ -2490,7 +2519,9 @@ if N_CER > 1
             'cluster_fusioni',        CLUS.fusioni, ...
             'cluster_gruppi',         CLUS.gruppi, ...
             'cluster_sufficienza',    CLUS.sufficienza, ...
-            'cluster_pareto',         CLUS.pareto));
+            'cluster_pareto',         CLUS.pareto, ...
+            'sensibilita_soglia_sweep',     SENS.perSweep, ...
+            'sensibilita_soglia_vincitori', SENS.vincitori));
     end
 end
 

@@ -176,6 +176,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `inclusion_index.m` | Indicatore di **inclusione**: quota di v(N) ai vulnerabili LIHC rispetto al loro numero (§7.7) |
 | `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
 | `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
+| `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -1091,6 +1092,71 @@ la correzione della §5.2 lo massimizza l'Equal Split.
 > La scelta del rappresentante è algoritmica. Per la tesi può essere preferibile, a parità di
 > concordanza, l'indicatore più leggibile del gruppo (l'eccesso in euro invece di σ): la
 > concordanza dell'eccesso con σ è 0,98.
+
+### 7.9 Il run finale: due run, due cartelle (13 ottobre 2026)
+
+> ⚠ **Gira ancora con i segnaposto LIHC** (§7.7): dopo aver compilato P50, y* e markup
+> vanno rifatti entrambi i run. Cambiano l'inclusione e il Tri-level EP, non il resto.
+
+`compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità. Sopra i
+18 membri Shapley e Nucleolo non si calcolano (§14.1), quindi un run unico fino a 25 membri
+li toglierebbe anche dalle comunità piccole, e con loro la stabilità. Per questo i run sono
+due, sullo stesso codice, in cartelle diverse grazie alla variabile `MAIN2_CARTELLA` (come
+`MAIN2_SCHEDE`, vuota = cartella di sempre):
+
+| Run | Comunità | Metodi nell'analisi | Cartella | Durata |
+|---|---|---|---|---|
+| fino a 18 membri | 20 (5, 8, 10, 15, 18 × 4 fasce) | 11: tutti, AS escluso perché duplica lo Shapley | `outputs/tables_main2/` | 42 min |
+| griglia fino a 25 | 28 (+ 20 e 25 membri) | 10: senza Shapley e Nucleolo, con l'AS al loro posto | `outputs/tables_main2_griglia25/` | 2 h 28 min |
+
+```bash
+MAIN2_SCHEDE="CER_0_5_0;...;CER_13_5_0" matlab -batch "MAIN2"                          # fino a 18
+MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="CER_0_5_0;...;CER_18_7_0" matlab -batch "MAIN2" # griglia
+```
+
+L'elenco esatto delle schede è in testa ai log in `outputs/run_logs/`
+(`main2_run_2026-10-13_F6_*.log`). Il primo run riproduce al bit i risultati della §7.8.
+
+**I risultati, nei due run.**
+
+| | fino a 18 membri | griglia fino a 25 |
+|---|---|---|
+| coppie invertite lungo la penetrazione (soglia di default) | 26-33% | 22-35%, calando da 8 a 25 membri |
+| coppie invertite lungo la taglia | 0,7-21% | 5-22% |
+| primo sull'uniformità (Gini) | Equal Split 20/20 | Equal Split 28/28 |
+| primo sul merito (Fairness Index) | VLC, con Shapley e Nucleolo a pari | VLC 14/28, a pari nelle altre |
+| primo sulla stabilità | a pari in 20 comunità su 20 entro il 5% di v(N); il Nucleolo, minimo per costruzione, è sempre fra i primi | a pari in 19 comunità su 20, VLC nell'altra; n.d. sopra i 18 membri |
+| gruppi di indicatori a τ ≥ 0,5 | 5 | 4 (i due assi dell'incentivo si fondono) |
+| perdita in stabilità scegliendo l'uniformità | 0,72 (eccesso 20% di v(N)) | 0,72 (stesso valore: la stabilità esiste solo fino a 18) |
+| perdita in uniformità scegliendo l'incentivo | 0,93 | 0,93 |
+
+Sulla griglia la concordanza minima col rappresentante scende a 0,79 (allineamento lordo
+dentro il gruppo dell'incentivo), e il fronte di Pareto coi soli 4 rappresentanti coincide
+con quello completo in 1 comunità su 28: con quattro criteri invece di cinque il fronte
+completo distingue più sfumature. Il sottoinsieme minimo **regge sulle graduatorie** (le
+concordanze), meno sui fronti.
+
+**Sensibilità alla soglia di rilevanza** (`sensibilita_soglia.m`, chiamata da §7c; file
+`sensibilita_soglia_sweep.csv` e `sensibilita_soglia_vincitori.csv` in `sintesi/`). Si
+ricalcola l'analisi dagli stessi `RESULTS` con la soglia spostata, a coppie escursione /
+v(N): 0/0, 5/2,5, 10/5 (default), 20/10%.
+
+| Soglia | inversioni lungo la penetrazione, fino a 18 | griglia fino a 25 |
+|---|---:|---:|
+| 0% (solo tolleranza numerica) | 41-51% | 33-53% |
+| 5% | 32-39% | 25-41% |
+| **10% (default)** | **26-33%** | **22-35%** |
+| 20% | 19-24% | 17-25% |
+
+Le inversioni calano con la soglia ma non spariscono: la dipendenza della graduatoria dalla
+composizione **non è un effetto di differenze minime**. E il primo classificato **non cambia
+mai**: su 220 celle (indicatore × comunità) fino a 18 membri e 308 sulla griglia, a nessuna
+soglia un altro metodo prende il primo posto; cambia solo quante celle diventano "a pari" (da
+20 a 186 fino a 18). Il vincitore per nozione è robusto alla soglia.
+
+> Il run della griglia è partito prima che la sensibilità fosse collegata a §7c: i suoi due
+> file sono stati prodotti con la stessa funzione dagli stessi `RESULTS` salvati, e la riga
+> al 10% riproduce esattamente le inversioni del run.
 
 ## 8. Dimensionamento impianto PV (standalone)
 

@@ -1560,14 +1560,24 @@ for iCER = 1:N_CER
     % e Jain. EI_orig resta perche' lo usano plot_cer_comparison_main2 e
     % l'ancora tau(EI,Gini) della §7b; CoalizioniInstabili perche' la usa
     % plot_fairness_tradeoff.
+    %
+    % MAIN2, Fase 2 della revisione (13/10/2026): l'eccesso anche in % di v(N).
+    % In euro non si confronta fra taglie: 20 EUR pesano molto in una CER che si
+    % divide 40 EUR e poco in una che se ne divide 1100. Dentro una comunita' le
+    % due colonne ordinano i metodi allo stesso modo, quindi nell'analisi di
+    % §7b ne entra una sola (la colonna in euro, a cui e' tarata la soglia di
+    % rilevanza del 5% di v(N)). QuoteNulle e ForzaIncentivante_lordo restano
+    % qui come diagnostica ma escono dall'analisi: vedi §7b.
     Tfair = table([metodi.nome].', ...
                   cellfun(@(F) F.eiOrig,    FIND), ...
                   cellfun(@(F) F.gini,      FIND), ...
                   BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+                  100 * EX.maxExcess / ES.vGrand, ...
                   FZ.IS, FZ.align, FZl.IS, FZl.align, ...
                   'VariableNames', {'Metodo', 'EI_orig', ...
                                     'Gini', 'FairnessIndex', 'Sigma', ...
                                     'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili', ...
+                                    'EccessoMax_pct_vN', ...
                                     'ForzaIncentivante', 'AllineamentoVirtu', ...
                                     'ForzaIncentivante_lordo', 'AllineamentoVirtu_lordo'});
     fprintf('\n=== Indicatori di equita'' per metodo ===\n');
@@ -2268,7 +2278,32 @@ F1 = fase1_shapley_vs_as(RESULTS, struct( ...
         'cartellaTabelle', fullfile(CSV.cartella, "fase1"), ...
         'cartellaFigure',  fullfile(FIG.cartella, "fase1")));
 
-AGR = compute_indicator_agreement(RESULTS);
+% --- Cosa entra nell'analisi (revisione del 13/10/2026, README §7.6) -------
+% METODI. L'Adaptive Sampling Shapley approssima lo Shapley con uno scarto
+% dell'1% circa: dove lo Shapley esatto c'e' in TUTTE le comunita' lo
+% duplicherebbe, raddoppiando coppie, pareggi e presenze sul fronte. Esce da
+% tau, inversioni, vincitori e Pareto e resta in Tfair. Sopra i 18 membri lo
+% Shapley esatto non c'e', e l'AS resta come suo sostituto.
+% INDICATORI. Restano in Tfair come diagnostica, ma non sono criteri:
+%   QuoteNulle               discrimina i metodi in 1 comunita' su 20
+%   ForzaIncentivante_lordo  denominatore quasi nullo sui profili lordi:
+%                            valori fino a +-13 e inversioni nell'82% delle
+%                            serie; come controllo resta il coseno lordo
+%   EccessoMax_pct_vN        dentro una comunita' ordina come EccessoMax_EUR
+haShapleyOvunque = all(arrayfun(@(r) any([r.metodi.nome] == "Shapley"), RESULTS));
+if haShapleyOvunque
+    ESCLUSI_METODI = "Adaptive Sampling Shapley";
+else
+    ESCLUSI_METODI = strings(0, 1);
+end
+ESCLUSI_INDICATORI = ["QuoteNulle", "ForzaIncentivante_lordo", "EccessoMax_pct_vN"];
+testoEsclusi = "(nessuno)";
+if ~isempty(ESCLUSI_METODI), testoEsclusi = strjoin(ESCLUSI_METODI, ', '); end
+fprintf('\n  Fuori dall''analisi - metodi: %s; indicatori: %s\n', ...
+        testoEsclusi, strjoin(ESCLUSI_INDICATORI, ', '));
+
+AGR = compute_indicator_agreement(RESULTS, struct( ...
+          'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
 
 % --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
 % fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
@@ -2384,7 +2419,10 @@ if N_CER > 1
     cartellaSintesi = "";
     if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
     fprintf('\n=== Sintesi dei risultati ===\n');
-    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi));
+    % escludiMetodi vuoto: l'AS e' gia' escluso a monte (§7b), e solo dove lo
+    % Shapley esatto c'e'; sopra i 18 membri deve restare sul fronte.
+    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi, ...
+                                                  'escludiMetodi', strings(0, 1)));
 end
 
 %% ========================================================================

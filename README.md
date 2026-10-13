@@ -534,6 +534,12 @@ misurerebbe sé stessa.
 > su **sei comunità su sette**. Conclusione operativa: la graduatoria per forza incentivante
 > **va riportata su entrambi gli assi**, e una lettura sui soli profili netti sarebbe una
 > conclusione sbagliata, non una conclusione parziale.
+>
+> **Ma sull'asse lordo si legge il coseno, non l'indice** (`MAIN2.m`, 13 ottobre 2026). Sulla
+> griglia a 20 comunità la forza incentivante lorda arriva a ±13 e cambia segno al 100% di
+> penetrazione: il suo denominatore, la proiezione della regola di riferimento sull'asse
+> lordo, va quasi a zero. Resta in `Tfair` come diagnostica; nell'analisi il controllo lordo
+> è `AllineamentoVirtu_lordo`, che sta in [−1, 1] (§7.6).
 
 ### 7.1 Due indicatori esclusi, e perché
 
@@ -927,12 +933,32 @@ Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra
 
 > `MAIN2.m` §7b chiama `apply_relevance_threshold` (commit c1e0901): le inversioni e i vincitori del run completo usano già la soglia. La tabella qui sopra è misurata su 12 comunità fino a 10 membri; sulle 20 fino a 18 le inversioni a 5 membri, penetrazione, scendono dal 46% al 33% con la soglia di default (5% di v(N) sugli indicatori in euro, 10% dell'escursione sugli altri).
 
+#### 7.6 Cosa entra nell'analisi (`MAIN2.m` §7b, revisione del 13 ottobre 2026)
+
+`Tfair` contiene tutto quello che si calcola; τ, inversioni, vincitori e fronti di Pareto ne
+usano una parte. Le esclusioni passano per due opzioni di `compute_indicator_agreement`
+(`escludiMetodi`, `escludiIndicatori`, vuote di default), quindi le colonne escluse restano
+leggibili in `Tfair`.
+
+| Fuori dall'analisi | Perché | Cosa resta |
+|---|---|---|
+| **Adaptive Sampling Shapley**, se lo Shapley esatto c'è in tutte le comunità | sposta lo 0,4% di v(N) rispetto allo Shapley: contarlo due volte raddoppia coppie e presenze sul fronte | in `Tfair`; sopra i 18 membri resta nell'analisi come sostituto dello Shapley |
+| `QuoteNulle` | distingue i metodi in 1 comunità su 20 | in `Tfair`, serve a leggere la branca intera del Fairness Index |
+| `ForzaIncentivante_lordo` | sull'asse lordo il denominatore va quasi a zero: valori fino a ±13 e inversioni nell'82% delle serie | in `Tfair` come diagnostica; come controllo lordo resta il coseno `AllineamentoVirtu_lordo` |
+| `EccessoMax_pct_vN` (nuova) | dentro una comunità ordina i metodi come `EccessoMax_EUR`, su cui è tarata la soglia del 5% di v(N) | in `Tfair`, per confrontare l'eccesso **fra taglie** |
+
+Verifica (20 comunità fino a 18 membri): quote, VAN e `Tfair` identici; i punteggi dei metodi
+e degli indicatori rimasti identici; nessun vincitore cambia (200 casi su 200); il τ medio fra
+gli indicatori rimasti si muove al più di 0,03, perché si calcola su 11 metodi invece di 12.
+Le inversioni lungo la penetrazione, con la soglia di rilevanza, vanno ora dal 30% (n = 5) al
+21% (n = 18) delle coppie; lungo la taglia dal 17% (fascia 1) allo 0,5% (fascia 3).
+
 #### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
 
 Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva). Dal 13 ottobre 2026 anche le tabelle di `outputs/tables_main2/confronto/` vengono dallo stesso run a 20 comunità (prima erano della griglia a 28, con un set di metodi più vecchio); la griglia a 28 di `outputs/tables/confronto/` è quella di `MAIN.m`. Vendita corretta come in §5.2.
 
 - **Accordo per fascia e taglia** (`tau_per_fascia`, `tau_per_taglia`, `tau_per_cella`): il tau-b medio, minimo e massimo per coppia di indicatori, con il segno che cambia o no fra le fasce. La fascia è il rango della penetrazione dentro la taglia. Esempio: tau(Gini, Fairness Index) vale +0,39 alla fascia 1 e fra −0,16 e −0,33 nelle altre; tau(Gini, forza incentivante) va da −0,08 a −0,92.
-- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 6,2 su equità + incentivo + VAN (7,4 prima della correzione della vendita, §5.2). Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
+- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso a monte, in §7b, perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 6,2 su equità + incentivo + VAN (7,4 prima della correzione della vendita, §5.2), 2,8 su equità + coseno lordo + VAN (l'incentivo lordo è il coseno, non la forza incentivante lorda: vedi sopra). Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
 - **Quote ai prosumer** (`quote_prosumer`, `quote_prosumer_fascia`): quota di v(N) ricevuta dai prosumer e suo rapporto con la quota di membri. Lo Shapley passa da 1,73 (pochi prosumer) a 0,44 (fascia 3): premia il lato scarso, e cambia lato con la penetrazione. Pearson Key e Similarity-Utilization restano sotto 0,2 a ogni fascia (premiano chi consuma, non chi produce). Alla fascia 4 (100% prosumer) il rapporto vale 1 per costruzione.
 
 > ⚠ Il fronte dice quanto i criteri siano in conflitto, non quale metodo sia migliore. La scelta dell'insieme dei criteri e la soglia del 10% sono scelte di modello: riportare la sensibilità.
@@ -944,8 +970,8 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 >    confronto è fra tredici metodi.
 > 2. L'eccesso di coalizione (stabilità) non è calcolato sopra i 18 membri: le celle a 20 e
 >    25 del pannello di stabilità sono "n.d.".
-> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`: nelle schede attuali, le sole
->    a penetrazione 100%. La sostenibilità economica non è confrontabile lungo le fasce.
+> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`. Sulle 20 comunità fino a 18
+>    membri c'è ovunque (verificato il 13 ottobre 2026).
 > 4. Jain e MinMax hanno un pavimento 1/n: le loro inversioni nello sweep di taglia possono
 >    venire dal pavimento e non dai metodi.
 

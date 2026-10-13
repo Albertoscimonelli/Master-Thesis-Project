@@ -13,16 +13,11 @@ penetrazione,n = 5,5,EI_orig,Variance Least Core,Pearson Key,CER_4_1_0,CER_3_2_0
 penetrazione,n = 5,5,EI_orig,Variance Least Core,Similarity-Utilization,CER_4_1_0,CER_3_2_0,20,40,-0.164536,0.18343,0
 penetrazione,n = 5,5,EI_orig,Variance Least Core,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.140771,0.195544,0
 penetrazione,n = 5,5,EI_orig,Proportional to Consumption,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,0.0467178,-0.151048,0
-penetrazione,n = 5,5,EI_orig,Proportional to Consumption,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.0890969,-0.228705,0
 penetrazione,n = 5,5,EI_orig,Remuneration Model 1,Cascading Tree,CER_3_2_0,CER_0_5_0,40,100,0.0881552,-0.10817,1
 penetrazione,n = 5,5,EI_orig,Cascading Tree,Weighted Solidarity,CER_3_2_0,CER_2_3_0,40,60,-0.0649163,0.0604122,0
 penetrazione,n = 5,5,EI_orig,Cascading Tree,Pearson Key,CER_4_1_0,CER_3_2_0,20,40,-0.0696532,0.224562,0
 penetrazione,n = 5,5,EI_orig,Cascading Tree,Similarity-Utilization,CER_4_1_0,CER_3_2_0,20,40,-0.0858102,0.204918,0
-penetrazione,n = 5,5,EI_orig,Cascading Tree,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,-0.077657,0.141172,0
 penetrazione,n = 5,5,EI_orig,Cascading Tree,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.0620459,0.217032,0
-penetrazione,n = 5,5,EI_orig,Pearson Key,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.112032,-0.302219,0
-penetrazione,n = 5,5,EI_orig,Similarity-Utilization,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.128189,-0.282575,0
-penetrazione,n = 5,5,EI_orig,Adaptive Sampling Shapley,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.104425,0.294689,0
 penetrazione,n = 5,5,Gini,Shapley,Proportional to Consumption,CER_4_1_0,CER_3_2_0,20,40,-0.0908284,0.221843,0
 penetrazione,n = 5,5,Gini,Shapley,Cascading Tree,CER_3_2_0,CER_2_3_0,40,60,0.0707959,-0.136265,0
 penetrazione,n = 5,5,Gini,Shapley,Pearson Key,CER_4_1_0,CER_3_2_0,20,40,-0.113764,0.295358,0
@@ -37,16 +32,11 @@ penetrazione,n = 5,5,Gini,Variance Least Core,Pearson Key,CER_4_1_0,CER_3_2_0,20
 penetrazione,n = 5,5,Gini,Variance Least Core,Similarity-Utilization,CER_4_1_0,CER_3_2_0,20,40,-0.164536,0.18343,0
 penetrazione,n = 5,5,Gini,Variance Least Core,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.140771,0.195544,0
 penetrazione,n = 5,5,Gini,Proportional to Consumption,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,0.0467178,-0.151048,0
-penetrazione,n = 5,5,Gini,Proportional to Consumption,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.0890969,-0.228705,0
 penetrazione,n = 5,5,Gini,Remuneration Model 1,Cascading Tree,CER_3_2_0,CER_0_5_0,40,100,0.0881552,-0.10817,1
 penetrazione,n = 5,5,Gini,Cascading Tree,Weighted Solidarity,CER_3_2_0,CER_2_3_0,40,60,-0.0649163,0.0604122,0
 penetrazione,n = 5,5,Gini,Cascading Tree,Pearson Key,CER_4_1_0,CER_3_2_0,20,40,-0.0696532,0.224562,0
 penetrazione,n = 5,5,Gini,Cascading Tree,Similarity-Utilization,CER_4_1_0,CER_3_2_0,20,40,-0.0858102,0.204918,0
-penetrazione,n = 5,5,Gini,Cascading Tree,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,-0.077657,0.141172,0
 penetrazione,n = 5,5,Gini,Cascading Tree,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.0620459,0.217032,0
-penetrazione,n = 5,5,Gini,Pearson Key,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.112032,-0.302219,0
-penetrazione,n = 5,5,Gini,Similarity-Utilization,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,0.128189,-0.282575,0
-penetrazione,n = 5,5,Gini,Adaptive Sampling Shapley,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,-0.104425,0.294689,0
 penetrazione,n = 5,5,FairnessIndex,Shapley,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,0.391231,-0.0456541,0
 penetrazione,n = 5,5,FairnessIndex,Shapley,Remuneration Model 1,CER_3_2_0,CER_2_3_0,40,60,-0.0456541,0.105959,0
 penetrazione,n = 5,5,FairnessIndex,Equal Split,Proportional to Consumption,CER_3_2_0,CER_2_3_0,40,60,0.0818034,-0.25009,0
@@ -63,8 +53,6 @@ penetrazione,n = 5,5,FairnessIndex,Proportional to Consumption,Similarity-Utiliz
 penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-0.338654,0.201147,0
 penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Pearson Key,CER_3_2_0,CER_2_3_0,40,60,0.199572,-0.0796508,0
 penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-0.0796508,0.0590669,0
-penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,-0.390659,0.0390663,0
-penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,0.0390663,-0.107817,0
 penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Tri-level EP,CER_3_2_0,CER_2_3_0,40,60,0.187133,-0.0822343,0
 penetrazione,n = 5,5,FairnessIndex,Remuneration Model 1,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-0.0822343,0.0682355,0
 penetrazione,n = 5,5,FairnessIndex,Cascading Tree,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,0.332594,-0.0410826,0
@@ -77,7 +65,6 @@ penetrazione,n = 5,5,FairnessIndex,Weighted Solidarity,Tri-level EP,CER_3_2_0,CE
 penetrazione,n = 5,5,Sigma,Shapley,Nucleolo,CER_4_1_0,CER_3_2_0,20,40,0.0368129,-0.0350045,0
 penetrazione,n = 5,5,Sigma,Shapley,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,0.197099,-0.0164685,0
 penetrazione,n = 5,5,Sigma,Shapley,Remuneration Model 1,CER_3_2_0,CER_2_3_0,40,60,-0.0164685,0.0457237,0
-penetrazione,n = 5,5,Sigma,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,-0.0366878,0.0340439,0
 penetrazione,n = 5,5,Sigma,Equal Split,Proportional to Consumption,CER_3_2_0,CER_2_3_0,40,60,0.0480957,-0.0973741,0
 penetrazione,n = 5,5,Sigma,Equal Split,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-0.16179,0.0576635,0
 penetrazione,n = 5,5,Sigma,Equal Split,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,0.0447728,-0.0218505,0
@@ -91,8 +78,6 @@ penetrazione,n = 5,5,Sigma,Proportional to Consumption,Weighted Solidarity,CER_4
 penetrazione,n = 5,5,Sigma,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-0.170699,0.0944082,0
 penetrazione,n = 5,5,Sigma,Remuneration Model 1,Pearson Key,CER_3_2_0,CER_2_3_0,40,60,0.0986367,-0.0232977,0
 penetrazione,n = 5,5,Sigma,Remuneration Model 1,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-0.0232977,0.0332441,0
-penetrazione,n = 5,5,Sigma,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,-0.196974,0.0155079,0
-penetrazione,n = 5,5,Sigma,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,0.0155079,-0.0469774,0
 penetrazione,n = 5,5,Sigma,Remuneration Model 1,Tri-level EP,CER_3_2_0,CER_2_3_0,40,60,0.0961428,-0.0264864,0
 penetrazione,n = 5,5,Sigma,Remuneration Model 1,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-0.0264864,0.0378457,0
 penetrazione,n = 5,5,Sigma,Cascading Tree,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,0.175473,-0.0212398,0
@@ -122,8 +107,6 @@ penetrazione,n = 5,5,EccessoMax_EUR,Cascading Tree,Pearson Key,CER_4_1_0,CER_3_2
 penetrazione,n = 5,5,EccessoMax_EUR,Cascading Tree,Similarity-Utilization,CER_4_1_0,CER_3_2_0,20,40,50.5391,-23.6912,0
 penetrazione,n = 5,5,EccessoMax_EUR,Cascading Tree,Tri-level EP,CER_4_1_0,CER_3_2_0,20,40,33.8206,-46.6165,0
 penetrazione,n = 5,5,EccessoMax_EUR,Similarity-Utilization,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-24.9221,2.0596,0
-penetrazione,n = 5,5,EccessoMax_EUR,Adaptive Sampling Shapley,Tri-level EP,CER_4_1_0,CER_2_3_0,20,60,36.8373,-11.9564,1
-penetrazione,n = 5,5,EccessoMax_EUR,Adaptive Sampling Shapley,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-11.9564,2.34408,0
 penetrazione,n = 5,5,CoalizioniInstabili,Equal Split,Proportional to Consumption,CER_3_2_0,CER_2_3_0,40,60,5,-4,0
 penetrazione,n = 5,5,CoalizioniInstabili,Equal Split,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,2,-1,0
 penetrazione,n = 5,5,CoalizioniInstabili,Equal Split,Pearson Key,CER_3_2_0,CER_0_5_0,40,100,8,-4,1
@@ -151,15 +134,11 @@ penetrazione,n = 5,5,ForzaIncentivante,Nucleolo,Equal Split,CER_4_1_0,CER_3_2_0,
 penetrazione,n = 5,5,ForzaIncentivante,Nucleolo,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,-2.23725,0.303947,0
 penetrazione,n = 5,5,ForzaIncentivante,Nucleolo,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-0.749478,0.852934,0
 penetrazione,n = 5,5,ForzaIncentivante,Nucleolo,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,-2.26572,0.476334,0
-penetrazione,n = 5,5,ForzaIncentivante,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,-0.518686,0.461659,0
 penetrazione,n = 5,5,ForzaIncentivante,Variance Least Core,Equal Split,CER_4_1_0,CER_3_2_0,20,40,-1.80513,0.376374,0
 penetrazione,n = 5,5,ForzaIncentivante,Variance Least Core,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,-1.85809,0.30393,0
 penetrazione,n = 5,5,ForzaIncentivante,Variance Least Core,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-0.370324,0.852917,0
 penetrazione,n = 5,5,ForzaIncentivante,Variance Least Core,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,-1.88656,0.476318,0
 penetrazione,n = 5,5,ForzaIncentivante,Equal Split,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,0.193944,-0.117329,0
-penetrazione,n = 5,5,ForzaIncentivante,Equal Split,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,1.66559,-0.386744,1
-penetrazione,n = 5,5,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,0.157712,-0.187054,0
-penetrazione,n = 5,5,ForzaIncentivante,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,1.74703,-0.458379,1
 penetrazione,n = 5,5,AllineamentoVirtu,Shapley,Equal Split,CER_3_2_0,CER_2_3_0,40,60,-0.360969,0.881889,0
 penetrazione,n = 5,5,AllineamentoVirtu,Shapley,Weighted Solidarity,CER_4_1_0,CER_2_3_0,20,60,-1.17082,1.10604,1
 penetrazione,n = 5,5,AllineamentoVirtu,Nucleolo,Equal Split,CER_4_1_0,CER_3_2_0,20,40,-0.993826,0.706423,0
@@ -170,82 +149,7 @@ penetrazione,n = 5,5,AllineamentoVirtu,Variance Least Core,Remuneration Model 1,
 penetrazione,n = 5,5,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,-1.17094,1.02879,0
 penetrazione,n = 5,5,AllineamentoVirtu,Equal Split,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,0.944701,-0.89935,0
 penetrazione,n = 5,5,AllineamentoVirtu,Equal Split,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,0.224147,-0.418382,0
-penetrazione,n = 5,5,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,0.322325,-0.877504,0
 penetrazione,n = 5,5,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,-0.720555,0.480968,0
-penetrazione,n = 5,5,AllineamentoVirtu,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,1.1708,-1.10165,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_4_1_0,CER_3_2_0,20,40,2.7209,-5.79133,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_2_3_0,CER_0_5_0,60,100,-3.21185,3.26379,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Variance Least Core,CER_2_3_0,CER_0_5_0,60,100,-3.14212,3.22274,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Equal Split,CER_4_1_0,CER_2_3_0,20,60,-8.87722,3.73249,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Equal Split,CER_2_3_0,CER_0_5_0,60,100,3.73249,-6.55833,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_3_2_0,CER_0_5_0,40,100,-7.78931,3.92222,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_4_1_0,CER_2_3_0,20,60,-9.11774,2.20239,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_2_3_0,CER_0_5_0,60,100,2.20239,-2.49334,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,6.8181,-4.94096,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_4_1_0,CER_2_3_0,20,60,-9.40645,5.30233,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,5.30233,-7.36351,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-5.14877,6.23324,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-8.01539,4.75796,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-4.6375,6.46604,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_4_1_0,CER_3_2_0,20,40,-11.5981,5.2054,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_2_3_0,CER_0_5_0,60,100,6.94434,-9.82212,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Proportional to Consumption,CER_3_2_0,CER_2_3_0,40,60,-1.99798,1.93483,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,-11.8386,4.08627,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_2_3_0,CER_0_5_0,60,100,5.41424,-5.75712,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-4.01471,10.8522,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,10.03,-8.20475,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,-12.1274,5.82329,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,8.51418,-10.6273,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-1.93692,2.96945,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-4.80354,1.49417,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_3_2_0,20,40,-2.73433,5.69402,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,3.26963,-3.26794,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Nucleolo,Tri-level EP,CER_3_2_0,CER_0_5_0,40,100,-4.83898,3.20225,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_4_1_0,CER_3_2_0,20,40,-9.60342,5.20524,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_2_3_0,CER_0_5_0,60,100,6.87461,-9.78108,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Proportional to Consumption,CER_3_2_0,CER_2_3_0,40,60,-1.99814,1.8651,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_4_1_0,CER_3_2_0,20,40,-9.84394,4.08611,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_2_3_0,CER_0_5_0,60,100,5.34451,-5.71608,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_4_1_0,CER_3_2_0,20,40,-2.02001,10.852,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,9.96022,-8.1637,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_4_1_0,CER_3_2_0,20,40,-10.1327,5.82313,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,8.44445,-10.5863,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-2.00665,3.0105,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-4.87327,1.53522,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,3.19991,-3.22689,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Variance Least Core,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-1.49538,3.2433,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_2_3_0,CER_0_5_0,60,100,-5.00951,10.4806,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Remuneration Model 1,CER_2_3_0,CER_0_5_0,60,100,-1.5301,4.065,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-8.88127,12.7916,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-11.7479,11.3163,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,8.86379,-3.67471,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-3.67471,6.55418,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-8.36999,13.0244,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Remuneration Model 1,CER_2_3_0,CER_0_5_0,60,100,3.47941,-6.41556,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,8.09512,-8.86318,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,6.57935,-11.2857,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-3.87176,2.31102,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_3_2_0,CER_0_5_0,40,100,7.692,-3.92637,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Proportional to Consumption,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-3.36048,2.54382,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Cascading Tree,CER_2_3_0,CER_0_5_0,60,100,4.61571,-2.44762,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,3.09994,-4.87017,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-7.35116,8.72657,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-10.2178,7.25129,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,9.10432,-2.14461,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-2.14461,2.48919,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Remuneration Model 1,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-6.83989,8.95938,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Cascading Tree,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-11.9669,11.1742,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Cascading Tree,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-14.8335,9.69892,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Cascading Tree,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-6.76032,4.93681,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Cascading Tree,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-11.4556,11.407,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-10.4511,13.5967,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-13.3177,12.1215,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,9.39302,-5.24454,1
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-5.24454,7.35936,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-9.93982,13.8295,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Pearson Key,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,5.20656,-6.23739,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,8.07318,-4.76211,0
-penetrazione,n = 5,5,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-4.69528,6.47019,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_4_1_0,CER_2_3_0,20,60,-0.931343,0.493404,1
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_2_3_0,CER_0_5_0,60,100,0.493404,-0.733359,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,CER_3_2_0,CER_2_3_0,40,60,-0.531402,0.174223,0
@@ -267,16 +171,11 @@ penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,CER
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,0.282399,-0.11916,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-0.530909,0.713614,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-0.67532,0.723875,0
-penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,0.931562,-0.479351,1
-penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-0.479351,0.733635,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-0.511097,0.711894,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,0.675217,-0.861836,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_3_0,CER_0_5_0,60,100,0.60158,-0.885056,0
-penetrazione,n = 5,5,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,0.513709,-0.160169,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,CER_2_3_0,CER_0_5_0,60,100,-0.813308,0.832773,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_3_0,CER_0_5_0,60,100,-0.957719,0.843035,0
-penetrazione,n = 5,5,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_1_0,CER_2_3_0,20,60,1.12863,-0.76175,1
-penetrazione,n = 5,5,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_3_0,CER_0_5_0,60,100,-0.76175,0.852795,0
 penetrazione,n = 5,5,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_2_3_0,CER_0_5_0,60,100,-0.793496,0.831053,0
 penetrazione,n = 5,5,VAN_min_EUR,Nucleolo,Proportional to Consumption,CER_4_1_0,CER_3_2_0,20,40,400.026,-235.139,0
 penetrazione,n = 5,5,VAN_min_EUR,Nucleolo,Proportional to Consumption,CER_3_2_0,CER_0_5_0,40,100,-235.139,9.18324,1
@@ -284,15 +183,12 @@ penetrazione,n = 5,5,VAN_min_EUR,Variance Least Core,Proportional to Consumption
 penetrazione,n = 5,5,VAN_min_EUR,Variance Least Core,Proportional to Consumption,CER_3_2_0,CER_0_5_0,40,100,-235.136,9.18379,1
 penetrazione,n = 5,5,VAN_min_EUR,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_2_3_0,20,60,129.171,-145.028,1
 penetrazione,n = 5,5,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,CER_4_1_0,CER_0_5_0,20,100,86.656,-10.485,2
-penetrazione,n = 5,5,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_3_2_0,CER_2_3_0,40,60,-69.7063,93.7079,0
 penetrazione,n = 8,8,EI_orig,Shapley,Nucleolo,CER_6_2_0,CER_4_4_0,25,50,-0.121099,0.170778,0
 penetrazione,n = 8,8,EI_orig,Shapley,Variance Least Core,CER_6_2_0,CER_4_4_0,25,50,-0.123772,0.159318,0
 penetrazione,n = 8,8,EI_orig,Nucleolo,Proportional to Consumption,CER_4_4_0,CER_0_8_0,50,100,0.0572624,-0.0845456,1
 penetrazione,n = 8,8,EI_orig,Nucleolo,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,0.122613,-0.225556,0
-penetrazione,n = 8,8,EI_orig,Nucleolo,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.127094,-0.172532,0
 penetrazione,n = 8,8,EI_orig,Variance Least Core,Proportional to Consumption,CER_4_4_0,CER_0_8_0,50,100,0.0687223,-0.0845386,1
 penetrazione,n = 8,8,EI_orig,Variance Least Core,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,0.125286,-0.214096,0
-penetrazione,n = 8,8,EI_orig,Variance Least Core,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.129767,-0.161072,0
 penetrazione,n = 8,8,EI_orig,Proportional to Consumption,Similarity-Utilization,CER_6_2_0,CER_4_4_0,25,50,-0.0629961,0.0594616,0
 penetrazione,n = 8,8,EI_orig,Remuneration Model 1,Cascading Tree,CER_6_2_0,CER_2_6_0,25,75,0.140119,-0.156408,1
 penetrazione,n = 8,8,EI_orig,Remuneration Model 1,Weighted Solidarity,CER_6_2_0,CER_2_6_0,25,75,0.0479526,-0.0768921,1
@@ -302,10 +198,8 @@ penetrazione,n = 8,8,Gini,Shapley,Nucleolo,CER_6_2_0,CER_4_4_0,25,50,-0.121099,0
 penetrazione,n = 8,8,Gini,Shapley,Variance Least Core,CER_6_2_0,CER_4_4_0,25,50,-0.123772,0.159318,0
 penetrazione,n = 8,8,Gini,Nucleolo,Proportional to Consumption,CER_4_4_0,CER_0_8_0,50,100,0.0572624,-0.0845456,1
 penetrazione,n = 8,8,Gini,Nucleolo,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,0.122613,-0.225556,0
-penetrazione,n = 8,8,Gini,Nucleolo,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.127094,-0.172532,0
 penetrazione,n = 8,8,Gini,Variance Least Core,Proportional to Consumption,CER_4_4_0,CER_0_8_0,50,100,0.0687223,-0.0845386,1
 penetrazione,n = 8,8,Gini,Variance Least Core,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,0.125286,-0.214096,0
-penetrazione,n = 8,8,Gini,Variance Least Core,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.129767,-0.161072,0
 penetrazione,n = 8,8,Gini,Proportional to Consumption,Similarity-Utilization,CER_6_2_0,CER_4_4_0,25,50,-0.0629961,0.0594616,0
 penetrazione,n = 8,8,Gini,Remuneration Model 1,Cascading Tree,CER_6_2_0,CER_2_6_0,25,75,0.140119,-0.156408,1
 penetrazione,n = 8,8,Gini,Remuneration Model 1,Weighted Solidarity,CER_6_2_0,CER_2_6_0,25,75,0.0479526,-0.0768921,1
@@ -379,7 +273,6 @@ penetrazione,n = 8,8,CoalizioniInstabili,Proportional to Consumption,Similarity-
 penetrazione,n = 8,8,CoalizioniInstabili,Proportional to Consumption,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,13,-23,0
 penetrazione,n = 8,8,CoalizioniInstabili,Remuneration Model 1,Pearson Key,CER_4_4_0,CER_2_6_0,50,75,21,-33,0
 penetrazione,n = 8,8,CoalizioniInstabili,Remuneration Model 1,Similarity-Utilization,CER_4_4_0,CER_2_6_0,50,75,24,-24,0
-penetrazione,n = 8,8,CoalizioniInstabili,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,17,-12,0
 penetrazione,n = 8,8,CoalizioniInstabili,Remuneration Model 1,Tri-level EP,CER_4_4_0,CER_2_6_0,50,75,16,-38,0
 penetrazione,n = 8,8,CoalizioniInstabili,Cascading Tree,Weighted Solidarity,CER_6_2_0,CER_0_8_0,25,100,18,-42,2
 penetrazione,n = 8,8,CoalizioniInstabili,Cascading Tree,Pearson Key,CER_6_2_0,CER_2_6_0,25,75,73,-33,1
@@ -401,9 +294,6 @@ penetrazione,n = 8,8,ForzaIncentivante,Variance Least Core,Proportional to Consu
 penetrazione,n = 8,8,ForzaIncentivante,Variance Least Core,Remuneration Model 1,CER_6_2_0,CER_4_4_0,25,50,-0.303891,0.52811,0
 penetrazione,n = 8,8,ForzaIncentivante,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-0.19794,0.767124,0
 penetrazione,n = 8,8,ForzaIncentivante,Equal Split,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,0.113737,-0.424351,0
-penetrazione,n = 8,8,ForzaIncentivante,Equal Split,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.864638,-0.347441,0
-penetrazione,n = 8,8,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.84921,-0.192917,0
-penetrazione,n = 8,8,ForzaIncentivante,Weighted Solidarity,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.743259,-0.431931,0
 penetrazione,n = 8,8,AllineamentoVirtu,Shapley,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-0.976441,0.903671,0
 penetrazione,n = 8,8,AllineamentoVirtu,Shapley,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-0.747412,1.17747,0
 penetrazione,n = 8,8,AllineamentoVirtu,Nucleolo,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-0.728894,0.954563,0
@@ -414,83 +304,6 @@ penetrazione,n = 8,8,AllineamentoVirtu,Variance Least Core,Remuneration Model 1,
 penetrazione,n = 8,8,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-0.536201,1.22874,0
 penetrazione,n = 8,8,AllineamentoVirtu,Equal Split,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,0.623307,-0.732818,0
 penetrazione,n = 8,8,AllineamentoVirtu,Equal Split,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,0.612227,-0.775093,0
-penetrazione,n = 8,8,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.980489,-0.905522,0
-penetrazione,n = 8,8,AllineamentoVirtu,Weighted Solidarity,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.75146,-1.17932,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_4_4_0,CER_0_8_0,50,100,-4.07586,3.49451,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Variance Least Core,CER_4_4_0,CER_0_8_0,50,100,-3.91645,3.49425,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-5.66929,4.82001,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Equal Split,CER_2_6_0,CER_0_8_0,75,100,5.09508,-8.79232,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_4_4_0,CER_2_6_0,50,75,-2.73861,1.99384,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_6_2_0,CER_4_4_0,25,50,-1.59602,2.27681,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_2_6_0,CER_0_8_0,75,100,2.67789,-3.87357,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,6.33517,-7.26067,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-5.69241,6.49581,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,8.38881,-6.15628,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Pearson Key,CER_4_4_0,CER_0_8_0,50,100,-6.09126,7.0349,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-3.3655,4.98408,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_4_4_0,CER_0_8_0,50,100,-4.86306,7.51547,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-4.32273,8.89587,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_2_6_0,CER_0_8_0,75,100,5.93146,-12.2868,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Proportional to Consumption,CER_6_2_0,CER_2_6_0,25,75,-1.38212,2.83023,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_2_6_0,CER_0_8_0,75,100,3.51428,-7.36808,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,7.17155,-10.7552,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-4.34585,10.5717,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,9.22519,-9.65079,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Pearson Key,CER_4_4_0,CER_0_8_0,50,100,-2.0154,3.54039,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_4_4_0,CER_0_8_0,50,100,4.11399,-3.50111,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Nucleolo,Tri-level EP,CER_6_2_0,CER_0_8_0,25,100,-1.66125,4.02096,2
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-4.163,8.73646,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_2_6_0,CER_0_8_0,75,100,5.93631,-12.2866,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Proportional to Consumption,CER_6_2_0,CER_2_6_0,25,75,-1.22239,2.83508,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_2_6_0,CER_0_8_0,75,100,3.51913,-7.36782,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,7.1764,-10.7549,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-4.18611,10.4123,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,9.23004,-9.65053,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Pearson Key,CER_4_4_0,CER_0_8_0,50,100,-2.1748,3.54065,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_4_4_0,CER_0_8_0,50,100,3.95459,-3.50085,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Variance Least Core,Tri-level EP,CER_6_2_0,CER_0_8_0,25,100,-1.50151,4.02122,2
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_6_2_0,CER_4_4_0,25,50,2.94061,-7.55861,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_2_6_0,CER_0_8_0,75,100,-3.10124,11.6005,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Remuneration Model 1,CER_6_2_0,CER_4_4_0,25,50,4.07328,-2.5432,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Remuneration Model 1,CER_2_6_0,CER_0_8_0,75,100,-2.41718,4.91875,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_6_2_0,CER_4_4_0,25,50,1.22632,-10.9113,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-6.21228,15.8272,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-8.46058,13.7764,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,5.72065,-4.78187,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-5.14012,8.78572,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_6_2_0,CER_4_4_0,25,50,2.66149,-9.68306,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-5.11623,16.3078,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Remuneration Model 1,CER_4_4_0,CER_0_8_0,50,100,5.01541,-6.68171,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,4.34133,-10.0688,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-2.96373,9.23442,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,6.39497,-8.96443,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-3.11104,4.22675,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-5.35934,2.17593,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_4_4_0,CER_2_6_0,50,75,2.77674,-2.03889,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Proportional to Consumption,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-2.01499,4.70733,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,3.65728,-3.3871,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-4.09639,4.21901,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,5.71091,-2.28271,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-3.79509,10.9085,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-6.04339,8.85764,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,1.64737,-2.23867,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-2.72294,3.86697,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Remuneration Model 1,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-2.69904,11.389,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Cascading Tree,Weighted Solidarity,CER_4_4_0,CER_2_6_0,50,75,-1.78967,2.05364,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Cascading Tree,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-7.45237,14.2956,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Cascading Tree,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-9.70067,12.2447,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Cascading Tree,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-6.38021,7.25407,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Cascading Tree,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-6.35632,14.7761,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_6_2_0,CER_4_4_0,25,50,1.24944,-12.5871,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-9.50601,13.1912,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-11.7543,11.1404,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,5.74376,-6.45768,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-8.43385,6.14968,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_6_2_0,CER_4_4_0,25,50,2.6846,-11.3589,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-8.40996,13.6718,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Pearson Key,Adaptive Sampling Shapley,CER_4_4_0,CER_0_8_0,50,100,6.12939,-7.04149,1
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,3.32046,-4.99067,0
-penetrazione,n = 8,8,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_4_4_0,CER_0_8_0,50,100,-4.90119,7.52207,1
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_6_2_0,CER_4_4_0,25,50,-0.585904,0.626188,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_2_6_0,CER_0_8_0,75,100,0.232629,-0.631433,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,CER_6_2_0,CER_4_4_0,25,50,-0.347419,0.169663,0
@@ -522,45 +335,35 @@ penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,CE
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,CER_2_6_0,CER_0_8_0,75,100,-0.236945,0.638516,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-0.195591,0.709149,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-0.250883,0.722007,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.575469,-0.626488,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-0.233816,0.629624,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_6_2_0,CER_4_4_0,25,50,0.204927,-0.512706,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-0.165427,0.705794,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,CER_6_2_0,CER_4_4_0,25,50,0.643452,-0.141247,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Proportional to Consumption,Cascading Tree,CER_2_6_0,CER_0_8_0,75,100,0.570422,-0.0989218,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-0.242354,0.729513,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,0.647485,-0.518159,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.336984,-0.169962,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Remuneration Model 1,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,-0.416217,1.21563,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,-0.885806,0.87076,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,0.762689,-0.384316,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Remuneration Model 1,Similarity-Utilization,CER_6_2_0,CER_0_8_0,25,100,-1.3196,0.083491,2
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,-0.721335,0.454949,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,-0.776627,0.467807,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,0.579338,-0.899475,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,-0.75956,0.375424,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_6_2_0,CER_4_4_0,25,50,0.208796,-0.785693,0
 penetrazione,n = 8,8,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,-0.691171,0.451594,0
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Pearson Key,Adaptive Sampling Shapley,CER_6_2_0,CER_0_8_0,25,100,0.476054,-0.0795245,2
-penetrazione,n = 8,8,AllineamentoVirtu_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_6_2_0,CER_0_8_0,25,100,1.01313,-0.0923824,2
 penetrazione,n = 8,8,VAN_min_EUR,Shapley,Nucleolo,CER_6_2_0,CER_4_4_0,25,50,-131.79,182.945,0
 penetrazione,n = 8,8,VAN_min_EUR,Shapley,Variance Least Core,CER_6_2_0,CER_4_4_0,25,50,-131.797,171.529,0
 penetrazione,n = 8,8,VAN_min_EUR,Shapley,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,-201.498,28.3836,0
 penetrazione,n = 8,8,VAN_min_EUR,Nucleolo,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,88.3276,-356.689,0
 penetrazione,n = 8,8,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,171.753,-324.472,0
 penetrazione,n = 8,8,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,-286.68,15.7732,0
-penetrazione,n = 8,8,VAN_min_EUR,Nucleolo,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,143.511,-178.784,0
 penetrazione,n = 8,8,VAN_min_EUR,Variance Least Core,Cascading Tree,CER_6_2_0,CER_4_4_0,25,50,88.3347,-345.274,0
 penetrazione,n = 8,8,VAN_min_EUR,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_4_4_0,25,50,171.76,-313.056,0
 penetrazione,n = 8,8,VAN_min_EUR,Variance Least Core,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,-286.676,15.7739,0
-penetrazione,n = 8,8,VAN_min_EUR,Variance Least Core,Adaptive Sampling Shapley,CER_6_2_0,CER_4_4_0,25,50,143.519,-167.368,0
 penetrazione,n = 8,8,VAN_min_EUR,Proportional to Consumption,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,-278.737,10.1687,0
 penetrazione,n = 8,8,VAN_min_EUR,Remuneration Model 1,Cascading Tree,CER_6_2_0,CER_2_6_0,25,75,113.427,-128.677,1
 penetrazione,n = 8,8,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,CER_6_2_0,CER_2_6_0,25,75,196.852,-83.7306,1
 penetrazione,n = 8,8,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,CER_2_6_0,CER_0_8_0,75,100,-83.7306,36.0672,0
 penetrazione,n = 8,8,VAN_min_EUR,Weighted Solidarity,Pearson Key,CER_2_6_0,CER_0_8_0,75,100,308.986,-13.8603,0
 penetrazione,n = 8,8,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,CER_2_6_0,CER_0_8_0,75,100,313.413,-17.0231,0
-penetrazione,n = 8,8,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_6_0,CER_0_8_0,75,100,204.538,-29.0766,0
 penetrazione,n = 8,8,VAN_min_EUR,Weighted Solidarity,Tri-level EP,CER_2_6_0,CER_0_8_0,75,100,307.689,-12.0539,0
 penetrazione,n = 10,10,EI_orig,Shapley,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,0.0984818,-0.0955723,0
 penetrazione,n = 10,10,EI_orig,Nucleolo,Proportional to Consumption,CER_5_5_0,CER_2_8_0,50,80,0.0535333,-0.0850664,0
@@ -569,7 +372,6 @@ penetrazione,n = 10,10,EI_orig,Variance Least Core,Proportional to Consumption,C
 penetrazione,n = 10,10,EI_orig,Variance Least Core,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,0.115774,-0.244516,0
 penetrazione,n = 10,10,EI_orig,Remuneration Model 1,Cascading Tree,CER_7_3_0,CER_2_8_0,30,80,0.145626,-0.18404,1
 penetrazione,n = 10,10,EI_orig,Cascading Tree,Weighted Solidarity,CER_7_3_0,CER_2_8_0,30,80,-0.122844,0.12139,1
-penetrazione,n = 10,10,EI_orig,Cascading Tree,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,-0.0988771,0.0999145,0
 penetrazione,n = 10,10,Gini,Shapley,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,0.0984818,-0.0955723,0
 penetrazione,n = 10,10,Gini,Nucleolo,Proportional to Consumption,CER_5_5_0,CER_2_8_0,50,80,0.0535333,-0.0850664,0
 penetrazione,n = 10,10,Gini,Nucleolo,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,0.114709,-0.244535,0
@@ -577,7 +379,6 @@ penetrazione,n = 10,10,Gini,Variance Least Core,Proportional to Consumption,CER_
 penetrazione,n = 10,10,Gini,Variance Least Core,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,0.115774,-0.244516,0
 penetrazione,n = 10,10,Gini,Remuneration Model 1,Cascading Tree,CER_7_3_0,CER_2_8_0,30,80,0.145626,-0.18404,1
 penetrazione,n = 10,10,Gini,Cascading Tree,Weighted Solidarity,CER_7_3_0,CER_2_8_0,30,80,-0.122844,0.12139,1
-penetrazione,n = 10,10,Gini,Cascading Tree,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,-0.0988771,0.0999145,0
 penetrazione,n = 10,10,FairnessIndex,Shapley,Remuneration Model 1,CER_7_3_0,CER_5_5_0,30,50,-0.0570597,0.100498,0
 penetrazione,n = 10,10,FairnessIndex,Equal Split,Proportional to Consumption,CER_7_3_0,CER_5_5_0,30,50,0.134366,-0.21836,0
 penetrazione,n = 10,10,FairnessIndex,Equal Split,Pearson Key,CER_7_3_0,CER_5_5_0,30,50,0.189067,-0.162334,0
@@ -591,7 +392,6 @@ penetrazione,n = 10,10,FairnessIndex,Proportional to Consumption,Similarity-Util
 penetrazione,n = 10,10,FairnessIndex,Proportional to Consumption,Tri-level EP,CER_5_5_0,CER_0_10_0,50,100,0.0473304,-0.0455861,1
 penetrazione,n = 10,10,FairnessIndex,Remuneration Model 1,Pearson Key,CER_7_3_0,CER_5_5_0,30,50,0.248011,-0.0656869,0
 penetrazione,n = 10,10,FairnessIndex,Remuneration Model 1,Similarity-Utilization,CER_7_3_0,CER_2_8_0,30,80,0.250365,-0.153727,1
-penetrazione,n = 10,10,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.0577798,-0.105421,0
 penetrazione,n = 10,10,FairnessIndex,Remuneration Model 1,Tri-level EP,CER_7_3_0,CER_5_5_0,30,50,0.226904,-0.0743822,0
 penetrazione,n = 10,10,FairnessIndex,Cascading Tree,Weighted Solidarity,CER_5_5_0,CER_0_10_0,50,100,-0.0838632,0.0689675,1
 penetrazione,n = 10,10,FairnessIndex,Cascading Tree,Pearson Key,CER_7_3_0,CER_5_5_0,30,50,0.0596916,-0.291613,0
@@ -614,7 +414,6 @@ penetrazione,n = 10,10,Sigma,Proportional to Consumption,Weighted Solidarity,CER
 penetrazione,n = 10,10,Sigma,Proportional to Consumption,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,0.0237507,-0.0158216,0
 penetrazione,n = 10,10,Sigma,Remuneration Model 1,Pearson Key,CER_7_3_0,CER_5_5_0,30,50,0.0545031,-0.010774,0
 penetrazione,n = 10,10,Sigma,Remuneration Model 1,Similarity-Utilization,CER_7_3_0,CER_2_8_0,30,80,0.0569506,-0.0278758,1
-penetrazione,n = 10,10,Sigma,Remuneration Model 1,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.00910721,-0.021612,0
 penetrazione,n = 10,10,Sigma,Remuneration Model 1,Tri-level EP,CER_7_3_0,CER_5_5_0,30,50,0.0521146,-0.0126589,0
 penetrazione,n = 10,10,Sigma,Cascading Tree,Pearson Key,CER_7_3_0,CER_5_5_0,30,50,0.0146528,-0.0593471,0
 penetrazione,n = 10,10,Sigma,Cascading Tree,Similarity-Utilization,CER_7_3_0,CER_5_5_0,30,50,0.0171003,-0.0466924,0
@@ -656,70 +455,12 @@ penetrazione,n = 10,10,ForzaIncentivante,Shapley,Remuneration Model 1,CER_7_3_0,
 penetrazione,n = 10,10,ForzaIncentivante,Shapley,Weighted Solidarity,CER_7_3_0,CER_5_5_0,30,50,-0.281284,0.440202,0
 penetrazione,n = 10,10,ForzaIncentivante,Nucleolo,Proportional to Consumption,CER_7_3_0,CER_2_8_0,30,80,-0.729224,0.172099,1
 penetrazione,n = 10,10,ForzaIncentivante,Variance Least Core,Proportional to Consumption,CER_7_3_0,CER_2_8_0,30,80,-0.731653,0.172089,1
-penetrazione,n = 10,10,ForzaIncentivante,Equal Split,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.355328,-0.411013,0
-penetrazione,n = 10,10,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.392844,-0.218832,0
-penetrazione,n = 10,10,ForzaIncentivante,Weighted Solidarity,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.283591,-0.450549,0
 penetrazione,n = 10,10,ForzaIncentivante,Pearson Key,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-0.115393,0.201467,0
 penetrazione,n = 10,10,ForzaIncentivante,Similarity-Utilization,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,0.144653,-0.25014,0
 penetrazione,n = 10,10,AllineamentoVirtu,Shapley,Equal Split,CER_7_3_0,CER_5_5_0,30,50,-0.751808,0.866486,0
 penetrazione,n = 10,10,AllineamentoVirtu,Shapley,Weighted Solidarity,CER_7_3_0,CER_5_5_0,30,50,-0.551337,0.979774,0
 penetrazione,n = 10,10,AllineamentoVirtu,Equal Split,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,0.637015,-0.818382,0
-penetrazione,n = 10,10,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.760626,-0.872898,0
-penetrazione,n = 10,10,AllineamentoVirtu,Remuneration Model 1,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.888765,-0.199564,0
 penetrazione,n = 10,10,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,-0.363232,0.826885,0
-penetrazione,n = 10,10,AllineamentoVirtu,Weighted Solidarity,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.560156,-0.986187,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_5_5_0,CER_0_10_0,50,100,-3.04237,2.90671,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Variance Least Core,CER_5_5_0,CER_0_10_0,50,100,-3.0421,2.82041,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Equal Split,CER_2_8_0,CER_0_10_0,80,100,6.62652,-7.84173,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_5_5_0,CER_2_8_0,50,80,-2.13435,3.18266,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_2_8_0,CER_0_10_0,80,100,3.9732,-3.94877,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,8.29539,-6.71312,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,8.04858,-8.84397,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Pearson Key,CER_5_5_0,CER_0_10_0,50,100,-5.27095,6.65953,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-6.21888,4.30356,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_5_5_0,CER_0_10_0,50,100,-4.03065,7.23225,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_2_8_0,CER_0_10_0,80,100,7.33095,-10.7484,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_2_8_0,CER_0_10_0,80,100,4.67763,-6.85548,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,8.99983,-9.61983,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,8.75302,-11.7507,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Pearson Key,CER_5_5_0,CER_0_10_0,50,100,-2.22858,3.75282,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_5_5_0,CER_0_10_0,50,100,2.91843,-2.87982,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_2_8_0,CER_0_10_0,80,100,7.33138,-10.6621,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_2_8_0,CER_0_10_0,80,100,4.67806,-6.76919,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,9.00026,-9.53353,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,8.75345,-11.6644,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Pearson Key,CER_5_5_0,CER_0_10_0,50,100,-2.22885,3.83911,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_5_5_0,CER_0_10_0,50,100,2.91816,-2.79353,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_2_8_0,CER_0_10_0,80,100,-3.44385,10.6581,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Remuneration Model 1,CER_2_8_0,CER_0_10_0,80,100,-2.65332,3.89296,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-7.74969,14.5013,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-12.8454,12.1453,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-6.67398,7.86862,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-6.55447,15.074,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Remuneration Model 1,CER_5_5_0,CER_0_10_0,50,100,4.5328,-6.76514,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,5.11273,-9.52948,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,4.86592,-11.6603,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-4.30584,3.84316,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_5_5_0,CER_2_8_0,50,80,2.01041,-3.23012,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Proportional to Consumption,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-3.11061,4.41589,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,4.32219,-2.76435,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,4.07538,-4.8952,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-5.09637,10.6083,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-10.1921,8.25233,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-4.02066,3.97566,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Remuneration Model 1,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-3.90114,11.181,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Cascading Tree,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-9.41857,13.3726,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Cascading Tree,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-14.5143,11.0167,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Cascading Tree,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-8.34285,6.74001,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Cascading Tree,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-8.22334,13.9454,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-9.17176,15.5035,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-14.2675,13.1475,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.821616,-4.90959,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-8.09604,8.87086,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-7.97653,16.0762,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Pearson Key,Adaptive Sampling Shapley,CER_5_5_0,CER_0_10_0,50,100,5.147,-6.63264,1
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,6.17142,-4.27667,0
-penetrazione,n = 10,10,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_5_5_0,CER_0_10_0,50,100,-3.9067,7.20536,1
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_2_8_0,CER_0_10_0,80,100,0.300244,-0.622363,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,CER_7_3_0,CER_2_8_0,30,80,-0.144889,0.13885,1
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,CER_7_3_0,CER_5_5_0,30,50,-0.197751,0.152801,0
@@ -742,26 +483,18 @@ penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,C
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,0.209572,-0.130293,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-0.265559,0.746456,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-0.399142,0.767636,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-0.302389,0.623144,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-0.230677,0.744378,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Proportional to Consumption,Cascading Tree,CER_2_8_0,CER_0_10_0,80,100,0.8266,-0.235066,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,0.370966,-0.924912,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_7_3_0,CER_2_8_0,30,80,0.166347,-0.140995,1
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,0.471505,-0.675698,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Remuneration Model 1,Pearson Key,CER_5_5_0,CER_0_10_0,50,100,-0.171142,0.201051,1
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Remuneration Model 1,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-0.137209,0.222231,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.219209,-0.158287,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Cascading Tree,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-0.930764,0.186904,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-1.06435,0.208084,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Cascading Tree,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-0.895882,0.184826,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,-0.47513,0.876749,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,-0.608714,0.897929,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,0.193779,-0.583629,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,-0.511961,0.753438,0
 penetrazione,n = 10,10,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,-0.440248,0.874671,0
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Pearson Key,Adaptive Sampling Shapley,CER_7_3_0,CER_0_10_0,30,100,0.31481,-0.123312,2
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_5_5_0,CER_0_10_0,50,100,0.147431,-0.144491,1
-penetrazione,n = 10,10,AllineamentoVirtu_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_7_3_0,CER_0_10_0,30,100,-0.238022,0.121234,2
 penetrazione,n = 10,10,VAN_min_EUR,Shapley,Cascading Tree,CER_7_3_0,CER_5_5_0,30,50,107.94,-264.816,0
 penetrazione,n = 10,10,VAN_min_EUR,Shapley,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,-168.818,25.888,0
 penetrazione,n = 10,10,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,-221.87,11.1348,0
@@ -772,31 +505,23 @@ penetrazione,n = 10,10,VAN_min_EUR,Variance Least Core,Pearson Key,CER_5_5_0,CER
 penetrazione,n = 10,10,VAN_min_EUR,Variance Least Core,Similarity-Utilization,CER_5_5_0,CER_0_10_0,50,100,106.369,-10.945,1
 penetrazione,n = 10,10,VAN_min_EUR,Proportional to Consumption,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,-199.161,17.5587,0
 penetrazione,n = 10,10,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,CER_2_8_0,CER_0_10_0,80,100,-65.1357,40.7241,0
-penetrazione,n = 10,10,VAN_min_EUR,Cascading Tree,Adaptive Sampling Shapley,CER_7_3_0,CER_5_5_0,30,50,-107.538,271.606,0
 penetrazione,n = 10,10,VAN_min_EUR,Weighted Solidarity,Pearson Key,CER_2_8_0,CER_0_10_0,80,100,228.097,-19.2483,0
 penetrazione,n = 10,10,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,CER_2_8_0,CER_0_10_0,80,100,234.742,-22.0808,0
-penetrazione,n = 10,10,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_2_8_0,CER_0_10_0,80,100,166.589,-25.529,0
 penetrazione,n = 10,10,VAN_min_EUR,Weighted Solidarity,Tri-level EP,CER_2_8_0,CER_0_10_0,80,100,227.197,-16.9598,0
 penetrazione,n = 15,15,EI_orig,Shapley,Nucleolo,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0660393,0.115115,0
 penetrazione,n = 15,15,EI_orig,Shapley,Variance Least Core,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0662784,0.113519,0
 penetrazione,n = 15,15,EI_orig,Shapley,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0760171,-0.181796,0
 penetrazione,n = 15,15,EI_orig,Nucleolo,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.142056,-0.296911,0
-penetrazione,n = 15,15,EI_orig,Nucleolo,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0679773,-0.11595,0
 penetrazione,n = 15,15,EI_orig,Variance Least Core,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.142296,-0.295315,0
-penetrazione,n = 15,15,EI_orig,Variance Least Core,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0682164,-0.114354,0
 penetrazione,n = 15,15,EI_orig,Remuneration Model 1,Cascading Tree,CER_11_4_0,CER_4_11_0,26.67,73.33,0.159867,-0.169899,1
 penetrazione,n = 15,15,EI_orig,Cascading Tree,Weighted Solidarity,CER_11_4_0,CER_4_11_0,26.67,73.33,-0.123364,0.116131,1
-penetrazione,n = 15,15,EI_orig,Cascading Tree,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0740792,0.180961,0
 penetrazione,n = 15,15,Gini,Shapley,Nucleolo,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0660393,0.115115,0
 penetrazione,n = 15,15,Gini,Shapley,Variance Least Core,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0662784,0.113519,0
 penetrazione,n = 15,15,Gini,Shapley,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0760171,-0.181796,0
 penetrazione,n = 15,15,Gini,Nucleolo,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.142056,-0.296911,0
-penetrazione,n = 15,15,Gini,Nucleolo,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0679773,-0.11595,0
 penetrazione,n = 15,15,Gini,Variance Least Core,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,0.142296,-0.295315,0
-penetrazione,n = 15,15,Gini,Variance Least Core,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.0682164,-0.114354,0
 penetrazione,n = 15,15,Gini,Remuneration Model 1,Cascading Tree,CER_11_4_0,CER_4_11_0,26.67,73.33,0.159867,-0.169899,1
 penetrazione,n = 15,15,Gini,Cascading Tree,Weighted Solidarity,CER_11_4_0,CER_4_11_0,26.67,73.33,-0.123364,0.116131,1
-penetrazione,n = 15,15,Gini,Cascading Tree,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.0740792,0.180961,0
 penetrazione,n = 15,15,FairnessIndex,Equal Split,Proportional to Consumption,CER_11_4_0,CER_7_8_0,26.67,53.33,0.184232,-0.303009,0
 penetrazione,n = 15,15,FairnessIndex,Equal Split,Pearson Key,CER_11_4_0,CER_7_8_0,26.67,53.33,0.228719,-0.243651,0
 penetrazione,n = 15,15,FairnessIndex,Equal Split,Similarity-Utilization,CER_11_4_0,CER_7_8_0,26.67,53.33,0.228187,-0.208661,0
@@ -870,10 +595,7 @@ penetrazione,n = 15,15,ForzaIncentivante,Shapley,Remuneration Model 1,CER_11_4_0
 penetrazione,n = 15,15,ForzaIncentivante,Shapley,Weighted Solidarity,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.467911,0.619355,0
 penetrazione,n = 15,15,ForzaIncentivante,Nucleolo,Proportional to Consumption,CER_11_4_0,CER_4_11_0,26.67,73.33,-0.94543,0.12814,1
 penetrazione,n = 15,15,ForzaIncentivante,Variance Least Core,Proportional to Consumption,CER_11_4_0,CER_4_11_0,26.67,73.33,-0.939747,0.1279,1
-penetrazione,n = 15,15,ForzaIncentivante,Equal Split,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.521834,-0.536026,0
-penetrazione,n = 15,15,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.558945,-0.329285,0
 penetrazione,n = 15,15,ForzaIncentivante,Cascading Tree,Weighted Solidarity,CER_7_8_0,CER_0_15_0,53.33,100,-0.145479,0.139025,1
-penetrazione,n = 15,15,ForzaIncentivante,Weighted Solidarity,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.474032,-0.616455,0
 penetrazione,n = 15,15,AllineamentoVirtu,Shapley,Equal Split,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.879815,0.930164,0
 penetrazione,n = 15,15,AllineamentoVirtu,Shapley,Weighted Solidarity,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.761309,1.20979,0
 penetrazione,n = 15,15,AllineamentoVirtu,Nucleolo,Equal Split,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.351151,0.946332,0
@@ -881,70 +603,7 @@ penetrazione,n = 15,15,AllineamentoVirtu,Nucleolo,Weighted Solidarity,CER_11_4_0
 penetrazione,n = 15,15,AllineamentoVirtu,Variance Least Core,Equal Split,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.337987,0.94639,0
 penetrazione,n = 15,15,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.219481,1.22601,0
 penetrazione,n = 15,15,AllineamentoVirtu,Equal Split,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,0.755196,-0.423622,0
-penetrazione,n = 15,15,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.873593,-0.928885,0
 penetrazione,n = 15,15,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,-0.533435,0.510863,0
-penetrazione,n = 15,15,AllineamentoVirtu,Weighted Solidarity,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.755087,-1.20851,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_7_8_0,CER_0_15_0,53.33,100,-2.38955,2.02346,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Variance Least Core,CER_7_8_0,CER_0_15_0,53.33,100,-2.36134,2.02262,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Equal Split,CER_11_4_0,CER_7_8_0,26.67,53.33,-1.19461,5.7325,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Equal Split,CER_4_11_0,CER_0_15_0,73.33,100,6.85806,-8.45768,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_11_4_0,CER_4_11_0,26.67,73.33,-3.00339,1.96888,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_11_4_0,CER_7_8_0,26.67,53.33,-1.25923,4.16787,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,4.51774,-4.0427,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,8.80905,-6.94809,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_11_4_0,CER_7_8_0,26.67,53.33,-1.17025,6.70785,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,8.31087,-9.11108,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-1.78865,4.36727,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-5.62772,1.62499,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_7_8_0,CER_0_15_0,53.33,100,-3.06559,5.25112,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_4_11_0,CER_0_15_0,73.33,100,7.72947,-10.4811,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Proportional to Consumption,CER_11_4_0,CER_4_11_0,26.67,73.33,-1.10112,2.84029,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,5.38915,-6.06616,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,9.68046,-8.97155,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,9.18228,-11.1345,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Pearson Key,CER_7_8_0,CER_0_15_0,53.33,100,-2.30447,2.34381,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_7_8_0,CER_0_15_0,53.33,100,2.53523,-1.99111,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Nucleolo,Tri-level EP,CER_11_4_0,CER_0_15_0,26.67,100,-1.7629,3.22765,2
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_4_11_0,CER_0_15_0,73.33,100,7.72643,-10.4803,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Proportional to Consumption,CER_11_4_0,CER_4_11_0,26.67,73.33,-1.08468,2.83725,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,5.38611,-6.06533,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,9.67743,-8.97072,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,9.17924,-11.1337,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Pearson Key,CER_7_8_0,CER_0_15_0,53.33,100,-2.33267,2.34465,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_7_8_0,CER_0_15_0,53.33,100,2.50703,-1.99028,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Variance Least Core,Tri-level EP,CER_11_4_0,CER_0_15_0,26.67,100,-1.74646,3.22849,2
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_4_11_0,CER_0_15_0,73.33,100,-4.88918,9.33979,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,-2.34032,4.41498,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-8.64671,12.825,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-12.4858,10.0827,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,1.00783,-5.58681,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-6.92793,8.49003,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-7.13373,13.7088,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,2.54886,-4.92481,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,6.84017,-7.83021,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,6.34199,-9.99319,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-3.75753,3.48516,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_11_4_0,CER_4_11_0,26.67,73.33,2.81661,-2.03875,1
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Proportional to Consumption,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-2.24455,4.369,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,4.29131,-2.90539,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,3.79313,-5.06838,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-6.30638,8.40997,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-10.1455,5.6677,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,1.07245,-4.02218,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-4.58761,4.07505,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Remuneration Model 1,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-4.79341,9.29382,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Cascading Tree,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-10.5977,11.3154,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Cascading Tree,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-14.4368,8.57309,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Cascading Tree,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-8.87892,6.98044,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Cascading Tree,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-9.08472,12.1992,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-10.0995,13.4783,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Weighted Solidarity,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-13.9386,10.7361,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.983466,-6.56216,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-8.38074,9.14343,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-8.58654,14.3622,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Pearson Key,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,1.71878,-4.33492,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,5.55785,-1.59265,0
-penetrazione,n = 15,15,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_7_8_0,CER_0_15_0,53.33,100,-3.21127,5.21877,1
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.15516,0.400812,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_4_11_0,CER_0_15_0,73.33,100,0.272817,-0.676348,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,CER_11_4_0,CER_7_8_0,26.67,53.33,-0.173003,0.167425,0
@@ -958,23 +617,18 @@ penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Proportional to Consu
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,CER_4_11_0,CER_0_15_0,73.33,100,-0.209383,0.638283,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-0.26304,0.725257,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-0.367152,0.708563,0
-penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.128449,-0.392198,0
-penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-0.273941,0.677447,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-0.222877,0.726361,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,CER_11_4_0,CER_0_15_0,26.67,100,0.13107,-0.11449,2
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Proportional to Consumption,Cascading Tree,CER_4_11_0,CER_0_15_0,73.33,100,0.826008,-0.127961,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,0.372377,-0.831534,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,0.388291,-0.717045,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Remuneration Model 1,Pearson Key,CER_7_8_0,CER_0_15_0,53.33,100,-0.187044,0.0869742,1
-penetrazione,n = 15,15,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.146293,-0.158811,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,CER_7_8_0,CER_0_15_0,53.33,100,-0.134078,0.0880784,1
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Cascading Tree,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-0.89558,0.100446,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-0.999692,0.0837518,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Cascading Tree,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-0.855417,0.10155,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,CER_4_11_0,CER_0_15_0,73.33,100,-0.441949,0.804019,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,-0.54606,0.787325,0
-penetrazione,n = 15,15,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_11_4_0,CER_7_8_0,26.67,53.33,0.123851,-0.529567,0
-penetrazione,n = 15,15,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_11_0,CER_0_15_0,73.33,100,-0.452849,0.756208,0
 penetrazione,n = 15,15,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_4_11_0,CER_0_15_0,73.33,100,-0.401786,0.805123,0
 penetrazione,n = 15,15,VAN_min_EUR,Shapley,Weighted Solidarity,CER_7_8_0,CER_0_15_0,53.33,100,-245.305,13.9091,1
 penetrazione,n = 15,15,VAN_min_EUR,Nucleolo,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,91.7097,-483.403,0
@@ -984,7 +638,6 @@ penetrazione,n = 15,15,VAN_min_EUR,Variance Least Core,Similarity-Utilization,CE
 penetrazione,n = 15,15,VAN_min_EUR,Proportional to Consumption,Weighted Solidarity,CER_4_11_0,CER_0_15_0,73.33,100,-65.6418,6.40203,0
 penetrazione,n = 15,15,VAN_min_EUR,Remuneration Model 1,Cascading Tree,CER_11_4_0,CER_7_8_0,26.67,53.33,111.142,-143.864,0
 penetrazione,n = 15,15,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,CER_4_11_0,CER_0_15_0,73.33,100,105.752,-8.50524,0
-penetrazione,n = 15,15,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_7_8_0,CER_0_15_0,53.33,100,251.06,-14.1089,1
 penetrazione,n = 18,18,EI_orig,Shapley,Cascading Tree,CER_13_5_0,CER_9_9_0,27.78,50,0.107246,-0.144292,0
 penetrazione,n = 18,18,EI_orig,Nucleolo,Proportional to Consumption,CER_13_5_0,CER_4_14_0,27.78,77.78,0.174232,-0.0754012,1
 penetrazione,n = 18,18,EI_orig,Nucleolo,Cascading Tree,CER_13_5_0,CER_9_9_0,27.78,50,0.131627,-0.249674,0
@@ -996,7 +649,6 @@ penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Cascading Tree,CER_13_5_0,CE
 penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Weighted Solidarity,CER_13_5_0,CER_4_14_0,27.78,77.78,0.0693112,-0.0919657,1
 penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,-0.0919657,0.060922,0
 penetrazione,n = 18,18,EI_orig,Cascading Tree,Weighted Solidarity,CER_13_5_0,CER_4_14_0,27.78,77.78,-0.0906518,0.0987314,1
-penetrazione,n = 18,18,EI_orig,Cascading Tree,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,-0.107514,0.151994,0
 penetrazione,n = 18,18,Gini,Shapley,Cascading Tree,CER_13_5_0,CER_9_9_0,27.78,50,0.107246,-0.144292,0
 penetrazione,n = 18,18,Gini,Nucleolo,Proportional to Consumption,CER_13_5_0,CER_4_14_0,27.78,77.78,0.174232,-0.0754012,1
 penetrazione,n = 18,18,Gini,Nucleolo,Cascading Tree,CER_13_5_0,CER_9_9_0,27.78,50,0.131627,-0.249674,0
@@ -1008,7 +660,6 @@ penetrazione,n = 18,18,Gini,Remuneration Model 1,Cascading Tree,CER_13_5_0,CER_4
 penetrazione,n = 18,18,Gini,Remuneration Model 1,Weighted Solidarity,CER_13_5_0,CER_4_14_0,27.78,77.78,0.0693112,-0.0919657,1
 penetrazione,n = 18,18,Gini,Remuneration Model 1,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,-0.0919657,0.060922,0
 penetrazione,n = 18,18,Gini,Cascading Tree,Weighted Solidarity,CER_13_5_0,CER_4_14_0,27.78,77.78,-0.0906518,0.0987314,1
-penetrazione,n = 18,18,Gini,Cascading Tree,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,-0.107514,0.151994,0
 penetrazione,n = 18,18,FairnessIndex,Shapley,Remuneration Model 1,CER_13_5_0,CER_9_9_0,27.78,50,-0.02998,0.152414,0
 penetrazione,n = 18,18,FairnessIndex,Equal Split,Proportional to Consumption,CER_13_5_0,CER_9_9_0,27.78,50,0.150475,-0.268072,0
 penetrazione,n = 18,18,FairnessIndex,Equal Split,Pearson Key,CER_13_5_0,CER_9_9_0,27.78,50,0.203317,-0.203681,0
@@ -1022,7 +673,6 @@ penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Similarity-Util
 penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Tri-level EP,CER_9_9_0,CER_0_18_0,50,100,0.0563841,-0.0303827,1
 penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Pearson Key,CER_13_5_0,CER_9_9_0,27.78,50,0.2349,-0.109213,0
 penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Similarity-Utilization,CER_13_5_0,CER_9_9_0,27.78,50,0.233664,-0.0849919,0
-penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.0281583,-0.159267,0
 penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,0.215082,-0.11722,0
 penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Weighted Solidarity,CER_9_9_0,CER_0_18_0,50,100,-0.0655633,0.0445776,1
 penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Pearson Key,CER_13_5_0,CER_9_9_0,27.78,50,0.0724873,-0.327055,0
@@ -1077,70 +727,11 @@ penetrazione,n = 18,18,ForzaIncentivante,Shapley,Remuneration Model 1,CER_13_5_0
 penetrazione,n = 18,18,ForzaIncentivante,Shapley,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.376766,0.61293,0
 penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Proportional to Consumption,CER_13_5_0,CER_4_14_0,27.78,77.78,-0.771647,0.14646,1
 penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Proportional to Consumption,CER_13_5_0,CER_4_14_0,27.78,77.78,-0.774185,0.145845,1
-penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.343701,-0.531399,0
-penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.394587,-0.33603,0
-penetrazione,n = 18,18,ForzaIncentivante,Weighted Solidarity,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.370801,-0.627278,0
 penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Equal Split,CER_13_5_0,CER_9_9_0,27.78,50,-0.781931,0.933306,0
 penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Remuneration Model 1,CER_13_5_0,CER_0_18_0,27.78,100,-0.996892,0.144733,2
 penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.842461,1.263,0
 penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,0.508282,-0.129118,0
-penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.757057,-0.933778,0
-penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Adaptive Sampling Shapley,CER_13_5_0,CER_0_18_0,27.78,100,0.972018,-0.144358,2
 penetrazione,n = 18,18,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,CER_9_9_0,CER_0_18_0,50,100,-0.621594,0.0962606,1
-penetrazione,n = 18,18,AllineamentoVirtu,Weighted Solidarity,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.817587,-1.26347,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_13_5_0,CER_0_18_0,27.78,100,-1.11289,1.02345,2
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Variance Least Core,CER_13_5_0,CER_0_18_0,27.78,100,-1.12185,1.02275,2
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Equal Split,CER_4_14_0,CER_0_18_0,77.78,100,4.59726,-4.93839,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_13_5_0,CER_9_9_0,27.78,50,-1.13971,1.0093,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Remuneration Model 1,CER_4_14_0,CER_0_18_0,77.78,100,3.86998,-1.54551,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,6.46423,-3.28724,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.962729,1.47445,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,6.17126,-4.70742,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-1.25652,1.46074,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-1.8126,0.6276,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_4_14_0,CER_0_18_0,77.78,100,5.11238,-5.96184,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Proportional to Consumption,CER_4_14_0,CER_0_18_0,77.78,100,1.62846,-0.7374,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_4_14_0,CER_0_18_0,77.78,100,4.3851,-2.56896,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,6.97936,-4.31069,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,6.68638,-5.73087,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_13_5_0,CER_0_18_0,27.78,100,1.09203,-1.04545,2
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Nucleolo,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-0.699705,0.802771,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_4_14_0,CER_0_18_0,77.78,100,5.09717,-5.96114,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Proportional to Consumption,CER_4_14_0,CER_0_18_0,77.78,100,1.61325,-0.736701,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_4_14_0,CER_0_18_0,77.78,100,4.36989,-2.56826,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,6.96414,-4.30999,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,6.67117,-5.73017,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_13_5_0,CER_0_18_0,27.78,100,1.10099,-1.04475,2
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Variance Least Core,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-0.690749,0.811789,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_4_14_0,CER_0_18_0,77.78,100,-3.48392,5.22444,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.624746,0.557443,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-5.85379,6.39913,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-6.73473,4.3167,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-4.64038,4.91639,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-5.01824,6.95411,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Remuneration Model 1,CER_4_14_0,CER_0_18_0,77.78,100,2.75664,-1.83156,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,5.35089,-3.57329,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,5.05792,-4.99347,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-2.36986,1.1747,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,1.11885,-0.985046,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Proportional to Consumption,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-1.53432,1.72967,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Cascading Tree,CER_4_14_0,CER_0_18_0,77.78,100,2.59426,-1.74173,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,2.30128,-3.16191,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-5.1265,3.00625,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-6.00745,0.923823,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-3.91309,1.52351,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Remuneration Model 1,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-4.29096,3.56123,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Cascading Tree,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-7.72076,4.74799,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Cascading Tree,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-8.6017,2.66556,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Cascading Tree,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-6.50735,3.26524,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Cascading Tree,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-6.88521,5.30296,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-7.42779,6.16817,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Weighted Solidarity,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-8.30873,4.08574,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.941871,-1.4502,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-6.21438,4.68542,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-6.59224,6.72314,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Pearson Key,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,1.21341,-1.48275,0
-penetrazione,n = 18,18,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-1.79174,0.603347,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_13_5_0,CER_9_9_0,27.78,50,-0.0720785,0.0900632,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Equal Split,CER_4_14_0,CER_0_18_0,77.78,100,0.200196,-0.489145,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,CER_13_5_0,CER_9_9_0,27.78,50,-0.159839,0.0961457,0
@@ -1157,25 +748,17 @@ penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.133076,0.104296,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-0.205378,0.452639,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-0.225506,0.375077,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.0666153,-0.085357,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-0.200114,0.487561,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-0.180331,0.457712,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,CER_9_9_0,CER_0_18_0,50,100,-0.0573829,0.113004,1
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,0.42522,-0.47675,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.154376,-0.0914395,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,-0.0997428,0.155596,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,CER_4_14_0,CER_0_18_0,77.78,100,0.339758,-0.589755,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_13_5_0,CER_4_14_0,27.78,77.78,0.0999487,-0.126397,1
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-0.111636,0.0350599,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,CER_9_9_0,CER_4_14_0,50,77.78,0.0350599,-0.106614,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,CER_4_14_0,CER_0_18_0,77.78,100,-0.471419,0.417877,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,CER_4_14_0,CER_0_18_0,77.78,100,-0.491546,0.340316,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,0.199692,-0.189653,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Adaptive Sampling Shapley,CER_4_14_0,CER_0_18_0,77.78,100,-0.466154,0.4528,0
 penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_4_14_0,CER_0_18_0,77.78,100,-0.446372,0.42295,0
-penetrazione,n = 18,18,AllineamentoVirtu_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_13_5_0,CER_9_9_0,27.78,50,-0.211584,0.0691164,0
 penetrazione,n = 18,18,VAN_min_EUR,Shapley,Weighted Solidarity,CER_13_5_0,CER_9_9_0,27.78,50,167.043,-248.582,0
-penetrazione,n = 18,18,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_13_5_0,CER_9_9_0,27.78,50,-163.042,261.66,0
 taglia,fascia 1 (~27%),1,EI_orig,Shapley,Nucleolo,CER_4_1_0,CER_6_2_0,5,8,0.0847971,-0.121099,0
 taglia,fascia 1 (~27%),1,EI_orig,Shapley,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-0.0908284,0.0896838,0
 taglia,fascia 1 (~27%),1,EI_orig,Shapley,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.113764,0.0808279,0
@@ -1186,7 +769,6 @@ taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8
 taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Weighted Solidarity,CER_4_1_0,CER_13_5_0,5,18,-0.316376,0.0409751,3
 taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.198561,0.201926,0
 taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Similarity-Utilization,CER_4_1_0,CER_6_2_0,5,8,-0.214718,0.147786,0
-taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-0.0865286,0.127094,0
 taglia,fascia 1 (~27%),1,EI_orig,Nucleolo,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.190954,0.222583,0
 taglia,fascia 1 (~27%),1,EI_orig,Variance Least Core,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-0.125443,0.213456,0
 taglia,fascia 1 (~27%),1,EI_orig,Variance Least Core,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-0.0787255,0.125286,0
@@ -1195,13 +777,9 @@ taglia,fascia 1 (~27%),1,EI_orig,Variance Least Core,Pearson Key,CER_4_1_0,CER_6
 taglia,fascia 1 (~27%),1,EI_orig,Variance Least Core,Similarity-Utilization,CER_4_1_0,CER_6_2_0,5,8,-0.164536,0.150459,0
 taglia,fascia 1 (~27%),1,EI_orig,Variance Least Core,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.140771,0.225256,0
 taglia,fascia 1 (~27%),1,EI_orig,Proportional to Consumption,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,0.0467178,-0.0881696,0
-taglia,fascia 1 (~27%),1,EI_orig,Proportional to Consumption,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,0.0890969,-0.0836888,0
 taglia,fascia 1 (~27%),1,EI_orig,Cascading Tree,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.0696532,0.0793137,0
 taglia,fascia 1 (~27%),1,EI_orig,Cascading Tree,Similarity-Utilization,CER_4_1_0,CER_7_3_0,5,10,-0.0858102,0.0611656,1
 taglia,fascia 1 (~27%),1,EI_orig,Cascading Tree,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.0620459,0.0999703,0
-taglia,fascia 1 (~27%),1,EI_orig,Pearson Key,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,0.112032,-0.0748329,0
-taglia,fascia 1 (~27%),1,EI_orig,Similarity-Utilization,Adaptive Sampling Shapley,CER_4_1_0,CER_7_3_0,5,10,0.128189,-0.160043,1
-taglia,fascia 1 (~27%),1,EI_orig,Adaptive Sampling Shapley,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.104425,0.0954895,0
 taglia,fascia 1 (~27%),1,Gini,Shapley,Nucleolo,CER_4_1_0,CER_6_2_0,5,8,0.0847971,-0.121099,0
 taglia,fascia 1 (~27%),1,Gini,Shapley,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-0.0908284,0.0896838,0
 taglia,fascia 1 (~27%),1,Gini,Shapley,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.113764,0.0808279,0
@@ -1212,7 +790,6 @@ taglia,fascia 1 (~27%),1,Gini,Nucleolo,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-0
 taglia,fascia 1 (~27%),1,Gini,Nucleolo,Weighted Solidarity,CER_4_1_0,CER_13_5_0,5,18,-0.316376,0.0409751,3
 taglia,fascia 1 (~27%),1,Gini,Nucleolo,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.198561,0.201926,0
 taglia,fascia 1 (~27%),1,Gini,Nucleolo,Similarity-Utilization,CER_4_1_0,CER_6_2_0,5,8,-0.214718,0.147786,0
-taglia,fascia 1 (~27%),1,Gini,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-0.0865286,0.127094,0
 taglia,fascia 1 (~27%),1,Gini,Nucleolo,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.190954,0.222583,0
 taglia,fascia 1 (~27%),1,Gini,Variance Least Core,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-0.125443,0.213456,0
 taglia,fascia 1 (~27%),1,Gini,Variance Least Core,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-0.0787255,0.125286,0
@@ -1221,24 +798,17 @@ taglia,fascia 1 (~27%),1,Gini,Variance Least Core,Pearson Key,CER_4_1_0,CER_6_2_
 taglia,fascia 1 (~27%),1,Gini,Variance Least Core,Similarity-Utilization,CER_4_1_0,CER_6_2_0,5,8,-0.164536,0.150459,0
 taglia,fascia 1 (~27%),1,Gini,Variance Least Core,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.140771,0.225256,0
 taglia,fascia 1 (~27%),1,Gini,Proportional to Consumption,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,0.0467178,-0.0881696,0
-taglia,fascia 1 (~27%),1,Gini,Proportional to Consumption,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,0.0890969,-0.0836888,0
 taglia,fascia 1 (~27%),1,Gini,Cascading Tree,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-0.0696532,0.0793137,0
 taglia,fascia 1 (~27%),1,Gini,Cascading Tree,Similarity-Utilization,CER_4_1_0,CER_7_3_0,5,10,-0.0858102,0.0611656,1
 taglia,fascia 1 (~27%),1,Gini,Cascading Tree,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.0620459,0.0999703,0
-taglia,fascia 1 (~27%),1,Gini,Pearson Key,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,0.112032,-0.0748329,0
-taglia,fascia 1 (~27%),1,Gini,Similarity-Utilization,Adaptive Sampling Shapley,CER_4_1_0,CER_7_3_0,5,10,0.128189,-0.160043,1
-taglia,fascia 1 (~27%),1,Gini,Adaptive Sampling Shapley,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.104425,0.0954895,0
 taglia,fascia 1 (~27%),1,FairnessIndex,Shapley,Remuneration Model 1,CER_6_2_0,CER_7_3_0,8,10,0.0466631,-0.0570597,0
 taglia,fascia 1 (~27%),1,FairnessIndex,Equal Split,Cascading Tree,CER_6_2_0,CER_7_3_0,8,10,-0.0722033,0.129375,0
 taglia,fascia 1 (~27%),1,FairnessIndex,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-0.338654,0.18832,1
-taglia,fascia 1 (~27%),1,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,-0.0392108,0.0577798,0
 taglia,fascia 1 (~27%),1,FairnessIndex,Cascading Tree,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,0.091017,-0.0572287,0
 taglia,fascia 1 (~27%),1,Sigma,Shapley,Nucleolo,CER_4_1_0,CER_7_3_0,5,10,0.0368129,-0.018574,1
 taglia,fascia 1 (~27%),1,Sigma,Shapley,Remuneration Model 1,CER_6_2_0,CER_7_3_0,8,10,0.0128179,-0.00880179,0
-taglia,fascia 1 (~27%),1,Sigma,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-0.0366878,0.0119364,0
 taglia,fascia 1 (~27%),1,Sigma,Equal Split,Cascading Tree,CER_6_2_0,CER_7_3_0,8,10,-0.0133576,0.0274645,0
 taglia,fascia 1 (~27%),1,Sigma,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-0.170699,0.0398503,1
-taglia,fascia 1 (~27%),1,Sigma,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,-0.0102739,0.00910721,0
 taglia,fascia 1 (~27%),1,Sigma,Cascading Tree,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,0.0207796,-0.0131383,0
 taglia,fascia 1 (~27%),1,EccessoMax_EUR,Proportional to Consumption,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-34.7606,33.2061,1
 taglia,fascia 1 (~27%),1,EccessoMax_EUR,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-18.2612,56.782,1
@@ -1246,37 +816,13 @@ taglia,fascia 1 (~27%),1,EccessoMax_EUR,Cascading Tree,Tri-level EP,CER_4_1_0,CE
 taglia,fascia 1 (~27%),1,CoalizioniInstabili,Shapley,Remuneration Model 1,CER_4_1_0,CER_6_2_0,5,8,2,-18,0
 taglia,fascia 1 (~27%),1,CoalizioniInstabili,Equal Split,Cascading Tree,CER_4_1_0,CER_11_4_0,5,15,-3,2581,2
 taglia,fascia 1 (~27%),1,CoalizioniInstabili,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-2,24,0
-taglia,fascia 1 (~27%),1,CoalizioniInstabili,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-2,17,0
 taglia,fascia 1 (~27%),1,ForzaIncentivante,Shapley,Nucleolo,CER_4_1_0,CER_6_2_0,5,8,0.515747,-0.530565,0
 taglia,fascia 1 (~27%),1,ForzaIncentivante,Nucleolo,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-0.749478,0.564127,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-0.518686,0.557063,0
 taglia,fascia 1 (~27%),1,ForzaIncentivante,Variance Least Core,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,-0.370324,0.552382,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu,Nucleolo,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,-0.499865,0.372037,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu,Nucleolo,Weighted Solidarity,CER_7_3_0,CER_11_4_0,10,15,0.372037,-0.232645,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,-0.536201,0.366583,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,CER_7_3_0,CER_11_4_0,10,15,0.366583,-0.219481,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Shapley,Nucleolo,CER_4_1_0,CER_6_2_0,5,8,2.7209,-1.34656,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Nucleolo,Equal Split,CER_6_2_0,CER_7_3_0,8,10,-4.32273,2.21851,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Nucleolo,Remuneration Model 1,CER_4_1_0,CER_7_3_0,5,10,-11.8386,1.48224,1
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Nucleolo,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-4.01471,5.32815,1
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Nucleolo,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,-4.34585,1.42553,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Nucleolo,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,-2.73433,1.39792,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Variance Least Core,Equal Split,CER_6_2_0,CER_7_3_0,8,10,-4.163,2.20448,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Variance Least Core,Remuneration Model 1,CER_4_1_0,CER_7_3_0,5,10,-9.84394,1.46821,1
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Variance Least Core,Cascading Tree,CER_4_1_0,CER_7_3_0,5,10,-2.02001,5.31412,1
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Variance Least Core,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,-4.18611,1.4115,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-4.9098,2.94061,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Proportional to Consumption,CER_6_2_0,CER_7_3_0,8,10,2.94061,-1.72664,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-5.08967,1.22632,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Pearson Key,CER_6_2_0,CER_7_3_0,8,10,1.22632,-3.75948,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-5.02821,2.66149,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Equal Split,Tri-level EP,CER_6_2_0,CER_7_3_0,8,10,2.66149,-2.6995,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_4_1_0,CER_6_2_0,5,8,4.38057,-2.96373,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Proportional to Consumption,Weighted Solidarity,CER_6_2_0,CER_7_3_0,8,10,-2.96373,0.933656,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_4_1_0,CER_6_2_0,5,8,-4.56043,1.24944,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Weighted Solidarity,Pearson Key,CER_6_2_0,CER_7_3_0,8,10,1.24944,-2.9665,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-4.49898,2.6846,0
-taglia,fascia 1 (~27%),1,ForzaIncentivante_lordo,Weighted Solidarity,Tri-level EP,CER_6_2_0,CER_7_3_0,8,10,2.6846,-1.90652,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Shapley,Nucleolo,CER_6_2_0,CER_7_3_0,8,10,0.322838,-0.481242,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Shapley,Variance Least Core,CER_6_2_0,CER_7_3_0,8,10,0.299092,-0.480934,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,CER_4_1_0,CER_6_2_0,5,8,-1.10469,0.296033,0
@@ -1290,7 +836,6 @@ taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Pearson Key,CER_6_2_0,
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Pearson Key,CER_7_3_0,CER_11_4_0,10,15,0.18789,-0.126639,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Similarity-Utilization,CER_6_2_0,CER_7_3_0,8,10,-1.34641,0.104647,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Similarity-Utilization,CER_7_3_0,CER_11_4_0,10,15,0.104647,-0.215285,0
-taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,-0.333273,0.5027,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Nucleolo,Tri-level EP,CER_6_2_0,CER_7_3_0,8,10,-0.703815,0.264678,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Equal Split,CER_6_2_0,CER_7_3_0,8,10,-0.884996,0.497177,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Proportional to Consumption,CER_6_2_0,CER_7_3_0,8,10,-0.646511,0.336045,0
@@ -1301,7 +846,6 @@ taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Pearson Key
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Pearson Key,CER_7_3_0,CER_11_4_0,10,15,0.187582,-0.121762,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,CER_6_2_0,CER_7_3_0,8,10,-1.32266,0.104339,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,CER_7_3_0,CER_11_4_0,10,15,0.104339,-0.210408,0
-taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,-0.309527,0.502393,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Variance Least Core,Tri-level EP,CER_6_2_0,CER_7_3_0,8,10,-0.680069,0.264371,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Equal Split,Proportional to Consumption,CER_4_1_0,CER_6_2_0,5,8,-0.813818,0.238485,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Equal Split,Proportional to Consumption,CER_6_2_0,CER_7_3_0,8,10,0.238485,-0.161131,0
@@ -1312,20 +856,14 @@ taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Proportional to Consumption,Wei
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,CER_6_2_0,CER_11_4_0,8,15,-0.242354,0.153513,1
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Remuneration Model 1,Cascading Tree,CER_4_1_0,CER_6_2_0,5,8,1.09738,-0.416217,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Remuneration Model 1,Cascading Tree,CER_6_2_0,CER_7_3_0,8,10,-0.416217,0.552643,0
-taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_4_1_0,CER_6_2_0,5,8,1.10491,-0.306468,0
-taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,-0.306468,0.219209,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_4_1_0,CER_6_2_0,5,8,-0.659919,0.208796,0
 taglia,fascia 1 (~27%),1,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,CER_6_2_0,CER_11_4_0,8,15,0.208796,-0.194245,1
 taglia,fascia 1 (~27%),1,VAN_min_EUR,Shapley,Nucleolo,CER_6_2_0,CER_7_3_0,8,10,-131.79,154.362,0
 taglia,fascia 1 (~27%),1,VAN_min_EUR,Shapley,Variance Least Core,CER_6_2_0,CER_7_3_0,8,10,-131.797,154.362,0
 taglia,fascia 1 (~27%),1,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_4_1_0,CER_6_2_0,5,8,-99.086,171.753,0
-taglia,fascia 1 (~27%),1,VAN_min_EUR,Nucleolo,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,143.511,-153.96,0
 taglia,fascia 1 (~27%),1,VAN_min_EUR,Variance Least Core,Weighted Solidarity,CER_4_1_0,CER_6_2_0,5,8,-99.0828,171.76,0
-taglia,fascia 1 (~27%),1,VAN_min_EUR,Variance Least Core,Adaptive Sampling Shapley,CER_6_2_0,CER_7_3_0,8,10,143.519,-153.96,0
 taglia,fascia 2 (~50%),2,EI_orig,Shapley,Cascading Tree,CER_3_2_0,CER_4_4_0,5,8,0.0707959,-0.054778,0
-taglia,fascia 2 (~50%),2,EI_orig,Cascading Tree,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,-0.077657,0.0530244,0
 taglia,fascia 2 (~50%),2,Gini,Shapley,Cascading Tree,CER_3_2_0,CER_4_4_0,5,8,0.0707959,-0.054778,0
-taglia,fascia 2 (~50%),2,Gini,Cascading Tree,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,-0.077657,0.0530244,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Shapley,Remuneration Model 1,CER_3_2_0,CER_4_4_0,5,8,-0.0456541,0.0951251,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Equal Split,Proportional to Consumption,CER_3_2_0,CER_4_4_0,5,8,0.0818034,-0.190219,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Equal Split,Pearson Key,CER_3_2_0,CER_4_4_0,5,8,0.120709,-0.148345,0
@@ -1334,7 +872,6 @@ taglia,fascia 2 (~50%),2,FairnessIndex,Equal Split,Tri-level EP,CER_3_2_0,CER_4_
 taglia,fascia 2 (~50%),2,FairnessIndex,Proportional to Consumption,Remuneration Model 1,CER_3_2_0,CER_4_4_0,5,8,-0.160666,0.111367,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Remuneration Model 1,Pearson Key,CER_3_2_0,CER_4_4_0,5,8,0.199572,-0.0694933,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Remuneration Model 1,Similarity-Utilization,CER_3_2_0,CER_4_4_0,5,8,0.208835,-0.0534181,0
-taglia,fascia 2 (~50%),2,FairnessIndex,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,0.0390663,-0.0940114,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Remuneration Model 1,Tri-level EP,CER_3_2_0,CER_4_4_0,5,8,0.187133,-0.0752727,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Weighted Solidarity,Pearson Key,CER_3_2_0,CER_4_4_0,5,8,0.039508,-0.216932,0
 taglia,fascia 2 (~50%),2,FairnessIndex,Weighted Solidarity,Similarity-Utilization,CER_3_2_0,CER_4_4_0,5,8,0.0487711,-0.200857,0
@@ -1347,7 +884,6 @@ taglia,fascia 2 (~50%),2,Sigma,Equal Split,Tri-level EP,CER_3_2_0,CER_4_4_0,5,8,
 taglia,fascia 2 (~50%),2,Sigma,Proportional to Consumption,Remuneration Model 1,CER_3_2_0,CER_4_4_0,5,8,-0.0848404,0.0250475,0
 taglia,fascia 2 (~50%),2,Sigma,Remuneration Model 1,Pearson Key,CER_3_2_0,CER_4_4_0,5,8,0.0986367,-0.0149212,0
 taglia,fascia 2 (~50%),2,Sigma,Remuneration Model 1,Similarity-Utilization,CER_3_2_0,CER_7_8_0,5,15,0.10674,-0.00890827,2
-taglia,fascia 2 (~50%),2,Sigma,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,0.0155079,-0.0241214,0
 taglia,fascia 2 (~50%),2,Sigma,Remuneration Model 1,Tri-level EP,CER_3_2_0,CER_4_4_0,5,8,0.0961428,-0.0173288,0
 taglia,fascia 2 (~50%),2,Sigma,Weighted Solidarity,Pearson Key,CER_3_2_0,CER_4_4_0,5,8,0.0254683,-0.0609758,0
 taglia,fascia 2 (~50%),2,Sigma,Weighted Solidarity,Similarity-Utilization,CER_3_2_0,CER_4_4_0,5,8,0.033572,-0.0490348,0
@@ -1370,32 +906,16 @@ taglia,fascia 2 (~50%),2,CoalizioniInstabili,Weighted Solidarity,Pearson Key,CER
 taglia,fascia 2 (~50%),2,CoalizioniInstabili,Weighted Solidarity,Similarity-Utilization,CER_3_2_0,CER_5_5_0,5,10,2,-49,1
 taglia,fascia 2 (~50%),2,CoalizioniInstabili,Weighted Solidarity,Tri-level EP,CER_3_2_0,CER_4_4_0,5,8,8,-10,0
 taglia,fascia 2 (~50%),2,ForzaIncentivante,Shapley,Remuneration Model 1,CER_3_2_0,CER_4_4_0,5,8,-0.174775,0.195139,0
-taglia,fascia 2 (~50%),2,ForzaIncentivante,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,0.157712,-0.192917,0
 taglia,fascia 2 (~50%),2,AllineamentoVirtu,Shapley,Equal Split,CER_3_2_0,CER_4_4_0,5,8,-0.360969,0.903671,0
-taglia,fascia 2 (~50%),2,AllineamentoVirtu,Equal Split,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,0.322325,-0.905522,0
-taglia,fascia 2 (~50%),2,AllineamentoVirtu,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_5_5_0,5,10,0.615885,-0.199564,1
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Shapley,Proportional to Consumption,CER_5_5_0,CER_9_9_0,10,18,-2.13435,1.0093,1
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Shapley,Tri-level EP,CER_7_8_0,CER_9_9_0,15,18,-3.06559,0.6276,0
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Nucleolo,Proportional to Consumption,CER_3_2_0,CER_9_9_0,5,18,-1.99798,1.18447,3
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Nucleolo,Tri-level EP,CER_3_2_0,CER_9_9_0,5,18,-4.83898,0.802771,3
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Variance Least Core,Proportional to Consumption,CER_3_2_0,CER_9_9_0,5,18,-1.99814,1.19349,3
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Variance Least Core,Tri-level EP,CER_3_2_0,CER_9_9_0,5,18,-4.83914,0.811789,3
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_5_5_0,CER_9_9_0,10,18,2.01041,-0.985046,1
-taglia,fascia 2 (~50%),2,ForzaIncentivante_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_7_8_0,CER_9_9_0,15,18,-3.21127,0.603347,0
 taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,CER_3_2_0,CER_4_4_0,5,8,-0.885391,0.169663,0
 taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,CER_3_2_0,CER_5_5_0,5,10,-0.531402,0.152801,1
 taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Shapley,Tri-level EP,CER_3_2_0,CER_9_9_0,5,18,-0.992291,0.0738226,3
 taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,CER_3_2_0,CER_4_4_0,5,8,0.353988,-0.141247,0
-taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Proportional to Consumption,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,0.867697,-0.169962,0
-taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Remuneration Model 1,Adaptive Sampling Shapley,CER_3_2_0,CER_5_5_0,5,10,0.513709,-0.158287,1
 taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,CER_7_8_0,CER_9_9_0,15,18,-0.134078,0.0350599,0
-taglia,fascia 2 (~50%),2,AllineamentoVirtu_lordo,Adaptive Sampling Shapley,Tri-level EP,CER_3_2_0,CER_9_9_0,5,18,-0.974597,0.0691164,3
 taglia,fascia 2 (~50%),2,VAN_min_EUR,Nucleolo,Proportional to Consumption,CER_3_2_0,CER_4_4_0,5,8,-235.139,161.683,0
 taglia,fascia 2 (~50%),2,VAN_min_EUR,Variance Least Core,Proportional to Consumption,CER_3_2_0,CER_4_4_0,5,8,-235.136,173.099,0
-taglia,fascia 2 (~50%),2,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_3_2_0,CER_4_4_0,5,8,-69.7063,145.688,0
 taglia,fascia 3 (~75%),3,CoalizioniInstabili,Proportional to Consumption,Pearson Key,CER_2_3_0,CER_2_8_0,5,10,4,-87,1
 taglia,fascia 3 (~75%),3,CoalizioniInstabili,Proportional to Consumption,Tri-level EP,CER_2_3_0,CER_2_8_0,5,10,4,-73,1
-taglia,fascia 3 (~75%),3,ForzaIncentivante_lordo,Cascading Tree,Weighted Solidarity,CER_2_3_0,CER_2_6_0,5,8,-1.51577,2.05364,0
 taglia,fascia 3 (~75%),3,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,CER_2_8_0,CER_4_11_0,10,15,-65.1357,148.982,0
 taglia,fascia 4 (~100%),4,FairnessIndex,Equal Split,Weighted Solidarity,CER_0_8_0,CER_0_10_0,8,10,-0.120937,0.0495543,0
 taglia,fascia 4 (~100%),4,FairnessIndex,Proportional to Consumption,Tri-level EP,CER_0_5_0,CER_0_8_0,5,8,0.0293662,-0.0499498,0
@@ -1410,9 +930,6 @@ taglia,fascia 4 (~100%),4,CoalizioniInstabili,Proportional to Consumption,Pearso
 taglia,fascia 4 (~100%),4,CoalizioniInstabili,Remuneration Model 1,Pearson Key,CER_0_5_0,CER_0_8_0,5,8,1,-34,0
 taglia,fascia 4 (~100%),4,CoalizioniInstabili,Remuneration Model 1,Tri-level EP,CER_0_5_0,CER_0_8_0,5,8,1,-24,0
 taglia,fascia 4 (~100%),4,ForzaIncentivante,Cascading Tree,Weighted Solidarity,CER_0_8_0,CER_0_15_0,8,15,-0.336356,0.139025,1
-taglia,fascia 4 (~100%),4,ForzaIncentivante_lordo,Nucleolo,Similarity-Utilization,CER_0_5_0,CER_0_18_0,5,18,1.49417,-1.64513,3
-taglia,fascia 4 (~100%),4,ForzaIncentivante_lordo,Variance Least Core,Similarity-Utilization,CER_0_5_0,CER_0_18_0,5,18,1.53522,-1.64443,3
-taglia,fascia 4 (~100%),4,ForzaIncentivante_lordo,Proportional to Consumption,Similarity-Utilization,CER_0_8_0,CER_0_18_0,8,18,2.17593,-0.907733,2
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Shapley,Similarity-Utilization,CER_0_10_0,CER_0_18_0,10,18,0.145273,-0.114067,1
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Nucleolo,Similarity-Utilization,CER_0_10_0,CER_0_18_0,10,18,0.14326,-0.106934,1
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,CER_0_10_0,CER_0_18_0,10,18,0.144667,-0.106923,1
@@ -1426,7 +943,6 @@ taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Cascading Tree,Pearson Key,CER_0_15_0,CER_0_18_0,15,18,0.100446,-0.341997,0
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,CER_0_15_0,CER_0_18_0,15,18,0.0837518,-0.419559,0
 taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Cascading Tree,Tri-level EP,CER_0_15_0,CER_0_18_0,15,18,0.10155,-0.336924,0
-taglia,fascia 4 (~100%),4,AllineamentoVirtu_lordo,Similarity-Utilization,Adaptive Sampling Shapley,CER_0_10_0,CER_0_18_0,10,18,-0.144491,0.112484,1
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Shapley,Weighted Solidarity,CER_0_5_0,CER_0_8_0,5,8,-22.2537,28.3836,0
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_0_5_0,CER_0_8_0,5,8,-46.2127,15.7732,0
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Nucleolo,Weighted Solidarity,CER_0_10_0,CER_0_18_0,10,18,11.1348,-12.6734,1
@@ -1441,6 +957,5 @@ taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Pearson Key,CER_0_5_0,
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Pearson Key,CER_0_10_0,CER_0_18_0,10,18,-19.2483,13.633,1
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,CER_0_5_0,CER_0_8_0,5,8,49.6695,-17.0231,0
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,CER_0_15_0,CER_0_18_0,15,18,-8.50524,9.29219,0
-taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Adaptive Sampling Shapley,CER_0_5_0,CER_0_8_0,5,8,22.2228,-29.0766,0
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Tri-level EP,CER_0_5_0,CER_0_8_0,5,8,56.7575,-12.0539,0
 taglia,fascia 4 (~100%),4,VAN_min_EUR,Weighted Solidarity,Tri-level EP,CER_0_10_0,CER_0_18_0,10,18,-16.9598,15.9049,1

@@ -83,6 +83,13 @@ function A = compute_indicator_agreement(RESULTS, opts)
 %                .tolRelativa   soglia di pareggio (def. 1e-6)
 %                .validateSelf  auto-test analitico del tau (def. true)
 %                .quiet         non stampare il riepilogo (def. false)
+%                .escludiMetodi     string, metodi da lasciare fuori (def. nessuno):
+%                                   restano in Tfair ma non entrano in tau,
+%                                   inversioni, vincitori e Pareto. MAIN2 ci
+%                                   mette l'Adaptive Sampling Shapley quando lo
+%                                   Shapley esatto c'e' ovunque (lo duplica).
+%                .escludiIndicatori string, colonne di Tfair da lasciare fuori
+%                                   (def. nessuna): diagnostiche, non criteri.
 %
 %   OUTPUT (struct A)
 %     .indicators   [1 x nI]  nomi degli indicatori, orientati
@@ -102,6 +109,8 @@ function A = compute_indicator_agreement(RESULTS, opts)
     if ~isfield(opts, 'tolRelativa'),  opts.tolRelativa  = 1e-6; end
     if ~isfield(opts, 'validateSelf'), opts.validateSelf = true; end
     if ~isfield(opts, 'quiet'),        opts.quiet        = false; end
+    if ~isfield(opts, 'escludiMetodi'),     opts.escludiMetodi     = strings(0, 1); end
+    if ~isfield(opts, 'escludiIndicatori'), opts.escludiIndicatori = strings(0, 1); end
 
     if opts.validateSelf
         local_validate_self();
@@ -124,6 +133,7 @@ function A = compute_indicator_agreement(RESULTS, opts)
     for c = 2:nK
         metodi = metodi(ismember(metodi, string(RESULTS(c).Tfair.Metodo)));
     end
+    metodi = metodi(~ismember(metodi, string(opts.escludiMetodi(:))));
     nM = numel(metodi);
     if nM < 2
         error('compute_indicator_agreement:metodiInsufficienti', ...
@@ -150,6 +160,16 @@ function A = compute_indicator_agreement(RESULTS, opts)
     if any(haNPV)
         indic(end+1) = "VAN_min_EUR";
     end
+
+    % Il verso va dichiarato anche per le colonne escluse: l'esclusione e' una
+    % scelta di analisi, non un modo di saltare la decisione sul verso.
+    mancantiEsclusi = setdiff(string(opts.escludiIndicatori(:)), string(O.Indicatore));
+    if ~isempty(mancantiEsclusi)
+        error('compute_indicator_agreement:esclusoNonOrientato', ...
+              'Indicatori esclusi senza verso dichiarato: %s.', ...
+              strjoin(cellstr(mancantiEsclusi), ', '));
+    end
+    indic = indic(~ismember(indic, string(opts.escludiIndicatori(:))));
 
     mancanti = indic(~ismember(indic, string(O.Indicatore)));
     if ~isempty(mancanti)
@@ -316,7 +336,7 @@ function O = local_orientamenti()
     nome = [ "MinMax_pro"; "MinMax_con"; "QoS_orig"; "QoS_new"
              "EI_orig"; "EI_new"; "Jain"
              "Gini"; "FairnessIndex"; "Sigma"; "QuoteNulle"
-             "EccessoMax_EUR"; "CoalizioniInstabili"
+             "EccessoMax_EUR"; "CoalizioniInstabili"; "EccessoMax_pct_vN"
              "ForzaIncentivante"; "AllineamentoVirtu"
              "ForzaIncentivante_lordo"; "AllineamentoVirtu_lordo"
              "VAN_min_EUR" ];
@@ -324,7 +344,7 @@ function O = local_orientamenti()
     verso = [ +1; +1; +1; +1
               +1; +1; +1
               -1; -1; -1; -1
-              -1; -1
+              -1; -1; -1
               +1; +1
               +1; +1
               +1 ];
@@ -332,7 +352,7 @@ function O = local_orientamenti()
     normativo = [ true;  true;  true;  true
                   true;  true;  true
                   true;  true;  true;  true
-                  true;  true
+                  true;  true;  true
                   false; false
                   false; false
                   true ];
@@ -353,6 +373,7 @@ function O = local_orientamenti()
                "0 = equo - membri lasciati a quota nulla"
                "piu' basso = piu' stabile (Volpato eq. 23)"
                "piu' basso = piu' stabile - sottogruppi che uscirebbero"
+               "piu' basso = piu' stabile - eccesso in % di v(N) per confronti fra taglie"
                "piu' alto = premia di piu' il sincronismo - NON un giudizio di equita'"
                "piu' alto = il premio e' piu' diretto alla virtuosita' - NON equita'"
                "come sopra - asse costruito sui profili lordi"

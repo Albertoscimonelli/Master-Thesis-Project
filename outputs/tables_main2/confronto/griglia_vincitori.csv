@@ -79,6 +79,26 @@ Sigma,18,1,27.78,CER_13_5_0,(pari),Variance Least Core = Nucleolo,0.000105572
 Sigma,18,2,50,CER_9_9_0,(pari),Variance Least Core = Nucleolo,0.000196919
 Sigma,18,3,77.78,CER_4_14_0,(pari),Variance Least Core = Nucleolo = Shapley = Tri-level EP,5.9933e-05
 Sigma,18,4,100,CER_0_18_0,(pari),Variance Least Core = Nucleolo = Shapley,3.87435e-06
+InclusioneLIHC,5,1,20,CER_4_1_0,,,NaN
+InclusioneLIHC,5,2,40,CER_3_2_0,,,NaN
+InclusioneLIHC,5,3,60,CER_2_3_0,,,NaN
+InclusioneLIHC,5,4,100,CER_0_5_0,,,NaN
+InclusioneLIHC,8,1,25,CER_6_2_0,(pari),Tri-level EP = Proportional to Consumption,0.0511285
+InclusioneLIHC,8,2,50,CER_4_4_0,(pari),Cascading Tree = Weighted Solidarity,0.0711901
+InclusioneLIHC,8,3,75,CER_2_6_0,Weighted Solidarity,Weighted Solidarity,0.133304
+InclusioneLIHC,8,4,100,CER_0_8_0,(pari),Tri-level EP = Pearson Key,0.114606
+InclusioneLIHC,10,1,30,CER_7_3_0,Cascading Tree,Cascading Tree,0.591224
+InclusioneLIHC,10,2,50,CER_5_5_0,(pari),Cascading Tree = Weighted Solidarity,0.0886589
+InclusioneLIHC,10,3,80,CER_2_8_0,(pari),Weighted Solidarity = Proportional to Consumption,0.0642044
+InclusioneLIHC,10,4,100,CER_0_10_0,(pari),Tri-level EP = Pearson Key,0.14059
+InclusioneLIHC,15,1,26.67,CER_11_4_0,Cascading Tree,Cascading Tree,0.65636
+InclusioneLIHC,15,2,53.33,CER_7_8_0,(pari),Cascading Tree = Weighted Solidarity,0.101504
+InclusioneLIHC,15,3,73.33,CER_4_11_0,(pari),Weighted Solidarity = Cascading Tree,0.0618039
+InclusioneLIHC,15,4,100,CER_0_15_0,(pari),Tri-level EP = Pearson Key,0.220624
+InclusioneLIHC,18,1,27.78,CER_13_5_0,Cascading Tree,Cascading Tree,0.701071
+InclusioneLIHC,18,2,50,CER_9_9_0,Cascading Tree,Cascading Tree,0.131076
+InclusioneLIHC,18,3,77.78,CER_4_14_0,Weighted Solidarity,Weighted Solidarity,0.122908
+InclusioneLIHC,18,4,100,CER_0_18_0,(pari),Tri-level EP = Pearson Key,0.260724
 EccessoMax_EUR,5,1,20,CER_4_1_0,(pari),Nucleolo = Variance Least Core = Shapley = Cascading Tree,0.000233257
 EccessoMax_EUR,5,2,40,CER_3_2_0,(pari),Nucleolo = Variance Least Core,0.000275059
 EccessoMax_EUR,5,3,60,CER_2_3_0,(pari),Nucleolo = Variance Least Core = Tri-level EP,0.000198354

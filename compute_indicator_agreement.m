@@ -335,7 +335,7 @@ function O = local_orientamenti()
 %             punteggio aggregato di equita'.
     nome = [ "MinMax_pro"; "MinMax_con"; "QoS_orig"; "QoS_new"
              "EI_orig"; "EI_new"; "Jain"
-             "Gini"; "FairnessIndex"; "Sigma"; "QuoteNulle"
+             "Gini"; "FairnessIndex"; "Sigma"; "QuoteNulle"; "InclusioneLIHC"
              "EccessoMax_EUR"; "CoalizioniInstabili"; "EccessoMax_pct_vN"
              "ForzaIncentivante"; "AllineamentoVirtu"
              "ForzaIncentivante_lordo"; "AllineamentoVirtu_lordo"
@@ -343,7 +343,7 @@ function O = local_orientamenti()
 
     verso = [ +1; +1; +1; +1
               +1; +1; +1
-              -1; -1; -1; -1
+              -1; -1; -1; -1; +1
               -1; -1; -1
               +1; +1
               +1; +1
@@ -351,7 +351,7 @@ function O = local_orientamenti()
 
     normativo = [ true;  true;  true;  true
                   true;  true;  true
-                  true;  true;  true;  true
+                  true;  true;  true;  true; true
                   true;  true;  true
                   false; false
                   false; false
@@ -371,6 +371,7 @@ function O = local_orientamenti()
                "0 = equo - distanza dal merito (Casalicchio eq. 14)"
                "0 = equo - dispersione dello scostamento dal merito"
                "0 = equo - membri lasciati a quota nulla"
+               "piu' alto = piu' valore ai vulnerabili LIHC (1 = in proporzione al loro numero)"
                "piu' basso = piu' stabile (Volpato eq. 23)"
                "piu' basso = piu' stabile - sottogruppi che uscirebbero"
                "piu' basso = piu' stabile - eccesso in % di v(N) per confronti fra taglie"

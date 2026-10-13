@@ -975,6 +975,52 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 > 4. Jain e MinMax hanno un pavimento 1/n: le loro inversioni nello sweep di taglia possono
 >    venire dal pavimento e non dai metodi.
 
+### 7.7 Inclusione: quanto va ai vulnerabili LIHC (`inclusion_index.m`)
+
+> ⚠ **DA FARE (Alberto) prima del run finale: compilare tre dati in
+> `CER_configuration/scenario_economico.txt`**, con la fonte accanto. Oggi sono a `?` e il
+> codice usa i segnaposto del Tri-level EP, dichiarandoli a ogni esecuzione:
+>
+> | Chiave | Cosa è | Segnaposto oggi | Fonte suggerita |
+> |---|---|---:|---|
+> | `[POVERTA_ENERGETICA].mediana_spesa_energetica_EUR` | P50: mediana nazionale della spesa energetica annua delle famiglie (elettricità + gas) | 1 323 € | Istat, spese per consumi delle famiglie; ARERA |
+> | `[POVERTA_ENERGETICA].soglia_poverta_EUR_percettore` | y*: soglia di povertà per percettore di reddito | 10 052 € | Istat / Eurostat, soglia di povertà relativa |
+> | `[MERCATO].markup_retail` | rapporto fra prezzo finale in bolletta e PUN all'ingrosso | ×2,5 | ARERA, prezzi domestici di riferimento |
+>
+> Sono questi tre numeri a decidere **chi** è vulnerabile; con i segnaposto lo è una sola
+> famiglia (`household_2`) in tutte le comunità da 8 membri in su, nessuna a 5. Dopo averli
+> compilati va rifatto il run: cambia l'indicatore e, con esso, il Tri-level EP.
+
+È la nozione di *inclusione* della domanda di ricerca. Per ogni metodo:
+
+```
+Incl_k = ( quota di v(N) che il metodo k dà ai vulnerabili ) / ( vulnerabili / membri )
+```
+
+Esempio: 10 membri, 1 vulnerabile, v(N) = 500 €. Un metodo che gli dà 50 € vale
+(50/500)/(1/10) = **1**, cioè in proporzione al suo numero, come l'Equal Split; uno che
+gliene dà 25 vale **0,5**. Senza vulnerabili l'indice è `NaN` ("non calcolabile", non
+"esclusi"). Chi è vulnerabile lo decide l'indice LIHC (`lihc_index.m`) con la **stessa**
+classificazione del Tri-level EP: la regola sta in un posto solo. La colonna è
+`Tfair.InclusioneLIHC`, verso "più alto = più inclusivo"; `MAIN2.m` §3t verifica che l'Equal
+Split valga 1.
+
+**Cosa dice oggi, coi segnaposto** (20 comunità fino a 18 membri, run del 13 ottobre 2026):
+
+- l'indice è definito in 16 comunità su 20 (le quattro da 5 membri non hanno vulnerabili);
+- sotto il 100% di penetrazione va da circa 0,1 (Similarity-Utilization, che premia il
+  sincronismo e quindi non la famiglia vulnerabile) a 1,3-1,8 (Cascading Tree, Weighted
+  Solidarity); al 100% il massimo è il Tri-level EP (≈4,3), che riserva per costruzione una
+  quota ai vulnerabili;
+- concorda poco con gli altri indicatori (τ medio fra −0,14 e +0,19), e va contro
+  l'allineamento alla virtuosità (−0,36 netto, −0,60 lordo): è una nozione a sé, non un
+  doppione;
+- cambia graduatoria nel 63% delle coppie lungo la penetrazione: misura **una** famiglia, e
+  ogni composizione la tratta in modo diverso. È il primo numero da rileggere coi dati veri.
+
+Verifica: aggiungere la colonna lascia identici al bit quote, VAN, `Tfair`, punteggi, τ e
+tolleranze di tutti gli altri indicatori; nelle tabelle cambiano solo le righe nuove.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di `MAIN.m`: è uno script indipendente che
@@ -1251,6 +1297,9 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 12. Limitazioni note / TODO
 
+- **DA FARE (Alberto): compilare P50, y* e markup in `scenario_economico.txt`** prima del
+  run finale. Decidono chi è vulnerabile LIHC, quindi l'indicatore di inclusione e il
+  Tri-level EP. Chiavi, segnaposto attuali e fonti suggerite in §7.7.
 - **I dati mancanti sono ora elencati dal codice, non da questa lista.** `load_cer_input`
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è

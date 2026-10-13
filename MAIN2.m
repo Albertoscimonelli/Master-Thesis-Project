@@ -460,7 +460,7 @@ for iCER = 1:N_CER
     fprintf('\n=== Bilancio CER annuale ===\n');
     fprintf('  Energia condivisa: %9.1f kWh\n', shared_annual);
     fprintf('  Energia non condivisa: %9.1f kWh\n', sold_annual);
-    fprintf('  Energia immessa:   %9.1f kWh  (venduta per intero, §3)\n', ...
+    fprintf('  Energia immessa:   %9.1f kWh  (venduta per intero, sez. 3)\n', ...
             shared_annual + sold_annual);
 
 
@@ -1555,6 +1555,33 @@ for iCER = 1:N_CER
     FZ    = compute_incentive_strength([metodi.phi], SU,  [metodi.nome], optFZ);
     FZl   = compute_incentive_strength([metodi.phi], SUl, [metodi.nome], optFZ);
 
+    % --- Inclusione: quanto va ai vulnerabili LIHC (revisione 13/10/2026) ---
+    % La nozione di "inclusion" della domanda di ricerca. Chi e' vulnerabile lo
+    % decide la STESSA classificazione LIHC del Tri-level EP (§3r), con gli
+    % stessi parametri di scenario: la regola sta in un posto solo. 1 = i
+    % vulnerabili ricevono in proporzione al loro numero (Equal Split); NaN =
+    % nessun vulnerabile in questa comunita'. Vedi help inclusion_index.
+    INC = inclusion_index([metodi.phi], TL.isVulnerable, [metodi.nome]);
+
+    % P50, y* e markup decidono CHI e' vulnerabile: finche' sono a '?' il
+    % Tri-level usa i propri segnaposto, e l'indicatore poggia su quelli.
+    parSegnaposto = strings(0, 1);
+    if ~CFG.noto.poverta.mediana_spesa_energetica_EUR,  parSegnaposto(end+1) = "mediana_spesa_energetica_EUR"; end
+    if ~CFG.noto.poverta.soglia_poverta_EUR_percettore, parSegnaposto(end+1) = "soglia_poverta_EUR_percettore"; end
+    if ~CFG.noto.mercato.markup_retail,                 parSegnaposto(end+1) = "markup_retail"; end
+    fprintf('\n=== Inclusione (vulnerabili LIHC) ===\n');
+    fprintf('  Vulnerabili: %d su %d membri', INC.nVulnerable, nUsers);
+    if INC.nVulnerable > 0
+        fprintf(' (%s)\n', strjoin(cellstr(userNames(TL.isVulnerable)), ', '));
+    else
+        fprintf(' - indicatore non definito (NaN) in questa comunita''\n');
+    end
+    if ~isempty(parSegnaposto)
+        fprintf(['  ATTENZIONE: chi e'' vulnerabile dipende da parametri ancora a ''?'':\n' ...
+                 '    %s\n  (default del Tri-level, README par. 7.7). Da compilare in scenario_economico.txt.\n'], ...
+                strjoin(parSegnaposto, ', '));
+    end
+
     % --- Tabella di confronto -------------------------------------------------
     % MAIN2 (Fase 2): fuori MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new
     % e Jain. EI_orig resta perche' lo usano plot_cer_comparison_main2 e
@@ -1571,11 +1598,11 @@ for iCER = 1:N_CER
     Tfair = table([metodi.nome].', ...
                   cellfun(@(F) F.eiOrig,    FIND), ...
                   cellfun(@(F) F.gini,      FIND), ...
-                  BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+                  BM.FI, BM.sigma, INC.index, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
                   100 * EX.maxExcess / ES.vGrand, ...
                   FZ.IS, FZ.align, FZl.IS, FZl.align, ...
                   'VariableNames', {'Metodo', 'EI_orig', ...
-                                    'Gini', 'FairnessIndex', 'Sigma', ...
+                                    'Gini', 'FairnessIndex', 'Sigma', 'InclusioneLIHC', ...
                                     'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili', ...
                                     'EccessoMax_pct_vN', ...
                                     'ForzaIncentivante', 'AllineamentoVirtu', ...
@@ -1654,6 +1681,13 @@ for iCER = 1:N_CER
     iES = find([metodi.nome] == "Equal Split", 1);
     assert(abs(Tfair.EI_orig(iES) - 1) < 1e-12, ...
            'Indici di equita'': EI originale dell''Equal Split diverso da 1');
+
+    % Stessa ancora per l'inclusione: parti uguali danno ai vulnerabili
+    % esattamente la loro quota di membri, quindi l'indice vale 1.
+    if INC.nVulnerable > 0
+        assert(abs(Tfair.InclusioneLIHC(iES) - 1) < 1e-12, ...
+               'Inclusione: l''Equal Split non vale 1');
+    end
 
     % La normalizzazione dell'eq. 10 di Cremers coincide con l'eq. 13 di
     % Casalicchio: MC.phi/v(N) E' la distribuzione di riferimento. Quindi la

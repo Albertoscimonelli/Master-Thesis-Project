@@ -173,6 +173,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
 | `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
+| `inclusion_index.m` | Indicatore di **inclusione**: quota di v(N) ai vulnerabili LIHC rispetto al loro numero (§7.7) |
+| `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
+| `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -1020,6 +1023,74 @@ Split valga 1.
 
 Verifica: aggiungere la colonna lascia identici al bit quote, VAN, `Tfair`, punteggi, τ e
 tolleranze di tutti gli altri indicatori; nelle tabelle cambiano solo le righe nuove.
+
+### 7.8 Quanto costano i trade-off, e quali indicatori bastano
+
+Le ultime due clausole della domanda di ricerca: (ii) *quanto* si perde su una nozione per
+guadagnare su un'altra, e (iii) quale sottoinsieme minimo di indicatori basta. Le calcola
+`MAIN2.m` §7c, dopo le sintesi della §7.6, e le scrive in `outputs/tables_main2/sintesi/`.
+Numeri sulle 20 comunità fino a 18 membri, run del 13 ottobre 2026.
+
+#### (ii) Perdite fra criteri (`tradeoff_losses.m`)
+
+**Rimpianto** di un metodo su un indicatore: quanto dista dal migliore, in quota
+dell'escursione fra i metodi di quella comunità. 0 = è il migliore, 1 = è il peggiore. Sugli
+indicatori in euro c'è anche la distanza in euro, e per l'eccesso di coalizione in % di v(N).
+File: `rimpianto_per_comunita.csv`, `rimpianto_medio.csv`.
+
+**Perdita fra criteri**: si sceglie il metodo migliore sul criterio A e si legge il suo
+rimpianto sul criterio B. Esempio: il migliore sul Gini è l'Equal Split; se il suo eccesso è
+100 € su un'escursione fra 0 e 120 €, la perdita vale 100/120 = 0,83. Se su A più metodi sono
+a pari (soglia di rilevanza della §7.6) si danno due letture: *ottimistica* (fra i pari, il
+migliore su B) e *pessimistica* (il peggiore). La matrice non è simmetrica. File:
+`perdite_tradeoff.csv` (medie), `perdite_tradeoff_fascia.csv`, `perdite_dettaglio.csv`.
+
+| Scelgo il migliore su… | perdo su uniformità (Gini) | su stabilità (eccesso) | su incentivo | su inclusione |
+|---|---:|---:|---:|---:|
+| uniformità (Gini) | — | 0,72 (eccesso = 20% di v(N)) | 0,79 | 0,57 |
+| stabilità (eccesso) | 0,61 | — | 0,24 | 0,39 |
+| merito (Fairness Index) | 0,65 | 0 | 0,32 | 0,56 |
+| incentivo (forza incentivante) | 0,93 | 0,29 (6,6% di v(N)) | — | 0,46 |
+| inclusione (LIHC) | 0,56 | 0,67 (19,6% di v(N)) | 0,62 | — |
+
+Lettura ottimistica, media sulle comunità. **Merito e stabilità non si fanno concorrenza**
+(perdita 0 nei due versi); **uniformità e incentivo sono i due criteri più in conflitto**
+(chi vince su uno sta quasi in fondo sull'altro).
+
+#### (iii) Sottoinsieme minimo (`indicator_clusters.m`)
+
+Due indicatori con τ medio vicino a +1 ordinano i metodi allo stesso modo: tenerli entrambi
+non aggiunge informazione. Distanza `d = 1 − τ medio`, raggruppamento gerarchico
+*average-linkage* scritto a mano, taglio a τ ≥ 0,5 (sensibilità a 0,7 e 0,3), e per ogni
+gruppo il membro con il τ medio più alto verso gli altri. File: `cluster_fusioni.csv`,
+`cluster_gruppi.csv`, `cluster_sufficienza.csv`, `cluster_pareto.csv`.
+
+| Gruppo | Indicatori | Rappresentante |
+|---|---|---|
+| uniformità | EI, Gini, VAN_min | EI |
+| merito e stabilità | Fairness Index, σ, coalizioni instabili, eccesso | σ |
+| inclusione | InclusioneLIHC | InclusioneLIHC |
+| incentivo (netto) | forza incentivante, allineamento | forza incentivante |
+| incentivo (lordo) | allineamento lordo | allineamento lordo |
+
+Cinque gruppi sia a τ ≥ 0,7 sia a 0,5; a 0,3 i due assi dell'incentivo si fondono e i gruppi
+diventano quattro. Il VAN del membro peggiore cade nel gruppo dell'uniformità (τ 0,81): dopo
+la correzione della §5.2 lo massimizza l'Equal Split.
+
+**Basta davvero?** Due prove.
+
+- *Concordanza delle coppie*: per ogni indicatore, la quota di coppie di metodi che il suo
+  rappresentante ordina nello stesso verso. Va da 0,95 (VAN_min) a 1,00: togliere gli altri
+  indicatori perde al più il 5% degli ordinamenti.
+- *Fronte di Pareto* con i 5 rappresentanti contro gli 11 indicatori: coincide in 8 comunità
+  su 20. Dove non coincide, coi soli rappresentanti escono dal fronte da uno a tre metodi
+  (spesso lo Shapley) che restavano non dominati solo grazie a differenze **dentro** un
+  gruppo, per esempio fra eccesso e σ. Il sottoinsieme conserva le graduatorie; il fronte
+  completo distingue in più solo sfumature interne a una stessa nozione.
+
+> La scelta del rappresentante è algoritmica. Per la tesi può essere preferibile, a parità di
+> concordanza, l'indicatore più leggibile del gruppo (l'eccesso in euro invece di σ): la
+> concordanza dell'eccesso con σ è 0,98.
 
 ## 8. Dimensionamento impianto PV (standalone)
 

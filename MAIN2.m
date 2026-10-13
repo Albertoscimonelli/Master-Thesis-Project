@@ -2457,6 +2457,41 @@ if N_CER > 1
     % Shapley esatto c'e'; sopra i 18 membri deve restare sul fronte.
     SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi, ...
                                                   'escludiMetodi', strings(0, 1)));
+
+    % --- Punti (ii) e (iii) della domanda (revisione 13/10/2026) --------------
+    % (ii) QUANTO costa un criterio in termini di un altro: il rimpianto di
+    %      ogni metodo e la perdita su B di chi vince su A (help tradeoff_losses).
+    % (iii) QUALI indicatori bastano: gruppi di indicatori che ordinano i metodi
+    %      allo stesso modo, un rappresentante per gruppo, e due prove che il
+    %      sottoinsieme basti (help indicator_clusters).
+    PERD = tradeoff_losses(AGR, RESULTS);
+    CLUS = indicator_clusters(AGR);
+
+    fprintf('\n=== Sottoinsieme minimo di indicatori (tau medio >= 0.5) ===\n');
+    gP = CLUS.gruppi(CLUS.gruppi.TaglioTau == 0.5, :);
+    for g = 1:height(gP)
+        fprintf('  %-26s <- %s\n', gP.Rappresentante(g), gP.Indicatori(g));
+    end
+    fprintf('  Concordanza delle coppie con il rappresentante: minima %.3f\n', ...
+            min(CLUS.sufficienza.ConcordanzaCoppie(CLUS.sufficienza.TaglioTau == 0.5)));
+    fprintf('  Fronte di Pareto uguale con i soli rappresentanti: %d comunita'' su %d\n', ...
+            nnz(CLUS.pareto.Coincidono), height(CLUS.pareto));
+    if ~isempty(CLUS.esclusi)
+        fprintf('  Non ammessi (discriminano in poche comunita''): %s\n', strjoin(CLUS.esclusi, ', '));
+    end
+
+    if CSV.esporta
+        save_tables(cartellaSintesi, struct( ...
+            'rimpianto_per_comunita', PERD.rimpianto, ...
+            'rimpianto_medio',        PERD.rimpiantoMedio, ...
+            'perdite_tradeoff',       PERD.perdite, ...
+            'perdite_tradeoff_fascia', PERD.perditeFascia, ...
+            'perdite_dettaglio',      PERD.perditeDettaglio, ...
+            'cluster_fusioni',        CLUS.fusioni, ...
+            'cluster_gruppi',         CLUS.gruppi, ...
+            'cluster_sufficienza',    CLUS.sufficienza, ...
+            'cluster_pareto',         CLUS.pareto));
+    end
 end
 
 %% ========================================================================

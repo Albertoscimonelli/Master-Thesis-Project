@@ -146,6 +146,22 @@ CSV = struct( ...
     'esporta',  true, ...
     'cartella', "outputs/tables_main2");   % MAIN2: non sovrascrive MAIN
 
+% MAIN2: cartella di uscita facoltativa da fuori, come MAIN2_SCHEDE. Serve a
+% tenere separati due run sullo stesso codice: le comunita' fino a 18 membri
+% (tutti i metodi, stabilita' compresa) e la griglia fino a 25 (solo i metodi
+% che scalano, perche' compute_indicator_agreement tiene i metodi comuni a
+% TUTTE le comunita'). Per esempio MAIN2_CARTELLA="griglia25" scrive in
+% outputs/tables_main2_griglia25 e outputs/figures_main2_griglia25. Vuota =
+% le cartelle di sempre.
+SUFFISSO = strtrim(string(getenv("MAIN2_CARTELLA")));
+if strlength(SUFFISSO) > 0
+    assert(~isempty(regexp(SUFFISSO, '^[A-Za-z0-9_-]+$', 'once')), ...
+           'MAIN2_CARTELLA: solo lettere, cifre, _ e - (ricevuto "%s")', SUFFISSO);
+    CSV.cartella = CSV.cartella + "_" + SUFFISSO;
+    FIG.cartella = FIG.cartella + "_" + SUFFISSO;
+end
+fprintf('  Tabelle in %s\n', CSV.cartella);
+
 
 % --- Cronometro dell'intera esecuzione ------------------------------------
 %  tic con un identificatore esplicito, non il tic/toc globale: quello e' uno
@@ -419,12 +435,25 @@ for iCER = 1:N_CER
     %  2) ELABORAZIONE ENERGETICA (CER)
     %
     %  Per ogni ora:
-    %    energia condivisa = min(produzione_PV, richiesta_totale)
-    %    energia venduta   = max(0, produzione_PV - richiesta_totale)
+    %    energia immessa       = eccedenza PV dopo l'autoconsumo dei proprietari
+    %    energia condivisa     = min(immessa, richiesta residua)
+    %    energia non condivisa = max(0, immessa - richiesta residua)
+    %
+    %  Condivisa e non condivisa sono le due PARTI dell'energia immessa, non due
+    %  destinazioni alternative: la condivisione e' virtuale (Regole Operative
+    %  GSE 16/07/2025, Appendice A, p. 155: l'energia condivisa e' "il minimo tra
+    %  l'energia elettrica immessa ai fini della condivisione e l'energia
+    %  elettrica prelevata"). Il produttore vende TUTTA l'immessa (§3). La
+    %  variabile sold conserva il nome storico ma e' la sola parte NON condivisa:
+    %  serve al bilancio energetico e agli indicatori di Dynge, non al ricavo.
     %  ========================================================================
 
-    shared = min(genPVSurplus, loadTotalForShare);      % energia condivisa CER   [kWh/h]
-    sold   = max(0, genPVSurplus - loadTotalForShare);  % surplus immesso in rete [kWh/h]
+    shared = min(genPVSurplus, loadTotalForShare);      % energia condivisa CER      [kWh/h]
+    sold   = max(0, genPVSurplus - loadTotalForShare);  % immessa NON condivisa      [kWh/h]
+
+    % Identita' del bilancio: le due parti ricompongono l'immessa, ora per ora.
+    assert(max(abs(shared + sold - genPVSurplus)) < 1e-9 * max(1, max(genPVSurplus)), ...
+           'Bilancio: condivisa + non condivisa diversa dall''energia immessa');
 
     % Riorganizzazione in matrici 24 x 365 (riga = ora 0..23, colonna = giorno)
     % Nota: demand_24x365/gen_24x365 usano i valori "grezzi" (intera comunita' e
@@ -446,7 +475,9 @@ for iCER = 1:N_CER
 
     fprintf('\n=== Bilancio CER annuale ===\n');
     fprintf('  Energia condivisa: %9.1f kWh\n', shared_annual);
-    fprintf('  Energia venduta:   %9.1f kWh\n', sold_annual);
+    fprintf('  Energia non condivisa: %9.1f kWh\n', sold_annual);
+    fprintf('  Energia immessa:   %9.1f kWh  (venduta per intero, sez. 3)\n', ...
+            shared_annual + sold_annual);
 
 
     %% ========================================================================
@@ -456,39 +487,52 @@ for iCER = 1:N_CER
     % Incentivo orario (TIP_h): il ricavo condiviso si somma ora per ora prima
     % di aggregare per mese, non piu' come prodotto di uno scalare costante.
     rev_shared_monthly = accumarray(monthOfHour, shared .* P_CER_h, [12 1]);  % [€]
-    rev_sold_monthly   = sold_monthly * P_SELL;                                % ricavo da energia venduta [€]
+    % --- Vendita: su TUTTA l'energia immessa ---------------------------------
+    % Fino al 13/10/2026 la vendita si calcolava sulla sola parte NON condivisa,
+    % come se il kWh condiviso fosse ceduto al vicino invece che venduto. Nella
+    % CER italiana non e' cosi': la messa a disposizione dell'impianto "rileva
+    % esclusivamente ai fini della erogazione dei benefici economici connessi
+    % alla condivisione dell'energia e, come previsto dal TIAD, non rileva ai
+    % fini della valorizzazione economica dell'energia immessa in rete che
+    % rimane liberamente definibile dal produttore" (Regole Operative GSE
+    % 16/07/2025, par. 1.2.2, p. 17). Il produttore vende quindi tutta
+    % l'immessa, e sulla parte condivisa la CER riceve in PIU' la TIP.
+    %
+    % Il lato dei consumi era gia' coerente con questa lettura: costUser (§3a)
+    % e' calcolato sul carico pieno, senza sconti per l'energia condivisa.
+    %
+    % Esempio, CER_4_1_0: 1819 kWh condivisi e 1811 non condivisi. Prima la
+    % vendita valeva 1811 x 0,11 = 199 EUR, ora (1819 + 1811) x 0,11 = 399 EUR.
+    % v(S) e le quote dei metodi non cambiano: ripartiscono la sola TIP.
+    injected_monthly   = accumarray(monthOfHour, genPVSurplus, [12 1]);       % energia immessa [kWh]
+    rev_sold_monthly   = injected_monthly * P_SELL;                           % ricavo da vendita dell'immessa [€]
     rev_tot_monthly    = rev_shared_monthly + rev_sold_monthly;
     rev_tot_annual     = sum(rev_tot_monthly);
     rev_sold_annual    = sum(rev_sold_monthly);
 
-    % ricavo da vendita diretta dell'eccedenza sul mercato: NON passa per il gioco
-    % cooperativo, va ai proprietari degli impianti (vedi §3b-§3f e
-    % plot_benefit_network.m)
+    % ricavo da vendita sul mercato: NON passa per il gioco cooperativo, va ai
+    % proprietari degli impianti (vedi §3b-§3f e plot_benefit_network.m)
 
-    % --- Vendita eccedenza attribuita a ciascun prosumer ---------------------
-    % L'eccedenza venduta e' una grandezza di comunita': si ripartisce fra i
-    % prosumer PRO-QUOTA sulla produzione oraria, che e' l'unica regola coerente
-    % col fatto che l'invenduto nasce dal surplus aggregato. Con un solo impianto
-    % si riduce esattamente ad attribuire tutto al suo proprietario.
-
-    shareGen = zeros(size(genForShare));
-    hasGen   = genPVSurplus > 0;
-    shareGen(hasGen, :) = genForShare(hasGen, :) ./ genPVSurplus(hasGen);
-    soldPerUser        = (sold(:).' * shareGen).';        % [nUsers x 1]  [kWh/anno]
-    revSoldPerPlayer   = soldPerUser * P_SELL;            % [nUsers x 1]  [EUR/anno]
+    % --- Vendita attribuita a ciascun prosumer --------------------------------
+    % Ognuno vende la PROPRIA immissione: l'eccedenza dietro il suo contatore,
+    % ora per ora. Con un solo impianto e' tutto del suo proprietario, come prima.
+    revSoldPerPlayer   = sum(genForShare, 1).' * P_SELL;  % [nUsers x 1]  [EUR/anno]
 
     assert(abs(sum(revSoldPerPlayer) - rev_sold_annual) < 1e-6 * max(1, rev_sold_annual), ...
-           'Vendita eccedenza: la ripartizione per utente non somma al totale annuo');
+           'Vendita: la ripartizione per utente non somma al totale annuo');
 
     % --- Tabella riepilogativa (12 mesi + riga totale annuo) -----------------
+    % E_venduta_kWh e' la parte NON condivisa (nome storico); Ric_venduta_E e'
+    % la vendita dell'intera immessa, quindi non e' E_venduta_kWh x P_SELL.
     Mese            = [meseNomi;                "TOTALE ANNO"];
     E_condivisa_kWh = [shared_monthly;          shared_annual];
     E_venduta_kWh   = [sold_monthly;            sold_annual];
+    E_immessa_kWh   = [injected_monthly;        sum(injected_monthly)];
     Ric_condivisa_E = [rev_shared_monthly;      sum(rev_shared_monthly)];
     Ric_venduta_E   = [rev_sold_monthly;        sum(rev_sold_monthly)];
     Ric_totale_E    = [rev_tot_monthly;         rev_tot_annual];
 
-    Treport = table(Mese, E_condivisa_kWh, E_venduta_kWh, ...
+    Treport = table(Mese, E_condivisa_kWh, E_venduta_kWh, E_immessa_kWh, ...
                     Ric_condivisa_E, Ric_venduta_E, Ric_totale_E);
 
     fprintf('\n=== Riepilogo economico mensile/annuale ===\n');
@@ -1527,19 +1571,56 @@ for iCER = 1:N_CER
     FZ    = compute_incentive_strength([metodi.phi], SU,  [metodi.nome], optFZ);
     FZl   = compute_incentive_strength([metodi.phi], SUl, [metodi.nome], optFZ);
 
+    % --- Inclusione: quanto va ai vulnerabili LIHC (revisione 13/10/2026) ---
+    % La nozione di "inclusion" della domanda di ricerca. Chi e' vulnerabile lo
+    % decide la STESSA classificazione LIHC del Tri-level EP (§3r), con gli
+    % stessi parametri di scenario: la regola sta in un posto solo. 1 = i
+    % vulnerabili ricevono in proporzione al loro numero (Equal Split); NaN =
+    % nessun vulnerabile in questa comunita'. Vedi help inclusion_index.
+    INC = inclusion_index([metodi.phi], TL.isVulnerable, [metodi.nome]);
+
+    % P50, y* e markup decidono CHI e' vulnerabile: finche' sono a '?' il
+    % Tri-level usa i propri segnaposto, e l'indicatore poggia su quelli.
+    parSegnaposto = strings(0, 1);
+    if ~CFG.noto.poverta.mediana_spesa_energetica_EUR,  parSegnaposto(end+1) = "mediana_spesa_energetica_EUR"; end
+    if ~CFG.noto.poverta.soglia_poverta_EUR_percettore, parSegnaposto(end+1) = "soglia_poverta_EUR_percettore"; end
+    if ~CFG.noto.mercato.markup_retail,                 parSegnaposto(end+1) = "markup_retail"; end
+    fprintf('\n=== Inclusione (vulnerabili LIHC) ===\n');
+    fprintf('  Vulnerabili: %d su %d membri', INC.nVulnerable, nUsers);
+    if INC.nVulnerable > 0
+        fprintf(' (%s)\n', strjoin(cellstr(userNames(TL.isVulnerable)), ', '));
+    else
+        fprintf(' - indicatore non definito (NaN) in questa comunita''\n');
+    end
+    if ~isempty(parSegnaposto)
+        fprintf(['  ATTENZIONE: chi e'' vulnerabile dipende da parametri ancora a ''?'':\n' ...
+                 '    %s\n  (default del Tri-level, README par. 7.7). Da compilare in scenario_economico.txt.\n'], ...
+                strjoin(parSegnaposto, ', '));
+    end
+
     % --- Tabella di confronto -------------------------------------------------
     % MAIN2 (Fase 2): fuori MinMax_pro, MinMax_con, QoS_orig, QoS_new, EI_new
     % e Jain. EI_orig resta perche' lo usano plot_cer_comparison_main2 e
     % l'ancora tau(EI,Gini) della §7b; CoalizioniInstabili perche' la usa
     % plot_fairness_tradeoff.
+    %
+    % MAIN2, Fase 2 della revisione (13/10/2026): l'eccesso anche in % di v(N).
+    % In euro non si confronta fra taglie: 20 EUR pesano molto in una CER che si
+    % divide 40 EUR e poco in una che se ne divide 1100. Dentro una comunita' le
+    % due colonne ordinano i metodi allo stesso modo, quindi nell'analisi di
+    % §7b ne entra una sola (la colonna in euro, a cui e' tarata la soglia di
+    % rilevanza del 5% di v(N)). QuoteNulle e ForzaIncentivante_lordo restano
+    % qui come diagnostica ma escono dall'analisi: vedi §7b.
     Tfair = table([metodi.nome].', ...
                   cellfun(@(F) F.eiOrig,    FIND), ...
                   cellfun(@(F) F.gini,      FIND), ...
-                  BM.FI, BM.sigma, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+                  BM.FI, BM.sigma, INC.index, BM.nZeroShare, EX.maxExcess, EX.nUnstable, ...
+                  100 * EX.maxExcess / ES.vGrand, ...
                   FZ.IS, FZ.align, FZl.IS, FZl.align, ...
                   'VariableNames', {'Metodo', 'EI_orig', ...
-                                    'Gini', 'FairnessIndex', 'Sigma', ...
+                                    'Gini', 'FairnessIndex', 'Sigma', 'InclusioneLIHC', ...
                                     'QuoteNulle', 'EccessoMax_EUR', 'CoalizioniInstabili', ...
+                                    'EccessoMax_pct_vN', ...
                                     'ForzaIncentivante', 'AllineamentoVirtu', ...
                                     'ForzaIncentivante_lordo', 'AllineamentoVirtu_lordo'});
     fprintf('\n=== Indicatori di equita'' per metodo ===\n');
@@ -1616,6 +1697,13 @@ for iCER = 1:N_CER
     iES = find([metodi.nome] == "Equal Split", 1);
     assert(abs(Tfair.EI_orig(iES) - 1) < 1e-12, ...
            'Indici di equita'': EI originale dell''Equal Split diverso da 1');
+
+    % Stessa ancora per l'inclusione: parti uguali danno ai vulnerabili
+    % esattamente la loro quota di membri, quindi l'indice vale 1.
+    if INC.nVulnerable > 0
+        assert(abs(Tfair.InclusioneLIHC(iES) - 1) < 1e-12, ...
+               'Inclusione: l''Equal Split non vale 1');
+    end
 
     % La normalizzazione dell'eq. 10 di Cremers coincide con l'eq. 13 di
     % Casalicchio: MC.phi/v(N) E' la distribuzione di riferimento. Quindi la
@@ -1869,7 +1957,8 @@ for iCER = 1:N_CER
     %
     %    Il flusso e' quindi:
     %      + risparmio in bolletta da autoconsumo dietro contatore
-    %      + ricavo dalla vendita dell'eccedenza          (revSoldPerPlayer, §3)
+    %      + ricavo dalla vendita dell'energia immessa    (revSoldPerPlayer, §3:
+    %        tutta l'immessa, condivisa compresa)
     %      + quota di incentivo CER                       (metodi(k).phi, §3b-3r)
     %      - OPEX degli impianti posseduti
     %      - rata del mutuo                               ([MEMBRI].mutuo_EUR_anno)
@@ -2239,7 +2328,32 @@ F1 = fase1_shapley_vs_as(RESULTS, struct( ...
         'cartellaTabelle', fullfile(CSV.cartella, "fase1"), ...
         'cartellaFigure',  fullfile(FIG.cartella, "fase1")));
 
-AGR = compute_indicator_agreement(RESULTS);
+% --- Cosa entra nell'analisi (revisione del 13/10/2026, README §7.6) -------
+% METODI. L'Adaptive Sampling Shapley approssima lo Shapley con uno scarto
+% dell'1% circa: dove lo Shapley esatto c'e' in TUTTE le comunita' lo
+% duplicherebbe, raddoppiando coppie, pareggi e presenze sul fronte. Esce da
+% tau, inversioni, vincitori e Pareto e resta in Tfair. Sopra i 18 membri lo
+% Shapley esatto non c'e', e l'AS resta come suo sostituto.
+% INDICATORI. Restano in Tfair come diagnostica, ma non sono criteri:
+%   QuoteNulle               discrimina i metodi in 1 comunita' su 20
+%   ForzaIncentivante_lordo  denominatore quasi nullo sui profili lordi:
+%                            valori fino a +-13 e inversioni nell'82% delle
+%                            serie; come controllo resta il coseno lordo
+%   EccessoMax_pct_vN        dentro una comunita' ordina come EccessoMax_EUR
+haShapleyOvunque = all(arrayfun(@(r) any([r.metodi.nome] == "Shapley"), RESULTS));
+if haShapleyOvunque
+    ESCLUSI_METODI = "Adaptive Sampling Shapley";
+else
+    ESCLUSI_METODI = strings(0, 1);
+end
+ESCLUSI_INDICATORI = ["QuoteNulle", "ForzaIncentivante_lordo", "EccessoMax_pct_vN"];
+testoEsclusi = "(nessuno)";
+if ~isempty(ESCLUSI_METODI), testoEsclusi = strjoin(ESCLUSI_METODI, ', '); end
+fprintf('\n  Fuori dall''analisi - metodi: %s; indicatori: %s\n', ...
+        testoEsclusi, strjoin(ESCLUSI_INDICATORI, ', '));
+
+AGR = compute_indicator_agreement(RESULTS, struct( ...
+          'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
 
 % --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
 % fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
@@ -2355,7 +2469,60 @@ if N_CER > 1
     cartellaSintesi = "";
     if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
     fprintf('\n=== Sintesi dei risultati ===\n');
-    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi));
+    % escludiMetodi vuoto: l'AS e' gia' escluso a monte (§7b), e solo dove lo
+    % Shapley esatto c'e'; sopra i 18 membri deve restare sul fronte.
+    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi, ...
+                                                  'escludiMetodi', strings(0, 1)));
+
+    % --- Punti (ii) e (iii) della domanda (revisione 13/10/2026) --------------
+    % (ii) QUANTO costa un criterio in termini di un altro: il rimpianto di
+    %      ogni metodo e la perdita su B di chi vince su A (help tradeoff_losses).
+    % (iii) QUALI indicatori bastano: gruppi di indicatori che ordinano i metodi
+    %      allo stesso modo, un rappresentante per gruppo, e due prove che il
+    %      sottoinsieme basti (help indicator_clusters).
+    PERD = tradeoff_losses(AGR, RESULTS);
+    CLUS = indicator_clusters(AGR);
+
+    % Sensibilita' alla soglia di rilevanza (0, 5, 10, 20% dell'escursione,
+    % con la meta' in % di v(N) sugli indicatori in euro): stessi RESULTS e
+    % stesse esclusioni di §7b, soglia diversa. Vedi help sensibilita_soglia.
+    SENS = sensibilita_soglia(RESULTS, struct( ...
+               'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
+    fprintf('\n=== Sensibilita'' alla soglia di rilevanza (quota di coppie invertite) ===\n');
+    for s = unique(SENS.perSweep.FracEscursione).'
+        q = SENS.perSweep.QuotaInvertite(SENS.perSweep.FracEscursione == s & ...
+                                         SENS.perSweep.Sweep == "penetrazione");
+        fprintf('  soglia %4.1f%% dell''escursione: penetrazione %3.0f%% - %3.0f%%\n', ...
+                100 * s, 100 * min(q), 100 * max(q));
+    end
+
+    fprintf('\n=== Sottoinsieme minimo di indicatori (tau medio >= 0.5) ===\n');
+    gP = CLUS.gruppi(CLUS.gruppi.TaglioTau == 0.5, :);
+    for g = 1:height(gP)
+        fprintf('  %-26s <- %s\n', gP.Rappresentante(g), gP.Indicatori(g));
+    end
+    fprintf('  Concordanza delle coppie con il rappresentante: minima %.3f\n', ...
+            min(CLUS.sufficienza.ConcordanzaCoppie(CLUS.sufficienza.TaglioTau == 0.5)));
+    fprintf('  Fronte di Pareto uguale con i soli rappresentanti: %d comunita'' su %d\n', ...
+            nnz(CLUS.pareto.Coincidono), height(CLUS.pareto));
+    if ~isempty(CLUS.esclusi)
+        fprintf('  Non ammessi (discriminano in poche comunita''): %s\n', strjoin(CLUS.esclusi, ', '));
+    end
+
+    if CSV.esporta
+        save_tables(cartellaSintesi, struct( ...
+            'rimpianto_per_comunita', PERD.rimpianto, ...
+            'rimpianto_medio',        PERD.rimpiantoMedio, ...
+            'perdite_tradeoff',       PERD.perdite, ...
+            'perdite_tradeoff_fascia', PERD.perditeFascia, ...
+            'perdite_dettaglio',      PERD.perditeDettaglio, ...
+            'cluster_fusioni',        CLUS.fusioni, ...
+            'cluster_gruppi',         CLUS.gruppi, ...
+            'cluster_sufficienza',    CLUS.sufficienza, ...
+            'cluster_pareto',         CLUS.pareto, ...
+            'sensibilita_soglia_sweep',     SENS.perSweep, ...
+            'sensibilita_soglia_vincitori', SENS.vincitori));
+    end
 end
 
 %% ========================================================================

@@ -336,3 +336,6 @@ CER_LoadProfiles/outputs/csv/profili_famiglie_dettaglio.csv
 # esplorazione, non referenziati da nessuna scheda CER_configuration/. Stessa
 # regola dei run sopra: si rigenerano dalla configurazione, non si versionano.
 CER_LoadProfiles/outputs/csv/profili_famiglie_HT07_*.csv
+
+# Workspace MATLAB dei run (binari da 10-14 MB): restano solo in locale, vedi outputs/workspace/LEGGIMI.md
+outputs/workspace/*.mat

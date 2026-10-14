@@ -173,6 +173,10 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni CS
 | `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
 | `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
+| `inclusion_index.m` | Indicatore di **inclusione**: quota di v(N) ai vulnerabili LIHC rispetto al loro numero (§7.7) |
+| `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
+| `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
+| `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
 | `plot_cer_comparison.m` | Confronto **fra le CER** analizzate, dopo il ciclo di `MAIN.m` (§11.1) |
 | `plot_gini_3d.m` | **Superficie 3D** del Gini: modelli × comunità × indice (§11.1) |
 | `save_figures.m`, `spread_labels.m` | Export delle figure su file (PDF+PNG) ed etichette distanziate con linea di richiamo |
@@ -242,6 +246,60 @@ da 25, che si compensano): `load_zonal_price` lo allinea **per posizione**, come
 > il montepremi del 5,46% (11 444 → 12 068 €), con l'effetto che cresce con la penetrazione
 > prosumer (+4,4% con un impianto solo, +8,1% con sette). Tutti i risultati numerici di
 > questo README sono posteriori alla correzione.
+
+### 5.2 La vendita: tutta l'energia immessa, non solo quella non condivisa
+
+**La regola.** Nella CER italiana la condivisione è **virtuale**. L'energia condivisa è «il
+minimo tra l'energia elettrica immessa ai fini della condivisione e l'energia elettrica
+prelevata» (Regole Operative GSE del 16 luglio 2025, Appendice A, p. 155): è una *parte*
+dell'energia immessa, non una sua destinazione alternativa. E la messa a disposizione
+dell'impianto verso la comunità «rileva esclusivamente ai fini della erogazione dei benefici
+economici connessi alla condivisione dell'energia e, come previsto dal TIAD, non rileva ai
+fini della valorizzazione economica dell'energia immessa in rete che rimane liberamente
+definibile dal produttore» (ivi, §1.2.2, p. 17). Il produttore vende quindi **tutta**
+l'energia immessa, e sulla parte condivisa la CER incassa **in più** la tariffa premio.
+
+**Cosa faceva il codice fino al 13 ottobre 2026.** La vendita si calcolava sulla sola parte
+non condivisa, `max(0, immessa − prelievo)`, come se il kWh condiviso fosse ceduto al vicino
+invece che venduto. Il lato dei consumi era già corretto (`costUser` è sul carico pieno,
+nessuno sconto per l'energia condivisa): i due lati non erano coerenti fra loro.
+
+| CER_4_1_0, un prosumer da 3,4 kWp | prima | dopo |
+|---|---:|---:|
+| energia immessa | 3 630 kWh | 3 630 kWh |
+| di cui condivisa / non condivisa | 1 819 / 1 811 kWh | 1 819 / 1 811 kWh |
+| vendita (0,11 €/kWh) | 1 811 × 0,11 = **199 €** | 3 630 × 0,11 = **399 €** |
+| incentivo da ripartire, `v(N)` | 233 € | 233 € |
+
+Al prosumer mancavano 200 € l'anno, cioè 2 719 € di VAN (fattore di annualità 13,59 a 4% e
+20 anni). L'errore era piccolo sulle sette comunità originali, dove la condivisa era il
+2-26% dell'immessa, ed è diventato grande sulla griglia di famiglie a bassa penetrazione,
+dove arriva al 50%.
+
+**Cosa cambia, e cosa no** (verificato sulle 20 comunità fino a 18 membri, confronto per
+chiave prima/dopo):
+
+- **non cambia** nulla di ciò che ripartisce l'incentivo: `v(S)`, le quote dei sedici
+  metodi, `Tcmp`, tutte le colonne di `Tfair`, la soglia regolatoria (che usava già
+  `immessa = condivisa + non condivisa`), la forza incentivante, le tabelle `fase1/` e
+  `quote_prosumer*`. Identici al bit;
+- **cambiano** il ricavo totale (di esattamente `condivisa × 0,11`), la vendita per membro,
+  il VAN dei prosumer (di `Δvendita × 13,59`, uguale con ogni metodo; i consumatori non
+  cambiano), il montepremi di proprietà del Tri-level EP (`TL.phiFromSold`; la colonna del
+  confronto `phiFromShared` resta identica) e quindi le righe di `VAN_min_EUR` nelle tabelle
+  di `confronto/` e `sintesi/`.
+
+| Prosumer (141 in 20 comunità) | prima | dopo |
+|---|---:|---:|
+| con VAN negativo | 103 | 48 |
+| VAN medio, fascia 1 → 4 | −1 750 → +323 € | +896 → +410 € |
+
+`VAN_min_EUR` diventa più stabile (meno inversioni lungo la penetrazione: a 18 membri da 18
+a 2 coppie) e più vicino all'uniformità: τ(VAN_min, Gini) passa da 0,58 a 0,80, e il
+metodo che lo massimizza è l'Equal Split in tutte e 20 le comunità.
+
+**Dove.** Solo in `MAIN2.m` §2-§3. `MAIN.m` resta il riferimento storico e **conserva la
+convenzione vecchia**: i suoi VAN non vanno citati.
 
 ## 6. I sedici modelli di ripartizione dei benefici
 
@@ -480,6 +538,12 @@ misurerebbe sé stessa.
 > su **sei comunità su sette**. Conclusione operativa: la graduatoria per forza incentivante
 > **va riportata su entrambi gli assi**, e una lettura sui soli profili netti sarebbe una
 > conclusione sbagliata, non una conclusione parziale.
+>
+> **Ma sull'asse lordo si legge il coseno, non l'indice** (`MAIN2.m`, 13 ottobre 2026). Sulla
+> griglia a 20 comunità la forza incentivante lorda arriva a ±13 e cambia segno al 100% di
+> penetrazione: il suo denominatore, la proiezione della regola di riferimento sull'asse
+> lordo, va quasi a zero. Resta in `Tfair` come diagnostica; nell'analisi il controllo lordo
+> è `AllineamentoVirtu_lordo`, che sta in [−1, 1] (§7.6).
 
 ### 7.1 Due indicatori esclusi, e perché
 
@@ -871,14 +935,34 @@ Con la sola tolleranza numerica (1e-6 dell'escursione) ogni scambio di posto fra
 | 10% | 910 | 808 |
 | 20% | 639 | 584 |
 
-> ⚠ Il collegamento in `MAIN2.m` §7b (sostituire il blocco della soglia sul solo `EccessoMax_EUR` con la chiamata a `apply_relevance_threshold`) non è ancora fatto: finché non lo è, il run completo usa la vecchia regola. Misura su 12 comunità; da ripetere sul run completo.
+> `MAIN2.m` §7b chiama `apply_relevance_threshold` (commit c1e0901): le inversioni e i vincitori del run completo usano già la soglia. La tabella qui sopra è misurata su 12 comunità fino a 10 membri; sulle 20 fino a 18 le inversioni a 5 membri, penetrazione, scendono dal 46% al 33% con la soglia di default (5% di v(N) sugli indicatori in euro, 10% dell'escursione sugli altri).
+
+#### 7.6 Cosa entra nell'analisi (`MAIN2.m` §7b, revisione del 13 ottobre 2026)
+
+`Tfair` contiene tutto quello che si calcola; τ, inversioni, vincitori e fronti di Pareto ne
+usano una parte. Le esclusioni passano per due opzioni di `compute_indicator_agreement`
+(`escludiMetodi`, `escludiIndicatori`, vuote di default), quindi le colonne escluse restano
+leggibili in `Tfair`.
+
+| Fuori dall'analisi | Perché | Cosa resta |
+|---|---|---|
+| **Adaptive Sampling Shapley**, se lo Shapley esatto c'è in tutte le comunità | sposta lo 0,4% di v(N) rispetto allo Shapley: contarlo due volte raddoppia coppie e presenze sul fronte | in `Tfair`; sopra i 18 membri resta nell'analisi come sostituto dello Shapley |
+| `QuoteNulle` | distingue i metodi in 1 comunità su 20 | in `Tfair`, serve a leggere la branca intera del Fairness Index |
+| `ForzaIncentivante_lordo` | sull'asse lordo il denominatore va quasi a zero: valori fino a ±13 e inversioni nell'82% delle serie | in `Tfair` come diagnostica; come controllo lordo resta il coseno `AllineamentoVirtu_lordo` |
+| `EccessoMax_pct_vN` (nuova) | dentro una comunità ordina i metodi come `EccessoMax_EUR`, su cui è tarata la soglia del 5% di v(N) | in `Tfair`, per confrontare l'eccesso **fra taglie** |
+
+Verifica (20 comunità fino a 18 membri): quote, VAN e `Tfair` identici; i punteggi dei metodi
+e degli indicatori rimasti identici; nessun vincitore cambia (200 casi su 200); il τ medio fra
+gli indicatori rimasti si muove al più di 0,03, perché si calcola su 11 metodi invece di 12.
+Le inversioni lungo la penetrazione, con la soglia di rilevanza, vanno ora dal 30% (n = 5) al
+21% (n = 18) delle coppie; lungo la taglia dal 17% (fascia 1) allo 0,5% (fascia 3).
 
 #### 7.6 Le tre sintesi (`MAIN2.m` §7c, `sintesi_risultati.m`)
 
-Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva), e non sulla griglia a 28 comunità delle tabelle di `confronto/`: vanno rigenerate insieme quando si rifà il run completo.
+Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre letture, scritte in `outputs/tables_main2/sintesi/`. **Misurate sulle 20 comunità fino a 18 membri** (soglia di rilevanza attiva). Dal 13 ottobre 2026 anche le tabelle di `outputs/tables_main2/confronto/` vengono dallo stesso run a 20 comunità (prima erano della griglia a 28, con un set di metodi più vecchio); la griglia a 28 di `outputs/tables/confronto/` è quella di `MAIN.m`. Vendita corretta come in §5.2.
 
 - **Accordo per fascia e taglia** (`tau_per_fascia`, `tau_per_taglia`, `tau_per_cella`): il tau-b medio, minimo e massimo per coppia di indicatori, con il segno che cambia o no fra le fasce. La fascia è il rango della penetrazione dentro la taglia. Esempio: tau(Gini, Fairness Index) vale +0,39 alla fascia 1 e fra −0,16 e −0,33 nelle altre; tau(Gini, forza incentivante) va da −0,08 a −0,92.
-- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 7,4 su equità + incentivo + VAN. Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
+- **Fronte di Pareto** (`pareto_per_comunita`, `pareto_conteggi`): per ogni comunità e per quattro insiemi di criteri, i metodi non dominati. Dominanza con la stessa soglia di rilevanza delle inversioni. L'Adaptive Sampling Shapley è escluso a monte, in §7b, perché duplica lo Shapley (scarto ~1%). Con la soglia i fronti sono più stretti: 4,1 metodi su 11 in media sull'insieme merito + stabilità + incentivo, 6,2 su equità + incentivo + VAN (7,4 prima della correzione della vendita, §5.2), 2,8 su equità + coseno lordo + VAN (l'incentivo lordo è il coseno, non la forza incentivante lorda: vedi sopra). Il Nucleolo e il VLC stanno sul fronte merito/stabilità/incentivo 19 volte su 20, ma **anche Tri-level EP (75%), che gira su dati segnaposto (§6)**.
 - **Quote ai prosumer** (`quote_prosumer`, `quote_prosumer_fascia`): quota di v(N) ricevuta dai prosumer e suo rapporto con la quota di membri. Lo Shapley passa da 1,73 (pochi prosumer) a 0,44 (fascia 3): premia il lato scarso, e cambia lato con la penetrazione. Pearson Key e Similarity-Utilization restano sotto 0,2 a ogni fascia (premiano chi consuma, non chi produce). Alla fascia 4 (100% prosumer) il rapporto vale 1 per costruzione.
 
 > ⚠ Il fronte dice quanto i criteri siano in conflitto, non quale metodo sia migliore. La scelta dell'insieme dei criteri e la soglia del 10% sono scelte di modello: riportare la sensibilità.
@@ -890,10 +974,189 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 >    confronto è fra tredici metodi.
 > 2. L'eccesso di coalizione (stabilità) non è calcolato sopra i 18 membri: le celle a 20 e
 >    25 del pannello di stabilità sono "n.d.".
-> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`: nelle schede attuali, le sole
->    a penetrazione 100%. La sostenibilità economica non è confrontabile lungo le fasce.
+> 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`. Sulle 20 comunità fino a 18
+>    membri c'è ovunque (verificato il 13 ottobre 2026).
 > 4. Jain e MinMax hanno un pavimento 1/n: le loro inversioni nello sweep di taglia possono
 >    venire dal pavimento e non dai metodi.
+
+### 7.7 Inclusione: quanto va ai vulnerabili LIHC (`inclusion_index.m`)
+
+> ⚠ **DA FARE (Alberto) prima del run finale: compilare tre dati in
+> `CER_configuration/scenario_economico.txt`**, con la fonte accanto. Oggi sono a `?` e il
+> codice usa i segnaposto del Tri-level EP, dichiarandoli a ogni esecuzione:
+>
+> | Chiave | Cosa è | Segnaposto oggi | Fonte suggerita |
+> |---|---|---:|---|
+> | `[POVERTA_ENERGETICA].mediana_spesa_energetica_EUR` | P50: mediana nazionale della spesa energetica annua delle famiglie (elettricità + gas) | 1 323 € | Istat, spese per consumi delle famiglie; ARERA |
+> | `[POVERTA_ENERGETICA].soglia_poverta_EUR_percettore` | y*: soglia di povertà per percettore di reddito | 10 052 € | Istat / Eurostat, soglia di povertà relativa |
+> | `[MERCATO].markup_retail` | rapporto fra prezzo finale in bolletta e PUN all'ingrosso | ×2,5 | ARERA, prezzi domestici di riferimento |
+>
+> Sono questi tre numeri a decidere **chi** è vulnerabile; con i segnaposto lo è una sola
+> famiglia (`household_2`) in tutte le comunità da 8 membri in su, nessuna a 5. Dopo averli
+> compilati va rifatto il run: cambia l'indicatore e, con esso, il Tri-level EP.
+
+È la nozione di *inclusione* della domanda di ricerca. Per ogni metodo:
+
+```
+Incl_k = ( quota di v(N) che il metodo k dà ai vulnerabili ) / ( vulnerabili / membri )
+```
+
+Esempio: 10 membri, 1 vulnerabile, v(N) = 500 €. Un metodo che gli dà 50 € vale
+(50/500)/(1/10) = **1**, cioè in proporzione al suo numero, come l'Equal Split; uno che
+gliene dà 25 vale **0,5**. Senza vulnerabili l'indice è `NaN` ("non calcolabile", non
+"esclusi"). Chi è vulnerabile lo decide l'indice LIHC (`lihc_index.m`) con la **stessa**
+classificazione del Tri-level EP: la regola sta in un posto solo. La colonna è
+`Tfair.InclusioneLIHC`, verso "più alto = più inclusivo"; `MAIN2.m` §3t verifica che l'Equal
+Split valga 1.
+
+**Cosa dice oggi, coi segnaposto** (20 comunità fino a 18 membri, run del 13 ottobre 2026):
+
+- l'indice è definito in 16 comunità su 20 (le quattro da 5 membri non hanno vulnerabili);
+- sotto il 100% di penetrazione va da circa 0,1 (Similarity-Utilization, che premia il
+  sincronismo e quindi non la famiglia vulnerabile) a 1,3-1,8 (Cascading Tree, Weighted
+  Solidarity); al 100% il massimo è il Tri-level EP (≈4,3), che riserva per costruzione una
+  quota ai vulnerabili;
+- concorda poco con gli altri indicatori (τ medio fra −0,14 e +0,19), e va contro
+  l'allineamento alla virtuosità (−0,36 netto, −0,60 lordo): è una nozione a sé, non un
+  doppione;
+- cambia graduatoria nel 63% delle coppie lungo la penetrazione: misura **una** famiglia, e
+  ogni composizione la tratta in modo diverso. È il primo numero da rileggere coi dati veri.
+
+Verifica: aggiungere la colonna lascia identici al bit quote, VAN, `Tfair`, punteggi, τ e
+tolleranze di tutti gli altri indicatori; nelle tabelle cambiano solo le righe nuove.
+
+### 7.8 Quanto costano i trade-off, e quali indicatori bastano
+
+Le ultime due clausole della domanda di ricerca: (ii) *quanto* si perde su una nozione per
+guadagnare su un'altra, e (iii) quale sottoinsieme minimo di indicatori basta. Le calcola
+`MAIN2.m` §7c, dopo le sintesi della §7.6, e le scrive in `outputs/tables_main2/sintesi/`.
+Numeri sulle 20 comunità fino a 18 membri, run del 13 ottobre 2026.
+
+#### (ii) Perdite fra criteri (`tradeoff_losses.m`)
+
+**Rimpianto** di un metodo su un indicatore: quanto dista dal migliore, in quota
+dell'escursione fra i metodi di quella comunità. 0 = è il migliore, 1 = è il peggiore. Sugli
+indicatori in euro c'è anche la distanza in euro, e per l'eccesso di coalizione in % di v(N).
+File: `rimpianto_per_comunita.csv`, `rimpianto_medio.csv`.
+
+**Perdita fra criteri**: si sceglie il metodo migliore sul criterio A e si legge il suo
+rimpianto sul criterio B. Esempio: il migliore sul Gini è l'Equal Split; se il suo eccesso è
+100 € su un'escursione fra 0 e 120 €, la perdita vale 100/120 = 0,83. Se su A più metodi sono
+a pari (soglia di rilevanza della §7.6) si danno due letture: *ottimistica* (fra i pari, il
+migliore su B) e *pessimistica* (il peggiore). La matrice non è simmetrica. File:
+`perdite_tradeoff.csv` (medie), `perdite_tradeoff_fascia.csv`, `perdite_dettaglio.csv`.
+
+| Scelgo il migliore su… | perdo su uniformità (Gini) | su stabilità (eccesso) | su incentivo | su inclusione |
+|---|---:|---:|---:|---:|
+| uniformità (Gini) | — | 0,72 (eccesso = 20% di v(N)) | 0,79 | 0,57 |
+| stabilità (eccesso) | 0,61 | — | 0,24 | 0,39 |
+| merito (Fairness Index) | 0,65 | 0 | 0,32 | 0,56 |
+| incentivo (forza incentivante) | 0,93 | 0,29 (6,6% di v(N)) | — | 0,46 |
+| inclusione (LIHC) | 0,56 | 0,67 (19,6% di v(N)) | 0,62 | — |
+
+Lettura ottimistica, media sulle comunità. **Merito e stabilità non si fanno concorrenza**
+(perdita 0 nei due versi); **uniformità e incentivo sono i due criteri più in conflitto**
+(chi vince su uno sta quasi in fondo sull'altro).
+
+#### (iii) Sottoinsieme minimo (`indicator_clusters.m`)
+
+Due indicatori con τ medio vicino a +1 ordinano i metodi allo stesso modo: tenerli entrambi
+non aggiunge informazione. Distanza `d = 1 − τ medio`, raggruppamento gerarchico
+*average-linkage* scritto a mano, taglio a τ ≥ 0,5 (sensibilità a 0,7 e 0,3), e per ogni
+gruppo il membro con il τ medio più alto verso gli altri. File: `cluster_fusioni.csv`,
+`cluster_gruppi.csv`, `cluster_sufficienza.csv`, `cluster_pareto.csv`.
+
+| Gruppo | Indicatori | Rappresentante |
+|---|---|---|
+| uniformità | EI, Gini, VAN_min | EI |
+| merito e stabilità | Fairness Index, σ, coalizioni instabili, eccesso | σ |
+| inclusione | InclusioneLIHC | InclusioneLIHC |
+| incentivo (netto) | forza incentivante, allineamento | forza incentivante |
+| incentivo (lordo) | allineamento lordo | allineamento lordo |
+
+Cinque gruppi sia a τ ≥ 0,7 sia a 0,5; a 0,3 i due assi dell'incentivo si fondono e i gruppi
+diventano quattro. Il VAN del membro peggiore cade nel gruppo dell'uniformità (τ 0,81): dopo
+la correzione della §5.2 lo massimizza l'Equal Split.
+
+**Basta davvero?** Due prove.
+
+- *Concordanza delle coppie*: per ogni indicatore, la quota di coppie di metodi che il suo
+  rappresentante ordina nello stesso verso. Va da 0,95 (VAN_min) a 1,00: togliere gli altri
+  indicatori perde al più il 5% degli ordinamenti.
+- *Fronte di Pareto* con i 5 rappresentanti contro gli 11 indicatori: coincide in 8 comunità
+  su 20. Dove non coincide, coi soli rappresentanti escono dal fronte da uno a tre metodi
+  (spesso lo Shapley) che restavano non dominati solo grazie a differenze **dentro** un
+  gruppo, per esempio fra eccesso e σ. Il sottoinsieme conserva le graduatorie; il fronte
+  completo distingue in più solo sfumature interne a una stessa nozione.
+
+> La scelta del rappresentante è algoritmica. Per la tesi può essere preferibile, a parità di
+> concordanza, l'indicatore più leggibile del gruppo (l'eccesso in euro invece di σ): la
+> concordanza dell'eccesso con σ è 0,98.
+
+### 7.9 Il run finale: due run, due cartelle (13 ottobre 2026)
+
+> ⚠ **Gira ancora con i segnaposto LIHC** (§7.7): dopo aver compilato P50, y* e markup
+> vanno rifatti entrambi i run. Cambiano l'inclusione e il Tri-level EP, non il resto.
+
+`compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità. Sopra i
+18 membri Shapley e Nucleolo non si calcolano (§14.1), quindi un run unico fino a 25 membri
+li toglierebbe anche dalle comunità piccole, e con loro la stabilità. Per questo i run sono
+due, sullo stesso codice, in cartelle diverse grazie alla variabile `MAIN2_CARTELLA` (come
+`MAIN2_SCHEDE`, vuota = cartella di sempre):
+
+| Run | Comunità | Metodi nell'analisi | Cartella | Durata |
+|---|---|---|---|---|
+| fino a 18 membri | 20 (5, 8, 10, 15, 18 × 4 fasce) | 11: tutti, AS escluso perché duplica lo Shapley | `outputs/tables_main2/` | 42 min |
+| griglia fino a 25 | 28 (+ 20 e 25 membri) | 10: senza Shapley e Nucleolo, con l'AS al loro posto | `outputs/tables_main2_griglia25/` | 2 h 28 min |
+
+```bash
+MAIN2_SCHEDE="CER_0_5_0;...;CER_13_5_0" matlab -batch "MAIN2"                          # fino a 18
+MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="CER_0_5_0;...;CER_18_7_0" matlab -batch "MAIN2" # griglia
+```
+
+L'elenco esatto delle schede è in testa ai log in `outputs/run_logs/`
+(`main2_run_2026-10-13_F6_*.log`). Il primo run riproduce al bit i risultati della §7.8.
+
+**I risultati, nei due run.**
+
+| | fino a 18 membri | griglia fino a 25 |
+|---|---|---|
+| coppie invertite lungo la penetrazione (soglia di default) | 26-33% | 22-35%, calando da 8 a 25 membri |
+| coppie invertite lungo la taglia | 0,7-21% | 5-22% |
+| primo sull'uniformità (Gini) | Equal Split 20/20 | Equal Split 28/28 |
+| primo sul merito (Fairness Index) | VLC, con Shapley e Nucleolo a pari | VLC 14/28, a pari nelle altre |
+| primo sulla stabilità | a pari in 20 comunità su 20 entro il 5% di v(N); il Nucleolo, minimo per costruzione, è sempre fra i primi | a pari in 19 comunità su 20, VLC nell'altra; n.d. sopra i 18 membri |
+| gruppi di indicatori a τ ≥ 0,5 | 5 | 4 (i due assi dell'incentivo si fondono) |
+| perdita in stabilità scegliendo l'uniformità | 0,72 (eccesso 20% di v(N)) | 0,72 (stesso valore: la stabilità esiste solo fino a 18) |
+| perdita in uniformità scegliendo l'incentivo | 0,93 | 0,93 |
+
+Sulla griglia la concordanza minima col rappresentante scende a 0,79 (allineamento lordo
+dentro il gruppo dell'incentivo), e il fronte di Pareto coi soli 4 rappresentanti coincide
+con quello completo in 1 comunità su 28: con quattro criteri invece di cinque il fronte
+completo distingue più sfumature. Il sottoinsieme minimo **regge sulle graduatorie** (le
+concordanze), meno sui fronti.
+
+**Sensibilità alla soglia di rilevanza** (`sensibilita_soglia.m`, chiamata da §7c; file
+`sensibilita_soglia_sweep.csv` e `sensibilita_soglia_vincitori.csv` in `sintesi/`). Si
+ricalcola l'analisi dagli stessi `RESULTS` con la soglia spostata, a coppie escursione /
+v(N): 0/0, 5/2,5, 10/5 (default), 20/10%.
+
+| Soglia | inversioni lungo la penetrazione, fino a 18 | griglia fino a 25 |
+|---|---:|---:|
+| 0% (solo tolleranza numerica) | 41-51% | 33-53% |
+| 5% | 32-39% | 25-41% |
+| **10% (default)** | **26-33%** | **22-35%** |
+| 20% | 19-24% | 17-25% |
+
+Le inversioni calano con la soglia ma non spariscono: la dipendenza della graduatoria dalla
+composizione **non è un effetto di differenze minime**. E il primo classificato **non cambia
+mai**: su 220 celle (indicatore × comunità) fino a 18 membri e 308 sulla griglia, a nessuna
+soglia un altro metodo prende il primo posto; cambia solo quante celle diventano "a pari" (da
+20 a 186 fino a 18). Il vincitore per nozione è robusto alla soglia.
+
+> Il run della griglia è partito prima che la sensibilità fosse collegata a §7c: i suoi due
+> file sono stati prodotti con la stessa funzione dagli stessi `RESULTS` salvati, e la riga
+> al 10% riproduce esattamente le inversioni del run.
 
 ## 8. Dimensionamento impianto PV (standalone)
 
@@ -1171,6 +1434,9 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 12. Limitazioni note / TODO
 
+- **DA FARE (Alberto): compilare P50, y* e markup in `scenario_economico.txt`** prima del
+  run finale. Decidono chi è vulnerabile LIHC, quindi l'indicatore di inclusione e il
+  Tri-level EP. Chiavi, segnaposto attuali e fonti suggerite in §7.7.
 - **I dati mancanti sono ora elencati dal codice, non da questa lista.** `load_cer_input`
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è

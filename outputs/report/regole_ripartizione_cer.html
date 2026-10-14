@@ -1,0 +1,746 @@
+<title>Regole di ripartizione CER a confronto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: relazione tecnica a due colonne. Indice fisso a sinistra con le parti della
+   domanda di ricerca, colonna di testo a ~68 caratteri, figure larghe quanto la colonna. */
+:root {
+  --carta: #f3f6f5;
+  --foglio: #fbfcfc;
+  --inchiostro: #14212a;
+  --inchiostro-2: #45525c;
+  --muto: #6c7882;
+  --filo: #d8dfde;
+  --filo-forte: #b9c4c4;
+  --ambra: #925400;
+  --ambra-velo: #f4e6cc;
+  --ok: #0b7a0b;
+  --attenzione: #a86400;
+  --critico: #c02f2f;
+
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --seq-lo: #edf3fb;
+  --seq-mid: #6da7ec;
+  --seq-hi: #0d366b;
+  --div-neg: #d6453f;
+  --div-mid: #f0efec;
+  --div-pos: #2a78d6;
+
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-testo: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --f-dati: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --t-xs: 0.75rem; --t-s: 0.875rem; --t-m: 1.0625rem; --t-l: 1.375rem; --t-xl: 1.875rem; --t-xxl: clamp(2.1rem, 4.2vw, 3.1rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --carta: #0e1417; --foglio: #141c20; --inchiostro: #e4eaec; --inchiostro-2: #b0bcc2; --muto: #84909a;
+    --filo: #26323a; --filo-forte: #3a4851; --ambra: #e3a24a; --ambra-velo: #33280f;
+    --ok: #3cc23c; --attenzione: #f0a830; --critico: #f07070;
+    --s1: #3987e5; --s2: #d95926;
+    --seq-lo: #1a2731; --seq-mid: #2f6db8; --seq-hi: #a9cdf6;
+    --div-neg: #e66767; --div-mid: #2a3236; --div-pos: #4a94ec;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --carta: #0e1417; --foglio: #141c20; --inchiostro: #e4eaec; --inchiostro-2: #b0bcc2; --muto: #84909a;
+  --filo: #26323a; --filo-forte: #3a4851; --ambra: #e3a24a; --ambra-velo: #33280f;
+  --ok: #3cc23c; --attenzione: #f0a830; --critico: #f07070;
+  --s1: #3987e5; --s2: #d95926;
+  --seq-lo: #1a2731; --seq-mid: #2f6db8; --seq-hi: #a9cdf6;
+  --div-neg: #e66767; --div-mid: #2a3236; --div-pos: #4a94ec;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--carta); color: var(--inchiostro);
+  font-family: var(--f-testo); font-size: var(--t-m); line-height: 1.6;
+  padding-inline: clamp(16px, 4vw, 48px); padding-block: 0 64px;
+}
+.pagina { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 56px; }
+@media (max-width: 880px) { .pagina { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+/* indice */
+nav.indice { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-block: 40px; }
+nav.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.indice a { display: grid; grid-template-columns: 2.4em 1fr; gap: 4px; text-decoration: none; color: var(--inchiostro-2);
+  font-family: var(--f-display); font-size: var(--t-s); padding: 6px 8px; border-radius: 4px; line-height: 1.3; }
+nav.indice a:hover { background: var(--foglio); color: var(--inchiostro); }
+nav.indice a:focus-visible, button:focus-visible { outline: 2px solid var(--ambra); outline-offset: 2px; }
+nav.indice .sigla { font-family: var(--f-dati); color: var(--ambra); font-size: var(--t-xs); padding-top: 2px; }
+nav.indice .titolo-indice { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muto); margin: 0 0 10px 8px; }
+@media (max-width: 880px) {
+  nav.indice { position: static; padding-block: 20px 0; }
+  nav.indice ol { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 6px; }
+  nav.indice a { white-space: nowrap; grid-template-columns: auto auto; }
+}
+
+main { min-width: 0; padding-block: 40px 0; }
+.colonna { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; color: var(--inchiostro); margin: 0; line-height: 1.15; }
+h1 { font-size: var(--t-xxl); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: var(--t-xl); font-weight: 600; }
+h3 { font-size: var(--t-l); font-weight: 600; }
+p { margin: 0; }
+.occhiello { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ambra); font-weight: 600; }
+.pila { display: grid; gap: 18px; }
+section { padding-block: 56px 8px; border-top: 1px solid var(--filo); display: grid; gap: 22px; }
+section:first-of-type { border-top: 0; }
+.attacco { font-size: var(--t-l); line-height: 1.5; color: var(--inchiostro-2); max-width: 60ch; }
+em { font-style: italic; }
+strong { font-weight: 600; }
+.dato { font-family: var(--f-dati); font-size: 0.92em; font-variant-numeric: tabular-nums; }
+
+/* scheda del banco di prova */
+dl.scheda { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin: 0;
+  border-top: 1px solid var(--filo-forte); border-bottom: 1px solid var(--filo-forte); }
+dl.scheda div { padding: 12px 14px 12px 0; display: grid; gap: 2px; }
+dl.scheda dt { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muto); }
+dl.scheda dd { margin: 0; font-family: var(--f-dati); font-size: var(--t-m); }
+
+/* domanda di ricerca */
+.domanda { background: var(--foglio); border: 1px solid var(--filo); border-radius: 6px; padding: 22px 24px; display: grid; gap: 14px; }
+.domanda blockquote { margin: 0; font-style: italic; color: var(--inchiostro-2); font-size: var(--t-m); }
+.parti { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.parti li { display: grid; grid-template-columns: 2.6em 1fr auto; gap: 10px; align-items: baseline; }
+.parti .sigla { font-family: var(--f-dati); color: var(--ambra); }
+.esito { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.esito.si { color: var(--ok); } .esito.parz { color: var(--attenzione); } .esito.no { color: var(--critico); }
+@media (max-width: 520px) { .parti li { grid-template-columns: 2.2em 1fr; } .parti .esito { grid-column: 2; justify-self: start; } }
+
+/* risposte */
+.risposte { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; }
+.risposta { display: grid; gap: 8px; align-content: start; }
+.risposta h3 { font-size: var(--t-m); }
+.risposta .numero { font-family: var(--f-display); font-size: var(--t-xl); font-weight: 700; color: var(--inchiostro); line-height: 1; }
+.risposta p { font-size: var(--t-s); color: var(--inchiostro-2); }
+
+/* figure */
+figure { margin: 0; display: grid; gap: 10px; }
+figcaption { display: grid; gap: 4px; }
+figcaption .fig { font-family: var(--f-display); font-weight: 600; font-size: var(--t-m); }
+figcaption .fig b { font-family: var(--f-dati); font-weight: 500; color: var(--ambra); margin-right: 8px; }
+figcaption .nota { font-size: var(--t-s); color: var(--muto); max-width: 70ch; }
+.tavola { background: var(--foglio); border: 1px solid var(--filo); border-radius: 6px; padding: 14px; overflow-x: auto; }
+.tavola svg { display: block; max-width: none; }
+.tavola svg text { font-family: var(--f-dati); }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--f-display); font-size: var(--t-s); color: var(--inchiostro-2); }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.legenda i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.legenda i.punto { width: 9px; height: 9px; border-radius: 50%; }
+.legenda i.scala { width: 90px; height: 10px; border-radius: 2px; }
+.due { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; }
+
+/* tabelle */
+table.dati { border-collapse: collapse; font-size: var(--t-s); width: 100%; }
+table.dati th, table.dati td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--filo); white-space: nowrap; }
+table.dati th { font-family: var(--f-display); font-weight: 600; color: var(--inchiostro-2); font-size: var(--t-xs); letter-spacing: 0.04em; text-transform: uppercase; }
+table.dati td { font-family: var(--f-dati); font-variant-numeric: tabular-nums; }
+table.dati th:first-child, table.dati td:first-child { text-align: left; font-family: var(--f-display); }
+table.dati tr.fuori td { color: var(--muto); }
+table.dati td small { color: var(--muto); font-size: 0.85em; }
+
+/* gruppi di indicatori */
+.gruppi { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.gruppo { border: 1px solid var(--filo); border-radius: 6px; padding: 14px; background: var(--foglio); display: grid; gap: 8px; align-content: start; }
+.gruppo .nome { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muto); }
+.gruppo .rap { font-family: var(--f-display); font-weight: 600; font-size: var(--t-m); }
+.gruppo ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: var(--t-s); color: var(--inchiostro-2); }
+.gruppo li { display: flex; justify-content: space-between; gap: 8px; }
+.gruppo li .dato { color: var(--muto); }
+
+/* cosa manca */
+.mancanze { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--filo-forte); }
+.mancanze li { display: grid; grid-template-columns: 7.5em 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--filo); }
+.mancanze .stato { font-family: var(--f-display); font-size: var(--t-xs); letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; padding-top: 3px; }
+.mancanze .stato.bloccante { color: var(--critico); } .mancanze .stato.dati { color: var(--attenzione); } .mancanze .stato.testo { color: var(--inchiostro-2); }
+.mancanze h3 { font-size: var(--t-m); margin-bottom: 4px; }
+.mancanze p { font-size: var(--t-s); color: var(--inchiostro-2); }
+@media (max-width: 520px) { .mancanze li { grid-template-columns: 1fr; gap: 4px; } }
+
+.avviso { border-left: 3px solid var(--ambra); background: var(--ambra-velo); padding: 12px 16px; font-size: var(--t-s); border-radius: 0 4px 4px 0; max-width: 72ch; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--filo); font-size: var(--t-xs); color: var(--muto); font-family: var(--f-dati); display: grid; gap: 4px; }
+
+#suggerimento { position: fixed; pointer-events: none; z-index: 10; background: var(--inchiostro); color: var(--carta);
+  font-family: var(--f-dati); font-size: var(--t-xs); padding: 6px 9px; border-radius: 4px; max-width: 280px; line-height: 1.4; }
+.bottoni { display: inline-flex; border: 1px solid var(--filo-forte); border-radius: 6px; overflow: hidden; }
+.bottoni button { font-family: var(--f-display); font-size: var(--t-s); background: transparent; color: var(--inchiostro-2); border: 0; padding: 6px 12px; cursor: pointer; }
+.bottoni button[aria-pressed="true"] { background: var(--inchiostro); color: var(--carta); }
+@media (prefers-reduced-motion: no-preference) { nav.indice a, .bottoni button { transition: background 120ms, color 120ms; } }
+</style>
+
+<div class="pagina">
+  <nav class="indice" aria-label="Indice">
+    <p class="titolo-indice">Indice</p>
+    <ol>
+      <li><a href="#sintesi"><span class="sigla">—</span><span>Sintesi</span></a></li>
+      <li><a href="#banco"><span class="sigla">0</span><span>Banco di prova</span></a></li>
+      <li><a href="#nozione"><span class="sigla">(i)</span><span>Nozione di equità</span></a></li>
+      <li><a href="#comunita"><span class="sigla">(i)</span><span>Taglia e penetrazione</span></a></li>
+      <li><a href="#costi"><span class="sigla">(ii)</span><span>Quanto costa scegliere</span></a></li>
+      <li><a href="#indicatori"><span class="sigla">(iii)</span><span>Indicatori che bastano</span></a></li>
+      <li><a href="#complementari"><span class="sigla">+</span><span>Stabilità, incentivo, VAN</span></a></li>
+      <li><a href="#manca"><span class="sigla">!</span><span>Cosa manca</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="sintesi">
+      <div class="pila colonna">
+        <p class="occhiello">Tesi magistrale · comunità energetiche rinnovabili · run del 13 ottobre 2026</p>
+        <h1>Regole di ripartizione CER a confronto</h1>
+        <p class="attacco">Undici regole si dividono lo stesso incentivo, la tariffa premio oraria sull'energia condivisa, in 20 comunità di famiglie da 5 a 18 membri, e in 28 fino a 25. Qui sono raccolti i risultati sulle tre parti della domanda di ricerca e quello che manca per chiudere il lavoro.</p>
+      </div>
+      <dl class="scheda">
+        <div><dt>Comunità</dt><dd>20 <span class="dato" style="color:var(--muto)">+ 8 fino a 25</span></dd></div>
+        <div><dt>Regole confrontate</dt><dd>11 <span class="dato" style="color:var(--muto)">10 sopra 18</span></dd></div>
+        <div><dt>Indicatori</dt><dd>10 in analisi</dd></div>
+        <div><dt>Risoluzione</dt><dd>8 760 h/anno</dd></div>
+        <div><dt>Incentivo</dt><dd>TIP oraria, DM 414/2023</dd></div>
+      </dl>
+      <div class="domanda">
+        <p class="occhiello">La domanda di ricerca</p>
+        <blockquote>Quando un anno di profili orari viene ripartito da regole di famiglie diverse, (i) la graduatoria cambia con la nozione di equità e con taglia, penetrazione e composizione della comunità? (ii) Quanto sono grandi i trade-off fra le nozioni, forza incentivante compresa? (iii) Quale sottoinsieme minimo di indicatori basta a distinguere le regole?</blockquote>
+        <ul class="parti">
+          <li><span class="sigla">(i)</span><span>Nozione di equità, taglia, penetrazione</span><span class="esito si">risposta</span></li>
+          <li><span class="sigla">(i)</span><span>Composizione per categoria</span><span class="esito no">manca</span></li>
+          <li><span class="sigla">(ii)</span><span>Entità dei trade-off</span><span class="esito si">risposta</span></li>
+          <li><span class="sigla">(iii)</span><span>Sottoinsieme minimo di indicatori</span><span class="esito si">risposta</span></li>
+          <li><span class="sigla">+</span><span>Inclusione e Tri-level EP</span><span class="esito parz">dati segnaposto</span></li>
+        </ul>
+      </div>
+      <div class="risposte">
+        <div class="risposta">
+          <p class="occhiello">(i) Nozione e comunità</p>
+          <p class="numero">26–33%</p>
+          <h3>delle coppie di regole cambia ordine al variare della penetrazione</h3>
+          <p>Ogni nozione di equità ha un suo vincitore, e non cambia mai con la soglia di rilevanza. Il resto della graduatoria si muove con la quota di prosumer molto più che con il numero di membri.</p>
+        </div>
+        <div class="risposta">
+          <p class="occhiello">(ii) Trade-off</p>
+          <p class="numero">20% di v(N)</p>
+          <h3>è l'eccesso di coalizione che costa la regola più uniforme</h3>
+          <p>Uniformità e incentivo sono i criteri più in conflitto: chi vince sull'uno sta quasi in fondo sull'altro. Merito e stabilità invece non si fanno concorrenza.</p>
+        </div>
+        <div class="risposta">
+          <p class="occhiello">(iii) Indicatori</p>
+          <p class="numero">5 gruppi</p>
+          <h3>bastano a riprodurre il 95–100% degli ordinamenti</h3>
+          <p>Uniformità, merito e stabilità, inclusione, incentivo netto, incentivo lordo. Sulla griglia fino a 25 membri i gruppi scendono a 4.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="banco">
+      <div class="pila colonna">
+        <p class="occhiello">0 · Il banco di prova</p>
+        <h2>Ventotto comunità di famiglie lombarde</h2>
+        <p>Ogni riga è una taglia, ogni colonna una fascia di penetrazione: il rango della quota di prosumer dentro la taglia. Il montepremi v(N) è l'incentivo annuo sull'energia condivisa: cala con la penetrazione, perché con molti impianti l'energia immessa supera i prelievi e resta poco da condividere.</p>
+      </div>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 1</b>Penetrazione e montepremi per membro</span>
+          <span class="nota">In ogni cella: quota di prosumer e v(N) per membro in euro all'anno. In grigio le taglie del solo run sulla griglia (Shapley, Nucleolo e stabilità non calcolabili sopra 18 membri).</span></figcaption>
+        <div class="tavola"><table class="dati" id="tab-griglia"></table></div>
+      </figure>
+      <div class="due">
+        <div class="pila">
+          <h3>Le undici regole</h3>
+          <table class="dati" id="tab-metodi"></table>
+        </div>
+        <div class="pila">
+          <h3>Le nozioni e i loro indicatori</h3>
+          <table class="dati" id="tab-nozioni"></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="nozione">
+      <div class="pila colonna">
+        <p class="occhiello">(i) · Prima metà</p>
+        <h2>Ogni nozione di equità ha il suo vincitore</h2>
+        <p>Per ogni comunità e indicatore si guarda quali regole stanno al primo posto, contando a pari quelle che distano meno della soglia di rilevanza (10% dell'escursione fra le regole, 5% di v(N) per gli indicatori in euro). L'Equal Split è sempre il più uniforme e quasi mai stabile; Nucleolo e Variance Least Core sono sempre i più stabili e i più vicini al merito; le chiavi dinamiche vincono sull'incentivo.</p>
+      </div>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 2</b>Quante volte una regola è prima, nozione per nozione</span>
+          <span class="nota">Comunità (su 20, fino a 18 membri) in cui la regola è fra i primi a pari merito. L'inclusione è definita in 16 comunità: in quelle da 5 membri nessuna famiglia risulta vulnerabile con i dati segnaposto.</span></figcaption>
+        <div class="tavola" id="fig-vincitori"></div>
+        <div class="legenda" id="leg-vincitori"></div>
+      </figure>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 3</b>Quanto due indicatori concordano nell'ordinare le regole</span>
+          <span class="nota">τ-b di Kendall medio sulle 20 comunità, dopo aver orientato ogni indicatore in modo che "più alto" sia "meglio". Blu: graduatorie simili. Rosso: graduatorie opposte.</span></figcaption>
+        <div class="tavola" id="fig-tau"></div>
+        <div class="legenda" id="leg-tau"></div>
+      </figure>
+      <p class="colonna">Il quadro è netto. Uniformità e stabilità sono debolmente opposte (τ <span class="dato">−0,25</span>), uniformità e incentivo nettamente opposte (τ <span class="dato">−0,68</span>), merito e stabilità quasi la stessa cosa (τ <span class="dato">+0,79</span>). L'inclusione non somiglia a nessun altro indicatore: è una nozione a sé.</p>
+    </section>
+
+    <section id="comunita">
+      <div class="pila colonna">
+        <p class="occhiello">(i) · Seconda metà</p>
+        <h2>La graduatoria si muove con la penetrazione, poco con la taglia</h2>
+        <p>Si seguono le regole a coppie lungo un asse alla volta, con l'altro fermo, e si conta quante coppie cambiano ordine almeno una volta. Lungo la penetrazione cambia fra un quarto e un terzo delle coppie, e l'effetto cala con la taglia. Lungo la taglia, a penetrazione ferma, l'ordine è molto più stabile, soprattutto sopra il 50% di prosumer.</p>
+      </div>
+      <div class="due">
+        <figure>
+          <figcaption><span class="fig"><b>Fig. 4</b>Coppie che si invertono lungo la penetrazione</span>
+            <span class="nota">Quota di coppie (regola × regola × indicatore) che cambiano ordine fra le 4 fasce, a taglia fissa. I due run hanno insiemi di regole diversi.</span></figcaption>
+          <div class="tavola" id="fig-inv-pen"></div>
+          <div class="legenda" id="leg-inv"></div>
+        </figure>
+        <figure>
+          <figcaption><span class="fig"><b>Fig. 5</b>Coppie che si invertono lungo la taglia</span>
+            <span class="nota">Stessa misura, a fascia di penetrazione fissa, da 5 a 18 membri (o 25).</span></figcaption>
+          <div class="tavola" id="fig-inv-taglia"></div>
+        </figure>
+      </div>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 6</b>Il risultato regge se si sposta la soglia di rilevanza</span>
+          <span class="nota">Inversioni lungo la penetrazione, fino a 18 membri, a quattro soglie. Le inversioni calano ma non spariscono: non sono un effetto di differenze minime. In tutte le 220 celle (e nelle 308 della griglia) il primo classificato resta lo stesso a ogni soglia; cambia solo quante celle diventano a pari.</span></figcaption>
+        <div class="tavola" id="fig-sens"></div>
+        <div class="legenda" id="leg-sens"></div>
+      </figure>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 7</b>Perché: chi premia il lato scarso</span>
+          <span class="nota">Quota di v(N) ricevuta dai prosumer divisa per la loro quota di membri. 1 = in proporzione al loro numero (Equal Split). Shapley, Nucleolo e VLC premiano chi è raro: i prosumer quando sono pochi, i consumatori quando sono pochi loro. Le chiavi dinamiche premiano sempre chi consuma. Al 100% di penetrazione il rapporto vale 1 per costruzione e non è mostrato.</span></figcaption>
+        <div class="tavola" id="fig-prosumer"></div>
+        <div class="legenda" id="leg-prosumer"></div>
+      </figure>
+    </section>
+
+    <section id="costi">
+      <div class="pila colonna">
+        <p class="occhiello">(ii) · Entità dei trade-off</p>
+        <h2>Quanto costa scegliere una nozione</h2>
+        <p>Si prende la regola migliore su un criterio e si guarda dove si colloca sugli altri: 0 vuol dire che è anche la migliore, 1 che è la peggiore delle undici. È la perdita che il testo della tesi indica come quantità di interesse, perché il vincitore di molti indicatori è noto per costruzione.</p>
+      </div>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 8</b>Scelgo il migliore su una riga, quanto perdo su ogni colonna</span>
+          <span class="nota">Quota dell'escursione fra le regole, media sulle comunità (lettura ottimistica: fra le regole a pari sul criterio scelto si prende la migliore sull'altro). Sulla colonna dell'eccesso, fra parentesi, la perdita in % di v(N).</span></figcaption>
+        <div class="tavola" id="fig-perdite"></div>
+        <div class="legenda" id="leg-perdite"></div>
+      </figure>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 9</b>Il profilo di ogni regola</span>
+          <span class="nota">Distanza media dal migliore, criterio per criterio (0 = la migliore). Lo Shapley è il compromesso più equilibrato fra merito, stabilità e uniformità; nessuna regola sta vicino al migliore su tutto.</span></figcaption>
+        <div class="tavola" id="fig-profilo"></div>
+      </figure>
+    </section>
+
+    <section id="indicatori">
+      <div class="pila colonna">
+        <p class="occhiello">(iii) · Sottoinsieme minimo</p>
+        <h2>Cinque indicatori dicono quasi tutto</h2>
+        <p>Gli indicatori con τ medio alto ordinano le regole allo stesso modo. Raggruppandoli (average-linkage su 1 − τ, taglio a τ ≥ 0,5) e tenendo un rappresentante per gruppo, ogni indicatore tolto viene riprodotto dal suo rappresentante nel 95–100% delle coppie di regole.</p>
+      </div>
+      <div class="pila">
+        <div class="bottoni" role="group" aria-label="Run">
+          <button type="button" id="btn-18" aria-pressed="true">Fino a 18 membri</button>
+          <button type="button" id="btn-25" aria-pressed="false">Griglia fino a 25</button>
+        </div>
+        <div class="gruppi" id="gruppi"></div>
+        <p class="nota" id="nota-gruppi" style="font-size:var(--t-s);color:var(--muto);max-width:72ch"></p>
+      </div>
+    </section>
+
+    <section id="complementari">
+      <div class="pila colonna">
+        <p class="occhiello">Analisi complementari</p>
+        <h2>Stabilità, incentivo, sostenibilità e norma</h2>
+      </div>
+      <div class="due">
+        <figure>
+          <figcaption><span class="fig"><b>Fig. 10</b>Il core c'è, ma si assottiglia</span>
+            <span class="nota">Eccesso massimo di coalizione del Nucleolo, in % di v(N). Negativo = nessun sottogruppo vuole uscire. Tende a zero al crescere della taglia: con più membri, una ripartizione stabile ha sempre meno margine.</span></figcaption>
+          <div class="tavola" id="fig-core"></div>
+          <div class="legenda" id="leg-core"></div>
+        </figure>
+        <figure>
+          <figcaption><span class="fig"><b>Fig. 11</b>Quanto ogni regola premia il sincronismo</span>
+            <span class="nota">Forza incentivante (profili netti): 0 = Equal Split, 1 = Similarity-Utilization. Lo Shapley cambia segno fra la prima e la seconda fascia.</span></figcaption>
+          <div class="tavola" id="fig-forza"></div>
+          <div class="legenda" id="leg-forza"></div>
+        </figure>
+      </div>
+      <div class="due">
+        <div class="pila">
+          <h3>VAN dei prosumer</h3>
+          <table class="dati" id="tab-van"></table>
+          <p style="font-size:var(--t-s);color:var(--inchiostro-2)">Dopo la correzione della vendita (tutta l'energia immessa è venduta, Regole Operative GSE §1.2.2). La regola sposta il VAN di un membro di <span class="dato" id="spread"></span> € (mediana), ma il segno lo decide quasi sempre l'impianto: i 3,4 kWp a 7 000 € rendono meno del 4%.</p>
+        </div>
+        <div class="pila">
+          <h3>Shapley esatto e Adaptive Sampling</h3>
+          <table class="dati" id="tab-as"></table>
+          <p style="font-size:var(--t-s);color:var(--inchiostro-2)">L'approssimazione per campionamento sposta in media l'1% della quota: sopra i 18 membri sostituisce lo Shapley esatto senza cambiarne la graduatoria.</p>
+        </div>
+      </div>
+      <figure>
+        <figcaption><span class="fig"><b>Fig. 12</b>La soglia di energia incentivabile non morde mai</span>
+          <span class="nota">Energia condivisa incentivata in % dell'energia immessa, per comunità. Soglia del DM 414/2023: 55% con la sola tariffa premio, 45% con contributo in conto capitale. Nessuna comunità la supera; al 45% la supererebbe CER_4_1_0. Con sole famiglie il vincolo non avrebbe comunque imprese su cui agire.</span></figcaption>
+        <div class="tavola" id="fig-soglia"></div>
+        <div class="legenda" id="leg-soglia"></div>
+      </figure>
+    </section>
+
+    <section id="manca">
+      <div class="pila colonna">
+        <p class="occhiello">Per chiudere il lavoro</p>
+        <h2>Cosa manca</h2>
+        <p>In ordine di peso sulla tesi. Le prime due voci toccano la domanda di ricerca; le altre ne rafforzano o ne scrivono le risposte.</p>
+      </div>
+      <ul class="mancanze">
+        <li><span class="stato bloccante">Domanda (i)</span><div><h3>Composizione per categoria</h3><p>Tutte le comunità sono di famiglie. La tesi promette di variare la composizione e la motiva con quattro fonti; senza imprese anche il controllo di ammissibilità regolatoria resta vuoto. I profili di ufficio e comune sono già validati: servono le schede miste e un run fino a 10–15 membri (Fase 5, decisione D5 in sospeso).</p></div></li>
+        <li><span class="stato dati">Dati</span><div><h3>P50, soglia di povertà e markup per il LIHC</h3><p>Decidono chi è vulnerabile. Coi segnaposto è vulnerabile una sola famiglia: l'inclusione e il Tri-level EP poggiano su di lei. Dopo averli compilati vanno rifatti i due run (circa 3 ore).</p></div></li>
+        <li><span class="stato dati">Robustezza</span><div><h3>Più comunità per cella</h3><p>Ogni coppia taglia × penetrazione è una sola comunità, con una scelta fissa di quali famiglie hanno l'impianto. Tre-cinque estrazioni per cella fino a 10 membri darebbero un intervallo alle inversioni e ai vincitori.</p></div></li>
+        <li><span class="stato dati">Modello</span><div><h3>Generazione tutta uguale</h3><p>Gli impianti usano due o tre curve PVsyst identiche per fascia di componenti: i prosumer si distinguono solo per il carico. Da variare o da dichiarare come limite.</p></div></li>
+        <li><span class="stato testo">Testo</span><div><h3>Allineare il capitolo del gap ai numeri</h3><p>"Sixteen mechanisms" diventa undici regole distinte; la mappatura sulle famiglie va rifatta; "proportionality to the physical contribution" va rinominata o affiancata da un indicatore fisico; il TODO sulla soglia regolatoria si chiude con la Fig. 12; la stabilità è ora disponibile anche in % di v(N).</p></div></li>
+        <li><span class="stato testo">Testo</span><div><h3>Figure definitive e capitoli</h3><p>Le figure per la tesi (PDF) non sono ancora esportate; restano da scrivere metodi, risultati e discussione. I numeri di questa pagina sono quelli da citare.</p></div></li>
+        <li><span class="stato testo">Repository</span><div><h3>Pull request verso main</h3><p>Cinque commit sul branch 62-test-2, ciascuno con il suo controllo di regressione.</p></div></li>
+      </ul>
+    </section>
+
+    <footer>
+      <span>Fonte: run MAIN2 del 13/10/2026, commit b6f18a5. Tabelle in outputs/tables_main2 (fino a 18) e outputs/tables_main2_griglia25.</span>
+      <span>Workspace e analisi complete in outputs/workspace. Vendita corretta (README §5.2), dati LIHC segnaposto (README §7.7).</span>
+    </footer>
+  </main>
+</div>
+<div id="suggerimento" hidden></div>
+
+<script id="dati" type="application/json">{"comunita":[{"scheda":"CER_4_1_0","n":5,"fascia":1,"pen":20.0,"np":1,"vN":233.3,"cont":30.1,"inc":50.1},{"scheda":"CER_3_2_0","n":5,"fascia":2,"pen":40.0,"np":2,"vN":275.1,"cont":17.8,"inc":23.8},{"scheda":"CER_2_3_0","n":5,"fascia":3,"pen":60.0,"np":3,"vN":198.4,"cont":14.4,"inc":11.9},{"scheda":"CER_0_5_0","n":5,"fascia":4,"pen":100.0,"np":5,"vN":40.4,"cont":41.9,"inc":1.4},{"scheda":"CER_6_2_0","n":8,"fascia":1,"pen":25.0,"np":2,"vN":522.4,"cont":29.0,"inc":43.5},{"scheda":"CER_4_4_0","n":8,"fascia":2,"pen":50.0,"np":4,"vN":405.0,"cont":14.2,"inc":17.3},{"scheda":"CER_2_6_0","n":8,"fascia":3,"pen":75.0,"np":6,"vN":257.1,"cont":12.5,"inc":7.6},{"scheda":"CER_0_8_0","n":8,"fascia":4,"pen":100.0,"np":8,"vN":54.6,"cont":33.6,"inc":1.2},{"scheda":"CER_7_3_0","n":10,"fascia":1,"pen":30.0,"np":3,"vN":584.0,"cont":23.9,"inc":35.3},{"scheda":"CER_5_5_0","n":10,"fascia":2,"pen":50.0,"np":5,"vN":504.5,"cont":14.5,"inc":18.6},{"scheda":"CER_2_8_0","n":10,"fascia":3,"pen":80.0,"np":8,"vN":249.0,"cont":13.1,"inc":5.7},{"scheda":"CER_0_10_0","n":10,"fascia":4,"pen":100.0,"np":10,"vN":70.2,"cont":33.5,"inc":1.3},{"scheda":"CER_11_4_0","n":15,"fascia":1,"pen":26.7,"np":4,"vN":944.9,"cont":27.3,"inc":43.5},{"scheda":"CER_7_8_0","n":15,"fascia":2,"pen":53.3,"np":8,"vN":748.0,"cont":12.8,"inc":17.2},{"scheda":"CER_4_11_0","n":15,"fascia":3,"pen":73.3,"np":11,"vN":511.2,"cont":12.1,"inc":8.6},{"scheda":"CER_0_15_0","n":15,"fascia":4,"pen":100.0,"np":15,"vN":113.4,"cont":32.7,"inc":1.3},{"scheda":"CER_13_5_0","n":18,"fascia":1,"pen":27.8,"np":5,"vN":1121.0,"cont":25.9,"inc":41.8},{"scheda":"CER_9_9_0","n":18,"fascia":2,"pen":50.0,"np":9,"vN":930.0,"cont":13.2,"inc":19.0},{"scheda":"CER_4_14_0","n":18,"fascia":3,"pen":77.8,"np":14,"vN":551.1,"cont":11.2,"inc":6.9},{"scheda":"CER_0_18_0","n":18,"fascia":4,"pen":100.0,"np":18,"vN":140.3,"cont":30.7,"inc":1.4},{"scheda":"CER_15_5_0","n":20,"fascia":1,"pen":25.0,"np":5,"vN":1228.3,"cont":27.2,"inc":45.6},{"scheda":"CER_10_10_0","n":20,"fascia":2,"pen":50.0,"np":10,"vN":981.5,"cont":13.2,"inc":18.3},{"scheda":"CER_5_15_0","n":20,"fascia":3,"pen":75.0,"np":15,"vN":622.1,"cont":11.0,"inc":7.2},{"scheda":"CER_0_20_0","n":20,"fascia":4,"pen":100.0,"np":20,"vN":155.0,"cont":31.3,"inc":1.4},{"scheda":"CER_18_7_0","n":25,"fascia":1,"pen":28.0,"np":7,"vN":1433.3,"cont":22.1,"inc":37.4},{"scheda":"CER_12_13_0","n":25,"fascia":2,"pen":52.0,"np":13,"vN":1187.2,"cont":13.0,"inc":16.2},{"scheda":"CER_6_19_0","n":25,"fascia":3,"pen":76.0,"np":19,"vN":662.9,"cont":12.1,"inc":6.4},{"scheda":"CER_0_25_0","n":25,"fascia":4,"pen":100.0,"np":25,"vN":185.8,"cont":29.7,"inc":1.3}],"vincitori":{"indicatori":["Gini","FairnessIndex","EccessoMax_EUR","InclusioneLIHC","ForzaIncentivante","VAN_min_EUR"],"metodi":["Shapley","Nucleolo","Variance Least Core","Equal Split","Proportional to Consumption","Remuneration Model 1","Cascading Tree","Weighted Solidarity","Pearson Key","Similarity-Utilization","Tri-level EP"],"presenza":{"Gini":{"tot":20,"conte":{"Shapley":0,"Nucleolo":0,"Variance Least Core":0,"Equal Split":20,"Proportional to Consumption":0,"Remuneration Model 1":0,"Cascading Tree":0,"Weighted Solidarity":0,"Pearson Key":0,"Similarity-Utilization":0,"Tri-level EP":0}},"FairnessIndex":{"tot":20,"conte":{"Shapley":9,"Nucleolo":20,"Variance Least Core":20,"Equal Split":0,"Proportional to Consumption":0,"Remuneration Model 1":0,"Cascading Tree":1,"Weighted Solidarity":0,"Pearson Key":1,"Similarity-Utilization":0,"Tri-level EP":1}},"EccessoMax_EUR":{"tot":20,"conte":{"Shapley":15,"Nucleolo":20,"Variance Least Core":20,"Equal Split":0,"Proportional to Consumption":3,"Remuneration Model 1":4,"Cascading Tree":2,"Weighted Solidarity":0,"Pearson Key":8,"Similarity-Utilization":0,"Tri-level EP":9}},"InclusioneLIHC":{"tot":16,"conte":{"Shapley":0,"Nucleolo":0,"Variance Least Core":0,"Equal Split":0,"Proportional to Consumption":2,"Remuneration Model 1":0,"Cascading Tree":8,"Weighted Solidarity":7,"Pearson Key":4,"Similarity-Utilization":0,"Tri-level EP":5}},"ForzaIncentivante":{"tot":20,"conte":{"Shapley":0,"Nucleolo":0,"Variance Least Core":0,"Equal Split":0,"Proportional to Consumption":3,"Remuneration Model 1":0,"Cascading Tree":0,"Weighted Solidarity":0,"Pearson Key":19,"Similarity-Utilization":15,"Tri-level EP":19}},"VAN_min_EUR":{"tot":20,"conte":{"Shapley":0,"Nucleolo":0,"Variance Least Core":0,"Equal Split":20,"Proportional to Consumption":0,"Remuneration Model 1":1,"Cascading Tree":2,"Weighted Solidarity":0,"Pearson Key":0,"Similarity-Utilization":0,"Tri-level EP":0}}}},"tau":{"indicatori":["Gini","VAN_min_EUR","FairnessIndex","Sigma","EccessoMax_EUR","CoalizioniInstabili","InclusioneLIHC","ForzaIncentivante","AllineamentoVirtu","AllineamentoVirtu_lordo"],"matrice":[[1.0,0.81,-0.08,-0.09,-0.25,-0.09,0.07,-0.68,-0.54,-0.22],[0.81,1.0,-0.04,-0.06,-0.2,-0.07,0.19,-0.7,-0.57,-0.35],[-0.08,-0.04,1.0,0.94,0.79,0.83,-0.1,0.11,0.15,0.08],[-0.09,-0.06,0.94,1.0,0.76,0.87,-0.07,0.12,0.15,0.07],[-0.25,-0.2,0.79,0.76,1.0,0.71,-0.14,0.25,0.25,0.14],[-0.09,-0.07,0.83,0.87,0.71,1.0,-0.07,0.13,0.16,0.09],[0.07,0.19,-0.1,-0.07,-0.14,-0.07,1.0,-0.24,-0.36,-0.6],[-0.68,-0.7,0.11,0.12,0.25,0.13,-0.24,1.0,0.85,0.42],[-0.54,-0.57,0.15,0.15,0.25,0.16,-0.36,0.85,1.0,0.47],[-0.22,-0.35,0.08,0.07,0.14,0.09,-0.6,0.42,0.47,1.0]]},"inversioni":{"fino18":[{"sweep":"penetrazione","fisso":"n = 5","quota":27.1},{"sweep":"penetrazione","fisso":"n = 8","quota":33.1},{"sweep":"penetrazione","fisso":"n = 10","quota":30.2},{"sweep":"penetrazione","fisso":"n = 15","quota":28.3},{"sweep":"penetrazione","fisso":"n = 18","quota":26.0},{"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":21.0},{"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":8.6},{"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":0.7},{"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":5.8}],"griglia25":[{"sweep":"penetrazione","fisso":"n = 5","quota":28.9},{"sweep":"penetrazione","fisso":"n = 8","quota":34.7},{"sweep":"penetrazione","fisso":"n = 10","quota":33.3},{"sweep":"penetrazione","fisso":"n = 15","quota":30.7},{"sweep":"penetrazione","fisso":"n = 18","quota":28.3},{"sweep":"penetrazione","fisso":"n = 20","quota":23.8},{"sweep":"penetrazione","fisso":"n = 25","quota":22.2},{"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":21.8},{"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":10.7},{"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":5.5},{"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":8.1}]},"sensibilita":{"fino18":[{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 5","quota":40.7},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 8","quota":51.2},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 10","quota":44.8},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 15","quota":47.9},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 18","quota":41.5},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":34.2},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":17.5},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":10.9},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":18.8},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 5","quota":31.9},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 8","quota":39.0},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 10","quota":35.9},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 15","quota":36.7},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 18","quota":32.2},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":25.6},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":10.9},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":3.3},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":8.9},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 5","quota":27.1},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 8","quota":33.1},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 10","quota":30.2},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 15","quota":28.3},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 18","quota":26.0},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":21.0},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":8.6},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":0.7},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":5.8},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 5","quota":19.5},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 8","quota":23.6},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 10","quota":21.2},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 15","quota":20.7},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 18","quota":18.7},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":13.1},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":4.8},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":0.2},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":2.6}],"fino18_vincitori":[{"FracEscursione":0.0,"FracVN":0.0,"Celle":220,"VincitoreDiversoDaMAIN2":123,"AltroMetodoPrimo":0,"CelleAPari":20},{"FracEscursione":0.05,"FracVN":0.025,"Celle":220,"VincitoreDiversoDaMAIN2":26,"AltroMetodoPrimo":0,"CelleAPari":117},{"FracEscursione":0.1,"FracVN":0.05,"Celle":220,"VincitoreDiversoDaMAIN2":0,"AltroMetodoPrimo":0,"CelleAPari":143},{"FracEscursione":0.2,"FracVN":0.1,"Celle":220,"VincitoreDiversoDaMAIN2":43,"AltroMetodoPrimo":0,"CelleAPari":186}],"griglia25":[{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 5","quota":42.8},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 8","quota":53.1},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 10","quota":47.5},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 15","quota":48.7},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 18","quota":43.8},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 20","quota":36.8},{"soglia":0.0,"sweep":"penetrazione","fisso":"n = 25","quota":32.7},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":34.1},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":20.2},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":16.4},{"soglia":0.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":21.4},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 5","quota":34.1},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 8","quota":41.4},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 10","quota":39.0},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 15","quota":38.6},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 18","quota":34.7},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 20","quota":28.5},{"soglia":5.0,"sweep":"penetrazione","fisso":"n = 25","quota":25.1},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":27.5},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":13.5},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":8.9},{"soglia":5.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":12.3},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 5","quota":28.9},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 8","quota":34.7},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 10","quota":33.3},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 15","quota":30.7},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 18","quota":28.3},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 20","quota":23.8},{"soglia":10.0,"sweep":"penetrazione","fisso":"n = 25","quota":22.2},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":21.8},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":10.7},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":5.5},{"soglia":10.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":8.1},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 5","quota":20.4},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 8","quota":25.5},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 10","quota":24.0},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 15","quota":22.8},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 18","quota":20.8},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 20","quota":19.0},{"soglia":20.0,"sweep":"penetrazione","fisso":"n = 25","quota":16.6},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 1 (~27%)","quota":12.5},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 2 (~50%)","quota":5.7},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 3 (~75%)","quota":4.0},{"soglia":20.0,"sweep":"taglia","fisso":"fascia 4 (~100%)","quota":4.0}],"griglia25_vincitori":[{"FracEscursione":0.0,"FracVN":0.0,"Celle":308,"VincitoreDiversoDaMAIN2":136,"AltroMetodoPrimo":0,"CelleAPari":2},{"FracEscursione":0.05,"FracVN":0.025,"Celle":308,"VincitoreDiversoDaMAIN2":64,"AltroMetodoPrimo":0,"CelleAPari":74},{"FracEscursione":0.1,"FracVN":0.05,"Celle":308,"VincitoreDiversoDaMAIN2":0,"AltroMetodoPrimo":0,"CelleAPari":138},{"FracEscursione":0.2,"FracVN":0.1,"Celle":308,"VincitoreDiversoDaMAIN2":89,"AltroMetodoPrimo":0,"CelleAPari":227}]},"prosumer":{"fasce":[1,2,3],"pen":[26.0,49.0,73.0],"righe":[{"metodo":"Shapley","valori":[1.73,0.67,0.44]},{"metodo":"Nucleolo","valori":[1.5,0.38,0.3]},{"metodo":"Variance Least Core","valori":[1.43,0.39,0.3]},{"metodo":"Equal Split","valori":[1.0,1.0,1.0]},{"metodo":"Proportional to Consumption","valori":[0.15,0.28,0.4]},{"metodo":"Remuneration Model 1","valori":[0.95,0.84,0.75]},{"metodo":"Cascading Tree","valori":[1.93,1.28,1.07]},{"metodo":"Weighted Solidarity","valori":[1.05,1.09,1.07]},{"metodo":"Pearson Key","valori":[0.03,0.09,0.19]},{"metodo":"Similarity-Utilization","valori":[0.03,0.07,0.13]},{"metodo":"Tri-level EP","valori":[0.07,0.13,0.22]}]},"perdite":{"indicatori":["Gini","FairnessIndex","EccessoMax_EUR","InclusioneLIHC","ForzaIncentivante","VAN_min_EUR"],"ott":[[null,0.67,0.72,0.57,0.79,0.0],[0.65,null,0.0,0.56,0.32,0.63],[0.61,0.0,null,0.39,0.24,0.59],[0.56,0.71,0.67,null,0.62,0.43],[0.93,0.49,0.29,0.46,null,0.95],[0.0,0.67,0.72,0.55,0.79,null]],"pes":[[null,0.67,0.72,0.57,0.79,0.0],[0.74,null,0.04,0.64,0.4,0.72],[0.85,0.16,null,0.66,0.46,0.78],[0.63,0.8,0.76,null,0.7,0.55],[0.98,0.55,0.55,0.75,null,0.97],[0.02,0.69,0.74,0.57,0.8,null]],"pctvN":[[null,null,20.4,null,null,null],[null,null,0.0,null,null,null],[null,null,null,null,null,null],[null,null,19.6,null,null,null],[null,null,6.6,null,null,null],[null,null,20.3,null,null,null]]},"rimpianto":{"indicatori":["Gini","FairnessIndex","EccessoMax_EUR","InclusioneLIHC","ForzaIncentivante","VAN_min_EUR"],"metodi":["Shapley","Nucleolo","Variance Least Core","Equal Split","Proportional to Consumption","Remuneration Model 1","Cascading Tree","Weighted Solidarity","Pearson Key","Similarity-Utilization","Tri-level EP"],"valori":[[0.6,0.14,0.16,0.57,0.52,0.52],[0.74,0.01,0.0,0.58,0.33,0.71],[0.73,0.0,0.0,0.58,0.33,0.71],[0.0,0.67,0.72,0.57,0.79,0.0],[0.83,0.48,0.4,0.43,0.22,0.88],[0.32,0.39,0.37,0.55,0.62,0.32],[0.33,0.81,0.82,0.32,0.96,0.2],[0.38,0.79,0.91,0.35,0.81,0.45],[0.96,0.51,0.31,0.57,0.04,0.96],[0.91,0.52,0.52,0.8,0.04,0.95],[0.96,0.5,0.3,0.41,0.05,0.96]]},"cluster":{"fino18":{"gruppi":[{"rap":"EI_orig","ind":["EI_orig","Gini","VAN_min_EUR"],"tau":0.88},{"rap":"Sigma","ind":["FairnessIndex","Sigma","CoalizioniInstabili","EccessoMax_EUR"],"tau":0.82},{"rap":"InclusioneLIHC","ind":["InclusioneLIHC"],"tau":null},{"rap":"ForzaIncentivante","ind":["ForzaIncentivante","AllineamentoVirtu"],"tau":0.85},{"rap":"AllineamentoVirtu_lordo","ind":["AllineamentoVirtu_lordo"],"tau":null}],"conc":[{"ind":"EI_orig","rap":"EI_orig","conc":1.0},{"ind":"Gini","rap":"EI_orig","conc":1.0},{"ind":"VAN_min_EUR","rap":"EI_orig","conc":0.953},{"ind":"FairnessIndex","rap":"Sigma","conc":0.999},{"ind":"Sigma","rap":"Sigma","conc":1.0},{"ind":"CoalizioniInstabili","rap":"Sigma","conc":0.99},{"ind":"EccessoMax_EUR","rap":"Sigma","conc":0.976},{"ind":"InclusioneLIHC","rap":"InclusioneLIHC","conc":1.0},{"ind":"ForzaIncentivante","rap":"ForzaIncentivante","conc":1.0},{"ind":"AllineamentoVirtu","rap":"ForzaIncentivante","conc":0.998},{"ind":"AllineamentoVirtu_lordo","rap":"AllineamentoVirtu_lordo","conc":1.0}],"ngruppi":{"0.3":4,"0.5":5,"0.7":5},"pareto":{"uguali":8,"tot":20}},"griglia25":{"gruppi":[{"rap":"EI_orig","ind":["EI_orig","Gini","VAN_min_EUR"],"tau":0.88},{"rap":"Sigma","ind":["FairnessIndex","Sigma","CoalizioniInstabili","EccessoMax_EUR"],"tau":0.8},{"rap":"InclusioneLIHC","ind":["InclusioneLIHC"],"tau":null},{"rap":"AllineamentoVirtu","ind":["ForzaIncentivante","AllineamentoVirtu","AllineamentoVirtu_lordo"],"tau":0.64}],"conc":[{"ind":"EI_orig","rap":"EI_orig","conc":1.0},{"ind":"Gini","rap":"EI_orig","conc":1.0},{"ind":"VAN_min_EUR","rap":"EI_orig","conc":0.957},{"ind":"FairnessIndex","rap":"Sigma","conc":0.999},{"ind":"Sigma","rap":"Sigma","conc":1.0},{"ind":"CoalizioniInstabili","rap":"Sigma","conc":0.989},{"ind":"EccessoMax_EUR","rap":"Sigma","conc":0.971},{"ind":"InclusioneLIHC","rap":"InclusioneLIHC","conc":1.0},{"ind":"ForzaIncentivante","rap":"AllineamentoVirtu","conc":0.997},{"ind":"AllineamentoVirtu","rap":"AllineamentoVirtu","conc":1.0},{"ind":"AllineamentoVirtu_lordo","rap":"AllineamentoVirtu","conc":0.792}],"ngruppi":{"0.3":4,"0.5":4,"0.7":5},"pareto":{"uguali":1,"tot":28}}},"nucleolo":{"taglie":[5,8,10,15,18],"fasce":[1,2,3,4],"valori":[[-8.89,-2.48,-1.67,-5.81],[-1.07,-0.64,-0.71,-1.97],[-0.6,-0.42,-0.55,-1.29],[-0.34,-0.18,-0.21,-0.6],[-0.21,-0.14,-0.15,-0.42]]},"eccesso_medio":[{"metodo":"Shapley","v":2.5},{"metodo":"Nucleolo","v":-1.4},{"metodo":"Variance Least Core","v":-1.4},{"metodo":"Equal Split","v":18.9},{"metodo":"Proportional to Consumption","v":7.9},{"metodo":"Remuneration Model 1","v":9.3},{"metodo":"Cascading Tree","v":21.7},{"metodo":"Weighted Solidarity","v":23.4},{"metodo":"Pearson Key","v":5.3},{"metodo":"Similarity-Utilization","v":10.9},{"metodo":"Tri-level EP","v":4.9}],"forza":{"fasce":[1,2,3,4],"righe":[{"metodo":"Shapley","valori":[-0.75,0.34,0.63,0.7]},{"metodo":"Nucleolo","valori":[-0.51,0.65,0.8,0.95]},{"metodo":"Variance Least Core","valori":[-0.43,0.65,0.8,0.94]},{"metodo":"Equal Split","valori":[-0.0,-0.0,0.0,-0.0]},{"metodo":"Proportional to Consumption","valori":[0.84,0.77,0.69,0.81]},{"metodo":"Remuneration Model 1","valori":[0.03,0.16,0.28,0.36]},{"metodo":"Cascading Tree","valori":[-0.96,-0.3,-0.08,0.08]},{"metodo":"Weighted Solidarity","valori":[-0.03,-0.08,-0.08,0.11]},{"metodo":"Pearson Key","valori":[0.97,0.96,0.92,1.15]},{"metodo":"Similarity-Utilization","valori":[1.0,1.0,1.0,1.0]},{"metodo":"Tri-level EP","valori":[0.92,0.92,0.9,1.2]}]},"van":{"fasce":[1,2,3,4],"medio":[896.0,567.0,392.0,410.0],"negativi":[20.0,20.0,36.0,55.0],"spread_mediano":654.0},"shapley_as":[{"Membri":5,"Comunita":4,"RD_medio_pct":0.922,"RD_max_pct":4.286,"L1_su_vN_pct":0.816,"Spearman_rho_medio":1.0,"Spearman_rho_min":1.0},{"Membri":8,"Comunita":4,"RD_medio_pct":1.309,"RD_max_pct":4.168,"L1_su_vN_pct":1.034,"Spearman_rho_medio":0.964,"Spearman_rho_min":0.905},{"Membri":10,"Comunita":4,"RD_medio_pct":1.047,"RD_max_pct":4.088,"L1_su_vN_pct":0.768,"Spearman_rho_medio":0.997,"Spearman_rho_min":0.988},{"Membri":15,"Comunita":4,"RD_medio_pct":1.085,"RD_max_pct":7.245,"L1_su_vN_pct":0.763,"Spearman_rho_medio":0.99,"Spearman_rho_min":0.979},{"Membri":18,"Comunita":4,"RD_medio_pct":1.464,"RD_max_pct":4.981,"L1_su_vN_pct":1.048,"Spearman_rho_medio":0.995,"Spearman_rho_min":0.99}],"inclusione":[{"metodo":"Shapley","v":1.36},{"metodo":"Nucleolo","v":1.43},{"metodo":"Variance Least Core","v":1.42},{"metodo":"Equal Split","v":1.0},{"metodo":"Proportional to Consumption","v":1.45},{"metodo":"Remuneration Model 1","v":1.2},{"metodo":"Cascading Tree","v":1.37},{"metodo":"Weighted Solidarity","v":1.37},{"metodo":"Pearson Key","v":1.46},{"metodo":"Similarity-Utilization","v":1.1},{"metodo":"Tri-level EP","v":1.68}]}</script>
+<script>
+(function () {
+  "use strict";
+  const D = JSON.parse(document.getElementById("dati").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+
+  const NOME_METODO = {
+    "Shapley": "Shapley", "Nucleolo": "Nucleolo", "Variance Least Core": "Variance Least Core",
+    "Equal Split": "Equal Split", "Proportional to Consumption": "Proporzionale al consumo",
+    "Remuneration Model 1": "Remuneration Model 1", "Cascading Tree": "Cascading Tree",
+    "Weighted Solidarity": "Weighted Solidarity", "Pearson Key": "Pearson Key",
+    "Similarity-Utilization": "Similarity-Utilization", "Tri-level EP": "Tri-level EP *"
+  };
+  const FAMIGLIA = {
+    "Shapley": "teoria dei giochi", "Nucleolo": "teoria dei giochi", "Variance Least Core": "teoria dei giochi",
+    "Equal Split": "benchmark", "Proportional to Consumption": "benchmark",
+    "Remuneration Model 1": "modelli REC italiani", "Cascading Tree": "modelli REC italiani",
+    "Weighted Solidarity": "modelli REC italiani", "Pearson Key": "chiavi dinamiche",
+    "Similarity-Utilization": "chiavi dinamiche", "Tri-level EP": "povertà energetica"
+  };
+  const NOME_IND = {
+    "Gini": "Gini", "EI_orig": "EI", "VAN_min_EUR": "VAN minimo", "FairnessIndex": "Fairness Index",
+    "Sigma": "σ dal merito", "EccessoMax_EUR": "Eccesso coalizione", "CoalizioniInstabili": "Coalizioni instabili",
+    "InclusioneLIHC": "Inclusione LIHC", "ForzaIncentivante": "Forza incentivante",
+    "AllineamentoVirtu": "Allineamento netto", "AllineamentoVirtu_lordo": "Allineamento lordo"
+  };
+  const NOZIONE = {
+    "Gini": "uniformità", "FairnessIndex": "merito", "EccessoMax_EUR": "stabilità",
+    "InclusioneLIHC": "inclusione", "ForzaIncentivante": "incentivo", "VAN_min_EUR": "sostenibilità"
+  };
+  const it = (v, k) => v == null ? "n.d." : v.toLocaleString("it-IT", { minimumFractionDigits: k, maximumFractionDigits: k });
+
+  /* ---------- colori dai token ---------- */
+  const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const hex2rgb = h => { h = h.replace("#", ""); if (h.length === 3) h = h.split("").map(c => c + c).join("");
+    return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+  const rgb2hex = c => "#" + c.map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, "0")).join("");
+  const mix = (a, b, t) => rgb2hex(hex2rgb(a).map((x, i) => x + (hex2rgb(b)[i] - x) * t));
+  const lum = h => { const c = hex2rgb(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const inkOn = bg => lum(bg) > 0.33 ? "#14212a" : "#f4f7f8";
+  function seq(t) { t = Math.max(0, Math.min(1, t)); const lo = tok("--seq-lo"), mi = tok("--seq-mid"), hi = tok("--seq-hi");
+    return t < 0.5 ? mix(lo, mi, t / 0.5) : mix(mi, hi, (t - 0.5) / 0.5); }
+  function div(t) { t = Math.max(-1, Math.min(1, t)); const m = tok("--div-mid");
+    return t < 0 ? mix(m, tok("--div-neg"), -t) : mix(m, tok("--div-pos"), t); }
+
+  /* ---------- suggerimento ---------- */
+  const tip = document.getElementById("suggerimento");
+  function mostra(e, html) { tip.innerHTML = html; tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = e.clientX + 14, y = e.clientY + 14;
+    if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+    if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+    tip.style.left = x + "px"; tip.style.top = y + "px"; }
+  const nascondi = () => { tip.hidden = true; };
+  function aggancia(el, html) { if (!html) return; el.addEventListener("pointermove", e => mostra(e, html)); el.addEventListener("pointerleave", nascondi); }
+
+  function el(tag, attrs, parent) { const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+  function testo(parent, x, y, s, attrs) { const t = el("text", Object.assign({ x, y }, attrs || {}), parent); t.textContent = s; return t; }
+
+  /* ---------- mappa di calore ---------- */
+  function heatmap(id, o) {
+    const box = document.getElementById(id); box.innerHTML = "";
+    const lw = o.labelW || 190, cw = o.cellW || 74, ch = o.cellH || 30, hh = o.headH || 64;
+    const W = lw + cw * o.cols.length + 4, H = hh + ch * o.rows.length + 4;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": o.aria }, box);
+    o.cols.forEach((c, j) => {
+      const x = lw + j * cw + cw / 2;
+      const righe = String(c).split("\n");
+      righe.forEach((r, k) => testo(svg, x, hh - 10 - (righe.length - 1 - k) * 14, r,
+        { "text-anchor": "middle", "font-size": 11, fill: k === 0 ? tok("--inchiostro") : tok("--muto") }));
+    });
+    o.rows.forEach((r, i) => {
+      const y = hh + i * ch;
+      testo(svg, lw - 10, y + ch / 2 + 4, r, { "text-anchor": "end", "font-size": 12, fill: tok("--inchiostro") });
+      o.cols.forEach((c, j) => {
+        const v = o.values[i][j];
+        const x = lw + j * cw;
+        const fill = v == null ? tok("--foglio") : o.color(v, i, j);
+        const rect = el("rect", { x: x + 1, y: y + 1, width: cw - 2, height: ch - 2, rx: 3, fill,
+          stroke: v == null ? tok("--filo") : "none" }, svg);
+        const s = v == null ? (o.vuoto || "—") : o.fmt(v, i, j);
+        testo(svg, x + cw / 2, y + ch / 2 + 4, s, { "text-anchor": "middle", "font-size": 11.5,
+          fill: v == null ? tok("--muto") : inkOn(fill), "pointer-events": "none" });
+        aggancia(rect, o.tip(v, i, j));
+      });
+    });
+  }
+  function scala(id, colori, sx, dx) {
+    const l = document.getElementById(id);
+    l.innerHTML = `<span>${sx}</span><span><i class="scala" style="background:linear-gradient(90deg,${colori.join(",")})"></i></span><span>${dx}</span>`;
+  }
+
+  /* ---------- linee ---------- */
+  function linee(id, o) {
+    const box = document.getElementById(id); box.innerHTML = "";
+    const W = o.W || 520, H = o.H || 280, m = { l: 48, r: o.mr || 96, t: 16, b: 40 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": o.aria }, box);
+    const xs = o.xs, x0 = Math.min(...xs), x1 = Math.max(...xs);
+    const X = v => m.l + (o.xCat ? (xs.indexOf(v) / (xs.length - 1)) : ((v - x0) / (x1 - x0))) * (W - m.l - m.r);
+    const Y = v => m.t + (1 - (v - o.yMin) / (o.yMax - o.yMin)) * (H - m.t - m.b);
+    o.yTicks.forEach(t => {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), stroke: t === 0 ? tok("--filo-forte") : tok("--filo"), "stroke-width": 1 }, svg);
+      testo(svg, m.l - 8, Y(t) + 4, o.yFmt(t), { "text-anchor": "end", "font-size": 11, fill: tok("--muto") });
+    });
+    xs.forEach(v => testo(svg, X(v), H - m.b + 18, o.xFmt ? o.xFmt(v) : v, { "text-anchor": "middle", "font-size": 11, fill: tok("--muto") }));
+    if (o.xLabel) testo(svg, m.l + (W - m.l - m.r) / 2, H - 4, o.xLabel, { "text-anchor": "middle", "font-size": 11, fill: tok("--muto") });
+    (o.ref || []).forEach(r => {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(r.y), y2: Y(r.y), stroke: tok("--ambra"), "stroke-width": 1.5, "stroke-dasharray": "5 4" }, svg);
+      testo(svg, W - m.r + 6, Y(r.y) + 4, r.label, { "font-size": 11, fill: tok("--ambra") });
+    });
+    o.series.forEach(s => {
+      const pts = s.pts.filter(p => p[1] != null);
+      if (!o.soloPunti) el("path", { d: pts.map((p, k) => (k ? "L" : "M") + X(p[0]) + " " + Y(p[1])).join(" "),
+        fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+      pts.forEach(p => {
+        el("circle", { cx: X(p[0]), cy: Y(p[1]), r: o.r || 4.5, fill: s.color, stroke: tok("--foglio"), "stroke-width": 2 }, svg);
+        const hit = el("circle", { cx: X(p[0]), cy: Y(p[1]), r: 12, fill: "transparent" }, svg);
+        aggancia(hit, o.tip(s, p));
+      });
+      if (s.etichetta !== false && !o.soloPunti) {
+        const u = pts[pts.length - 1];
+        testo(svg, X(u[0]) + 10, Y(u[1]) + 4 + (s.dy || 0), s.name, { "font-size": 11, fill: tok("--inchiostro-2") });
+      }
+    });
+  }
+  function legenda(id, voci, punto) {
+    document.getElementById(id).innerHTML = voci.map(v =>
+      `<span><i class="${punto ? "punto" : ""}" style="background:${v.color}"></i>${v.name}</span>`).join("");
+  }
+
+  /* ---------- barre raggruppate ---------- */
+  function barre(id, o) {
+    const box = document.getElementById(id); box.innerHTML = "";
+    const W = o.W || 520, H = o.H || 280, m = { l: 48, r: 12, t: 16, b: 40 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": o.aria }, box);
+    const Y = v => m.t + (1 - v / o.yMax) * (H - m.t - m.b);
+    o.yTicks.forEach(t => {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), stroke: t === 0 ? tok("--filo-forte") : tok("--filo") }, svg);
+      testo(svg, m.l - 8, Y(t) + 4, t + "%", { "text-anchor": "end", "font-size": 11, fill: tok("--muto") });
+    });
+    const gw = (W - m.l - m.r) / o.cats.length, bw = Math.min(26, (gw - 18) / o.series.length);
+    o.cats.forEach((c, i) => {
+      const gx = m.l + i * gw + (gw - bw * o.series.length - 2 * (o.series.length - 1)) / 2;
+      o.series.forEach((s, k) => {
+        const v = s.vals[i]; if (v == null) return;
+        const x = gx + k * (bw + 2), y = Y(v), h = Y(0) - y;
+        const p = el("path", { d: `M${x} ${Y(0)} V${y + 3} Q${x} ${y} ${x + 3} ${y} H${x + bw - 3} Q${x + bw} ${y} ${x + bw} ${y + 3} V${Y(0)} Z`,
+          fill: s.color }, svg);
+        aggancia(p, `${s.name}<br>${c}: <b>${it(v, 1)}%</b>`);
+        if (h < 0) return;
+      });
+      testo(svg, m.l + i * gw + gw / 2, H - m.b + 18, c, { "text-anchor": "middle", "font-size": 11, fill: tok("--muto") });
+    });
+    testo(svg, m.l + (W - m.l - m.r) / 2, H - 4, o.xLabel, { "text-anchor": "middle", "font-size": 11, fill: tok("--muto") });
+  }
+
+  /* ---------- tabelle statiche ---------- */
+  function tabelle() {
+    const C = D.comunita, taglie = [...new Set(C.map(c => c.n))];
+    let h = "<thead><tr><th>Membri</th><th>Fascia 1</th><th>Fascia 2</th><th>Fascia 3</th><th>Fascia 4</th></tr></thead><tbody>";
+    taglie.forEach(n => {
+      const r = C.filter(c => c.n === n).sort((a, b) => a.fascia - b.fascia);
+      h += `<tr class="${n > 18 ? "fuori" : ""}"><td>${n}${n > 18 ? " <small>solo griglia</small>" : ""}</td>` +
+        r.map(c => `<td title="${c.scheda}">${it(c.pen, 0)}% <small>· ${it(c.vN / c.n, 1)} €</small></td>`).join("") + "</tr>";
+    });
+    document.getElementById("tab-griglia").innerHTML = h + "</tbody>";
+
+    let m = "<thead><tr><th>Regola</th><th>Famiglia</th></tr></thead><tbody>";
+    D.vincitori.metodi.forEach(x => { m += `<tr><td>${NOME_METODO[x]}</td><td style="font-family:var(--f-display);color:var(--inchiostro-2)">${FAMIGLIA[x]}</td></tr>`; });
+    document.getElementById("tab-metodi").innerHTML = m + `</tbody><caption style="caption-side:bottom;text-align:left;font-size:var(--t-xs);color:var(--muto);padding-top:6px">* dati di povertà energetica ancora segnaposto. L'Adaptive Sampling Shapley è usato solo sopra i 18 membri, al posto dello Shapley esatto.</caption>`;
+
+    const noz = [["Uniformità", "Gini, EI"], ["Merito", "Fairness Index, σ"], ["Stabilità", "Eccesso di coalizione, coalizioni instabili"],
+      ["Inclusione", "Quota ai vulnerabili LIHC"], ["Incentivo", "Forza incentivante, allineamento netto e lordo"], ["Sostenibilità", "VAN del membro peggiore"]];
+    document.getElementById("tab-nozioni").innerHTML = "<thead><tr><th>Nozione</th><th style='text-align:left'>Indicatori</th></tr></thead><tbody>" +
+      noz.map(r => `<tr><td>${r[0]}</td><td style="text-align:left;font-family:var(--f-testo);white-space:normal">${r[1]}</td></tr>`).join("") + "</tbody>";
+
+    const V = D.van;
+    document.getElementById("tab-van").innerHTML = "<thead><tr><th>Fascia</th><th>VAN medio</th><th>Con VAN &lt; 0</th></tr></thead><tbody>" +
+      V.fasce.map((f, i) => `<tr><td>Fascia ${f}</td><td>${it(V.medio[i], 0)} €</td><td>${it(V.negativi[i], 0)}%</td></tr>`).join("") + "</tbody>";
+    document.getElementById("spread").textContent = it(V.spread_mediano, 0);
+
+    document.getElementById("tab-as").innerHTML = "<thead><tr><th>Membri</th><th>Scarto medio</th><th>Scarto max</th><th>ρ di Spearman min</th></tr></thead><tbody>" +
+      D.shapley_as.map(r => `<tr><td>${r.Membri}</td><td>${it(r.RD_medio_pct, 2)}%</td><td>${it(r.RD_max_pct, 1)}%</td><td>${it(r.Spearman_rho_min, 2)}</td></tr>`).join("") + "</tbody>";
+  }
+
+  /* ---------- gruppi di indicatori ---------- */
+  let run = "fino18";
+  function gruppi() {
+    const G = D.cluster[run], conc = Object.fromEntries(G.conc.map(c => [c.ind, c.conc]));
+    const nomeGruppo = g => g.ind.includes("Gini") ? "uniformità" : g.ind.includes("Sigma") ? "merito e stabilità"
+      : g.ind.includes("InclusioneLIHC") ? "inclusione" : g.ind.includes("ForzaIncentivante") ? "incentivo"
+      : "incentivo lordo";
+    document.getElementById("gruppi").innerHTML = G.gruppi.map(g => `<div class="gruppo">
+        <span class="nome">${nomeGruppo(g)}</span>
+        <span class="rap">${NOME_IND[g.rap]}</span>
+        <ul>${g.ind.map(i => `<li><span>${NOME_IND[i]}</span><span class="dato">${i === g.rap ? "rapp." : it(conc[i], 2)}</span></li>`).join("")}</ul>
+      </div>`).join("");
+    const conMin = Math.min(...G.conc.map(c => c.conc));
+    document.getElementById("nota-gruppi").textContent =
+      `Accanto a ogni indicatore, la quota di coppie di regole che il rappresentante ordina allo stesso modo (minimo ${it(conMin, 2)}). ` +
+      `Gruppi ai tre tagli: ${G.ngruppi["0.7"]} a τ ≥ 0,7, ${G.ngruppi["0.5"]} a τ ≥ 0,5, ${G.ngruppi["0.3"]} a τ ≥ 0,3. ` +
+      `Il fronte di Pareto calcolato coi soli rappresentanti coincide con quello completo in ${G.pareto.uguali} comunità su ${G.pareto.tot}: ` +
+      `dove differisce, escono regole non dominate solo per sfumature interne a un gruppo. La scelta del rappresentante è algoritmica; per la tesi l'eccesso in euro è più leggibile di σ.`;
+    document.getElementById("btn-18").setAttribute("aria-pressed", run === "fino18");
+    document.getElementById("btn-25").setAttribute("aria-pressed", run === "griglia25");
+  }
+  document.getElementById("btn-18").addEventListener("click", () => { run = "fino18"; gruppi(); });
+  document.getElementById("btn-25").addEventListener("click", () => { run = "griglia25"; gruppi(); });
+
+  /* ---------- figure ---------- */
+  function figure() {
+    const metodi = D.vincitori.metodi, rowsM = metodi.map(x => NOME_METODO[x]);
+
+    // Fig 2
+    const vi = D.vincitori.indicatori;
+    heatmap("fig-vincitori", {
+      rows: rowsM, cols: vi.map(i => NOZIONE[i] + "\n" + NOME_IND[i]), cellW: 104, headH: 52,
+      values: metodi.map(m => vi.map(i => D.vincitori.presenza[i].conte[m])),
+      color: (v, i, j) => seq(v / D.vincitori.presenza[vi[j]].tot),
+      fmt: v => v === 0 ? "·" : String(v),
+      tip: (v, i, j) => `${rowsM[i]}<br>${NOME_IND[vi[j]]}: prima in <b>${v}</b> comunità su ${D.vincitori.presenza[vi[j]].tot}`,
+      aria: "Mappa: comunità in cui ogni regola è prima per ogni nozione di equità"
+    });
+    scala("leg-vincitori", [seq(0), seq(0.5), seq(1)], "mai prima", "prima in tutte");
+
+    // Fig 3
+    const ti = D.tau.indicatori;
+    heatmap("fig-tau", {
+      rows: ti.map(i => NOME_IND[i]), cols: ti.map(i => NOME_IND[i].replace(" ", "\n")), cellW: 66, headH: 52, labelW: 150,
+      values: D.tau.matrice, color: v => div(v), fmt: v => it(v, 2),
+      tip: (v, i, j) => `${NOME_IND[ti[i]]} · ${NOME_IND[ti[j]]}<br>τ medio <b>${it(v, 2)}</b>`,
+      aria: "Mappa del tau di Kendall medio fra gli indicatori"
+    });
+    scala("leg-tau", [div(-1), div(0), div(1)], "−1 graduatorie opposte", "+1 stessa graduatoria");
+
+    // Fig 4
+    const pen = run2pts => run2pts.filter(r => r.sweep === "penetrazione").map(r => [parseInt(r.fisso.replace("n = ", "")), r.quota]);
+    const s18 = { name: "fino a 18 (11 regole)", color: tok("--s1"), pts: pen(D.inversioni.fino18), etichetta: false };
+    const s25 = { name: "griglia (10 regole)", color: tok("--s2"), pts: pen(D.inversioni.griglia25), etichetta: false };
+    linee("fig-inv-pen", { xs: [5, 8, 10, 15, 18, 20, 25], yMin: 0, yMax: 40, yTicks: [0, 10, 20, 30, 40], yFmt: t => t + "%",
+      series: [s25, s18], xLabel: "membri", mr: 30, W: 460, H: 260,
+      tip: (s, p) => `${s.name}<br>${p[0]} membri: <b>${it(p[1], 1)}%</b> delle coppie`, aria: "Inversioni lungo la penetrazione per taglia" });
+    legenda("leg-inv", [{ name: "fino a 18 membri, 11 regole", color: tok("--s1") }, { name: "griglia fino a 25, 10 regole", color: tok("--s2") }]);
+
+    // Fig 5
+    const tag = r => r.filter(x => x.sweep === "taglia").map(x => x.quota);
+    barre("fig-inv-taglia", { cats: ["fascia 1", "fascia 2", "fascia 3", "fascia 4"], yMax: 40, yTicks: [0, 10, 20, 30, 40],
+      series: [{ name: "fino a 18 membri", color: tok("--s1"), vals: tag(D.inversioni.fino18) },
+               { name: "griglia fino a 25", color: tok("--s2"), vals: tag(D.inversioni.griglia25) }],
+      xLabel: "fascia di penetrazione (≈27, 50, 75, 100%)", W: 460, H: 260, aria: "Inversioni lungo la taglia per fascia" });
+
+    // Fig 6
+    const soglie = [0, 5, 10, 20], cs = [seq(0.3), seq(0.5), seq(0.75), seq(1)];
+    const ss = soglie.map((s, k) => ({ name: s === 10 ? "10% (default)" : s + "%", color: cs[k],
+      pts: D.sensibilita.fino18.filter(r => r.soglia === s && r.sweep === "penetrazione").map(r => [parseInt(r.fisso.replace("n = ", "")), r.quota]) }));
+    linee("fig-sens", { xs: [5, 8, 10, 15, 18], yMin: 0, yMax: 60, yTicks: [0, 20, 40, 60], yFmt: t => t + "%",
+      series: ss, xLabel: "membri", W: 640, H: 260, mr: 110,
+      tip: (s, p) => `soglia ${s.name}<br>${p[0]} membri: <b>${it(p[1], 1)}%</b>`, aria: "Sensibilità delle inversioni alla soglia" });
+    legenda("leg-sens", ss.map(s => ({ name: "soglia " + s.name, color: s.color })));
+
+    // Fig 7
+    const P = D.prosumer, L2 = v => Math.log2(v) / 3;
+    heatmap("fig-prosumer", {
+      rows: rowsM, cols: P.fasce.map((f, k) => `fascia ${f}\n≈${it(P.pen[k], 0)}% prosumer`), cellW: 112, headH: 52,
+      values: P.righe.map(r => r.valori), color: v => div(L2(Math.max(v, 0.01))), fmt: v => it(v, 2),
+      tip: (v, i, j) => `${rowsM[i]}, fascia ${P.fasce[j]}<br>i prosumer ricevono <b>${it(v, 2)}</b> volte la loro quota di membri`,
+      aria: "Rapporto fra quota dei prosumer e loro quota di membri"
+    });
+    scala("leg-prosumer", [div(-1), div(0), div(1)], "≤ 0,125 penalizzati", "≥ 8 premiati (1 al centro)");
+
+    // Fig 8
+    const pi = D.perdite.indicatori;
+    heatmap("fig-perdite", {
+      rows: pi.map(i => "migliore su " + NOZIONE[i]), cols: pi.map(i => "perdo su\n" + NOZIONE[i]), cellW: 100, headH: 52, labelW: 200,
+      values: D.perdite.ott, color: v => seq(v),
+      fmt: (v, i, j) => it(v, 2) + (D.perdite.pctvN[i][j] != null ? ` (${it(D.perdite.pctvN[i][j], 0)}%)` : ""),
+      vuoto: "",
+      tip: (v, i, j) => v == null ? "" : `Scelgo il migliore su ${NOZIONE[pi[i]]}<br>perdo su ${NOZIONE[pi[j]]}: <b>${it(v, 2)}</b> dell'escursione` +
+        `<br>lettura pessimistica: ${it(D.perdite.pes[i][j], 2)}` + (D.perdite.pctvN[i][j] != null ? `<br>eccesso = ${it(D.perdite.pctvN[i][j], 1)}% di v(N)` : ""),
+      aria: "Matrice delle perdite fra criteri"
+    });
+    scala("leg-perdite", [seq(0), seq(0.5), seq(1)], "0 nessun costo", "1 la peggiore");
+
+    // Fig 9
+    heatmap("fig-profilo", {
+      rows: rowsM, cols: D.rimpianto.indicatori.map(i => NOZIONE[i]), cellW: 96, headH: 36,
+      values: D.rimpianto.valori, color: v => seq(v), fmt: v => it(v, 2),
+      tip: (v, i, j) => `${rowsM[i]}<br>${NOZIONE[D.rimpianto.indicatori[j]]}: distanza media dal migliore <b>${it(v, 2)}</b>`,
+      aria: "Distanza media di ogni regola dalla migliore, per criterio"
+    });
+
+    // Fig 10
+    const N = D.nucleolo, cc = [seq(0.3), seq(0.5), seq(0.75), seq(1)];
+    const sc = N.fasce.map((f, k) => ({ name: "fascia " + f, color: cc[k], pts: N.taglie.map((t, i) => [t, N.valori[i][k]]),
+      etichetta: false }));
+    linee("fig-core", { xs: N.taglie, yMin: -10, yMax: 0, yTicks: [-10, -8, -6, -4, -2, 0], yFmt: t => t + "%",
+      series: sc, xLabel: "membri", W: 460, H: 260, mr: 20,
+      tip: (s, p) => `${s.name}, ${p[0]} membri<br>eccesso del Nucleolo <b>${it(p[1], 2)}%</b> di v(N)`, aria: "Eccesso del Nucleolo per taglia" });
+    legenda("leg-core", sc.map(s => ({ name: s.name, color: s.color })));
+
+    // Fig 11
+    const F = D.forza;
+    heatmap("fig-forza", {
+      rows: rowsM, cols: F.fasce.map(f => "fascia " + f), cellW: 70, headH: 30, labelW: 180,
+      values: F.righe.map(r => r.valori), color: v => div(v / 1.2), fmt: v => it(v, 2),
+      tip: (v, i, j) => `${rowsM[i]}, fascia ${F.fasce[j]}<br>forza incentivante <b>${it(v, 2)}</b>`,
+      aria: "Forza incentivante per regola e fascia"
+    });
+    scala("leg-forza", [div(-1), div(0), div(1)], "premia il contrario", "premia il sincronismo");
+
+    // Fig 12
+    const C = D.comunita.slice().sort((a, b) => a.n - b.n || a.fascia - b.fascia);
+    const xsC = C.map((c, i) => i);
+    linee("fig-soglia", { xs: xsC, xCat: true, yMin: 0, yMax: 60, yTicks: [0, 15, 30, 45, 60], yFmt: t => t + "%",
+      xFmt: i => (C[i].fascia === 1 ? C[i].n : ""), soloPunti: true, r: 5,
+      series: [{ name: "comunità", color: tok("--s1"), pts: C.map((c, i) => [i, c.inc]) }],
+      ref: [{ y: 55, label: "55% sola TIP" }, { y: 45, label: "45% con conto capitale" }],
+      xLabel: "comunità, per taglia (membri) e fascia", W: 760, H: 270, mr: 150,
+      tip: (s, p) => `${C[p[0]].scheda} · ${C[p[0]].n} membri, ${it(C[p[0]].pen, 0)}% prosumer<br>incentivata <b>${it(p[1], 1)}%</b> dell'immessa`,
+      aria: "Quota di energia incentivata per comunità rispetto alle soglie" });
+    legenda("leg-soglia", [{ name: "una comunità", color: tok("--s1") }, { name: "soglia del DM 414/2023", color: tok("--ambra") }], true);
+  }
+
+  tabelle(); gruppi(); figure();
+  // ridisegna quando cambia il tema (i colori dei grafici vengono dai token)
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", figure);
+  new MutationObserver(figure).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>

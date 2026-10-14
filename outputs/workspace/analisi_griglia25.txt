@@ -1,0 +1,458 @@
+
+====================================================================================================
+1) COMUNITA': montepremi, energia, contendibile, soglia regolatoria
+====================================================================================================
+     Scheda  Membri  Fascia  Penetrazione_pct    vN_EUR  vN_per_membro  Condivisa_kWh  NonCondivisa_kWh  Contendibile_pct  Incentivata_pct  Margine55_pt  Margine45_pt  Binding
+  CER_4_1_0       5       1            20.000   233.257         46.651      1,818.858         1,811.119            30.142           50.107         4.893        -5.107        0
+  CER_3_2_0       5       2            40.000   275.059         55.012      2,146.124         6,861.506            17.761           23.826        31.174        21.174        0
+  CER_2_3_0       5       3            60.000   198.354         39.671      1,549.314        11,451.439            14.420           11.917        43.083        33.083        0
+  CER_0_5_0       5       4           100.000    40.375          8.075        316.896        21,995.099            41.877            1.420        53.580        43.580        0
+  CER_6_2_0       8       1            25.000   522.426         65.303      4,073.014         5,286.031            28.982           43.520        11.480         1.480        0
+  CER_4_4_0       8       2            50.000   405.017         50.627      3,159.139        15,112.564            14.171           17.290        37.710        27.710        0
+  CER_2_6_0       8       3            75.000   257.103         32.138      2,002.992        24,499.926            12.498            7.558        47.442        37.442        0
+  CER_0_8_0       8       4           100.000    54.588          6.824        427.886        35,122.497            33.623            1.204        53.796        43.796        0
+  CER_7_3_0      10       1            30.000   583.971         58.397      4,552.998         8,344.165            23.903           35.302        19.698         9.698        0
+  CER_5_5_0      10       2            50.000   504.471         50.447      3,936.481        17,229.213            14.539           18.598        36.402        26.402        0
+  CER_2_8_0      10       3            80.000   248.986         24.899      1,943.601        32,370.000            13.121            5.664        49.336        39.336        0
+ CER_0_10_0      10       4           100.000    70.247          7.025        550.330        43,004.033            33.521            1.264        53.736        43.736        0
+ CER_11_4_0      15       1            26.670   944.898         62.993      7,362.726         9,553.225            27.314           43.525        11.475         1.475        0
+  CER_7_8_0      15       2            53.330   748.016         49.868      5,836.376        28,190.807            12.793           17.152        37.848        27.848        0
+ CER_4_11_0      15       3            73.330   511.199         34.080      3,989.593        42,242.191            12.083            8.630        46.370        36.370        0
+ CER_0_15_0      15       4           100.000   113.419          7.561        889.038        66,938.164            32.667            1.311        53.689        43.689        0
+ CER_13_5_0      18       1            27.780 1,121.020         62.279      8,739.847        12,189.524            25.905           41.759        13.241         3.241        0
+  CER_9_9_0      18       2            50.000   929.966         51.665      7,258.599        30,859.685            13.247           19.042        35.958        25.958        0
+ CER_4_14_0      18       3            77.780   551.074         30.615      4,303.247        57,764.893            11.196            6.933        48.067        38.067        0
+ CER_0_18_0      18       4           100.000   140.349          7.797      1,100.792        80,143.013            30.729            1.355        53.645        43.645        0
+ CER_15_5_0      20       1            25.000 1,228.296         61.415      9,575.813        11,401.299            27.233           45.649         9.351        -0.649        0
+CER_10_10_0      20       2            50.000   981.477         49.074      7,667.138        34,324.034            13.172           18.259        36.741        26.741        0
+ CER_5_15_0      20       3            75.000   622.148         31.107      4,861.933        62,293.056            11.042            7.240        47.760        37.760        0
+ CER_0_20_0      20       4           100.000   155.035          7.752      1,216.257        88,351.171            31.290            1.358        53.642        43.642        0
+ CER_18_7_0      25       1            28.000 1,433.312         57.332     11,181.291        18,729.108            22.097           37.383        17.617         7.617        0
+CER_12_13_0      25       2            52.000 1,187.164         47.487      9,268.737        47,779.448            13.032           16.247        38.753        28.753        0
+ CER_6_19_0      25       3            76.000   662.923         26.517      5,182.652        76,069.612            12.065            6.378        48.622        38.622        0
+ CER_0_25_0      25       4           100.000   185.837          7.433      1,457.685       111,500.820            29.701            1.290        53.710        43.710        0
+
+Binding (55%): 0/28; sarebbero binding al 45%: CER_4_1_0, CER_15_5_0
+
+====================================================================================================
+2) SHAPLEY ESATTO vs ADAPTIVE SAMPLING
+====================================================================================================
+ Membri  Comunita  RD_medio_pct  RD_max_pct  L1_su_vN_pct  Spearman_rho_medio  Spearman_rho_min
+      5         4         0.922       4.286         0.816               1.000             1.000
+      8         4         1.309       4.168         1.034               0.964             0.905
+     10         4         1.047       4.088         0.768               0.997             0.988
+     15         4         1.085       7.245         0.763               0.990             0.979
+     18         4         1.464       4.981         1.048               0.995             0.990
+
+CER peggiori per RD_max:
+    Scheda  Membri  Penetrazione_pct    vN_EUR  RD_medio_pct  RD_max_pct  L1_su_vN_pct  ScartoMax_EUR  Spearman_rho  AS_campioni_M  AS_seed
+CER_4_11_0      15            73.330   511.200         1.515       7.245         0.809          0.910         0.986           1000       42
+CER_4_14_0      18            77.780   551.070         2.320       4.981         1.184          0.880         0.996           1000       42
+ CER_9_9_0      18            50.000   929.970         2.047       4.925         1.509          1.550         0.994           1000       42
+CER_13_5_0      18            27.780 1,121.020         1.145       4.520         1.217          3.270         0.990           1000       42
+ CER_2_3_0       5            60.000   198.350         1.324       4.286         0.925          0.890         1.000           1000       42
+
+Membri con scarto relativo > 3%: 25 su 224; quota media di questi sul totale Shapley: 27.54 EUR (media generale 37.74)
+
+====================================================================================================
+3) VINCITORI per indicatore (punteggi orientati, pareggio = soglia di rilevanza di MAIN2)
+====================================================================================================
+EI_orig                    n=28  Equal Split 28  | pari medi 1.0, distacco rel. medio 0.20
+Gini                       n=28  Equal Split 28  | pari medi 1.0, distacco rel. medio 0.20
+FairnessIndex              n=28  Variance Least Core 27, Adaptive Sampling Shapley 1  | pari medi 1.6, distacco rel. medio 0.10
+Sigma                      n=28  Variance Least Core 27, Adaptive Sampling Shapley 1  | pari medi 1.5, distacco rel. medio 0.11
+InclusioneLIHC             n=24  Cascading Tree 11, Tri-level EP 7, Weighted Solidarity 6  | pari medi 1.6, distacco rel. medio 0.14
+EccessoMax_EUR             n=20  Variance Least Core 20  | pari medi 3.0, distacco rel. medio 0.12
+CoalizioniInstabili        n=20  Variance Least Core 20  | pari medi 1.4, distacco rel. medio 0.27
+ForzaIncentivante          n=28  Similarity-Utilization 21, Tri-level EP 7  | pari medi 2.8, distacco rel. medio 0.04
+AllineamentoVirtu          n=28  Similarity-Utilization 28  | pari medi 5.1, distacco rel. medio 0.03
+AllineamentoVirtu_lordo    n=28  Similarity-Utilization 20, Equal Split 4, Weighted Solidarity 3, Variance Least Core 1  | pari medi 2.2, distacco rel. medio 0.12
+VAN_min_EUR                n=28  Equal Split 28  | pari medi 1.1, distacco rel. medio 0.16
+
+====================================================================================================
+4) ACCORDO FRA INDICATORI: tau-b medio sulle comunita' (tolleranza numerica)
+====================================================================================================
+IndicatoreB     EI_orig   Gini  FairIdx  Sigma  InclusioneLIHC    Ecc  CoalI    FI_    AV_   AV_L  VANmin
+IndicatoreA                                                                                              
+EI_orig             NaN  1.000   -0.110 -0.127           0.089 -0.253 -0.086 -0.692 -0.590 -0.292   0.820
+Gini              1.000    NaN   -0.110 -0.127           0.089 -0.253 -0.086 -0.692 -0.590 -0.292   0.820
+FairIdx          -0.110 -0.110      NaN  0.928          -0.070  0.791  0.805  0.171  0.206  0.050  -0.040
+Sigma            -0.127 -0.127    0.928    NaN          -0.035  0.758  0.852  0.175  0.210  0.035  -0.063
+InclusioneLIHC    0.089  0.089   -0.070 -0.035             NaN -0.139 -0.044 -0.283 -0.389 -0.561   0.196
+Ecc              -0.253 -0.253    0.791  0.758          -0.139    NaN  0.666  0.269  0.287  0.118  -0.188
+CoalI            -0.086 -0.086    0.805  0.852          -0.044  0.666    NaN  0.140  0.174  0.050  -0.042
+FI_              -0.692 -0.692    0.171  0.175          -0.283  0.269  0.140    NaN  0.889  0.508  -0.683
+AV_              -0.590 -0.590    0.206  0.210          -0.389  0.287  0.174  0.889    NaN  0.537  -0.588
+AV_L             -0.292 -0.292    0.050  0.035          -0.561  0.118  0.050  0.508  0.537    NaN  -0.376
+VANmin            0.820  0.820   -0.040 -0.063           0.196 -0.188 -0.042 -0.683 -0.588 -0.376     NaN
+
+Numero di comunita' su cui il tau e' definito:
+IndicatoreB     EI_orig  Gini  FairIdx  Sigma  InclusioneLIHC  Ecc  CoalI  FI_  AV_  AV_L  VANmin
+IndicatoreA                                                                                      
+EI_orig               0    28       28     28              24   20     20   28   28    28      28
+Gini                 28     0       28     28              24   20     20   28   28    28      28
+FairIdx              28    28        0     28              24   20     20   28   28    28      28
+Sigma                28    28       28      0              24   20     20   28   28    28      28
+InclusioneLIHC       24    24       24     24               0   16     16   24   24    24      24
+Ecc                  20    20       20     20              16    0     20   20   20    20      20
+CoalI                20    20       20     20              16   20      0   20   20    20      20
+FI_                  28    28       28     28              24   20     20    0   28    28      28
+AV_                  28    28       28     28              24   20     20   28    0    28      28
+AV_L                 28    28       28     28              24   20     20   28   28     0      28
+VANmin               28    28       28     28              24   20     20   28   28    28       0
+
+====================================================================================================
+5) [ESPLORATIVO] SOTTOINSIEME MINIMO: raggruppamento gerarchico average-linkage su d = 1 - tau medio
+====================================================================================================
+  d= 0.00 (tau~+1.00)  unisce ['EI_orig']  +  ['Gini']
+  d= 0.07 (tau~+0.93)  unisce ['FairnessIndex']  +  ['Sigma']
+  d= 0.11 (tau~+0.89)  unisce ['ForzaIncentivante']  +  ['AllineamentoVirtu']
+  d= 0.17 (tau~+0.83)  unisce ['FairnessIndex', 'Sigma']  +  ['CoalizioniInstabili']
+  d= 0.18 (tau~+0.82)  unisce ['EI_orig', 'Gini']  +  ['VAN_min_EUR']
+  d= 0.26 (tau~+0.74)  unisce ['FairnessIndex', 'Sigma', 'CoalizioniInstabili']  +  ['EccessoMax_EUR']
+  d= 0.48 (tau~+0.52)  unisce ['ForzaIncentivante', 'AllineamentoVirtu']  +  ['AllineamentoVirtu_lordo']
+  d= 0.84 (tau~+0.16)  unisce ['FairnessIndex', 'Sigma', 'CoalizioniInstabili', 'EccessoMax_EUR']  +  ['ForzaIncentivante', 'AllineamentoVirtu', 'AllineamentoVirtu_lordo']
+  d= 0.88 (tau~+0.12)  unisce ['EI_orig', 'Gini', 'VAN_min_EUR']  +  ['InclusioneLIHC']
+  d= 1.28 (tau~-0.28)  unisce ['EI_orig', 'Gini', 'VAN_min_EUR', 'InclusioneLIHC']  +  ['FairnessIndex', 'Sigma', 'CoalizioniInstabili', 'EccessoMax_EUR', 'ForzaIncentivante', 'AllineamentoVirtu', 'AllineamentoVirtu_lordo']
+
+  taglio d<=0.3 (tau medio >= 0.7): 5 gruppi
+     ['EI_orig', 'Gini', 'VAN_min_EUR']   -> rappresentante: EI_orig
+     ['FairnessIndex', 'Sigma', 'CoalizioniInstabili', 'EccessoMax_EUR']   -> rappresentante: Sigma
+     ['InclusioneLIHC']   -> rappresentante: InclusioneLIHC
+     ['ForzaIncentivante', 'AllineamentoVirtu']   -> rappresentante: ForzaIncentivante
+     ['AllineamentoVirtu_lordo']   -> rappresentante: AllineamentoVirtu_lordo
+
+  taglio d<=0.5 (tau medio >= 0.5): 4 gruppi
+     ['EI_orig', 'Gini', 'VAN_min_EUR']   -> rappresentante: EI_orig
+     ['FairnessIndex', 'Sigma', 'CoalizioniInstabili', 'EccessoMax_EUR']   -> rappresentante: Sigma
+     ['InclusioneLIHC']   -> rappresentante: InclusioneLIHC
+     ['ForzaIncentivante', 'AllineamentoVirtu', 'AllineamentoVirtu_lordo']   -> rappresentante: AllineamentoVirtu
+
+  taglio d<=0.7 (tau medio >= 0.3): 4 gruppi
+     ['EI_orig', 'Gini', 'VAN_min_EUR']   -> rappresentante: EI_orig
+     ['FairnessIndex', 'Sigma', 'CoalizioniInstabili', 'EccessoMax_EUR']   -> rappresentante: Sigma
+     ['InclusioneLIHC']   -> rappresentante: InclusioneLIHC
+     ['ForzaIncentivante', 'AllineamentoVirtu', 'AllineamentoVirtu_lordo']   -> rappresentante: AllineamentoVirtu
+  (esclusi per tau poco definito: [])
+
+====================================================================================================
+6) [ESPLORATIVO] ENTITA' DEI TRADE-OFF: perdita su B scegliendo il migliore su A
+====================================================================================================
+   perdita = (max_B - B(scelto)) / (max_B - min_B), media sulle comunita'; 0 = nessun costo, 1 = il peggiore su B
+         EI_orig  Gini  FairIdx  Sigma   Ecc  CoalI   FI_  VANmin
+EI_orig      NaN 0.000    0.686  0.727 0.722  0.790 0.799   0.000
+Gini       0.000   NaN    0.686  0.727 0.722  0.790 0.799   0.000
+FairIdx    0.651 0.651      NaN  0.000 0.000  0.000 0.314   0.644
+Sigma      0.651 0.651    0.000    NaN 0.000  0.000 0.316   0.644
+Ecc        0.617 0.617    0.000  0.000   NaN  0.000 0.247   0.594
+CoalI      0.669 0.669    0.000  0.000 0.000    NaN 0.320   0.653
+FI_        0.935 0.935    0.468  0.464 0.291  0.679   NaN   0.953
+VANmin     0.000 0.000    0.686  0.727 0.721  0.787 0.798     NaN
+
+   stessa perdita in % di v(N) per le colonne in euro (EccessoMax, VAN_min):
+           Ecc  VANmin
+EI_orig 20.350   0.000
+Gini    20.350   0.000
+FairIdx  0.000  67.377
+Sigma    0.000  67.377
+Ecc        NaN  76.972
+CoalI    0.000  82.654
+FI_      6.564 103.460
+VANmin  20.315     NaN
+
+====================================================================================================
+7) [ESPLORATIVO] QUANTO SI SOMIGLIANO I METODI: valore spostato fra due metodi, % di v(N)
+====================================================================================================
+       ASS     CT     ES      N     PK    PtC    RM1      S     SU    TlE    VLC     WS
+ASS  0.000 27.819 25.261 10.771 24.026 20.003 16.061  0.443 24.770 23.411  9.081 30.096
+CT  27.819  0.000 11.610 36.865 49.847 40.544 20.113 26.210 50.548 48.839 36.694 18.846
+ES  25.261 11.610  0.000 31.831 40.108 31.365 12.117 24.810 40.624 39.331 30.794 14.428
+N   10.771 36.865 31.831  0.000 17.647 18.181 21.728 10.843 19.284 17.321  0.559 35.820
+PK  24.026 49.847 40.108 17.647  0.000 10.164 30.804 26.164  8.247  1.863 16.203 44.156
+PtC 20.003 40.544 31.365 18.181 10.164  0.000 23.657 21.585 14.187  9.010 16.747 38.136
+RM1 16.061 20.113 12.117 21.728 30.804 23.657  0.000 15.622 31.703 29.992 20.774 19.801
+S    0.443 26.210 24.810 10.843 26.164 21.585 15.622  0.000 26.503 25.565 10.314 29.631
+SU  24.770 50.548 40.624 19.284  8.247 14.187 31.703 26.503  0.000  9.437 18.210 43.597
+TlE 23.411 48.839 39.331 17.321  1.863  9.010 29.992 25.565  9.437  0.000 15.838 43.408
+VLC  9.081 36.694 30.794  0.559 16.203 16.747 20.774 10.314 18.210 15.838  0.000 34.813
+WS  30.096 18.846 14.428 35.820 44.156 38.136 19.801 29.631 43.597 43.408 34.813  0.000
+   legenda: ASS=Adaptive Sampling Shapley, CT=Cascading Tree, ES=Equal Split, N=Nucleolo, PK=Pearson Key, PtC=Proportional to Consumption, RM1=Remuneration Model 1, S=Shapley, SU=Similarity-Utilization, TlE=Tri-level EP, VLC=Variance Least Core, WS=Weighted Solidarity
+   Adaptive Sampling Shapley      piu' vicini: Shapley 0.4%, Variance Least Core 9.1%
+   Cascading Tree                 piu' vicini: Equal Split 11.6%, Weighted Solidarity 18.8%
+   Equal Split                    piu' vicini: Cascading Tree 11.6%, Remuneration Model 1 12.1%
+   Nucleolo                       piu' vicini: Variance Least Core 0.6%, Adaptive Sampling Shapley 10.8%
+   Pearson Key                    piu' vicini: Tri-level EP 1.9%, Similarity-Utilization 8.2%
+   Proportional to Consumption    piu' vicini: Tri-level EP 9.0%, Pearson Key 10.2%
+   Remuneration Model 1           piu' vicini: Equal Split 12.1%, Shapley 15.6%
+   Shapley                        piu' vicini: Adaptive Sampling Shapley 0.4%, Variance Least Core 10.3%
+   Similarity-Utilization         piu' vicini: Pearson Key 8.2%, Tri-level EP 9.4%
+   Tri-level EP                   piu' vicini: Pearson Key 1.9%, Proportional to Consumption 9.0%
+   Variance Least Core            piu' vicini: Nucleolo 0.6%, Adaptive Sampling Shapley 9.1%
+   Weighted Solidarity            piu' vicini: Equal Split 14.4%, Cascading Tree 18.8%
+
+====================================================================================================
+8) QUOTE AI PROSUMER: rapporto quota di v(N) / quota di membri, per fascia e per taglia
+====================================================================================================
+Fascia                          1     2     3
+Metodo                                       
+Adaptive Sampling Shapley   1.619 0.606 0.417
+Cascading Tree              1.917 1.269 1.069
+Equal Split                 1.000 1.000 1.000
+Nucleolo                    1.503 0.379 0.295
+Pearson Key                 0.033 0.094 0.197
+Proportional to Consumption 0.169 0.281 0.406
+Remuneration Model 1        0.951 0.832 0.752
+Shapley                     1.729 0.673 0.444
+Similarity-Utilization      0.035 0.072 0.134
+Tri-level EP                0.083 0.134 0.223
+Variance Least Core         1.302 0.364 0.295
+Weighted Solidarity         1.028 1.076 1.063
+
+Membri                         5     8     10    15    18    20    25
+Metodo                                                               
+Adaptive Sampling Shapley   1.462 0.979 0.788 0.783 0.723 0.782 0.648
+Cascading Tree              1.691 1.383 1.344 1.373 1.357 1.418 1.363
+Equal Split                 1.000 1.000 1.000 1.000 1.000 1.000 1.000
+Nucleolo                    1.402 0.626 0.527 0.553 0.521   NaN   NaN
+Pearson Key                 0.081 0.097 0.131 0.102 0.109 0.108 0.127
+Proportional to Consumption 0.235 0.237 0.319 0.287 0.297 0.296 0.324
+Remuneration Model 1        0.883 0.853 0.836 0.829 0.830 0.841 0.843
+Shapley                     1.469 0.970 0.791 0.782 0.732   NaN   NaN
+Similarity-Utilization      0.053 0.071 0.090 0.081 0.088 0.083 0.095
+Tri-level EP                0.098 0.122 0.176 0.148 0.155 0.155 0.173
+Variance Least Core         1.270 0.638 0.528 0.552 0.523 0.579 0.485
+Weighted Solidarity         1.050 1.112 1.065 1.064 1.053 1.045 1.001
+
+====================================================================================================
+9) FORZA INCENTIVANTE: netta contro lorda
+====================================================================================================
+IS netta, media per fascia:
+Fascia                           1      2      3      4
+Metodo                                                 
+Adaptive Sampling Shapley   -0.630  0.416  0.669  0.689
+Cascading Tree              -0.938 -0.289 -0.077  0.053
+Equal Split                  0.000 -0.000  0.000 -0.000
+Nucleolo                    -0.508  0.653  0.804  0.946
+Pearson Key                  0.974  0.964  0.922  1.120
+Proportional to Consumption  0.826  0.766  0.685  0.771
+Remuneration Model 1         0.038  0.174  0.283  0.329
+Shapley                     -0.745  0.341  0.635  0.705
+Similarity-Utilization       1.000  1.000  1.000  1.000
+Tri-level EP                 0.921  0.922  0.893  1.171
+Variance Least Core         -0.304  0.672  0.808  0.894
+Weighted Solidarity         -0.011 -0.071 -0.068  0.092
+
+IS lorda, media per fascia:
+Fascia                           1      2      3      4
+Metodo                                                 
+Adaptive Sampling Shapley   -2.360  2.513  3.487 -5.678
+Cascading Tree              -3.705 -2.790 -1.641 -1.398
+Equal Split                  0.000  0.000 -0.000 -0.000
+Nucleolo                    -2.444  6.099  6.610 -9.860
+Pearson Key                  2.572  6.652  4.965 -9.291
+Proportional to Consumption  1.311  4.373  2.456 -7.226
+Remuneration Model 1        -0.338  1.109  1.025 -3.411
+Shapley                     -3.198  3.004  5.382 -7.318
+Similarity-Utilization       4.030  8.297  7.435 -7.379
+Tri-level EP                 1.801  5.783  4.153 -9.765
+Variance Least Core         -1.340  4.781  4.290 -7.546
+Weighted Solidarity          0.129 -0.912 -1.522 -0.153
+
+Quota di comunita' in cui netta e lorda hanno lo stesso segno:
+Metodo
+Adaptive Sampling Shapley     0.679
+Cascading Tree                0.786
+Equal Split                   0.536
+Nucleolo                      0.700
+Pearson Key                   0.714
+Proportional to Consumption   0.643
+Remuneration Model 1          0.679
+Shapley                       0.700
+Similarity-Utilization        0.750
+Tri-level EP                  0.714
+Variance Least Core           0.643
+Weighted Solidarity           0.679
+
+Coseno fra asse netto e lordo, per fascia:
+Fascia     1     2      3      4
+Membri                          
+5      0.952 0.935  0.668 -0.727
+8      0.410 0.636  0.248 -0.760
+10     0.389 0.624  0.390 -0.754
+15     0.362 0.537  0.362 -0.511
+18     0.336 0.147  0.228 -0.072
+20     0.356 0.215  0.137  0.160
+25     0.270 0.230 -0.232  0.570
+
+====================================================================================================
+10) STABILITA': eccesso massimo in % di v(N) e coalizioni instabili
+====================================================================================================
+Fascia                           1      2      3      4
+Metodo                                                 
+Adaptive Sampling Shapley    0.528  5.115  4.431 -0.027
+Cascading Tree               5.620 25.721 41.917 13.483
+Equal Split                  5.523 17.469 38.177 14.562
+Nucleolo                    -2.223 -0.772 -0.656 -2.018
+Pearson Key                  8.252  4.558  4.004  4.525
+Proportional to Consumption  7.520  4.826 10.036  9.194
+Remuneration Model 1         1.832 10.601 20.541  4.346
+Shapley                      0.398  5.103  4.632 -0.026
+Similarity-Utilization      15.445 12.081 12.030  3.874
+Tri-level EP                 7.111  3.872  3.097  5.670
+Variance Least Core         -2.223 -0.772 -0.656 -2.018
+Weighted Solidarity         12.950 22.995 42.042 15.474
+
+Coalizioni instabili, media per fascia:
+Fascia                               1          2          3          4
+Metodo                                                                 
+Adaptive Sampling Shapley    4,785.400 10,829.400 11,519.000     15.800
+Cascading Tree              16,560.200 27,480.800 28,139.400 23,348.600
+Equal Split                 10,339.200 26,601.000 28,169.000 25,449.200
+Nucleolo                         0.000      0.000      0.000      0.000
+Pearson Key                 26,559.000 22,955.600 17,841.000  8,573.400
+Proportional to Consumption 25,366.800 14,693.400 19,728.600 11,738.800
+Remuneration Model 1         5,350.600 24,422.200 27,168.800 18,724.800
+Shapley                      5,241.800 11,942.400 13,024.200     17.000
+Similarity-Utilization      25,051.800 22,409.200 23,185.600  7,971.800
+Tri-level EP                26,168.400 21,663.000 17,544.800 11,319.400
+Variance Least Core              0.000      0.000      0.000      0.000
+Weighted Solidarity         15,335.200 27,068.400 28,307.200 19,713.600
+
+Per comunita': eccesso del Nucleolo (% v(N), <=0 = core non vuoto) e quanti metodi stanno nel core:
+             EccNucleolo_pct  MetodiNelCore  Membri  Fascia
+Scheda                                                     
+CER_4_1_0             -8.892              5       5       1
+CER_3_2_0             -2.477              2       5       2
+CER_2_3_0             -1.674              2       5       3
+CER_0_5_0             -5.813              5       5       4
+CER_6_2_0             -1.074              2       8       1
+CER_4_4_0             -0.641              2       8       2
+CER_2_6_0             -0.706              2       8       3
+CER_0_8_0             -1.968              2       8       4
+CER_7_3_0             -0.601              2      10       1
+CER_5_5_0             -0.421              2      10       2
+CER_2_8_0             -0.547              2      10       3
+CER_0_10_0            -1.292              2      10       4
+CER_11_4_0            -0.340              2      15       1
+CER_7_8_0             -0.181              2      15       2
+CER_4_11_0            -0.206              2      15       3
+CER_0_15_0            -0.596              2      15       4
+CER_13_5_0            -0.210              2      18       1
+CER_9_9_0             -0.140              2      18       2
+CER_4_14_0            -0.147              2      18       3
+CER_0_18_0            -0.420              2      18       4
+CER_15_5_0               NaN              0      20       1
+CER_10_10_0              NaN              0      20       2
+CER_5_15_0               NaN              0      20       3
+CER_0_20_0               NaN              0      20       4
+CER_18_7_0               NaN              0      25       1
+CER_12_13_0              NaN              0      25       2
+CER_6_19_0               NaN              0      25       3
+CER_0_25_0               NaN              0      25       4
+
+====================================================================================================
+11) SOSTENIBILITA' ECONOMICA: VAN per membro
+====================================================================================================
+                              VANmin  VANmedio  QuotaNeg
+Metodo                                                  
+Adaptive Sampling Shapley    -95.719   642.168     0.228
+Cascading Tree               -74.098   642.168     0.153
+Equal Split                  -56.752   642.168     0.168
+Nucleolo                    -110.113   657.036     0.281
+Pearson Key                 -143.062   642.168     0.379
+Proportional to Consumption -118.161   642.168     0.248
+Remuneration Model 1         -80.524   642.168     0.151
+Shapley                      -95.360   657.036     0.214
+Similarity-Utilization      -133.606   642.168     0.376
+Tri-level EP                -136.925   642.168     0.364
+Variance Least Core         -110.112   642.168     0.290
+Weighted Solidarity         -121.248   642.168     0.156
+
+VAN medio per ruolo e fascia (media sui metodi):
+Fascia         1       2         3       4
+Prosumer                                  
+0        868.407 991.537 1,005.862     NaN
+1        837.262 546.017   392.045 403.606
+
+Quota di membri con VAN < 0, per ruolo e fascia:
+Fascia       1     2     3     4
+Prosumer                        
+0        0.000 0.000 0.000   NaN
+1        0.213 0.216 0.359 0.568
+
+Escursione del VAN di un membro fra i metodi: mediana 652.1 EUR, contro |VAN| medio 785.2 EUR: il metodo sposta il VAN del 83% del suo livello
+Consumatori con VAN negativo con QUALUNQUE metodo: 0 su 149
+
+====================================================================================================
+12) INVERSIONI DI GRADUATORIA
+====================================================================================================
+       Sweep            Fisso  Configurazioni  SerieEsaminate  CoppieInvertite  QuotaInvertite  InvertiteAgliEstremi  CambiDiSegno
+penetrazione            n = 5               4             495              143           0.289                   124           162
+penetrazione            n = 8               4             495              172           0.347                   134           210
+penetrazione           n = 10               4             495              165           0.333                   158           172
+penetrazione           n = 15               4             495              152           0.307                   146           158
+penetrazione           n = 18               4             495              140           0.283                   132           148
+penetrazione           n = 20               4             495              118           0.238                   113           123
+penetrazione           n = 25               4             495              110           0.222                    97           123
+      taglia  fascia 1 (~27%)               7             495              108           0.218                    98           120
+      taglia  fascia 2 (~50%)               7             495               53           0.107                    51            55
+      taglia  fascia 3 (~75%)               7             495               27           0.055                    27            27
+      taglia fascia 4 (~100%)               7             495               40           0.081                    37            51
+
+Sweep di penetrazione - quota di coppie che si invertono, per indicatore:
+                         Serie  QuotaInvertite  QuotaInvertiteEstremi
+Indicatore                                                           
+EccessoMax_EUR             315           0.124                  0.117
+ForzaIncentivante          315           0.124                  0.124
+AllineamentoVirtu          315           0.127                  0.127
+VAN_min_EUR                315           0.127                  0.114
+EI_orig                    315           0.165                  0.156
+Gini                       315           0.165                  0.156
+CoalizioniInstabili        315           0.314                  0.298
+FairnessIndex              315           0.435                  0.400
+Sigma                      315           0.438                  0.422
+AllineamentoVirtu_lordo    315           0.479                  0.365
+InclusioneLIHC             315           0.676                  0.590
+
+Coppie di metodi piu' instabili (quota di serie invertite su tutti gli indicatori normativi, sweep di penetrazione):
+MetodoA                      MetodoB               
+Cascading Tree               Weighted Solidarity      0.571
+Remuneration Model 1         Cascading Tree           0.500
+Weighted Solidarity          Similarity-Utilization   0.476
+Equal Split                  Similarity-Utilization   0.452
+Proportional to Consumption  Remuneration Model 1     0.429
+Remuneration Model 1         Pearson Key              0.429
+Proportional to Consumption  Similarity-Utilization   0.405
+Cascading Tree               Similarity-Utilization   0.405
+Weighted Solidarity          Pearson Key              0.405
+Proportional to Consumption  Weighted Solidarity      0.381
+Remuneration Model 1         Similarity-Utilization   0.381
+Weighted Solidarity          Tri-level EP             0.381
+...coppie piu' stabili:
+MetodoA                      MetodoB                  
+Proportional to Consumption  Adaptive Sampling Shapley   0.048
+Variance Least Core          Tri-level EP                0.048
+Pearson Key                  Adaptive Sampling Shapley   0.048
+Variance Least Core          Equal Split                 0.000
+Pearson Key                  Tri-level EP                0.000
+Variance Least Core          Remuneration Model 1        0.000
+Equal Split                  Remuneration Model 1        0.000
+                             Adaptive Sampling Shapley   0.000
+
+====================================================================================================
+13) INDICATORI PER METODO, media su tutte le comunita' (valori grezzi)
+====================================================================================================
+                              Gini  FairnessIndex  Sigma  QuoteNulle  Ecc_pct  CoalizioniInstabili  ForzaIncentivante  ForzaIncentivante_lordo
+Metodo                                                                                                                                        
+Adaptive Sampling Shapley    0.301          0.071  0.017       0.000    2.512            6,787.400              0.286                   -0.509
+Cascading Tree               0.138          0.354  0.074       0.000   21.685           23,882.250             -0.313                   -2.384
+Equal Split                 -0.000          0.304  0.071       0.000   18.933           22,639.600             -0.000                   -0.000
+Nucleolo                     0.374          0.034  0.012       0.000   -1.417                0.000              0.474                    0.101
+Pearson Key                  0.465          0.201  0.049       0.036    5.335           18,982.250              0.995                    1.225
+Proportional to Consumption  0.392          0.192  0.046       0.036    7.894           17,881.900              0.762                    0.229
+Remuneration Model 1         0.155          0.199  0.047       0.000    9.330           18,916.600              0.206                   -0.404
+Shapley                      0.296          0.079  0.022       0.000    2.526            7,556.350              0.234                   -0.532
+Similarity-Utilization       0.448          0.217  0.054       0.036   10.857           19,654.600              1.000                    3.096
+Tri-level EP                 0.463          0.197  0.049       0.036    4.938           19,173.900              0.977                    0.493
+Variance Least Core          0.365          0.024  0.007       0.000   -1.417                0.000              0.517                    0.046
+Weighted Solidarity          0.179          0.347  0.078       0.000   23.365           22,606.100             -0.014                   -0.614

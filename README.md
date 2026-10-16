@@ -1351,8 +1351,7 @@ la governance è la stessa ovunque. Tabella completa e convenzioni in
 [STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) §3. I profili si rigenerano da
 `CER_LoadProfiles/config/simulation_config.lombardia100.yaml` (§3). Le schede miste dei
 primi studi (7 membri: uffici, piccola industria, negozio, famiglie) stanno in
-`CER_configuration/Provvsiorio/`, che `MAIN2.m` non legge; resta versionata la scheda
-minima `CER_3_1_0.txt`, mista (un ufficio prosumer e tre famiglie). La scheda
+`CER_configuration/Provvsiorio/`, che `MAIN2.m` non legge. La scheda
 **descrive** i membri, non li crea, e `align_members_to_users.m` si ferma elencando tutti i
 disallineamenti fra le due liste.
 
@@ -1601,10 +1600,10 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo
   stadio Python.
-- **Un clone pulito non riproduce la griglia.** Le 40 schede, gli `N_utenti.xlsx` e gli
-  export PVsyst della griglia (`PROVA_CER_*`) non sono versionati; lo sono lo scenario, la
-  scheda minima `CER_3_1_0.txt` con i suoi file, e tutti i risultati (tabelle dei due run,
-  CSV esportati dai workspace, pagina dei risultati).
+- **Un clone pulito non riproduce la griglia.** Le 40 schede, lo scenario e tutti i
+  risultati (tabelle dei due run, CSV esportati dai workspace, pagina dei risultati) sono
+  versionati; non lo sono i profili di carico (`N_utenti.xlsx`, `100_utenti.csv`) e gli
+  export PVsyst della griglia (`PROVA_CER_*`), che le schede dichiarano.
 - **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
   `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
   capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano

@@ -38,8 +38,7 @@ CHE COSA FA
 I DATI
   40 schede in CER_configuration/, tutte comunita' DOMESTICHE: taglie 5, 8,
   10, 15, 18, 20, 25, 50, 75 e 100 per quattro livelli di penetrazione, da
-  circa il 25% al 100% (accanto c'e' la scheda minima CER_3_1_0, mista e
-  fuori dalla griglia). I profili di carico vengono da una societa' lombarda
+  circa il 25% al 100%. I profili di carico vengono da una societa' lombarda
   di cento famiglie simulate con pyLPG su un catalogo italianizzato e
   validato contro ARERA. Ogni prosumer ha un impianto da 3,4 / 4,2 / 5,9 kWp
   secondo la dimensione del nucleo.
@@ -87,12 +86,7 @@ Project/
 |-- LICENSE, .gitignore
 |
 +-- CER_configuration/                  LE SCHEDE DATI (sezione 3)
-|   |-- CER_<C>_<P>_<E>.txt     [l]     Una per comunita': 40 nella griglia
-|   |-- CER_3_1_0.txt           [v]     Scheda minima versionata, FUORI dalla
-|   |                                   griglia: comunita' MISTA di 4 membri (un
-|   |                                   ufficio prosumer con PV04 da 35 kWp e tre
-|   |                                   famiglie), per avere una scheda da
-|   |                                   eseguire da un clone pulito
+|   |-- CER_<C>_<P>_<E>.txt     [v]     Una per comunita': 40 nella griglia
 |   |-- scenario_economico.txt  [v]     Prezzi, costi, soglie di poverta': uno
 |   |                                   solo per tutte le schede
 |   +-- Provvsiorio/            [l]     Schede miste dei primi studi: il glob di
@@ -102,7 +96,7 @@ Project/
 |   |-- PROVA_CER_1_Project_1_2_componenti.CSV  [l]  impianto da 3,4 kWp
 |   |-- PROVA_CER_1_Project_3_4_componenti.CSV  [l]  impianto da 4,2 kWp
 |   |-- PROVA_CER_1_Project_5_componenti.CSV    [l]  impianto da 5,9 kWp
-|   +-- PV4.CSV                                 [v]  impianto della scheda minima
+|   +-- PV4.CSV                                 [v]  impianto dei primi studi
 |
 +-- data/                               DATI ESTERNI DELL'ARRICCHIMENTO (6.3)
 |   |-- external/istat_eusilc_reddito_nordovest_2024.csv   reddito per tipologia
@@ -131,8 +125,6 @@ Project/
 |       |-- 100_utenti.csv       [l]    Le cento famiglie, kWh/h, 8760 righe
 |       |-- N_utenti.xlsx        [l]    Prime N colonne del file da cento,
 |       |                               N = 5, 8, 10, 15, 18, 20, 25, 50, 75
-|       +-- 3_utenti.xlsx        [v]    Profili della scheda minima CER_3_1_0
-|                                       (office_1 e tre famiglie)
 |
 +-- *.m (root)                          IL CODICE MATLAB (sezione 5)
 |
@@ -267,9 +259,8 @@ Da Git Bash, nella root del progetto. Su questa macchina l'eseguibile e'
 LE DUE VARIABILI D'AMBIENTE
   MAIN2_SCHEDE    nomi di scheda senza .txt, separati da ';'. L'ordine non
                   conta (MAIN2 li ordina). Vuota = TUTTE le schede della
-                  cartella, comprese quelle da 50-100 membri e la scheda
-                  minima mista: da non fare, il Variance Least Core non
-                  arriva in fondo e la scheda mista entrerebbe nel confronto.
+                  cartella, comprese quelle da 50-100 membri: da non fare,
+                  il Variance Least Core non arriva in fondo.
   MAIN2_CARTELLA  suffisso delle cartelle di uscita (lettere, cifre, _ e -):
                   tables_main2_<suffisso> e figures_main2_<suffisso>.
 
@@ -425,11 +416,10 @@ LA PIPELINE E' DETERMINISTICA
  3.4  Cosa e' versionato
 --------------------------------------------------------------------------------
 
-  CER_configuration/* e' escluso da git tranne scenario_economico.txt e la
-  scheda minima CER_3_1_0.txt, che dichiara a sua volta PV_Generation/PV4.CSV
-  e csv_lombardia100/3_utenti.xlsx (anche loro versionati). Le 40 schede della
-  griglia, i file N_utenti.xlsx e gli export PROVA_CER_* restano in locale: un
-  clone pulito ha la scheda minima da eseguire, ma non riproduce la griglia.
+  Sono versionati scenario_economico.txt, le 40 schede della griglia e tutti i
+  risultati. Restano in locale i file N_utenti.xlsx, 100_utenti.csv e gli
+  export PROVA_CER_* che le schede dichiarano: un clone pulito ha le schede
+  ma non riproduce la griglia.
   Sono invece versionati tutti i risultati: le tabelle dei due run, i CSV
   esportati dai workspace e la pagina dei risultati (sezione 7).
 

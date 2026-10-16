@@ -1,0 +1,1409 @@
+================================================================================
+ STRUTTURA DEL PROGETTO CER - VERSIONE MAIN2
+================================================================================
+ Autore: Alberto Scimonelli
+ Tesi di Laurea Magistrale - 2026
+ Simulazione dei profili di carico e analisi tecnico-economica di Comunita'
+ Energetiche Rinnovabili (CER): confronto fra regole di ripartizione
+ dell'incentivo su una griglia di comunita' domestiche.
+
+ Questo file descrive il progetto COME SE L'UNICA PIPELINE DI ANALISI FOSSE
+ MAIN2.m. Ogni file elencato serve a MAIN2.m, direttamente o indirettamente,
+ oppure a produrre i suoi dati di ingresso o a leggerne i risultati. MAIN.m e
+ i file che usa solo lui non sono descritti: compaiono con una riga ciascuno
+ nell'Appendice A. La mappa storica che li descrive e' STRUTTURA_PROGETTO.txt.
+
+ Fotografia al 16 ottobre 2026: codice al commit 3340111, risultati dei due
+ run finali del 13 ottobre (outputs/tables_main2/ e
+ outputs/tables_main2_griglia25/).
+================================================================================
+
+
+================================================================================
+ 0. IN UNA PAGINA
+================================================================================
+
+CHE COSA FA
+  Una CER incassa un incentivo - la tariffa premio oraria TIP_h - sull'energia
+  condivisa fra i suoi membri. La norma non dice come dividerlo. MAIN2.m lo
+  divide con dodici regole diverse, giudica ogni ripartizione con un insieme
+  di indicatori (uniformita', merito, stabilita' della coalizione, forza
+  incentivante, inclusione dei vulnerabili, sostenibilita' economica) e
+  ripete tutto su una griglia di comunita' che varia la TAGLIA e la
+  PENETRAZIONE dei prosumer. Dopo il ciclo misura quanto gli indicatori
+  concordano, quanto la graduatoria dei metodi dipende dalla composizione,
+  quanto costa un criterio in termini di un altro e quale sottoinsieme di
+  indicatori basta.
+
+I DATI
+  40 schede in CER_configuration/, tutte comunita' DOMESTICHE: taglie 5, 8,
+  10, 15, 18, 20, 25, 50, 75 e 100 per quattro livelli di penetrazione, da
+  circa il 25% al 100% (accanto c'e' la scheda minima CER_3_1_0, mista e
+  fuori dalla griglia). I profili di carico vengono da una societa' lombarda
+  di cento famiglie simulate con pyLPG su un catalogo italianizzato e
+  validato contro ARERA. Ogni prosumer ha un impianto da 3,4 / 4,2 / 5,9 kWp
+  secondo la dimensione del nucleo.
+
+I RUN DI RIFERIMENTO (13 ottobre 2026)
+  fino a 18 membri    20 comunita'   11 metodi in analisi   circa 42 min
+  griglia fino a 25   28 comunita'   10 metodi in analisi   circa 2 h 30
+  Le schede da 50, 75 e 100 membri esistono ma non sono analizzate: il
+  Variance Least Core non converge in tempi pratici oltre ~25 membri
+  (sezione 11).
+
+COME SI LANCIA (sezione 2.3)
+  MAIN2_SCHEDE="CER_0_5_0;CER_2_3_0;..." matlab -batch "MAIN2"
+
+DOVE SONO I RISULTATI
+  outputs/tables_main2/{confronto,fase1,sintesi}/            (versionati)
+  outputs/tables_main2_griglia25/{confronto,fase1,sintesi}/  (versionati)
+  outputs/workspace/ per riprendere senza rilanciare, outputs/run_logs/ per i log
+  Lettura dei numeri: sezione 10 di questo file e README.md par. 7.6-7.9.
+
+
+================================================================================
+ 1. STRUTTURA DELLE CARTELLE
+================================================================================
+
+Solo cio' che serve a MAIN2.m o ai suoi dati di ingresso.
+[v] = versionato in git    [l] = solo in locale (escluso o non aggiunto)
+
+Project/
+|
+|-- MAIN2.m                             ENTRY POINT MATLAB (sezione 4)
+|-- README.md                           Panoramica, metodi, indicatori, risultati
+|-- STRUTTURA_PROGETTO2.txt             Questo file
+|-- GUIDA_modelli_distribuzione.md      Derivazione matematica dei modelli di
+|                                       ripartizione e degli indicatori
+|-- DATA_SOURCES.md                     Fonti di reddito e spesa gas nelle schede,
+|                                       assunzioni e limiti dell'arricchimento
+|-- CER_input.txt                       Guida commentata al formato delle schede.
+|                                       Non letta dal codice; il suo esempio e'
+|                                       una comunita' mista a 6 membri
+|-- 20250101_20251231_MGP_PrezziZonali_Nord.xlsx
+|                                       Prezzo zonale orario MGP 2025 (GME, Nord)
+|-- requirements.txt                    Freeze completo dell'ambiente Python
+|-- requirements-dev.txt, setup.cfg     Stile Python (pycodestyle, 99 colonne)
+|-- LICENSE, .gitignore
+|
++-- CER_configuration/                  LE SCHEDE DATI (sezione 3)
+|   |-- CER_<C>_<P>_<E>.txt     [l]     Una per comunita': 40 nella griglia
+|   |-- CER_3_1_0.txt           [v]     Scheda minima versionata, FUORI dalla
+|   |                                   griglia: comunita' MISTA di 4 membri (un
+|   |                                   ufficio prosumer con PV04 da 35 kWp e tre
+|   |                                   famiglie), per avere una scheda da
+|   |                                   eseguire da un clone pulito
+|   |-- scenario_economico.txt  [v]     Prezzi, costi, soglie di poverta': uno
+|   |                                   solo per tutte le schede
+|   +-- Provvsiorio/            [l]     Schede miste dei primi studi: il glob di
+|                                       MAIN2 non entra nelle sottocartelle
+|
++-- PV_Generation/                      EXPORT ORARI PVSYST (kWh/h)
+|   |-- PROVA_CER_1_Project_1_2_componenti.CSV  [l]  impianto da 3,4 kWp
+|   |-- PROVA_CER_1_Project_3_4_componenti.CSV  [l]  impianto da 4,2 kWp
+|   |-- PROVA_CER_1_Project_5_componenti.CSV    [l]  impianto da 5,9 kWp
+|   +-- PV4.CSV                                 [v]  impianto della scheda minima
+|
++-- data/                               DATI ESTERNI DELL'ARRICCHIMENTO (6.3)
+|   |-- external/istat_eusilc_reddito_nordovest_2024.csv   reddito per tipologia
+|   |-- external/arera_quote_gas_2023_24.csv               quote PdR gas per classe
+|   |-- external/parametri_arricchimento.yaml              jitter, soglie, seed
+|   +-- mapping_archetipo_istat.csv     archetipo LPG -> tipologia familiare Istat
++-- docs/
+|   +-- mapping_household_istat.md      Motivazione della mappatura e incoerenza
+|                                       archetipo dichiarato / profilo simulato
+|
++-- CER_LoadProfiles/                   STADIO PYTHON (sezione 6)
+|   |-- generate_load_profiles.py       Orchestratore della generazione
+|   |-- lpg_runner.py                   Famiglie (pyLPG)
+|   |-- ramp_runner.py                  Utenze non domestiche (RAMP)
+|   |-- postprocessing.py               Energia oraria ed export CSV
+|   |-- cer_config_writer.py            Bozza di scheda CER a fine run
+|   |-- arricchisci_schede.py           Reddito ed euro_gas nelle schede
+|   |-- tests/test_arricchisci_schede.py
+|   |-- config/simulation_config.lombardia100.yaml
+|   |                                   Il run che ha prodotto i profili delle schede
+|   |-- config/ (altre)                 Run di validazione e di esplorazione (6.5)
+|   |-- lpg_db/                         Catalogo LPG italiano e validazione domestica
+|   |-- ramp_db/                        Validazione dei profili non domestici
+|   |-- ramp_inputs/use_cases/          Archetipi RAMP (non usati dalle schede attuali)
+|   +-- outputs/csv_lombardia100/
+|       |-- 100_utenti.csv       [l]    Le cento famiglie, kWh/h, 8760 righe
+|       |-- N_utenti.xlsx        [l]    Prime N colonne del file da cento,
+|       |                               N = 5, 8, 10, 15, 18, 20, 25, 50, 75
+|       +-- 3_utenti.xlsx        [v]    Profili della scheda minima CER_3_1_0
+|                                       (office_1 e tre famiglie)
+|
++-- *.m (root)                          IL CODICE MATLAB (sezione 5)
+|
++-- outputs/
+    |-- tables_main2/            [v]    Tabelle del run fino a 18 membri (7.1)
+    |-- tables_main2_griglia25/  [v]    Tabelle del run fino a 25 membri
+    |-- figures_main2[_griglia25]/ [l]  Figure: la fase 1 sempre, le altre a richiesta
+    |-- workspace/                      Ripartire senza rilanciare (7.3): CSV lunghi
+    |                                   e analisi [v], workspace .mat [l],
+    |                                   strumenti/ [v], LEGGIMI.md [v]
+    |-- run_logs/                [l]    Log completi dei run, elenco schede in testa
+    +-- report/                         regole_ripartizione_cer.html (pagina dei
+                                        risultati finali), scaling_metodi_ripartizione.md,
+                                        validazione_lombardia100.md
+
+
+================================================================================
+ 2. PIPELINE DI ESECUZIONE
+================================================================================
+
+  STADIO 1 - Python (CER_LoadProfiles/): profili di carico orari e
+             arricchimento socio-economico delle schede
+  STADIO 2 - MATLAB (root): MAIN2.m
+
+I due stadi si parlano solo attraverso file: nessuno dei due lancia l'altro.
+
+--------------------------------------------------------------------------------
+ 2.1  Stadio Python: da dove vengono i dati delle schede
+--------------------------------------------------------------------------------
+
+    config/simulation_config.lombardia100.yaml
+        cento famiglie lombarde: composizione da ISTAT AVQ 2024 + censimento
+        2021 (lpg_db/tipologie_famiglie.py), un template LPG per famiglia,
+        house type HT06 o HT07 (raffrescamento al 54% contro il 55,6% ISTAT)
+                |
+                v
+    generate_load_profiles.py --config config/simulation_config.lombardia100.yaml
+        lpg_runner.run_lpg()  -> potenza a 1 minuto, una colonna per famiglia
+        postprocessing        -> energia oraria [kWh/h]
+                |                (circa 2 minuti per famiglia: 3-3,5 ore)
+                v
+    outputs/csv_lombardia100/100_utenti.csv       household_1 ... household_100
+                |
+                v   prime N colonne (estratte fuori dal codice: nessuno
+                |   script del repository produce gli .xlsx)
+    outputs/csv_lombardia100/N_utenti.xlsx       N = 5, 8, 10, ..., 75
+                |
+                v   [FILE].profili_carico di ogni scheda
+    CER_configuration/CER_<C>_<P>_<E>.txt
+                ^
+                |   reddito_EUR ed euro_gas dei membri domestici
+    arricchisci_schede.py   <-- data/external/ (Istat EU-SILC, ARERA gas)
+
+  Gli export PVsyst di PV_Generation/ non vengono da questa pipeline: sono le
+  simulazioni PVsyst di tre impianti residenziali tipo, uno per fascia di
+  componenti del nucleo.
+
+  ATTENZIONE - ARCHETIPO DICHIARATO E PROFILO SIMULATO. Sotto i 100 membri
+  household_k ha lo stesso profilo a ogni taglia (e' la colonna k del file da
+  cento), mentre le schede da 5 a 75 membri dichiarano in [MEMBRI].archetipo
+  una composizione allocata per quella taglia: i due non coincidono (per
+  esempio, nelle schede da 10 membri household_1 e' dichiarato CHR23 ma la
+  sua curva e' quella di CHR06). Il reddito segue l'archetipo dichiarato.
+  Conteggi in docs/mapping_household_istat.md.
+
+--------------------------------------------------------------------------------
+ 2.2  Stadio MATLAB: MAIN2.m in un colpo d'occhio
+--------------------------------------------------------------------------------
+
+    CER_configuration/CER_*.txt   (tutte, o quelle elencate in MAIN2_SCHEDE)
+                |
+                v
+    PER OGNI SCHEDA (ciclo, sezioni 0a-6)
+      0a  load_cer_input            scheda + scenario_economico.txt, validati
+      1   load_cer_data             profili, PV, autoconsumo -> carico residuo
+          align_members_to_users    membri riordinati sulle colonne dei profili
+      1c  load_zonal_price, cer_tip_bracket_power, compute_cer_incentive,
+          cer_reduction_factor      -> TIP_h lorda ed efficace
+      2   bilancio orario           condivisa, non condivisa, immessa
+      3   ricavi                    TIP su condivisa + vendita di tutta l'immessa
+      3a  profilo_prezzi_pun_2025   costo da rete di ogni membro
+      3b-3r  le dodici regole       Shapley e Nucleolo (fino a 18 membri, su una
+                                    v(S) calcolata una volta sola), Variance
+                                    Least Core, Equal Split, Proportional to
+                                    Consumption, Remuneration Model 1, Cascading
+                                    Tree, Weighted Solidarity, Pearson Key,
+                                    Similarity-Utilization, Adaptive Sampling
+                                    Shapley, Tri-level EP; piu' i contributi
+                                    marginali come riferimento di merito
+      3s  Tcmp                      quote per membro e per metodo
+      3t  Tfair                     indicatori per metodo (13 colonne)
+      3u  premium_excess_threshold  soglia GSE 55%/45%
+      3v  compute_financial_metrics VAN, TIR, payback per membro e metodo
+      4   Tcost                     costo da rete nelle tre modalita'
+      5   figure energetiche        (a richiesta)
+      6   RESULTS(i)                tutto cio' che serve dopo il ciclo
+                |
+                v
+    DOPO IL CICLO (sezioni 7-8)
+      7   plot_cer_comparison_main2, plot_gini_3d          (figure, a richiesta)
+      7a  fase1_shapley_vs_as        -> <tabelle>/fase1/
+      7b  compute_indicator_agreement, apply_relevance_threshold,
+          ranking_grid, reversals_by_axis, plot_ranking_grid
+                                     -> <tabelle>/confronto/
+      7c  sintesi_risultati, tradeoff_losses, indicator_clusters,
+          sensibilita_soglia         -> <tabelle>/sintesi/
+      8   riepilogo dei tempi
+
+  <tabelle> = outputs/tables_main2, oppure outputs/tables_main2_<suffisso>
+  con MAIN2_CARTELLA.
+
+--------------------------------------------------------------------------------
+ 2.3  Come si lancia
+--------------------------------------------------------------------------------
+
+Da Git Bash, nella root del progetto. Su questa macchina l'eseguibile e'
+"/c/Program Files/MATLAB/R2024b/bin/matlab.exe".
+
+    FINO18="CER_0_5_0;CER_2_3_0;CER_3_2_0;CER_4_1_0"
+    FINO18="$FINO18;CER_0_8_0;CER_2_6_0;CER_4_4_0;CER_6_2_0"
+    FINO18="$FINO18;CER_0_10_0;CER_2_8_0;CER_5_5_0;CER_7_3_0"
+    FINO18="$FINO18;CER_0_15_0;CER_4_11_0;CER_7_8_0;CER_11_4_0"
+    FINO18="$FINO18;CER_0_18_0;CER_4_14_0;CER_9_9_0;CER_13_5_0"
+    GRIGLIA25="$FINO18;CER_0_20_0;CER_5_15_0;CER_10_10_0;CER_15_5_0"
+    GRIGLIA25="$GRIGLIA25;CER_0_25_0;CER_6_19_0;CER_12_13_0;CER_18_7_0"
+
+    MAIN2_SCHEDE="$FINO18" matlab -batch "MAIN2"
+        -> outputs/tables_main2/                 circa 42 min
+    MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="$GRIGLIA25" matlab -batch "MAIN2"
+        -> outputs/tables_main2_griglia25/       circa 2 h 30
+
+LE DUE VARIABILI D'AMBIENTE
+  MAIN2_SCHEDE    nomi di scheda senza .txt, separati da ';'. L'ordine non
+                  conta (MAIN2 li ordina). Vuota = TUTTE le schede della
+                  cartella, comprese quelle da 50-100 membri e la scheda
+                  minima mista: da non fare, il Variance Least Core non
+                  arriva in fondo e la scheda mista entrerebbe nel confronto.
+  MAIN2_CARTELLA  suffisso delle cartelle di uscita (lettere, cifre, _ e -):
+                  tables_main2_<suffisso> e figures_main2_<suffisso>.
+
+PERCHE' DUE RUN E NON UNO
+  compute_indicator_agreement tiene solo i metodi presenti in TUTTE le
+  comunita'. Sopra i 18 membri Shapley e Nucleolo non si calcolano, quindi un
+  run unico fino a 25 membri li toglierebbe anche dalle comunita' piccole, e
+  con loro la lettura di stabilita'.
+
+UNA SCHEDA SOLA, PER PROVA
+    MAIN2_CARTELLA=prova MAIN2_SCHEDE="CER_2_3_0" matlab -batch "MAIN2"
+  Circa un minuto. Il suffisso evita di sovrascrivere le tabelle versionate di
+  fase1/, che la fase 1 scrive sempre. Con una comunita' sola le inversioni
+  non sono definite, e la figura finale della fase 1 puo' fermarsi su un
+  errore di asse dopo che l'analisi e' finita.
+
+TEMPI MISURATI (13 ottobre, analisi senza figure)
+  5 membri 3-8 s | 8 membri 7,5-44 s | 10 membri 15 s - 1,5 min |
+  15 membri 1-6 min | 18 membri 2,7-10 min | 20 membri 2,5-14 min |
+  25 membri 7,5-31 min. Dai 15 membri in su domina il Variance Least Core.
+
+RIPRENDERE SENZA RILANCIARE
+  outputs/workspace/LEGGIMI.md: i due workspace salvati contengono RESULTS,
+  AGR, GRID, REV, SINT, F1, PERD, CLUS (e SENS nel run fino a 18). In MATLAB
+  usare addpath(pwd) e chiamare le funzioni: run('script.m') cambia la
+  cartella corrente e i percorsi relativi finiscono altrove.
+
+LA PIPELINE E' DETERMINISTICA
+  L'unica sorgente casuale e' l'Adaptive Sampling, con un RandStream isolato
+  e seed 42: rilanciando senza modifiche le tabelle escono identiche al byte.
+  Il confronto prima/dopo una modifica e' quindi un test di regressione
+  (procedura in outputs/workspace/LEGGIMI.md).
+
+
+================================================================================
+ 3. LE SCHEDE DATI (CER_configuration/)
+================================================================================
+
+--------------------------------------------------------------------------------
+ 3.1  Formato
+--------------------------------------------------------------------------------
+
+  [SEZIONE]          apre una sezione
+  chiave = valore    dato scalare
+  a | b | c          riga di tabella (la prima e' l'intestazione)
+  #                  commento fino a fine riga
+
+  DUE MODI DI NON AVERE UN DATO
+    '-'  NON APPLICABILE -> NaN, nessuna conseguenza: il reddito di un
+         ufficio non manca, non esiste.
+    '?'  NON ANCORA NOTO -> il campo non viene passato al metodo, che usa il
+         proprio default e lo DICHIARA fra le ipotesi attive. In CFG.noto il
+         flag e' per colonna (basta un '?' perche' il vettore non sia un
+         dato), in CFG.incognito per cella.
+
+  SEZIONI
+    della scheda      [CER] [RIEPILOGO] [FILE] [GOVERNANCE] [MEMBRI] [IMPIANTI]
+    dello scenario    [MERCATO] [INVESTIMENTO] [POVERTA_ENERGETICA], innestate
+                      dal loader dal file dichiarato in [FILE].scenario_economico.
+                      Una sezione presente in entrambi i file e' un errore.
+  I percorsi di [FILE] sono relativi alla cartella della scheda: il progetto
+  gira da qualunque cartella e su qualunque macchina.
+
+  VALIDAZIONI (load_cer_input; tutti i problemi riportati insieme, con il
+  numero di riga)
+    sezioni presenti; colonne obbligatorie di [MEMBRI] (nome_csv, ruolo,
+    categoria, tariffa, P_prel_kW, impianto) e di [IMPIANTI] (id,
+    proprietario, kWp, file_produzione); domini di ruolo (C/P/E), categoria
+    (domestico, terziario, commerciale, industriale, PA, terzo_settore,
+    religioso, ambientale) e tariffa (MONORARIA, BIORARIA, ORARIO_VARIABILE);
+    nomi ripetuti; P_prel_kW positiva; ruolo P o E se e solo se si possiede un
+    impianto; '-' vietato su reddito, percettori e componenti dei domestici;
+    kWp e file di produzione presenti; pod a '?' vietato; [MEMBRI].impianto
+    concorde con [IMPIANTI].proprietario; [RIEPILOGO] ricalcolato dalle
+    tabelle (penetrazione entro 0,5 punti); file dichiarati esistenti.
+
+--------------------------------------------------------------------------------
+ 3.2  La griglia: 40 comunita' domestiche
+--------------------------------------------------------------------------------
+
+  Nome: CER_<consumatori>_<prosumer>_<produttori puri>. Nessun produttore
+  puro e nessun membro non domestico.
+
+   membri  fascia 1          fascia 2           fascia 3           fascia 4
+      5    CER_4_1_0   20%   CER_3_2_0    40%   CER_2_3_0    60%   CER_0_5_0   100%
+      8    CER_6_2_0   25%   CER_4_4_0    50%   CER_2_6_0    75%   CER_0_8_0   100%
+     10    CER_7_3_0   30%   CER_5_5_0    50%   CER_2_8_0    80%   CER_0_10_0  100%
+     15    CER_11_4_0  27%   CER_7_8_0    53%   CER_4_11_0   73%   CER_0_15_0  100%
+     18    CER_13_5_0  28%   CER_9_9_0    50%   CER_4_14_0   78%   CER_0_18_0  100%
+     20    CER_15_5_0  25%   CER_10_10_0  50%   CER_5_15_0   75%   CER_0_20_0  100%
+     25    CER_18_7_0  28%   CER_12_13_0  52%   CER_6_19_0   76%   CER_0_25_0  100%
+     50    CER_37_13_0 26%   CER_25_25_0  50%   CER_12_38_0  76%   CER_0_50_0  100%
+     75    CER_56_19_0 25%   CER_37_38_0  51%   CER_19_56_0  75%   CER_0_75_0  100%
+    100    CER_75_25_0 25%   CER_50_50_0  50%   CER_25_75_0  75%   CER_0_100_0 100%
+
+  La fascia e' il RANGO della penetrazione dentro la taglia, non una soglia:
+  a 5 membri i passi sono di 20 punti, a 25 di 4. Le analisi la usano cosi'
+  (ranking_grid, sintesi_risultati, tradeoff_losses).
+
+  CONVENZIONI COMUNI A TUTTE LE 40 SCHEDE (verificate sulle schede)
+    membri          household_1 ... household_N, colonne di N_utenti.xlsx
+                    (100_utenti.csv a 100 membri)
+    categoria       domestico: persone fisiche, quindi esenti dal fattore F e
+                    non imprese per la soglia GSE
+    tariffa         MONORARIA per tutti;  P_prel_kW = 3 per tutti
+    n_perc          '?' ovunque: il Tri-level EP assume 2 percettori
+    reddito_EUR,    compilati da arricchisci_schede.py (6.3), con le colonne
+    euro_gas        di provenienza in coda a [MEMBRI]
+    impianti        uno per prosumer, dimensionato sul nucleo:
+                      1-2 componenti  3,4 kWp  ..._1_2_componenti.CSV  7.000 EUR
+                      3-4 componenti  4,2 kWp  ..._3_4_componenti.CSV  7.400 EUR
+                      5+  componenti  5,9 kWp  ..._5_componenti.CSV    9.100 EUR
+                    tutti gli impianti di una fascia usano LA STESSA curva
+                    PVsyst; quota_inv_EUR = capex_EUR dell'impianto posseduto
+                    (stima di mercato, impianti senza accumulo); mutuo 0
+    [GOVERNANCE]    ct_riserva 0, ct_quota_fissa 0,30, ct_quota_prelievi 0,50,
+                    ct_quota_prosumer 0,60, as_campioni 1000, as_seed 42
+                    (psk_alpha 0,50 e' dichiarato ma MAIN2 non lo legge)
+
+  Le schede portano in testa un commento di preparazione che le dice "BOZZA,
+  non ancora caricabile": e' un residuo della pianificazione, le schede sono
+  complete e caricabili. Sono state preparate partendo dall'allocazione di
+  tipologie_famiglie.py; nessuno script del repository le rigenera per
+  intero.
+
+--------------------------------------------------------------------------------
+ 3.3  scenario_economico.txt
+--------------------------------------------------------------------------------
+
+  [MERCATO]
+    prezzo_vendita_EUR_kWh 0,110     vendita di tutta l'energia immessa
+    prezzo_gas_EUR_kWh     0,120     spesa gas nelle schede (6.3) e nel Tri-level
+    markup_retail          ?         PUN -> prezzo di bolletta (Tri-level, LIHC)
+    tip_potenza_rif_kW     ?         impone lo scaglione della TIP (5.2)
+    tip_fattore_riduzione  ?         impone il fattore F (5.2)
+  [INVESTIMENTO]
+    tasso_sconto 0,04 e vita_utile_anni 20       usati dal VAN (3v)
+    om_variabile_EUR_MWp_anno 10000              OPEX di ripiego (3v)
+    contributo_conto_capitale_pct ?              F e soglia 45%/55%
+    inflazione_opex, escalation_energia,
+    degrado_pv_pct_anno                          dichiarati, NON applicati
+    costi unitari, om_fisso_EUR_anno             trasportati, non usati
+  [POVERTA_ENERGETICA]
+    mediana_spesa_energetica_EUR ?, soglia_poverta_EUR_percettore ?,
+    quota_n_pct ?, tetto_quota_EP ?, usa_profondita_poverta false,
+    applica_tetto_bolletta false
+
+  DA COMPILARE (README par. 7.7): P50, y* e markup decidono chi e'
+  vulnerabile LIHC, quindi l'indicatore di inclusione e il Tri-level EP.
+  Finche' restano a '?' MAIN2 lo ricorda a ogni comunita'.
+
+--------------------------------------------------------------------------------
+ 3.4  Cosa e' versionato
+--------------------------------------------------------------------------------
+
+  CER_configuration/* e' escluso da git tranne scenario_economico.txt e la
+  scheda minima CER_3_1_0.txt, che dichiara a sua volta PV_Generation/PV4.CSV
+  e csv_lombardia100/3_utenti.xlsx (anche loro versionati). Le 40 schede della
+  griglia, i file N_utenti.xlsx e gli export PROVA_CER_* restano in locale: un
+  clone pulito ha la scheda minima da eseguire, ma non riproduce la griglia.
+  Sono invece versionati tutti i risultati: le tabelle dei due run, i CSV
+  esportati dai workspace e la pagina dei risultati (sezione 7).
+
+
+================================================================================
+ 4. MAIN2.m SEZIONE PER SEZIONE
+================================================================================
+
+MAIN2.m e' un ORCHESTRATORE: coordina i passi e commenta le scelte di modello,
+il lavoro sta nelle funzioni. Non contiene dati. Nessun try/catch: una scheda
+rotta ferma l'esecuzione con l'errore in chiaro, invece di nasconderlo in un
+riepilogo di fine batch.
+
+--------------------------------------------------------------------------------
+ 4.1  Prima del ciclo
+--------------------------------------------------------------------------------
+
+  0)  Elenco delle schede: dir("CER_configuration/CER_*.txt"), ordinato. Il
+      pattern lascia fuori scenario_economico.txt, le bozze bozza_CER_*.txt e
+      le sottocartelle. MAIN2_SCHEDE (facoltativa) seleziona un sottoinsieme
+      e si ferma se una scheda richiesta non esiste. RESULTS nasce vuoto: un
+      elemento per comunita', riempito in fondo al giro.
+
+  0b) FIG - quali figure produrre. Default: tutte spente tranne
+      confrontoCER, ed esporta = false.
+        profili       profili di consumo in 4 giorni tipo
+        energia       mensili, PV contro domanda, mappa oraria, curve di
+                      durata, TIP_h contro prezzo zonale
+        dettaglio     un grafico a rete per metodo + barra dello Shapley
+        metodi        confronto a barre + mappa quote metodi x membri
+        equita        mappa degli indicatori, scostamento dal merito,
+                      piano uniformita' x stabilita'
+        finanza       VAN, payback, composizione del flusso
+        confrontoCER  confronto fra comunita' e griglia dei vincitori
+        esporta, chiudi, cartella ("outputs/figures_main2")
+      CSV - esporta = true, cartella "outputs/tables_main2". Interruttore
+      separato dalle figure: le tabelle sono un risultato, le figure un
+      servizio.
+      MAIN2_CARTELLA (facoltativa) aggiunge "_<suffisso>" a entrambe le
+      cartelle. T_TOT = tic con identificatore, che nessuna funzione a valle
+      puo' azzerare.
+
+--------------------------------------------------------------------------------
+ 4.2  Il giro di una comunita'
+--------------------------------------------------------------------------------
+
+  In testa al giro: clearvars -except le sole variabili del ciclo. Le
+  comunita' hanno numero di membri diverso, e una variabile sopravvissuta al
+  giro precedente darebbe un risultato sbagliato in silenzio. T_CER = tic.
+
+  0a) CFG = load_cer_input(scheda). ANNO e N_HOURS da [CER]; griglia tGrid
+      di 8760 ore, verificata contro n_ore. P_SELL da [MERCATO]. Potenza che
+      sceglie lo scaglione della TIP: cer_tip_bracket_power, oppure
+      tip_potenza_rif_kW se dichiarata. Fattore F imposto se
+      tip_fattore_riduzione e' dichiarato. pvPlants = CFG.impiantiStruct.
+
+  1)  D = load_cer_data(profili, pvPlants, tGrid): userNames, loadUsers,
+      genPV_raw, genForShare, loadForShare (sezione 8).
+      skipGameTheory = nUsers > 18. Sopra la soglia Shapley, Nucleolo ed
+      eccesso di coalizione vengono SALTATI e il log stampa [BYPASS]: a 21
+      membri lo Shapley costava 9 minuti e il Nucleolo 18, e la crescita e'
+      2^n.
+      M = align_members_to_users(CFG, userNames): ogni campo [nUsers x 1]
+      nell'ordine delle colonne del CSV.
+
+  1c) Pz_h = load_zonal_price (allineamento per posizione, 8760 righe).
+      P_CER_lordo = compute_cer_incentive(Pz_h, potenza, zona, 0).
+      [F, esente] = cer_reduction_factor(contributo, categoria).
+      Tariffa EFFICACE di comunita', ora per ora:
+          P_CER_h = P_CER_lordo .* (1 - F*(1 - wEsN))
+      con wEsN la quota esente del carico residuo. Chi valuta le
+      sotto-coalizioni riceve la tariffa lorda piu' la maschera di esenzione
+      (optF), chi divide soltanto v(N) riceve l'efficace. Sulla griglia
+      F = 0 (contributo a '?') e comunque tutti i membri sono esenti: le due
+      tariffe coincidono.
+
+  2)  shared = min(genPVSurplus, loadTotalForShare)     energia condivisa
+      sold   = max(0, genPVSurplus - loadTotalForShare) parte NON condivisa
+      (nome storico: non e' la vendita). assert: shared + sold = immessa, ora
+      per ora. Matrici 24 x 365 e aggregati mensili.
+
+  3)  Ricavi. Incentivo: sum(shared .* P_CER_h), che e' v(N). Vendita: su
+      TUTTA l'energia immessa, immessa x P_SELL (Regole Operative GSE
+      16/07/2025, par. 1.2.2: la condivisione e' virtuale e non tocca la
+      valorizzazione dell'immessa). revSoldPerPlayer = immissione propria di
+      ciascun prosumer x P_SELL. Treport: 12 mesi + anno, con condivisa, non
+      condivisa, immessa e ricavi.
+
+  3a) Costo da rete senza CER. priceByMod: profilo_prezzi_pun_2025 nelle tre
+      modalita'. costMat [nUsers x 3] e costUser con la tariffa di ciascun
+      membro: e' la baseline y_noLEM degli indicatori.
+
+  3b) Fino a 18 membri: [vCache, players, A_inc] = cer_coalition_values(...)
+      UNA volta sola (2^n coalizioni), passata a Shapley, Nucleolo ed
+      eccesso di coalizione. Sh = shapley_cer_cached. assert: v(N) uguale per
+      le due strade del fattore F; v(N) uguale al ricavo da condivisa.
+  3c) Nu = nucleolus_cer_cached (sequenza di programmi lineari).
+  3e) VLC = variance_least_core_cer (row-generation, a ogni taglia). Fino a
+      18 membri assert: theta_LC = theta_min del Nucleolo.
+  3f) ES  = equal_split_cer
+  3g) PC  = proportional_consumption_cer
+  3h) RM1 = remuneration_model1_cer(..., P_prel_kW, kWp degli impianti)
+  3i) CT  = cascading_tree_cer (pesi da [GOVERNANCE])
+  3j) WS  = weighted_solidarity_cer (costo unitario Cu dalla tariffa
+      MONORARIA, coefficienti sul fronte di Pareto)
+  3k) PK  = pearson_key_cer. assert: energia ripartita = energia condivisa.
+  3m) SU  = similarity_utilization_cer (profili netti)
+  3n) MC  = marginal_contribution_cer. NON e' un metodo: fornisce
+      BC_i = v(N) - v(N\{i}) al Fairness Index.
+  3p) AS  = adaptive_sampling_shapley_cer (M e seed da [GOVERNANCE]).
+  3q) Fino a 18 membri: scarto dell'AS dallo Shapley esatto (Trd e RD media,
+      eq. 16-17 di Cremers et al.); assert: v(N) dell'AS e della MC uguale a
+      quello dello Shapley. Poi FASE1REC (regime "le18" o "gt18", quote
+      Shapley e AS, M, seed, fattore di normalizzazione) -> RESULTS.fase1.
+      Le lettere 3d, 3l e 3o mancano: erano Nash Bargaining, Pearson-Sharing
+      Rate e Stratified Expected Value, che MAIN2 non usa (Appendice A).
+  3r) TL = tri_level_ep_cer, con: ricavo di vendita; markup, prezzo gas, P50,
+      y*, n% e tetto dallo scenario se noti; isHousehold dalla categoria;
+      reddito, percettori, mutuo, euro_gas e quote di investimento dalla
+      scheda se le colonne non hanno '?'. Stampa le ipotesi ancora attive: 8
+      sulle schede attuali. assert: montepremi = condivisa + vendita;
+      phiFromShared = v(N); test di degenerazione con n% = 0.
+
+  3s) Tcmp, una colonna per metodo, e "metodi" (struct array nome + phi):
+      Shapley e Nucleolo in testa se calcolati, poi Variance Least Core,
+      Equal Split, Proportional to Consumption, Remuneration Model 1,
+      Cascading Tree, Weighted Solidarity, Pearson Key,
+      Similarity-Utilization, Adaptive Sampling Shapley, Tri-level EP (con
+      phiFromShared). Dodici metodi fino a 18 membri, dieci oltre.
+
+  3t) Indicatori. Indici di comunita', stampati e non in Tfair:
+      gini_heterogeneity (per categoria) e shape_heterogeneity (forma dei
+      profili lordi). Per ogni metodo fairness_indicators_lem con baseline
+      costUser; poi fairness_index_bm (BC = MC.mcRaw), coalition_excess
+      (fino a 18 membri, sulla stessa vCache; sopra resta NaN), forza
+      incentivante su asse netto (SU) e lordo (SUl, profili lordi),
+      inclusion_index (vulnerabili = TL.isVulnerable).
+      Tfair, 13 colonne:
+        EI_orig  Gini  FairnessIndex  Sigma  InclusioneLIHC  QuoteNulle
+        EccessoMax_EUR  CoalizioniInstabili  EccessoMax_pct_vN
+        ForzaIncentivante  AllineamentoVirtu
+        ForzaIncentivante_lordo  AllineamentoVirtu_lordo
+      Verifiche: sezione 9. Stampe: energia contendibile, coseno fra i due
+      assi della virtuosita', stabilita' per metodo con la coalizione
+      peggiore, distribuzione per contributo, ipotesi attive.
+
+  3u) SOG = premium_excess_threshold: soglia 55%, 45% se c'e' un contributo
+      in conto capitale (o F > 0). E_ACI = condivisa, E_immessa = condivisa +
+      non condivisa. Imprese = terziario, commerciale, industriale.
+
+  3v) Se quota_inv_EUR e' compilata: risparmio da autoconsumo
+      (loadUsers - loadForShare al prezzo della tariffa del membro), OPEX
+      (opex_EUR_anno se noto, altrimenti om_variabile x kWp), mutuo.
+        flusso annuo = risparmio + vendita + quota del metodo - OPEX - mutuo
+      FIN = compute_financial_metrics(quota_inv, flusso, tasso, vita utile).
+      Tfin per il metodo di riferimento (Shapley, o Adaptive Sampling sopra
+      18 membri) e Tvan per tutti i metodi.
+
+  4)  Tcost: costo da rete nelle tre modalita', piu' la tariffa e il costo
+      effettivo di ciascun membro.
+
+  5)  Figure energetiche (FIG.energia, FIG.profili). assert: la maschera
+      delle ore sature coincide con quella degli indicatori.
+
+  6)  RESULTS(iCER): scheda, nome, nUsers, userNames, Tcmp, Tfair, Tfin,
+      metodi, soglia, shared_annual, sold_annual, rev_tot_annual, CFG,
+      vGrand, contendibleShare, isProsumer, forza, forzaLorda, penetrazione
+      (da [RIEPILOGO], validata), NPV (tutti i metodi), fase1, tempi. Export
+      delle figure se FIG.esporta.
+
+--------------------------------------------------------------------------------
+ 4.3  Dopo il ciclo
+--------------------------------------------------------------------------------
+
+  7)  Se FIG.confrontoCER e piu' di una comunita': plot_cer_comparison_main2
+      (bilancio, montepremi contro vendita, quota ai prosumer per metodo,
+      escursione di EI ed eccesso fra i metodi) e plot_gini_3d.
+
+  7a) F1 = fase1_shapley_vs_as(RESULTS). Tabelle in <tabelle>/fase1/ e figure
+      in <figure>/fase1/, SEMPRE: non dipendono da FIG.
+
+  7b) Perimetro dell'analisi:
+        metodi esclusi      Adaptive Sampling Shapley, quando lo Shapley
+                            esatto c'e' in tutte le comunita' (lo duplica);
+                            sopra i 18 membri resta come suo sostituto
+        indicatori esclusi  QuoteNulle, ForzaIncentivante_lordo,
+                            EccessoMax_pct_vN (restano in Tfair)
+      AGR = compute_indicator_agreement(RESULTS, esclusioni): metodi comuni a
+      TUTTE le comunita', indicatori comuni piu' VAN_min_EUR, punteggi
+      orientati (piu' alto = meglio), tau-b di Kendall per comunita'.
+      assert: tau(EI_orig, Gini) = +1 dove entrambi discriminano; matrici
+      simmetriche, diagonale 1, valori in [-1,1].
+      AGR = apply_relevance_threshold(AGR, v(N)): due metodi sono A PARI se
+      distano meno del 5% di v(N) su EccessoMax_EUR, o meno del 10%
+      dell'escursione fra i metodi sugli altri indicatori.
+      GRID = ranking_grid, REV = reversals_by_axis, plot_ranking_grid se
+      FIG.confrontoCER. assert: dettaglio e sommario delle inversioni
+      contano lo stesso numero; penetrazione dichiarata e contata entro 0,5
+      punti. save_tables -> <tabelle>/confronto/.
+
+  7c) SINT = sintesi_risultati, PERD = tradeoff_losses, CLUS =
+      indicator_clusters, SENS = sensibilita_soglia -> <tabelle>/sintesi/.
+      Stampa la sensibilita' alla soglia e il sottoinsieme minimo.
+
+  8)  Riepilogo dei tempi: una riga per comunita' (analisi e figure
+      separate), le due somme, il confronto fra CER (cioe' tutto il dopo
+      ciclo) e il totale. Solo ASCII nelle stampe: simboli come il paragrafo
+      e l'euro escono corrotti nello stdout di MATLAB in modalita' batch.
+
+
+================================================================================
+ 5. I FILE MATLAB, PER RUOLO
+================================================================================
+
+--------------------------------------------------------------------------------
+ 5.1  Lettura e preparazione dei dati
+--------------------------------------------------------------------------------
+
+  load_cer_input.m          Legge la scheda e la restituisce come struct
+                            validata: CFG.cer, .riepilogo, .file, .mercato,
+                            .investimento, .poverta, .governance (scalari),
+                            .membri, .impianti (table), .impiantiStruct
+                            (percorsi assoluti per load_cer_data), .noto,
+                            .incognito, .radice, .scenario. Automa a stati
+                            sulle righe; colonne numeriche se ogni cella con
+                            un dato vero e' un numero, con un avviso se una
+                            sola cella rompe una colonna numerica. Stampa il
+                            riepilogo e l'elenco dei campi a '?'.
+  align_members_to_users.m  Riordina [MEMBRI] sull'ordine delle colonne del
+                            CSV e riporta INSIEME tutti i disallineamenti.
+                            Colonne facoltative assenti -> NaN con noto =
+                            false; quote di investimento tutte nulle ->
+                            noto = false (non sono un dato di proprieta').
+  opts_from_config.m        Chiave della scheda -> campo opts del metodo,
+                            saltando le chiavi a '?': un campo non passato non
+                            e' un campo passato a zero.
+  rmfield_if.m              rmfield senza errore se il campo manca.
+  load_cer_data.m           Profili (ogni colonna numerica e' un utente),
+                            riallineati su tGrid con retime lineare: errore se
+                            il CSV non copre l'anno (retime estrapolerebbe),
+                            avviso con l'elenco delle ore interpolate. Export
+                            PVsyst rifiutati se un valore non e' leggibile o
+                            usa la virgola decimale. Autoconsumo impianto per
+                            impianto (sezione 8). Stampa i consumi annui.
+
+--------------------------------------------------------------------------------
+ 5.2  Tariffa e regole GSE
+--------------------------------------------------------------------------------
+
+  load_zonal_price.m        Prezzo zonale MGP dall'export GME, allineato PER
+                            POSIZIONE: la riga k e' la k-esima ora assoluta
+                            dell'anno, come in tutte le altre serie. Verifica
+                            8760 righe, date crescenti, ore consecutive, anno
+                            giusto; rifiuta i prezzi illeggibili (un NaN
+                            diventerebbe la tariffa base in silenzio).
+  compute_cer_incentive.m   TIP_h = {min[CAP; TP_base + max(0; 180 - Pz)] +
+                            FC_zonale} x (1 - F), in EUR/kWh. TP_base/CAP
+                            80/120, 70/110, 60/100 EUR/MWh per impianti fino
+                            a 200 kW, fino a 600, oltre; FC_zonale +10 nord,
+                            +4 centro, 0 sud. MAIN2 la chiama con F = 0.
+  cer_tip_bracket_power.m   Quale potenza sceglie lo scaglione: quella del
+                            SINGOLO impianto (par. 2.2.2.1.2 delle Regole
+                            Operative), sommando le righe con lo stesso POD
+                            se la colonna pod c'e'. Se gli impianti cadono in
+                            scaglioni diversi si ferma (README par. 14.4.1).
+                            Auto-test.
+  cer_reduction_factor.m    F = 0,50 x pct/40 per contributo in conto
+                            capitale fino al 40% (oltre: errore) e maschera
+                            degli esenti: domestico, PA, terzo_settore,
+                            religioso, ambientale (DM 414/2023 come
+                            modificato dal DM 127/2025). Auto-test.
+  premium_excess_threshold.m  Soglia di energia incentivabile (55% sola TIP,
+                            45% con conto capitale) e tetto alle imprese
+                            (1 - %ecc) x C_ACI, con la formula del GSE alla
+                            lettera. Controllo a posteriori, non dentro i
+                            metodi. Auto-test.
+  profilo_prezzi_pun_2025.m Prezzi PUN 2025 per mese in tre modalita'
+                            (MONORARIA, BIORARIA F1/F23, ORARIO_VARIABILE
+                            F1/F2/F3) con i festivi nazionali 2025. Usato per
+                            il costo da rete, il risparmio da autoconsumo, il
+                            Cu della Weighted Solidarity e la spesa del
+                            Tri-level EP.
+
+--------------------------------------------------------------------------------
+ 5.3  Funzione caratteristica e metodi di teoria dei giochi
+--------------------------------------------------------------------------------
+
+  Il gioco: un giocatore per utente, che porta il proprio carico residuo e la
+  propria eccedenza. v(S) = somma_t min(gen_S(t), load_S(t)) x TIP(t).
+
+  cer_coalition_values.m    v(S) per tutte le 2^n coalizioni (bitmask) e la
+                            matrice di incidenza. Con F > 0 la quota esente e'
+                            quella della coalizione.
+  cer_shared_value.m        v di UNA coalizione dai suoi profili aggregati:
+                            la formula sta in un posto solo, usata
+                            dall'enumerazione e dalla valutazione su
+                            richiesta.
+  shapley_cer_cached.m      Shapley esatto (Moncecchi et al. 2020, eq. 39)
+                            sulla v(S) passata in opts.v. Copia riga per riga
+                            di shapley_cer.m con la sola cache in piu'.
+  nucleolus_cer_cached.m    Nucleolo per LP sequenziali (Fioriti et al. 2021),
+                            sulla v(S) in cache; tolleranza relativa a v(N);
+                            avviso se il rango non arriva a n.
+  variance_least_core_cer.m Variance Least Core (Ferrucci, Fioriti, Poli,
+                            ISGT Europe 2025) per row-generation: master LP
+                            per theta_LC, poi master QP a varianza minima;
+                            separazione con un MILP (intlinprog) sulle sole
+                            ore con generazione. Con F > 0 ricade
+                            sull'enumerazione. Espone tolConv, la tolleranza
+                            di convergenza con cui va verificato.
+  marginal_contribution_cer.m  MC_i = v(N) - v(N\{i}) (mcRaw), normalizzati a
+                            v(N). In MAIN2 serve solo come BC_i del Fairness
+                            Index.
+  adaptive_sampling_shapley_cer.m  Approssimazione dello Shapley per
+                            campionamento stratificato adattivo (O'Brien et
+                            al. 2015, App. C di Cremers et al. 2023): M
+                            campioni per giocatore, strati 0 e n-1 esatti,
+                            RandStream isolato con seed esplicito.
+
+--------------------------------------------------------------------------------
+ 5.4  Altre regole di ripartizione
+--------------------------------------------------------------------------------
+
+  equal_split_cer.m             v(N)/n a ciascuno.
+  proportional_consumption_cer.m  In proporzione al consumo nelle ore con
+                                energia condivisa.
+  remuneration_model1_cer.m     Candela et al. 2022: quota alpha/beta fra
+                                consumatori e produttori pesata su potenza
+                                impegnata (P_prel_kW) e potenza degli
+                                impianti (kWp), poi proporzionale all'energia
+                                oraria dentro ciascuna classe.
+  cascading_tree_cer.m          Trevisan et al. 2022: albero riserva ->
+                                fissa/variabile -> prelievi/immissione ->
+                                produttori+prosumer/soli prosumer, pesi da
+                                [GOVERNANCE], quote annue.
+  weighted_solidarity_cer.m     Marrasso et al. 2025: peso orario tecnico +
+                                solidarieta' (punteggio 1/3/5 sui quartili del
+                                costo unitario Cu), coefficienti scelti sul
+                                fronte di Pareto Gini / reddito medio dei
+                                "potenzialmente in poverta'" piu' vicino
+                                all'utopia. Usa gini_index.m.
+  pearson_key_cer.m             Gianaroli et al. 2024, M3: ripartisce l'ENERGIA
+                                ora per ora con la correlazione di Pearson
+                                giornaliera fra consumo del membro e immissione
+                                della comunita', con cap al consumo; poi la
+                                valorizza con la TIP. Helper:
+                                pearson_hourly_key.m (Pearson giornaliero in
+                                [0,1] espanso alle 24 ore),
+                                allocate_shared_energy.m (ripartizione
+                                iterativa con cap, Fig. 2 del paper),
+                                normalize_key_rows.m (chiave normalizzata, solo
+                                per ispezione).
+  similarity_utilization_cer.m  Bilardo 2025: quota GIORNALIERA proporzionale a
+                                theta x eta (similarita' coseno carico /
+                                generazione, utilizzo min(1, Egen/Eload)). Di
+                                default sui profili netti; con
+                                opts.loadForFactors/genForFactors sui lordi.
+                                Fornisce anche l'asse della forza incentivante.
+  tri_level_ep_cer.m            Campagna et al. 2024: quota min(33%, 1,32% x
+                                N_vulnerabili) ai vulnerabili LIHC; il resto
+                                fra criterio proporzionale (finanziato dalla
+                                condivisa) e di proprieta' (finanziato dalla
+                                vendita). Ripartisce ENTRAMBI i montepremi:
+                                in Tcmp entra phiFromShared. PROVVISORIO:
+                                registro di 11 ipotesi, stampa quelle ancora
+                                attive (8 sulle schede attuali: 3, 4, 5, 6, 7,
+                                9, 10, 11).
+  lihc_index.m                  Indice LIHC booleano (eq. 12, con AND) e
+                                continuo (eq. 13, con gate). P50 e' una
+                                costante nazionale, mai la mediana del
+                                campione. opts.validatePaper riproduce la
+                                Tabella 7 del paper.
+
+--------------------------------------------------------------------------------
+ 5.5  Indicatori di una comunita'
+--------------------------------------------------------------------------------
+
+  fairness_indicators_lem.m  Dynge & Cali 2025 su UNA ripartizione. In Tfair
+                            di MAIN2 entrano EI_orig = 1 - Gini dei risparmi
+                            e Gini. Calcola anche MinMax, QoS ed EI nuovo (non
+                            usati) e .contendibleShare, la frazione di energia
+                            condivisa su cui una chiave puo' davvero incidere
+                            (fuori dalle ore SATURE, in cui l'immissione copre
+                            tutto il carico residuo). Usa gini_index.m e
+                            jain_index.m.
+  fairness_index_bm.m       Casalicchio et al. 2022, eq. 12-14: distanza dalla
+                            distribuzione per contributo Dcd = BC/somma(BC);
+                            due branche (rapporto in [0,1), oppure intero =
+                            membri a quota nulla, colonna QuoteNulle); Sigma
+                            = deviazione standard di D - Dcd. La distribuzione
+                            peggiore e' derivata (vertice del simplesso).
+                            Auto-test.
+  coalition_excess.m        Volpato et al. 2024, eq. 23: e_S = v(S) - somma
+                            delle quote di S su tutte le coalizioni proprie.
+                            EccessoMax_EUR (positivo = qualcuno vuole uscire),
+                            CoalizioniInstabili, coalizione peggiore. Segno
+                            opposto al surplus di Nucleolo e VLC. Limite di
+                            sicurezza a 20 giocatori.
+  compute_incentive_strength.m  Forza incentivante: proiezione della
+                            deviazione dall'uniforme delle quote sull'asse di
+                            virtuosita' theta x eta (media pesata
+                            sull'incentivo giornaliero), normalizzata sulla
+                            regola di Bilardo: IS = 0 Equal Split, 1
+                            Similarity-Utilization. AllineamentoVirtu = coseno
+                            in [-1,1]. Calcolata su asse netto e lordo; la
+                            lorda resta solo diagnostica (denominatore quasi
+                            nullo). Auto-test.
+  inclusion_index.m         Incl = (quota di v(N) ai vulnerabili LIHC) /
+                            (vulnerabili / membri): 1 = in proporzione al
+                            numero (Equal Split), NaN senza vulnerabili.
+                            Auto-test.
+  gini_heterogeneity.m      Casalicchio eq. 10: indice di Simpson normalizzato
+                            sulle categorie dei membri (non e' un Gini di
+                            reddito). Sulla griglia vale 0: tutti domestici.
+  shape_heterogeneity.m     Distanza L1 media fra i profili lordi
+                            normalizzati: quanto i membri consumano in momenti
+                            diversi (0 = stessi ritmi, 2 = mai sovrapposti),
+                            dentro e fra tipologie.
+  gini_index.m, jain_index.m  Nuclei degli indicatori: Gini su vettore
+                            ordinato (rifiuta valori negativi), Jain in
+                            [1/m, 1] (NaN se tutto nullo).
+
+--------------------------------------------------------------------------------
+ 5.6  Economia
+--------------------------------------------------------------------------------
+
+  compute_financial_metrics.m  VAN, TIR e payback semplice per membro e per
+                            metodo, a flussi annui costanti (escalation,
+                            inflazione OPEX e degrado registrati come ipotesi
+                            non applicate). Chi non ha investito ha TIR
+                            indefinito (NaN) e payback 0, marcati "nessun
+                            investimento"; "non rientra" e "oltre vita utile"
+                            per gli altri casi limite. Auto-test.
+  irr_bisection.m           TIR per bisezione in [-99%, 1000%], senza
+                            Financial Toolbox.
+
+--------------------------------------------------------------------------------
+ 5.7  Analisi fra comunita' (dopo il ciclo)
+--------------------------------------------------------------------------------
+
+  fase1_shapley_vs_as.m     Fino a 18 membri: Shapley esatto contro Adaptive
+                            Sampling per comunita', membro e taglia (RD medio
+                            e massimo, somma degli scarti in % di v(N), rho di
+                            Spearman). Oltre: le sole quote AS e il fattore
+                            di normalizzazione. Tabelle e quattro figure.
+  compute_indicator_agreement.m  Tau-b di Kendall fra indicatori, contato per
+                            coppie, una comunita' alla volta. I versi degli
+                            indicatori sono DATI (tabella local_orientamenti,
+                            esportata in orientamenti.csv): una colonna nuova
+                            di Tfair senza verso fa fallire la funzione.
+                            Aggiunge VAN_min_EUR da RESULTS.NPV. Indicatore
+                            piatto o con NaN: non discriminante, tau = NaN.
+                            Auto-test.
+  indicator_tie_tol.m       Quando un indicatore discrimina (escursione oltre
+                            1e-9 della scala) e quando due metodi sono a pari
+                            numericamente (1e-6 dell'escursione).
+  apply_relevance_threshold.m  Soglia di rilevanza pratica: 5% di v(N) sugli
+                            indicatori in euro, 10% dell'escursione sugli
+                            altri. Agisce su inversioni, vincitori e Pareto,
+                            non sul tau. Idempotente. Auto-test.
+  ranking_grid.m            Griglia taglia x fascia, vincitore per cella e per
+                            indicatore ("(pari)" se i primi due sono entro la
+                            soglia), QuotaModale come misura d'interazione.
+  extract_ranking_reversals.m  Cambi di segno fra configurazioni ADIACENTI
+                            lungo un asse, con i pareggi attraversati;
+                            inversione agli estremi (primo e ultimo segno non
+                            nullo). Auto-test che esercita la scansione vera.
+  reversals_by_axis.m       Le inversioni un fattore alla volta: sweep di
+                            penetrazione a taglia fissa, sweep di taglia a
+                            fascia fissa, riusando extract_ranking_reversals.
+  sintesi_risultati.m       Tau per fascia, taglia e cella; fronti di Pareto
+                            per quattro insiemi di criteri, con la soglia di
+                            rilevanza; quote ai prosumer e rapporto con la
+                            quota di membri. Auto-test.
+  tradeoff_losses.m         Rimpianto di ogni metodo (0 = migliore, 1 =
+                            peggiore, anche in euro e in % di v(N)); perdita
+                            su B del migliore su A, in lettura ottimistica e
+                            pessimistica fra i pari. Auto-test.
+  indicator_clusters.m      Raggruppamento average-linkage scritto a mano su
+                            d = 1 - tau medio, tagli a tau 0,7 / 0,5 / 0,3,
+                            rappresentante per gruppo, due prove di
+                            sufficienza (concordanza delle coppie, fronte di
+                            Pareto). Auto-test.
+  sensibilita_soglia.m      Inversioni e vincitori ricalcolati dagli stessi
+                            RESULTS a quattro soglie (0/0, 5/2,5, 10/5,
+                            20/10% dell'escursione / di v(N)).
+  ricalcola_inversioni_soglia.m  Rifa' soglia, griglia e inversioni da un
+                            workspace salvato, senza rilanciare i metodi.
+
+--------------------------------------------------------------------------------
+ 5.8  Presentazione e uscite
+--------------------------------------------------------------------------------
+
+  report_allocation.m       Stampa una ripartizione e verifica che sommi a
+                            v(N). Chiamata per ogni metodo.
+  save_tables.m             Una table per CSV, arrotondando SOLO in scrittura:
+                            due decimali sulle colonne in euro, sei cifre
+                            significative sulle altre, zero vero sotto 1e-12.
+                            Non interrompe mai l'analisi.
+  save_figures.m            Tutte le figure aperte in PDF vettoriale + PNG,
+                            nome dal Name della figura.
+  method_color.m            Un colore per metodo, condiviso da tutti i grafici.
+  spread_labels.m           Etichette distanziate con linea di richiamo.
+  format_duration.m         Durate in s / min / h.
+  plot_cer_comparison_main2.m  Confronto fra le comunita' in quattro pannelli
+                            (FIG.confrontoCER).
+  plot_gini_3d.m            Superficie del Gini: metodi x comunita'
+                            (FIG.confrontoCER).
+  plot_ranking_grid.m       Heatmap dei vincitori per taglia e penetrazione
+                            (FIG.confrontoCER).
+  plot_allocation_comparison.m, plot_allocation_heatmap.m     (FIG.metodi)
+  plot_fairness_indicators.m, plot_merit_deviation.m,
+  plot_fairness_tradeoff.m                                     (FIG.equita)
+  plot_financial_metrics.m                                     (FIG.finanza)
+  plot_cer_energy.m, plot_pv_vs_demand.m, plot_hourly_map.m,
+  plot_duration_curves.m, plot_incentive_price.m               (FIG.energia)
+  plot_load_profiles.m                                         (FIG.profili)
+  plot_benefit_network.m                                       (FIG.dettaglio)
+
+
+================================================================================
+ 6. LO STADIO PYTHON (CER_LoadProfiles/)
+================================================================================
+
+--------------------------------------------------------------------------------
+ 6.1  generate_load_profiles.py (orchestratore)
+--------------------------------------------------------------------------------
+
+  python generate_load_profiles.py --config config/<file>.yaml
+
+  1. carica la configurazione;
+  2. RAMP per le utenze non domestiche (saltato se RAMP non e' installato);
+  3. pyLPG per le famiglie (fallback sintetico se pyLPG non risponde);
+  4. aggregazione a energia oraria [kWh/h];
+  5. export secondo la sezione output del YAML:
+       combined_profiles    profili_tutti.csv, una colonna per utenza
+       individual_profiles  profili_aziende.csv, profili_famiglie.csv
+       aggregate_total      profilo_CER_aggregato.csv
+       versioned            copia datata in storico/
+       scheda_cer           bozza di scheda in CER_configuration/bozza_CER_*.txt
+                            (cer_config_writer.py: il prefisso bozza_ la tiene
+                            fuori dal glob di MAIN2)
+     dettaglio_domestici (lpg_runner) scrive profili_famiglie_dettaglio.csv,
+     con le due meta' del contatore di ogni famiglia.
+
+  TRE TRAPPOLE: il codice di uscita 0 non basta. (1) run_lpg sostituisce un
+  profilo SINTETICO a ogni errore di pyLPG e il log finale li elenca; (2) un
+  run puo' finire senza file se il motore rifiuta il catalogo; (3) pyLPG puo'
+  restituire i risultati del run PRECEDENTE se quello corrente muore.
+
+--------------------------------------------------------------------------------
+ 6.2  I generatori
+--------------------------------------------------------------------------------
+
+  lpg_runner.py         Una famiglia alla volta con pyLPG, a 1 minuto, sul
+                        catalogo italiano (lpg.database), con house type per
+                        famiglia, posizione Italy_Mailand e il profilo di
+                        temperatura di Milano (PVGIS TMY). Ogni colonna e'
+                        il prelievo del POD: elettrodomestici
+                        (Electricity_HH1) + impianti di casa
+                        (Electricity_House). Seed deterministico
+                        (_seed_stabile, crc32); il fallback sintetico usa
+                        invece hash() e NON e' riproducibile.
+  ramp_runner.py        Archetipi RAMP con due patch di compatibilita'
+                        (NumPy 2, Pandas 3), seed deterministico su numpy e
+                        random, archetipi "a regimi" di calendario (un anno
+                        per regime, poi scelta giorno per giorno),
+                        interruttore enabled, indice tz-naive (l'ora civile
+                        locale che RAMP genera; un indice tz-aware spostava
+                        di un'ora la meta' estiva).
+  postprocessing.py     Energia oraria = media della potenza nell'ora / 1000;
+                        CSV con timestamp ISO8601, separatore virgola, tre
+                        decimali, suffisso _kWh.
+
+--------------------------------------------------------------------------------
+ 6.3  arricchisci_schede.py
+--------------------------------------------------------------------------------
+
+  python CER_LoadProfiles/arricchisci_schede.py [--dry-run] [--schede ...]
+
+  Compila, per ogni membro domestico delle schede CER_configuration/CER_*.txt:
+    reddito_EUR  media Istat EU-SILC (Nord-ovest, redditi 2024, netto, senza
+                 affitti figurativi) della tipologia familiare dell'archetipo
+                 (data/mapping_archetipo_istat.csv), per un fattore N(1; 0,075)
+                 troncato a [0,85; 1,15] per riestrazione;
+    euro_gas     categoria d'uso (cottura / cottura + acqua calda /
+                 riscaldamento) estratta dalle quote ARERA lombarde dei punti
+                 di prelievo domestici 2023-24 per classe di consumo, ciascuna
+                 perturbata del +-5%; spesa = Smc della categoria (120 / 480 /
+                 1400, ASSUNZIONE) x 10,70 kWh/Smc x prezzo gas dello scenario.
+  Accanto: valore base, fattore, quote e fonte (colonne reddito_* e gas_*).
+  Seed derivato da (seed_base, nome_csv, campo): household_k riceve gli
+  stessi valori in tutte le schede, e rilanciare riscrive le schede identiche.
+  Non tocca un dato inserito a mano; converte la vecchia colonna gas_kWh solo
+  se vuota. Fonti e limiti: DATA_SOURCES.md. Test:
+  python -m unittest discover -s CER_LoadProfiles/tests -v
+
+--------------------------------------------------------------------------------
+ 6.4  La validazione dei profili (lpg_db/, ramp_db/)
+--------------------------------------------------------------------------------
+
+  Non sono chiamati da MAIN2, ma sono il motivo per cui i profili sono
+  credibili.
+  lpg_db/   build_italian_db.py applica 19 migrazioni al catalogo tedesco di
+            LoadProfileGenerator (festivita', orari dei pasti e del lavoro,
+            vacanze ad agosto, temperatura di Milano, gas, dotazioni). Il
+            .db3 italiano NON e' versionato e si ricostruisce con questo
+            script. riferimento_arera.py costruisce il bersaglio dai dati
+            ARERA (forma oraria, livello, fasce, rumore di fonte come
+            soglia); riferimento_istat.py e tipologie_famiglie.py le
+            calibrazioni ISTAT e la composizione delle societa';
+            valida_domestici.py, curva_numerosita.py, confronta_societa.py e
+            confronta_profili.py misurano. Documento: REPORT_VALIDAZIONE_LPG.md.
+  ramp_db/  Gemello non domestico: livello mensile da ARERA per ATECO e
+            classe BTA, forma oraria dai profili standard GSE.
+            Documento: REPORT_VALIDAZIONE_RAMP.md.
+  La validazione della societa' a cento famiglie e' in
+  outputs/report/validazione_lombardia100.md.
+
+--------------------------------------------------------------------------------
+ 6.5  Le configurazioni (config/)
+--------------------------------------------------------------------------------
+
+  simulation_config.lombardia100.yaml  le cento famiglie delle schede attuali
+                                       (l'intestazione dice "non ancora
+                                       eseguita": e' stata eseguita)
+  simulation_config.lombardia20.yaml,
+  simulation_config.milano20.yaml      societa' da venti famiglie, lombarda e
+                                       milanese
+  simulation_config.campione20.yaml    20 famiglie per misurare l'errore di
+                                       numerosita'
+  simulation_config.nd20.yaml          20 istanze per archetipo non domestico
+  simulation_config.baseline.yaml      catalogo tedesco originale, per i
+                                       confronti A/B
+  simulation_config.scheda9.yaml,
+  simulation_config.yaml               comunita' miste dei primi studi
+
+
+================================================================================
+ 7. OUTPUT
+================================================================================
+
+--------------------------------------------------------------------------------
+ 7.1  Le tabelle: outputs/tables_main2[_<suffisso>]/
+--------------------------------------------------------------------------------
+
+  Versionate: sono ASCII, pesano poco e si leggono in diff.
+
+  confronto/   (7b)
+    accordo_indicatori.csv          tau-b per comunita' e coppia di indicatori,
+                                    con concordi, discordi e chi discrimina
+    orientamenti.csv                verso di ogni indicatore, se e' normativo,
+                                    perche'. Il primo file da aprire quando un
+                                    risultato non torna
+    inversioni_di_graduatoria.csv   una riga per cambio di segno: sweep, fisso,
+                                    indicatore, coppia, configurazioni, divari
+    inversioni_sommario.csv         una riga per serie (sweep, indicatore,
+                                    coppia): quante inversioni, se invertita
+                                    agli estremi e dove stanno gli estremi
+    inversioni_per_sweep.csv        per sottoinsieme: coppie invertite, quota,
+                                    invertite agli estremi
+    griglia_vincitori.csv           per indicatore e cella: vincitore, metodi a
+                                    pari, distacco dal secondo
+    griglia_interazione.csv         per indicatore: QuotaModale e numero di
+                                    sequenze distinte di vincitori
+
+  fase1/   (7a)
+    regime_le18_Shapley_vs_AS_per_CER.csv     RD medio e massimo, somma
+                                              degli scarti in % di v(N), Spearman
+    regime_le18_Shapley_vs_AS_per_membro.csv  quote Shapley e AS di ogni membro
+    regime_le18_Shapley_vs_AS_per_taglia.csv  le stesse misure per taglia
+    regime_gt18_AS_per_CER.csv                sopra 18 membri: fattore di
+                                              normalizzazione, quote min e max
+    regime_gt18_AS_per_membro.csv             quote AS di ogni membro
+
+  sintesi/   (7c)
+    tau_per_fascia.csv, tau_per_taglia.csv, tau_per_cella.csv
+                                    tau medio, minimo, massimo per coppia, e se
+                                    il segno cambia fra i gruppi
+    pareto_per_comunita.csv, pareto_conteggi.csv
+                                    metodi non dominati per comunita' e insieme
+                                    di criteri; quante volte ciascuno e' sul
+                                    fronte
+    quote_prosumer.csv, quote_prosumer_fascia.csv
+                                    quota di v(N) ai prosumer e rapporto con la
+                                    quota di membri
+    rimpianto_per_comunita.csv, rimpianto_medio.csv
+    perdite_tradeoff.csv, perdite_tradeoff_fascia.csv, perdite_dettaglio.csv
+    cluster_fusioni.csv, cluster_gruppi.csv, cluster_sufficienza.csv,
+    cluster_pareto.csv
+    sensibilita_soglia_sweep.csv, sensibilita_soglia_vincitori.csv
+                                    (nel run griglia25 prodotti dopo il run,
+                                    con la stessa funzione e gli stessi RESULTS)
+
+--------------------------------------------------------------------------------
+ 7.2  Le figure
+--------------------------------------------------------------------------------
+
+  outputs/figures_main2[_<suffisso>]/
+    fase1/               sempre: quote Shapley contro AS, scarto per taglia,
+                         affiancati per comunita', solo AS sopra 18 membri
+    <scheda>/, confronto/  solo con FIG.esporta = true (default false)
+  Non versionate.
+
+--------------------------------------------------------------------------------
+ 7.3  Workspace, log, report
+--------------------------------------------------------------------------------
+
+  outputs/workspace/run_2026-10-13_fino18.mat, run_2026-10-13_griglia25.mat
+                       [l] RESULTS, AGR, GRID, REV, SINT, F1, PERD, CLUS (SENS)
+  outputs/workspace/export_<run>/   comunita.csv, tfair_lungo.csv,
+                       punteggi_orientati.csv, quote_membri.csv, virtuosita.csv:
+                       gli stessi dati leggibili senza MATLAB
+  outputs/workspace/analisi_<run>.txt  l'analisi in 13 blocchi (analizza.py)
+  outputs/workspace/strumenti/
+    esporta_run.m        dal .mat ai CSV lunghi
+    analizza.py          l'analisi testuale dei CSV
+    dati_interfaccia.py  i numeri della pagina dei risultati
+    confronta_csv.py     confronto per chiave di due cartelle di tabelle
+    confronta_F1/F2/F3.m confronti di regressione del 13 ottobre (percorsi
+                         assoluti di una sessione precedente: vanno adattati)
+  outputs/run_logs/    log completi; main2_run_2026-10-13_F6_*.log sono i run
+                       finali, con l'elenco delle schede in testa
+  outputs/report/regole_ripartizione_cer.html
+                       pagina dei risultati finali (13 ottobre)
+
+
+================================================================================
+ 8. IL MODELLO ENERGETICO E IL GIOCO COOPERATIVO
+================================================================================
+
+AUTOCONSUMO DEL PROPRIETARIO (load_cer_data.m)
+  Ogni impianto sta dietro il contatore del suo proprietario. Per ogni
+  impianto p, nell'ordine di [IMPIANTI]:
+    surplus_p      = max(0, gen_p - carico residuo del proprietario)
+    carico residuo = max(0, carico residuo - gen_p)
+  Piu' impianti dello stesso proprietario riducono il carico in sequenza.
+    genForShare(t,i)   eccedenza dell'utente i, disponibile alla CER
+    loadForShare(t,i)  carico residuo dell'utente i
+  In ogni ora un utente ha eccedenza OPPURE carico residuo, mai entrambi:
+  quindi v({i}) = 0 per ogni giocatore.
+
+BILANCIO DI COMUNITA' (MAIN2 par. 2-3)
+  immessa(t)        = somma_i genForShare(t,i)
+  condivisa(t)      = min(immessa(t), somma_i loadForShare(t,i))
+  non condivisa(t)  = immessa(t) - condivisa(t)
+  incentivo         = somma_t condivisa(t) x TIP_h(t)     = v(N)
+  vendita           = somma_t immessa(t) x P_SELL
+  La vendita va ai prosumer, ciascuno per la propria immissione, fuori dal
+  gioco; v(N) e' il montepremi che le regole si dividono.
+
+FUNZIONE CARATTERISTICA
+  v(S) = somma_t min(somma_{i in S} gen_i(t), somma_{i in S} load_i(t)) x TIP(t)
+  Con F > 0: x [1 - F (1 - quota esente del carico della coalizione)].
+
+CALENDARIO
+  Tutte le serie stanno su un anno di 8760 ore assolute, senza cambio d'ora:
+  RAMP, pyLPG e PVsyst non lo modellano, e il prezzo zonale GME si allinea per
+  posizione (README par. 5.1).
+
+
+================================================================================
+ 9. VERIFICHE AUTOMATICHE
+================================================================================
+
+  IN MAIN2.m (41 assert, piu' quello di efficienza di report_allocation per
+  ogni metodo)
+    bilancio        condivisa + non condivisa = immessa; vendita per membro
+                    che somma al totale
+    gioco           v(N) uguale per tariffa lorda + esenzione e per tariffa
+                    efficace; v(N) = ricavo da condivisa; theta_LC del VLC =
+                    theta_min del Nucleolo (fino a 18 membri); v(N) di AS e MC
+                    uguale allo Shapley; energia della Pearson Key = condivisa
+    Tri-level       montepremi = condivisa + vendita; phiFromShared = v(N);
+                    degenerazione con n% = 0
+    indicatori      MinMax originale identico fra i metodi (i flussi fisici non
+                    dipendono da chi prende i soldi); EI e Gini in [0,1];
+                    Equal Split con EI = 1 e Inclusione = 1; Marginal
+                    Contribution con FI = 0 (o branca intera coerente);
+                    energia implicita = condivisa; eccesso del Nucleolo =
+                    -theta_min e minimo fra i metodi, del VLC = -theta_LC entro
+                    la sua tolleranza di convergenza; forza incentivante = 0
+                    per l'Equal Split (su entrambi gli assi) e = 1 per
+                    Similarity-Utilization, coseno in [-1,1], virtuosita' in
+                    [0,1], quote che sommano a 1, incentivo giornaliero che
+                    somma a v(N), stesso ordine dei membri
+    economia        autoconsumo mai negativo
+    dopo il ciclo   tau(EI_orig, Gini) = +1; matrici tau simmetriche con
+                    diagonale 1; dettaglio e sommario delle inversioni
+                    concordi; penetrazione dichiarata e contata entro 0,5 punti
+  Le verifiche sull'eccesso di coalizione e sul Nucleolo non girano sopra i
+  18 membri.
+
+  AUTO-TEST NEI MODULI (acceso di default, casi calcolati a penna)
+    cer_reduction_factor, cer_tip_bracket_power, premium_excess_threshold,
+    fairness_index_bm, compute_incentive_strength, compute_financial_metrics,
+    inclusion_index, compute_indicator_agreement, extract_ranking_reversals,
+    apply_relevance_threshold, sintesi_risultati, tradeoff_losses,
+    indicator_clusters. Facoltativi: lihc_index (validatePaper),
+    variance_least_core_cer (validateDense, fino a 12 membri).
+
+  SCRIPT DI VERIFICA
+    test_regressione_cache_v.m   due workspace di MAIN2, prima e dopo la cache
+                                 di v(S): devono coincidere bit per bit
+    test_shapley_permutations.m  la formula dello Shapley contro la media sui
+                                 720 ordini di un gioco a 6 giocatori
+                                 (efficienza, null player, simmetria)
+
+
+================================================================================
+ 10. RISULTATI AL 13 OTTOBRE 2026
+================================================================================
+
+  Run finali: 20 comunita' fino a 18 membri (11 metodi in analisi) e 28 fino a
+  25 (10 metodi). Dati LIHC ancora a segnaposto: inclusione e Tri-level EP
+  vanno rilette dopo averli compilati. Dettagli in README par. 7.6-7.9.
+
+BILANCIO
+  v(N) da 40 EUR (5 membri, 100% prosumer) a 1.433 EUR (25 membri, 28%). La
+  vendita dell'immessa vale dal 63% al 99% del ricavo totale: v(N) e' la
+  parte minore, e al 100% di penetrazione quasi nulla.
+  Energia contendibile fra i metodi: 11-42% della condivisa.
+  Quota condivisa / immessa: 1,2-50,1%. Mai sopra la soglia GSE del 55%;
+  sopra il 45% in CER_4_1_0 (50,1%) e CER_15_5_0 (45,6%). Senza imprese fra i
+  membri il vincolo di destinazione non avrebbe comunque effetto.
+
+FASE 1 - ADAPTIVE SAMPLING CONTRO SHAPLEY ESATTO
+  Fino a 18 membri: RD medio per taglia 0,9-1,5% (massimo su un membro 7,2%),
+  somma degli scarti assoluti 0,8-1,0% di v(N) (passa da un membro all'altro
+  la meta': 0,4-0,5%), rho di Spearman medio 0,96-1,00 (minimo 0,90). Sopra i
+  18 membri le stime grezze sommano a v(N) entro lo 0,6%.
+
+CHI VINCE (soglia di rilevanza attiva)
+  uniformita' (EI, Gini)    Equal Split in 20/20 e 28/28 comunita'
+  merito (Fairness Index)   VLC, a pari con Nucleolo (e Shapley) fino a 18
+                            membri; VLC in 14/28 sulla griglia, a pari nelle
+                            altre
+  stabilita' (eccesso)      a pari entro il 5% di v(N) in tutte le comunita'
+                            fino a 18 membri; n.d. sopra
+  forza incentivante        pari fra Similarity-Utilization, Pearson Key e
+                            Tri-level EP nella maggior parte delle celle
+  VAN del membro peggiore   Equal Split (17/20, a pari nelle altre 3)
+  Il primo classificato non cambia a nessuna soglia di rilevanza.
+
+ACCORDO FRA INDICATORI (tau-b medio per fascia, fino a 18 membri)
+  Gini - Fairness Index     +0,41 alla fascia 1, fra -0,14 e -0,32 nelle altre
+  Gini - forza incentivante da -0,16 (fascia 1) a -0,91 (fascia 4)
+  Gini - VAN_min            da +0,70 a +0,96
+
+DIPENDENZA DALLA COMPOSIZIONE (coppie di metodi che si invertono)
+                                fino a 18 membri    griglia fino a 25
+  lungo la penetrazione         26-33%              22-35%
+  lungo la taglia               0,7-21%             5-22%
+  senza soglia (solo numerica)  41-51%              33-53%
+  con soglia doppia (20/10%)    19-24%              17-25%
+
+FRONTI DI PARETO (11 metodi, fino a 18 membri)
+  merito + stabilita' + incentivo 4,1 metodi in media; equita' + incentivo +
+  VAN 6,2; equita' + coseno lordo + VAN 2,8. Nucleolo e VLC sul primo fronte
+  in 19 comunita' su 20, il Tri-level EP nel 75%.
+
+QUOTE AI PROSUMER (rapporto con la quota di membri)
+  Shapley 1,73 (fascia 1) -> 0,67 -> 0,44 (fascia 3): premia il lato scarso.
+  Pearson Key e Similarity-Utilization sotto 0,2 a ogni fascia.
+
+INCLUSIONE (LIHC, segnaposto)
+  Definita in 16 comunita' su 20 (nessun vulnerabile a 5 membri). Sotto il
+  100% di penetrazione la media per metodo va da 0,32 (Similarity-
+  Utilization) a 1,40 (Cascading Tree); al 100% il massimo e' il Tri-level EP
+  (circa 4,3). Inversioni nel 63% delle coppie lungo la penetrazione.
+
+PERDITE FRA CRITERI (lettura ottimistica, media)
+  scegliere l'uniformita' costa 0,72 in stabilita' (eccesso pari al 20% di
+  v(N)) e 0,79 in incentivo; scegliere l'incentivo costa 0,93 in uniformita';
+  merito e stabilita' non si fanno concorrenza (perdita 0).
+
+SOTTOINSIEME MINIMO (tau >= 0,5)
+  fino a 18 membri: 5 gruppi - uniformita' (EI, Gini, VAN_min), merito e
+  stabilita' (FI, sigma, coalizioni instabili, eccesso), inclusione,
+  incentivo netto, incentivo lordo; concordanza minima con il
+  rappresentante 0,95; fronte di Pareto identico in 8 comunita' su 20.
+  griglia fino a 25: 4 gruppi (i due assi dell'incentivo si fondono);
+  concordanza minima 0,79; fronte identico in 1 comunita' su 28.
+
+
+================================================================================
+ 11. LIMITI NOTI E PUNTI APERTI
+================================================================================
+
+  DA FARE   Compilare P50, y* e markup in scenario_economico.txt, poi rifare i
+            due run: cambiano l'inclusione e il Tri-level EP.
+  SCALA     Il Variance Least Core cresce rapidamente: 20 membri 2-14 min, 25
+            membri fino a 31 min (CER_18_7_0). Nelle prove del 25-28
+            settembre a 50 membri non convergeva in 5 ore. intlinprog usa il
+            limite di tempo di default (7200 s): se scatta, la separazione si
+            ferma con un errore invece di usare la migliore soluzione trovata.
+            E' successo il 5 ottobre su CER_18_7_0 (log in outputs/run_logs/).
+            Per questo le schede da 50-100 membri non sono nell'analisi.
+  COMPOSIZIONE  La griglia e' solo domestica: non varia la composizione per
+            categoria. Inoltre, sotto i 100 membri, archetipo dichiarato e
+            profilo simulato non coincidono (2.1).
+  DATI      Redditi e spesa gas sono stime statistiche (DATA_SOURCES.md);
+            n_perc a '?' (2 percettori per nucleo); stessa curva PVsyst per
+            tutti gli impianti di una fascia; tariffa monoraria e 3 kW per
+            tutti.
+  ECONOMIA  Flussi costanti su 20 anni (escalation, inflazione OPEX e degrado
+            dichiarati e non applicati); quote di investimento da stima di
+            mercato.
+  TRI-LEVEL EP  Provvisorio: 8 ipotesi attive; il livello di proprieta'
+            redistribuisce la vendita, che sulla griglia vale fino al 99% del
+            montepremi del metodo.
+  RIPRODUCIBILITA'  Le schede della griglia, gli N_utenti.xlsx e gli export
+            PROVA_CER_* non sono versionati (3.4).
+
+
+================================================================================
+ 12. COME MODIFICARE ED ESTENDERE
+================================================================================
+
+AGGIUNGERE UNA COMUNITA'
+  -> Una scheda CER_<C>_<P>_<E>.txt in CER_configuration/, con [FILE] che
+     punta a un CSV di profili le cui colonne coincidono ESATTAMENTE con
+     [MEMBRI].nome_csv (align_members_to_users elenca ogni differenza). Poi
+     arricchisci_schede.py per reddito e gas. MAIN2 non va toccato.
+
+CAMBIARE PREZZI, COSTI, SOGLIE
+  -> scenario_economico.txt. Il prezzo del gas e' anche dentro euro_gas:
+     rilanciare arricchisci_schede.py.
+
+CAMBIARE LA SOGLIA DI RILEVANZA
+  -> SOGLIA_RILEVANZA e SOGLIA_ESCURSIONE in MAIN2 par. 7b, oppure
+     sensibilita_soglia / ricalcola_inversioni_soglia su un workspace salvato.
+
+AGGIUNGERE UN METODO
+  -> Una funzione che restituisca .phi, .vGrand, .table (stessa firma degli
+     altri), una colonna in Tcmp e un elemento in "metodi" (par. 3s), un
+     colore in method_color.m. Indicatori, soglia, VAN e analisi fra comunita'
+     lo prendono da "metodi" senza altre modifiche.
+
+AGGIUNGERE UN INDICATORE
+  -> Una colonna in Tfair (par. 3t) E il suo verso in local_orientamenti di
+     compute_indicator_agreement.m: senza, l'analisi si ferma.
+
+ESCLUDERE UN METODO O UN INDICATORE DALL'ANALISI
+  -> ESCLUSI_METODI / ESCLUSI_INDICATORI in MAIN2 par. 7b: restano in Tfair.
+
+RIPARTIRE DA UN RUN SALVATO
+  -> outputs/workspace/LEGGIMI.md.
+
+
+================================================================================
+ APPENDICE A. FILE PRESENTI MA FUORI DAL PERIMETRO DI MAIN2
+================================================================================
+
+  MAIN.m                           pipeline precedente: 16 metodi, vendita sulla
+                                   sola energia non condivisa. I suoi numeri
+                                   (outputs/tables/) non vanno citati
+  shapley_cer.m, nucleolus_cer.m   originali delle versioni _cached
+  nash_bargaining_cer.m            con d_i = 0 coincide con la Marginal
+                                   Contribution normalizzata
+  stratified_expected_value_cer.m  scarto medio ~23% dallo Shapley esatto
+  pearson_sharing_key_cer.m,
+  sharing_rate_key.m               quasi indistinguibile dalla Pearson Key
+  plot_cer_comparison.m            versione con Jain, usata da MAIN.m
+  optimizer_PV.m, pv_*.m           pre-dimensionamento PV indipendente
+                                   (README par. 8)
+  archive/                         codice superato
+  CER_configuration/Provvsiorio/   schede miste dei primi studi
+  PV_Generation/ (altri file)      export PVsyst dei primi studi
+  outputs/tables/, outputs/report/report_completo.*,
+  outputs/report/griglia_recap.html  risultati di MAIN.m
+  STRUTTURA_PROGETTO.txt           mappa storica del progetto, con MAIN.m
+  AUDIT_REPORT.md                  audit del 10 luglio 2026
+  CONTESTO_*.md, REPORT_VALIDAZIONE_FASE2.md  appunti e report intermedi
+                                   della validazione dei profili
+
+================================================================================

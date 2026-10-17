@@ -337,3 +337,7 @@ outputs/run_logs/
 outputs/report/griglia_recap.html
 backup_schede_*/
 test_regressione/
+
+# Varianti PA delle schede (asse composizione): per ora non versionate, si rigenerano con
+# CER_configuration_PA/genera_varianti_PA.py (vedi CER_configuration_PA/README.md)
+CER_configuration_PA/PA*/

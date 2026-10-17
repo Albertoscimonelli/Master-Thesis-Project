@@ -44,6 +44,7 @@ varia taglia e penetrazione dei prosumer.
 12. [Limitazioni note / TODO](#12-limitazioni-note--todo)
 13. [Documentazione aggiuntiva](#13-documentazione-aggiuntiva)
 14. [Scaling a comunità grandi (~100 utenti): cosa va risolto prima](#14-scaling-a-comunità-grandi-100-utenti-cosa-va-risolto-prima)
+15. [Dati del palazzetto dello sport di Lucca](#15-dati-del-palazzetto-dello-sport-di-lucca)
 
 ---
 
@@ -192,6 +193,8 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_LoadProfiles/ramp_db/` | **Riferimento per la validazione dei profili non domestici.** Gemello non domestico di `lpg_db/`, con il bersaglio diviso fra due fonti: `riferimento_arera_nd.py` porta livello annuo e peso dei mesi da ARERA per ATECO e classe BTA (dato **solo mensile**), `riferimento_gse_nd.py` la forma oraria dentro il mese dai **profili standard GSE** 2024-2025 — gli stessi che il GSE applica nel settlement dei POD non trattati orari (TIAD, delibera ARERA 727/2022/R/eel). Fonti, trappole dei file e limiti in [CER_LoadProfiles/README.md](CER_LoadProfiles/README.md); risultati, difetti residui e riproducibilità in [REPORT_VALIDAZIONE_RAMP.md](REPORT_VALIDAZIONE_RAMP.md) |
 | `CER_LoadProfiles/arricchisci_schede.py` | **Compila reddito e spesa gas dei membri domestici** nelle schede (`reddito_EUR`, `euro_gas` più le colonne di provenienza), da Istat EU-SILC e ARERA. Test in `CER_LoadProfiles/tests/` |
 | `data/external/` | Dati esterni versionati con la fonte riga per riga (reddito Istat, quote gas ARERA) e i parametri dell'arricchimento. Fonti in [DATA_SOURCES.md](DATA_SOURCES.md) |
+| `data/external/palazzetto_lucca/` | **Consumo e produzione FV 2024 del palazzetto dello sport di Lucca** (CSV orari), guida al metodo e script Python. Dati archiviati, non letti da `MAIN2.m`. Vedi §15 |
+| `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Non lette da `MAIN2.m`. Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -1719,6 +1722,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [outputs/workspace/LEGGIMI.md](outputs/workspace/LEGGIMI.md) | Serve ripartire dai run finali senza rilanciarli, o confrontare due run (test di regressione) |
 | [outputs/report/regole_ripartizione_cer.html](outputs/report/regole_ripartizione_cer.html) | Serve la pagina dei risultati finali (13 ottobre 2026) |
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
+| [data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md) | Serve il metodo completo con cui sono state costruite le curve di consumo e di produzione FV del palazzetto di Lucca, con affidabilità e limiti |
+| [CER_configuration_PA/README.md](CER_configuration_PA/README.md) | Serve la regola con cui si inseriscono le PA nelle schede, le assunzioni sulle tre PA e i punti aperti dell'asse composizione |
 | [docs/mapping_household_istat.md](docs/mapping_household_istat.md) | Serve sapere perché un archetipo LPG ha quella tipologia familiare Istat (età e componenti dal catalogo LPG) |
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei modelli di ripartizione o degli indicatori |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
@@ -1947,3 +1952,66 @@ restavano nel primo scaglione tanto sommati quanto no.)
    che non possiedono alcun impianto (§4.1.2 di Cremers et al.) — lì la domanda «quali
    impianti ha questa coalizione» non ha risposta. È lo stesso nodo già affrontato per il
    fattore F, ma senza la via d'uscita che F aveva.
+
+---
+
+## 15. Dati del palazzetto dello sport di Lucca
+
+Due curve orarie 2024 di un'utenza reale, in [`data/external/palazzetto_lucca/`](data/external/palazzetto_lucca/).
+Sono **archiviate con la loro documentazione ma non ancora collegate a `MAIN2.m`**: usarle in una
+scheda richiede di concordare prima il cambio.
+
+| File | Contenuto |
+|---|---|
+| `palazzetto_lucca_carico.csv` | **Consumo orario allineato alla pipeline**: 8.760 righe su griglia 2025, formato di `100_utenti.csv` (`timestamp;palazzetto_lucca_kWh`). Energia 289.706 kWh, minimo 9,9 kW, massimo 114,0 kW |
+| `palazzetto_lucca_FV.CSV` | **Produzione FV allineata alla pipeline**: 8.760 righe, layout degli export PVsyst di `PV_Generation/` (`dd/mm/yy HH:MM;kW`, anno 90). Energia 398.112 kWh, picco 280,2 kW |
+| `originali_2024/` | Le due serie come costruite (anno 2024, 8.784 righe, ora di orologio): `lucca_anno_2024_ricostruito_kW.csv` (290.131 kWh) e `lucca_pv_2024_kW.csv` (398.902 kWh, con colonna `origine`) |
+| `GUIDA_dati_e_metodi.md` | Metodo completo, scelte, affidabilità e limiti |
+| `scripts/` | `lucca_year.py` e `plot_lucca_year.py` (carico), `lucca_pv_tmy.py` e `plot_lucca_pv_tmy.py` (FV), `allinea_alla_pipeline.py` (dagli originali ai due file allineati) |
+
+**Perimetro.** Solo il palazzetto di Lucca; i dati ENEA della palestra "Volley" e il relativo input
+RAMP sono stati scartati. I due oggetti sono diversi: il **consumo** è dell'edificio **esistente**
+(misure 2024 lette dai grafici della diagnosi), la **produzione** è dell'impianto del **nuovo**
+palazzetto (progetto). Il loro confronto è quindi indicativo: circa il 30% dell'energia FV
+sarebbe autoconsumata e il FV coprirebbe circa il 40% del consumo annuo.
+
+**Come sono state ottenute.**
+
+- *Consumo (ricostruito, non misurato).* La diagnosi non ha tabelle orarie ma grafici. Le barre
+  mensili (Fig. 2) danno l'energia di ogni mese, scalata a 290,136 MWh; il massimo e il minimo
+  di ogni giorno (Fig. 3) danno l'inviluppo; la settimana 22-28 gennaio 2024 (Fig. 4) dà la
+  forma oraria per feriale, sabato e domenica. Per ogni giorno
+  `P(h) = min + (max − min)·s(h)^γ`, con γ scelto mese per mese perché l'energia mensile
+  coincida con quella letta. Affidabilità: alta su energia mensile e annua, buona su massimo e
+  minimo giornalieri, media sulla forma oraria, più bassa d'estate. Sulla settimana nota lo scarto
+  quadratico medio è 8,6 kW (circa il 20% del carico medio), correlazione 0,94: verifica
+  ottimistica, perché la stessa settimana fornisce la forma. **Non è adatta a dimensionare FV,
+  accumuli o CER**: servono le curve vere del POD.
+- *Produzione FV (modellata).* Impianto da 310 kWp, 15° verso sud, perdite 14%. Il TMY orario di
+  PVGIS per Lucca è portato sul piano dei moduli con pvlib (Hay-Davies, temperatura di cella
+  Faiman, perdite per angolo di incidenza), riportato sul calendario 2024 con ora legale e
+  ogni mese riscalato alla tabella mensile della diagnosi (stima del progetto, 398.902 kWh/anno,
+  pag. 246): così la produzione è paragonabile al progetto mese per mese. Il calcolo fisico dal
+  TMY, senza riscalatura, è entro −0,7% da PVGIS-SARAH3 (391.232 kWh/anno), che nella prima
+  versione era il bersaglio ed è ora termine di confronto: rispetto al progetto ha gennaio +14%,
+  febbraio +16%, luglio −10%, totale −1,9%. È scartata una tabella in immagine di fonte ignota.
+  La tabella del progetto non dichiara inclinazione, orientamento né software.
+- *Colonna `origine`.* `tmy` (8.739 righe), `tmy_riempito` (21 ore diurne che nel TMY erano a
+  zero, tra cui il 2 dicembre dalle 10 alle 15) e `copia_28feb` (24 righe del 29 febbraio, copia
+  del 28). Il criterio di riempimento va confermato dall'autore.
+
+**Allineamento alla pipeline** (`scripts/allinea_alla_pipeline.py`). I due file nella cartella principale sono gli originali portati alle convenzioni del progetto (§5.1):
+- *Calendario.* Anno uniforme di 8.760 ore **senza ora legale**: le ore estive sono riportate a ora standard (−1 h dal 31 marzo al 27 ottobre 2024). Dopo lo spostamento il picco FV cade alle 12–13 in tutti i mesi, come negli export di `PV_Generation/`.
+- *Bisestile.* Il FV perde il 29 febbraio (24 ore, circa 790 kWh: febbraio scende da 18.123 a 17.333 kWh e l'annuo da 398.902 a 398.112 kWh) e il suo anno fittizio è il 1990. Il carico è rimappato sulla griglia **2025** a parità di giorno della settimana (il giorno D del 2025 prende il giorno D−364 del 2024, 52 settimane): la struttura settimanale, quindi feriali e festivi, resta al posto giusto, ma il fermo estivo e le festività si spostano di due giorni. L'energia annua del carico passa da 290.131 a 289.706 kWh.
+- *Formato.* Il FV ha la stessa struttura degli export PVsyst (righe di intestazione ignorate dal lettore, separatore `;`, punto decimale, lettura per posizione) con un'intestazione che dichiara che **non** è un export PVsyst. Il carico ha lo stesso formato di `100_utenti.csv` (timestamp ISO con `T`, separatore `;`, CRLF).
+- Il lettore di `load_cer_data.m` è stato emulato in Python sul FV (8.760 righe, nessun valore negativo o con virgola); non è stato eseguito in MATLAB.
+
+**Limiti.** Il FV è un anno tipico, non il 2024. Inclinazione e orientamento reali non sono nella
+diagnosi. Il picco di 280,2 kW supera i 270 kW di inverter (4 ore, circa 15 kWh/anno oltre il limite,
+taglio non applicato). Il progetto esecutivo del Comune (134,4 kWp) è un impianto diverso e non è usato.
+
+**Riferimenti.** Comune di Lucca, *Diagnosi energetica – Palazzetto dello Sport*, cod. 047.24.01.R.01,
+novembre 2025 (Fig. 2, 3, 4, cap. 7.3, cap. 12.1); Comune di Lucca, progetto esecutivo PE Silver 1,
+relazione tecnica FV; Commissione Europea JRC, PVGIS 5 (PVGIS-SARAH3, TMY 2005-2023),
+https://re.jrc.ec.europa.eu/pvg_tools/en/; pvlib python 0.16.1. Riferimenti completi in
+[DATA_SOURCES.md](DATA_SOURCES.md).

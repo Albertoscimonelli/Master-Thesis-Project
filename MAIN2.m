@@ -18,7 +18,10 @@ close all;
 %    - Fase 7a: v(S) calcolata una volta e passata a Shapley, Nucleolo ed
 %      eccesso di coalizione (shapley_cer_cached, nucleolus_cer_cached).
 %    - §0: variabile d'ambiente MAIN2_SCHEDE (facoltativa) per analizzare
-%      solo alcune schede; vuota = tutte, come MAIN.
+%      solo alcune schede; vuota = tutte quelle fino a MAIN2_MAX_UTENTI membri
+%      (default 18), livello 0 di CER_configuration/ piu' le varianti con PA
+%      di CER_configuration_PA/ (elenco_schede_cer.m). MAIN2_RIPRENDI=1
+%      riparte dal checkpoint di un run interrotto.
 %
 %  MAIN.m  -  Analisi energetica ed economica della CER
 %
@@ -62,31 +65,55 @@ close all;
 
 CARTELLA_CER = "CER_configuration";
 
-elencoSchede = dir(CARTELLA_CER + "/CER_*.txt");
-assert(~isempty(elencoSchede), ...
-       'Nessuna scheda CER_*.txt in %s: non c''e'' niente da analizzare.', ...
-       CARTELLA_CER);
+% MAIN2: le schede sono quelle di CER_configuration/ (livello 0, solo domestici)
+% piu' le varianti con PA di CER_configuration_PA/PA1..PA3, fino a un tetto di
+% membri. L'elenco e il suo auto-test stanno in elenco_schede_cer.m.
+%
+% IL TETTO. Oltre 18 membri Shapley, Nucleolo ed eccesso di coalizione non si
+% calcolano (2^n, README §14.1); oltre 25 il Variance Least Core non converge.
+% Il default e' 18, cioe' il run con tutti i metodi e la stabilita':
+% MAIN2_MAX_UTENTI=25 porta alla griglia fino a 25 (con MAIN2_CARTELLA=griglia25,
+% perche' compute_indicator_agreement tiene i soli metodi comuni a tutte le
+% comunita'). Le variabili si leggono qui perche' il clear in testa cancella
+% qualunque variabile preparata prima.
+TETTO_ENV = strtrim(string(getenv("MAIN2_MAX_UTENTI")));
+if strlength(TETTO_ENV) > 0
+    MAX_UTENTI = str2double(TETTO_ENV);
+    assert(isfinite(MAX_UTENTI) && MAX_UTENTI >= 1 && MAX_UTENTI == round(MAX_UTENTI), ...
+           'MAIN2_MAX_UTENTI: serve un intero positivo (ricevuto "%s")', TETTO_ENV);
+else
+    MAX_UTENTI = 18;
+end
 
-% sort esplicito: l'ordine di dir dipende dal filesystem, quello dei risultati no.
-% Separatore '/' e non fullfile: MATLAB lo accetta su ogni sistema, ed e' la
-% stessa barra dei percorsi [FILE] dentro le schede. Cosi' il percorso che
-% finisce stampato nel riepilogo si legge uguale ovunque giri il progetto.
-SCHEDE = CARTELLA_CER + "/" + sort(string({elencoSchede.name}).');
-
-% MAIN2: selezione facoltativa da fuori, perche' il clear in testa cancella
-% qualunque variabile preparata prima. Nomi di scheda separati da ';', per
-% esempio MAIN2_SCHEDE="CER_2_3_0;CER_4_4_0". Vuota = tutte le schede.
+% Selezione facoltativa, vince sul tetto. Nomi di scheda separati da ';': senza
+% cartella e' una scheda di CER_configuration/, per esempio
+% MAIN2_SCHEDE="CER_2_3_0;CER_4_4_0"; con cartella e' una variante con PA, per
+% esempio MAIN2_SCHEDE="CER_5_5_0;PA2/CER_5_5_0". Vuota = tutte fino al tetto.
 SELEZIONE = strtrim(string(getenv("MAIN2_SCHEDE")));
 if strlength(SELEZIONE) > 0
-    voluteSchede = CARTELLA_CER + "/" + strtrim(split(SELEZIONE, ";")) + ".txt";
-    mancanti = voluteSchede(~ismember(voluteSchede, SCHEDE));
-    assert(isempty(mancanti), 'MAIN2_SCHEDE: schede inesistenti: %s', ...
-           strjoin(mancanti, ', '));
-    SCHEDE = sort(voluteSchede);
+    nomiVoluti = strtrim(split(SELEZIONE, ";"));
+else
+    nomiVoluti = strings(0, 1);
 end
+
+% Percorsi con '/' e non fullfile: MATLAB lo accetta su ogni sistema, ed e' la
+% stessa barra dei percorsi [FILE] dentro le schede. Livello 0 per primo, poi
+% PA1, PA2, PA3; dentro ogni cartella in ordine alfabetico (l'ordine di dir
+% dipende dal filesystem, quello dei risultati no).
+[SCHEDE, INFO_SCHEDE] = elenco_schede_cer(struct( ...
+        'cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
+        'selezione', nomiVoluti));
 N_CER  = numel(SCHEDE);
 
 fprintf('\n=== CER da analizzare: %d ===\n', N_CER);
+if strlength(SELEZIONE) > 0
+    fprintf('  Selezione esplicita da MAIN2_SCHEDE (il tetto di membri non si applica)\n');
+else
+    fprintf('  Tetto: %d membri (MAIN2_MAX_UTENTI)\n', MAX_UTENTI);
+end
+for lv = unique(INFO_SCHEDE.LivelloCartella).'
+    fprintf('  Livello PA%d: %d comunita''\n', lv, nnz(INFO_SCHEDE.LivelloCartella == lv));
+end
 fprintf('  %s\n', SCHEDE);
 
 % Un elemento per CER, riempito in coda a ogni giro (§6). Serve perche' a fine
@@ -99,7 +126,8 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'rev_tot_annual', {}, 'contendibleShare', {}, ...
                  'isProsumer', {}, 'forza', {}, 'forzaLorda', {}, ...
                  'penetrazione', {}, 'NPV', {}, 'tempo_analisi_s', {}, ...
-                 'tempo_figure_s', {}, 'CFG', {}, 'fase1', {});
+                 'tempo_figure_s', {}, 'CFG', {}, 'fase1', {}, ...
+                 'etichetta', {}, 'nPA', {}, 'isPA', {});
 
 
 %% ========================================================================
@@ -162,6 +190,37 @@ if strlength(SUFFISSO) > 0
 end
 fprintf('  Tabelle in %s\n', CSV.cartella);
 
+% --- Checkpoint e ripresa --------------------------------------------------
+%  Il run completo dura ore, e un errore a meta' (il 5 ottobre un MILP del
+%  Variance Least Core ando' in timeout su CER_18_7_0) farebbe perdere tutto.
+%  Dopo ogni comunita' RESULTS si salva in outputs/checkpoint_main2[_suffisso].mat;
+%  con MAIN2_RIPRENDI=1 si ricarica e il ciclo riparte dalla prima comunita' non
+%  fatta. Il checkpoint non cambia nessun numero: e' la stessa struct, scritta
+%  su disco. Vale solo per lo stesso elenco di schede: se non coincide con
+%  l'inizio dell'elenco attuale ci si ferma, invece di mescolare due run.
+FILE_CHECKPOINT = "outputs/checkpoint_main2";
+if strlength(SUFFISSO) > 0
+    FILE_CHECKPOINT = FILE_CHECKPOINT + "_" + SUFFISSO;
+end
+FILE_CHECKPOINT = FILE_CHECKPOINT + ".mat";
+
+PRIMO = 1;
+if strtrim(string(getenv("MAIN2_RIPRENDI"))) == "1"
+    assert(isfile(FILE_CHECKPOINT), ...
+           'MAIN2_RIPRENDI: manca il checkpoint %s, non c''e'' niente da riprendere.', ...
+           FILE_CHECKPOINT);
+    K = load(FILE_CHECKPOINT, 'RESULTS');
+    nFatte = numel(K.RESULTS);
+    assert(nFatte <= N_CER && isequal(string({K.RESULTS.scheda}).', SCHEDE(1:nFatte)), ...
+           ['MAIN2_RIPRENDI: le %d comunita'' del checkpoint non coincidono con ' ...
+            'l''inizio dell''elenco attuale (MAIN2_SCHEDE, MAIN2_MAX_UTENTI o ' ...
+            'MAIN2_CARTELLA diversi dal run interrotto).'], nFatte);
+    RESULTS = K.RESULTS;
+    PRIMO   = nFatte + 1;
+    fprintf('  RIPRESA: %d comunita'' gia'' fatte, si riparte dalla %d.\n', nFatte, PRIMO);
+    clear K nFatte
+end
+
 
 % --- Cronometro dell'intera esecuzione ------------------------------------
 %  tic con un identificatore esplicito, non il tic/toc globale: quello e' uno
@@ -181,9 +240,9 @@ T_TOT = tic;
 %
 %  Nessun try/catch: se una scheda e' rotta l'esecuzione si ferma li', con
 %  l'errore in chiaro, invece di nasconderlo in un riepilogo di fine batch.
-for iCER = 1:N_CER
+for iCER = PRIMO:N_CER
 
-    clearvars -except CARTELLA_CER SCHEDE N_CER iCER RESULTS FIG CSV T_TOT
+    clearvars -except CARTELLA_CER SCHEDE INFO_SCHEDE N_CER iCER PRIMO RESULTS FIG CSV T_TOT FILE_CHECKPOINT
 
     % Cronometro di QUESTA comunita'. Sta dopo il clearvars, quindi nasce e
     % muore dentro il giro: quello che serve dopo finisce in RESULTS (§6).
@@ -325,6 +384,17 @@ for iCER = 1:N_CER
     % scheda e' scritta a mano e puo' elencarli in altro ordine. Da qui in poi
     % M.<campo> e' sempre [nUsers x 1] e allineato a userNames.
     M = align_members_to_users(CFG, userNames);
+
+    % --- Livello PA: quanti membri sono pubbliche amministrazioni -------------
+    % E' il terzo asse della griglia (taglia, penetrazione, composizione). Si
+    % legge dai DATI della scheda e si confronta con la cartella da cui viene:
+    % una variante finita nella cartella sbagliata si ferma qui, prima di
+    % produrre numeri attribuiti al livello sbagliato.
+    isPA = (string(M.categoria) == "PA");
+    nPA  = sum(isPA);
+    assert(nPA == INFO_SCHEDE.LivelloCartella(iCER), ...
+           '%s: ha %d membri PA ma sta nella cartella del livello %d.', ...
+           SCHEDA, nPA, INFO_SCHEDE.LivelloCartella(iCER));
 
 
     %% ========================================================================
@@ -2183,6 +2253,15 @@ for iCER = 1:N_CER
     RESULTS(iCER).rev_tot_annual = rev_tot_annual;
     RESULTS(iCER).CFG            = CFG;
 
+    % Il livello PA (0..3) e la maschera dei membri PA, allineata a userNames:
+    % servono all'analisi un livello alla volta e al confronto con / senza PA.
+    % L'etichetta distingue le varianti omonime (CER_5_5_0 esiste in ogni
+    % livello): e' il nome della comunita' nelle stampe e nelle cartelle delle
+    % figure, mentre le tabelle continuano a usare il nome base della scheda.
+    RESULTS(iCER).etichetta      = INFO_SCHEDE.Etichetta(iCER);
+    RESULTS(iCER).nPA            = nPA;
+    RESULTS(iCER).isPA           = isPA;
+
     % Serviti dal confronto fra CER della §7, e non ricavabili da quello che
     % c'e' gia': v(N) e' il montepremi in palio (il resto del ricavo e'
     % vendita, che sta fuori dal gioco), la frazione contendibile dice quanto
@@ -2237,9 +2316,9 @@ for iCER = 1:N_CER
     % comunita'. Chiudere le finestre e' anche cio' che fa partire pulito il
     % giro successivo: MAIN.m fa close all una volta sola, in testa.
     if FIG.esporta
-        [~, nomeScheda] = fileparts(SCHEDA);
-        fprintf('\n=== Figure di %s ===\n', nomeScheda);
-        save_figures(fullfile(FIG.cartella, nomeScheda), ...
+        etichetta = RESULTS(iCER).etichetta;     % PA2/CER_5_5_0: niente collisioni
+        fprintf('\n=== Figure di %s ===\n', etichetta);
+        save_figures(fullfile(FIG.cartella, etichetta), ...
                      struct('chiudi', FIG.chiudi));
     end
 
@@ -2251,6 +2330,26 @@ for iCER = 1:N_CER
     fprintf('  %-25s: %s\n', 'Figure',   format_duration(RESULTS(iCER).tempo_figure_s));
     fprintf('  %-25s: %s\n', 'Totale CER', format_duration(toc(T_CER)));
 
+    % Checkpoint: RESULTS fino a questa comunita' compresa (vedi §0).
+    save(FILE_CHECKPOINT, 'RESULTS');
+
+end
+
+
+% --- FASE 1: l'analisi fra comunita' e' per ora solo quella di livello 0 -----
+%  Le funzioni di §7a-§7c identificano le comunita' dal nome base della scheda
+%  (CER_5_5_0), che si ripete in ogni livello PA: su RESULTS mescolato
+%  ranking_grid si ferma (stessa taglia, stessa penetrazione). Qui RESULTS
+%  diventa il solo livello 0 e RESULTS_TUTTE tiene tutto per i tempi (§8). La
+%  Fase 2 sostituisce questo blocco con l'analisi un livello alla volta.
+RESULTS_TUTTE = RESULTS;
+RESULTS       = RESULTS([RESULTS.nPA] == 0);
+assert(~isempty(RESULTS), ...
+       'MAIN2: nessuna scheda di livello 0 (solo domestici) fra quelle selezionate.');
+if numel(RESULTS) < numel(RESULTS_TUTTE)
+    fprintf(['\n  Analisi fra comunita'': %d di livello 0 su %d ' ...
+             '(i livelli con PA non sono ancora analizzati).\n'], ...
+            numel(RESULTS), numel(RESULTS_TUTTE));
 end
 
 
@@ -2268,7 +2367,7 @@ end
 %  persona in due schede diverse.
 %  ========================================================================
 
-if FIG.confrontoCER && N_CER > 1
+if FIG.confrontoCER && numel(RESULTS) > 1
     plot_cer_comparison_main2(RESULTS);   % MAIN2: copia senza Jain
 
     % Il Gini su tre assi: comunita' x metodo x indice. Il pannello (d) del
@@ -2400,7 +2499,7 @@ AGR = apply_relevance_threshold(AGR, [RESULTS.vGrand], struct( ...
 fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro (%s), %.0f%% dell''escursione sugli altri\n', ...
         100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(AGR.regolaSoglia == "vN"), ', '), 100 * SOGLIA_ESCURSIONE);
 
-if N_CER > 1
+if numel(RESULTS) > 1
     % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e
     % un asse unico non e' ordinabile: la griglia taglia x penetrazione si legge
     % un fattore alla volta, con l'altro fermo. Con una taglia sola resta lo
@@ -2444,7 +2543,7 @@ if CSV.esporta
     daScrivere = struct( ...
         'accordo_indicatori', AGR.table, ...
         'orientamenti',       AGR.orientation);
-    if N_CER > 1
+    if numel(RESULTS) > 1
         daScrivere.inversioni_di_graduatoria = REV.inversioni;
         daScrivere.inversioni_sommario       = REV.sommario;
         daScrivere.inversioni_per_sweep      = REV.perSweep;
@@ -2465,7 +2564,7 @@ end
 %  membri. Dettagli: help sintesi_risultati. Si scrive sotto CSV.cartella/sintesi.
 %  ========================================================================
 
-if N_CER > 1
+if numel(RESULTS) > 1
     cartellaSintesi = "";
     if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
     fprintf('\n=== Sintesi dei risultati ===\n');
@@ -2539,23 +2638,31 @@ end
 %  e' l'unico modo per decidere cosa togliere quando l'esecuzione e' lenta.
 %  ========================================================================
 
-tempoAnalisiTot = sum([RESULTS.tempo_analisi_s]);
-tempoFigureTot  = sum([RESULTS.tempo_figure_s]);
-tempoTotale     = toc(T_TOT);
+% I tempi per comunita' sono quelli di TUTTE le comunita' (RESULTS_TUTTE: tutti i
+% livelli PA, comprese quelle fatte da una sessione precedente e riprese dal
+% checkpoint). Il cronometro T_TOT invece misura solo questa sessione: il
+% confronto fra CER si ricava quindi sulla sola parte di questa sessione, e il
+% totale e' il lavoro di tutte le sessioni. Senza ripresa PRIMO vale 1 e i due
+% conti coincidono con quello di sempre.
+tempoAnalisiTot = sum([RESULTS_TUTTE.tempo_analisi_s]);
+tempoFigureTot  = sum([RESULTS_TUTTE.tempo_figure_s]);
+inSessione      = PRIMO:N_CER;
+tempoSessione   = toc(T_TOT);
 
 % Quello che resta e' la §7 e la §7b (confronto fra CER, accordo fra indicatori,
 % inversioni di graduatoria e relativi export): non appartengono a nessuna
 % comunita' e non hanno un cronometro proprio, ma vanno dichiarati lo stesso,
 % altrimenti il totale non tornerebbe e non si capirebbe perche'. La voce e'
 % quindi piu' larga di quanto il nome "confronto CER" suggerisca.
-tempoConfronto = tempoTotale - tempoAnalisiTot - tempoFigureTot;
+tempoConfronto = tempoSessione - sum([RESULTS_TUTTE(inSessione).tempo_analisi_s]) ...
+                               - sum([RESULTS_TUTTE(inSessione).tempo_figure_s]);
+tempoTotale    = tempoAnalisiTot + tempoFigureTot + tempoConfronto;
 
 fprintf('\n\n=== Tempo di esecuzione ===\n');
 for c = 1:N_CER
-    [~, nomeScheda] = fileparts(RESULTS(c).scheda);
-    fprintf('  %-22s  analisi %10s   figure %10s\n', nomeScheda, ...
-            format_duration(RESULTS(c).tempo_analisi_s), ...
-            format_duration(RESULTS(c).tempo_figure_s));
+    fprintf('  %-22s  analisi %10s   figure %10s\n', RESULTS_TUTTE(c).etichetta, ...
+            format_duration(RESULTS_TUTTE(c).tempo_analisi_s), ...
+            format_duration(RESULTS_TUTTE(c).tempo_figure_s));
 end
 % Solo ASCII nelle stringhe STAMPATE: il paragrafo e l'euro esistono nei
 % commenti di questo file, ma passando dallo stdout di MATLAB in modalita'

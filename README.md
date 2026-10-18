@@ -147,12 +147,18 @@ o su un'altra macchina, e aggiungere una comunità allo studio vuol dire mettere
 quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`linprog`,
 `quadprog`, `intlinprog`) per Nucleolo e Variance Least Core.
 
-Due variabili d'ambiente, entrambe facoltative:
+**Quali schede legge.** Senza nessuna variabile, `MAIN2.m` prende **tutte le schede fino a
+18 membri**: il livello 0 di `CER_configuration/` (solo domestici) e le varianti con PA di
+`CER_configuration_PA/PA1..PA3` (asse composizione, §7.10). L'elenco lo costruisce
+`elenco_schede_cer.m`, che legge N = C+P+E dal nome della scheda e salta `PA0/` (copia
+identica del livello 0). Quattro variabili d'ambiente, tutte facoltative:
 
 | Variabile | Cosa fa |
 |---|---|
-| `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vuota = **tutte** le schede della cartella, comprese quelle da 50-100 membri, su cui il Variance Least Core non arriva in fondo (§14.1): da non fare |
+| `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vince sul tetto di membri. Un nome senza cartella è una scheda di `CER_configuration/`; `PA2/CER_5_5_0` è la variante PA2 |
+| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
+| `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
 
 I due run di riferimento — fino a 18 membri e griglia fino a 25 — sono descritti nella
 §7.9; l'elenco completo delle schede di ciascuno è in
@@ -196,6 +202,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `data/external/palazzetto_lucca/` | **Consumo e produzione FV 2024 del palazzetto dello sport di Lucca** (CSV orari), guida al metodo e script Python. Dati archiviati, non letti da `MAIN2.m`. Vedi §15 |
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Non lette da `MAIN2.m`. Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
+| `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
 | `load_cer_data.m` | Caricamento profili + assegnazione impianti PV/autoconsumo (§5) |
@@ -1945,6 +1952,18 @@ restavano nel primo scaglione tanto sommati quanto no.)
    che rimanda a questo paragrafo. Chi volesse comunque un risultato può dichiarare
    `[MERCATO].tip_potenza_rif_kW` e imporre uno scaglione unico, sapendo che è
    un'approssimazione.
+
+   > **Dal 18 ottobre 2026 lo scenario impone lo scaglione unico** (`tip_potenza_rif_kW = 100`
+   > in `scenario_economico.txt`: qualunque valore fino a 200 kW sceglie il primo scaglione,
+   > 80/120 €/MWh). Serve all'asse composizione (§7.10): nelle schede con il palazzetto di
+   > Lucca (PA3, 310,5 kWp) gli impianti cadrebbero in scaglioni diversi e `MAIN2.m` si
+   > fermerebbe. Il primo scaglione è quello dei domestici, quindi **la tariffa è identica in
+   > tutti i livelli PA** e la differenza fra livelli è solo composizione. L'approssimazione:
+   > per norma il palazzetto avrebbe 70/110, quindi in PA3 la tariffa è sovrastimata di al più
+   > 0,010 €/kWh sull'energia condivisa (`CAP − TP_base` vale 40 in ogni scaglione, come
+   > sopra). Sulle schede domestiche non cambia nulla: lo scaglione derivato era già il primo,
+   > e `RESULTS` è identico bit a bit al run del 13 ottobre (verificato su `CER_0_8_0`,
+   > `CER_4_1_0`, `CER_7_3_0`). Lo scenario non ha commenti per scelta: la motivazione sta qui.
 
    Se un giorno servisse davvero, l'ostacolo non è la formula ma il **gioco cooperativo**:
    con tariffe diverse per impianto, `v(S)` dipenderebbe da quali impianti possiede la

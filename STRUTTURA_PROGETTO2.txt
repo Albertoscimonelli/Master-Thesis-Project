@@ -256,13 +256,21 @@ Da Git Bash, nella root del progetto. Su questa macchina l'eseguibile e'
     MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="$GRIGLIA25" matlab -batch "MAIN2"
         -> outputs/tables_main2_griglia25/       circa 2 h 30
 
-LE DUE VARIABILI D'AMBIENTE
+LE QUATTRO VARIABILI D'AMBIENTE (dal 18 ottobre)
+  Senza variabili MAIN2 prende TUTTE le schede fino a 18 membri: il livello 0
+  di CER_configuration/ piu' le varianti con PA di CER_configuration_PA/PA1..3
+  (elenco_schede_cer.m; PA0/ e' una copia del livello 0 e si salta).
   MAIN2_SCHEDE    nomi di scheda senza .txt, separati da ';'. L'ordine non
-                  conta (MAIN2 li ordina). Vuota = TUTTE le schede della
-                  cartella, comprese quelle da 50-100 membri: da non fare,
-                  il Variance Least Core non arriva in fondo.
+                  conta (MAIN2 li ordina). Vince sul tetto. Senza cartella =
+                  CER_configuration/; "PA2/CER_5_5_0" = variante PA2.
+  MAIN2_MAX_UTENTI  tetto di membri, default 18. 25 = griglia fino a 25 (con
+                  MAIN2_CARTELLA=griglia25). Le schede da 50-100 membri non
+                  si analizzano: il Variance Least Core non arriva in fondo.
   MAIN2_CARTELLA  suffisso delle cartelle di uscita (lettere, cifre, _ e -):
                   tables_main2_<suffisso> e figures_main2_<suffisso>.
+  MAIN2_RIPRENDI  1 = riparte dal checkpoint outputs/checkpoint_main2
+                  [_<suffisso>].mat, scritto dopo ogni comunita' (non
+                  versionato). Vuole lo stesso elenco di schede.
 
 PERCHE' DUE RUN E NON UNO
   compute_indicator_agreement tiene solo i metodi presenti in TUTTE le
@@ -394,7 +402,8 @@ LA PIPELINE E' DETERMINISTICA
     prezzo_vendita_EUR_kWh 0,110     vendita di tutta l'energia immessa
     prezzo_gas_EUR_kWh     0,120     spesa gas nelle schede (6.3) e nel Tri-level
     markup_retail          ?         PUN -> prezzo di bolletta (Tri-level, LIHC)
-    tip_potenza_rif_kW     ?         impone lo scaglione della TIP (5.2)
+    tip_potenza_rif_kW     100       impone il primo scaglione della TIP (5.2): serve
+                                     alle schede con il palazzetto (README 14.4.1)
     tip_fattore_riduzione  ?         impone il fattore F (5.2)
   [INVESTIMENTO]
     tasso_sconto 0,04 e vita_utile_anni 20       usati dal VAN (3v)

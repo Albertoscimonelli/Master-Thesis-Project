@@ -2336,293 +2336,333 @@ for iCER = PRIMO:N_CER
 end
 
 
-% --- FASE 1: l'analisi fra comunita' e' per ora solo quella di livello 0 -----
+% --- L'analisi fra comunita' si fa UN LIVELLO PA ALLA VOLTA ---------------------
 %  Le funzioni di §7a-§7c identificano le comunita' dal nome base della scheda
 %  (CER_5_5_0), che si ripete in ogni livello PA: su RESULTS mescolato
-%  ranking_grid si ferma (stessa taglia, stessa penetrazione). Qui RESULTS
-%  diventa il solo livello 0 e RESULTS_TUTTE tiene tutto per i tempi (§8). La
-%  Fase 2 sostituisce questo blocco con l'analisi un livello alla volta.
+%  ranking_grid si ferma (stessa taglia, stessa penetrazione) e le tabelle non
+%  saprebbero dire di quale livello parlano. Il corpo del ciclo qui sotto e' percio'
+%  l'analisi di sempre (§7, §7a, §7b, §7c), applicata al sottoinsieme di un livello:
+%  dentro il ciclo RESULTS e' quel sottoinsieme, RESULTS_TUTTE tiene tutto.
+%
+%    livello 0   percorsi di uscita di sempre: <tabelle>/{confronto,fase1,sintesi},
+%                figure e Fase 1 (Shapley contro Adaptive Sampling) comprese
+%    livello k   <tabelle>/PAk/{confronto,sintesi}; niente figure e niente Fase 1,
+%                che e' una verifica dei metodi e non dipende dalla composizione
+%
+%  Il confronto fra i livelli, cioe' "con / senza PA", viene dopo (§7d).
 RESULTS_TUTTE = RESULTS;
-RESULTS       = RESULTS([RESULTS.nPA] == 0);
-assert(~isempty(RESULTS), ...
-       'MAIN2: nessuna scheda di livello 0 (solo domestici) fra quelle selezionate.');
-if numel(RESULTS) < numel(RESULTS_TUTTE)
-    fprintf(['\n  Analisi fra comunita'': %d di livello 0 su %d ' ...
-             '(i livelli con PA non sono ancora analizzati).\n'], ...
-            numel(RESULTS), numel(RESULTS_TUTTE));
-end
+LIVELLI       = unique([RESULTS_TUTTE.nPA]);
+CSV_BASE      = CSV;
+FIG_BASE      = FIG;
+LIV = struct('livello', {}, 'idx', {}, 'cartella', {}, 'AGR', {}, 'GRID', {}, ...
+             'REV', {}, 'SINT', {}, 'PERD', {}, 'CLUS', {}, 'SENS', {});
 
+for lv = LIVELLI
 
-%% ========================================================================
-%  7) CONFRONTO FRA LE COMUNITA' ANALIZZATE
-%
-%  Dentro il ciclo una CER non puo' vedere le altre: il clearvars di ogni giro
-%  azzera tutto, ed e' voluto. Qui invece RESULTS le ha tutte, e si puo'
-%  finalmente chiedere cosa cambi al cambiare della comunita' - quanto pesa un
-%  prosumer in piu' sul bilancio, sul montepremi in palio e sulle quote che
-%  ciascun modello assegna.
-%
-%  Si confrontano solo grandezze di comunita' e grandezze NORMALIZZATE: le CER
-%  hanno un numero di membri diverso, e "il terzo utente" non e' la stessa
-%  persona in due schede diverse.
-%  ========================================================================
+    idxLivello = find([RESULTS_TUTTE.nPA] == lv);
+    RESULTS    = RESULTS_TUTTE(idxLivello);
 
-if FIG.confrontoCER && numel(RESULTS) > 1
-    plot_cer_comparison_main2(RESULTS);   % MAIN2: copia senza Jain
-
-    % Il Gini su tre assi: comunita' x metodo x indice. Il pannello (d) del
-    % grafico qui sopra riassume in un numero per CER quanto la scelta del
-    % metodo sposti il Gini; questo tiene tutte le coppie e mostra anche QUALE
-    % metodo faccia cosa, e se l'ordine fra i metodi regga al cambio di
-    % comunita'.
-    plot_gini_3d(RESULTS);
-
-    if FIG.esporta
-        fprintf('\n=== Figure di confronto fra CER ===\n');
-        save_figures(fullfile(FIG.cartella, "confronto"), ...
-                     struct('chiudi', FIG.chiudi));
+    CSV.cartella = CSV_BASE.cartella;
+    FIG          = FIG_BASE;
+    if lv > 0
+        CSV.cartella     = fullfile(CSV_BASE.cartella, "PA" + lv);
+        FIG.confrontoCER = false;
     end
 
-end
+    % Niente puo' sopravvivere dal livello precedente: con una comunita' sola
+    % questi restano vuoti, e un valore vecchio finirebbe attribuito al livello sbagliato.
+    F1 = [];  GRID = [];  SINT = [];  PERD = [];  CLUS = [];  SENS = [];
 
+    fprintf('\n\n########################################################################\n');
+    fprintf('#  ANALISI FRA COMUNITA'' - LIVELLO PA%d (%d comunita'')\n', lv, numel(RESULTS));
+    fprintf('########################################################################\n');
 
-%% ========================================================================
-%  7b) ACCORDO FRA INDICATORI E INVERSIONI DI GRADUATORIA
-%
-%  Le due clausole finali della domanda di ricerca (§2.6 della tesi): "to what
-%  extent do different fairness indicators agree in evaluating them; and to what
-%  extent does this ranking depend on the composition of the community".
-%
-%  Fin qui il progetto rispondeva a entrambe con delle FIGURE. Il README §7.0
-%  racconta il caso piu' netto - l'Equal Split primo su EI e Gini e ultimo sulla
-%  stabilita', il Nucleolo l'opposto - plot_fairness_tradeoff lo rende geometrico
-%  e plot_gini_3d mostra se l'ordine fra i metodi regga al cambio di comunita'.
-%  Ma sono racconto e figura: quanto due indicatori concordino, e dove due metodi
-%  si scambino di posto, andava ricostruito a occhio. Qui si estrae.
-%
-%  NON STA DIETRO A FIG. E' analisi, non presentazione, e la §8 fa gia' quella
-%  distinzione ("il calcolo e' quello che serve, l'export delle figure e' un
-%  servizio"). Con FIG.esporta spento un blocco messo dentro if FIG.confrontoCER
-%  non girerebbe mai. Solo la SCRITTURA e' condizionata, e al suo flag.
-%
-%  L'ORDINE DELLE COMUNITA' NON E' QUELLO DI RESULTS. La §0 ordina le schede in
-%  modo lessicografico, che con schede a una cifra le mette in penetrazione
-%  DECRESCENTE: extract_ranking_reversals riordina per penetrazione crescente
-%  leggendola dal [RIEPILOGO], che load_cer_input valida contro la tabella membri.
-%  ========================================================================
+    %% ========================================================================
+    %  7) CONFRONTO FRA LE COMUNITA' ANALIZZATE
+    %
+    %  Dentro il ciclo una CER non puo' vedere le altre: il clearvars di ogni giro
+    %  azzera tutto, ed e' voluto. Qui invece RESULTS le ha tutte, e si puo'
+    %  finalmente chiedere cosa cambi al cambiare della comunita' - quanto pesa un
+    %  prosumer in piu' sul bilancio, sul montepremi in palio e sulle quote che
+    %  ciascun modello assegna.
+    %
+    %  Si confrontano solo grandezze di comunita' e grandezze NORMALIZZATE: le CER
+    %  hanno un numero di membri diverso, e "il terzo utente" non e' la stessa
+    %  persona in due schede diverse.
+    %  ========================================================================
 
-%% ========================================================================
-%  7a) MAIN2 - FASE 1: SHAPLEY ESATTO E ADAPTIVE SAMPLING SHAPLEY
-%
-%  Due set di risultati distinti, uno per regime:
-%    <= 18 utenti  Shapley esatto e Adaptive Sampling Shapley affiancati,
-%                  con lo scarto del secondo dal primo
-%    >  18 utenti  il solo Adaptive Sampling Shapley, che sostituisce lo
-%                  Shapley esatto non calcolabile
-%  Tabelle e figure si scrivono sempre: sono il risultato della fase, non un
-%  servizio di presentazione. Nomi di file e titoli dichiarano il regime.
-%  ========================================================================
+    if FIG.confrontoCER && numel(RESULTS) > 1
+        plot_cer_comparison_main2(RESULTS);   % MAIN2: copia senza Jain
 
-F1 = fase1_shapley_vs_as(RESULTS, struct( ...
-        'cartellaTabelle', fullfile(CSV.cartella, "fase1"), ...
-        'cartellaFigure',  fullfile(FIG.cartella, "fase1")));
+        % Il Gini su tre assi: comunita' x metodo x indice. Il pannello (d) del
+        % grafico qui sopra riassume in un numero per CER quanto la scelta del
+        % metodo sposti il Gini; questo tiene tutte le coppie e mostra anche QUALE
+        % metodo faccia cosa, e se l'ordine fra i metodi regga al cambio di
+        % comunita'.
+        plot_gini_3d(RESULTS);
 
-% --- Cosa entra nell'analisi (revisione del 13/10/2026, README §7.6) -------
-% METODI. L'Adaptive Sampling Shapley approssima lo Shapley con uno scarto
-% dell'1% circa: dove lo Shapley esatto c'e' in TUTTE le comunita' lo
-% duplicherebbe, raddoppiando coppie, pareggi e presenze sul fronte. Esce da
-% tau, inversioni, vincitori e Pareto e resta in Tfair. Sopra i 18 membri lo
-% Shapley esatto non c'e', e l'AS resta come suo sostituto.
-% INDICATORI. Restano in Tfair come diagnostica, ma non sono criteri:
-%   QuoteNulle               discrimina i metodi in 1 comunita' su 20
-%   ForzaIncentivante_lordo  denominatore quasi nullo sui profili lordi:
-%                            valori fino a +-13 e inversioni nell'82% delle
-%                            serie; come controllo resta il coseno lordo
-%   EccessoMax_pct_vN        dentro una comunita' ordina come EccessoMax_EUR
-haShapleyOvunque = all(arrayfun(@(r) any([r.metodi.nome] == "Shapley"), RESULTS));
-if haShapleyOvunque
-    ESCLUSI_METODI = "Adaptive Sampling Shapley";
-else
-    ESCLUSI_METODI = strings(0, 1);
-end
-ESCLUSI_INDICATORI = ["QuoteNulle", "ForzaIncentivante_lordo", "EccessoMax_pct_vN"];
-testoEsclusi = "(nessuno)";
-if ~isempty(ESCLUSI_METODI), testoEsclusi = strjoin(ESCLUSI_METODI, ', '); end
-fprintf('\n  Fuori dall''analisi - metodi: %s; indicatori: %s\n', ...
-        testoEsclusi, strjoin(ESCLUSI_INDICATORI, ', '));
-
-AGR = compute_indicator_agreement(RESULTS, struct( ...
-          'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
-
-% --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
-% fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
-% risparmi, quindi dopo l'orientamento il tau fra i due deve valere +1 esatto, e
-% puo' valerlo perche' le strutture di pareggio sono identiche per costruzione.
-% Un singolo assert che esercita insieme la tabella dei versi, la regola dei
-% pareggi e l'implementazione del tau-b: se cade, l'orientamento e' sbagliato e
-% la tabella delle inversioni direbbe il contrario del vero.
-iEI   = find(AGR.indicators == "EI_orig", 1);
-iGini = find(AGR.indicators == "Gini",    1);
-for c = 1:numel(AGR.schede)
-    if AGR.discrimina(iEI, c) && AGR.discrimina(iGini, c)
-        assert(abs(AGR.tau(iEI, iGini, c) - 1) < 1e-12, ...
-               'Accordo fra indicatori: tau(EI_orig, Gini) diverso da +1 su %s', ...
-               AGR.schede(c));
-    end
-    % Simmetria e diagonale unitaria: la matrice deve restare una matrice di
-    % correlazione anche dove qualche indicatore non ordina niente.
-    M = AGR.tau(:, :, c);
-    assert(isequaln(M, M.'), ...
-           'Accordo fra indicatori: matrice non simmetrica su %s', AGR.schede(c));
-    assert(all(abs(diag(M) - 1) < 1e-12), ...
-           'Accordo fra indicatori: diagonale diversa da 1 su %s', AGR.schede(c));
-    assert(all(abs(M(~isnan(M))) <= 1 + 1e-12), ...
-           'Accordo fra indicatori: un tau e'' uscito da [-1,1] su %s', AGR.schede(c));
-end
-
-% --- MAIN2, Fase 5: soglia di rilevanza pratica ---------------------------
-% Due metodi sono A PARI su un indicatore se distano meno della soglia di
-% rilevanza: una differenza piu' piccola non cambia in modo apprezzabile la
-% convenienza di nessuno. Indicatori in euro annui (EccessoMax_EUR): 5% di
-% v(N). Tutti gli altri: 10% dell'escursione fra i metodi della comunita'.
-% Prima la tolleranza era solo numerica (indicator_tie_tol.m) e la soglia
-% valeva per il solo EccessoMax_EUR. Dettagli: help apply_relevance_threshold.
-%
-% Agisce su cio' che legge AGR.tolTie, cioe' inversioni di graduatoria
-% (extract_ranking_reversals) e vincitori della griglia (ranking_grid). NON
-% sul tau di Kendall, gia' calcolato dentro compute_indicator_agreement con
-% la tolleranza numerica.
-SOGLIA_RILEVANZA = 0.05;                       % frazione di v(N), indicatori in euro
-SOGLIA_ESCURSIONE = 0.10;                      % frazione dell'escursione, gli altri
-AGR = apply_relevance_threshold(AGR, [RESULTS.vGrand], struct( ...
-          'fracVN', SOGLIA_RILEVANZA, 'fracEscursione', SOGLIA_ESCURSIONE));
-fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro (%s), %.0f%% dell''escursione sugli altri\n', ...
-        100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(AGR.regolaSoglia == "vN"), ', '), 100 * SOGLIA_ESCURSIONE);
-
-if numel(RESULTS) > 1
-    % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e
-    % un asse unico non e' ordinabile: la griglia taglia x penetrazione si legge
-    % un fattore alla volta, con l'altro fermo. Con una taglia sola resta lo
-    % sweep di penetrazione, cioe' la scansione di sempre.
-    GRID = ranking_grid(AGR, RESULTS);
-    REV  = reversals_by_axis(AGR, GRID);
-
-    if FIG.confrontoCER
-        plot_ranking_grid(GRID);
         if FIG.esporta
+            fprintf('\n=== Figure di confronto fra CER ===\n');
             save_figures(fullfile(FIG.cartella, "confronto"), ...
                          struct('chiudi', FIG.chiudi));
         end
+
     end
 
-    % Il dettaglio e il sommario devono contare la stessa cosa: sono due viste
-    % della stessa scansione, e uno scarto vorrebbe dire che una delle due perde
-    % righe.
-    assert(height(REV.inversioni) == sum(REV.sommario.nInversioni), ...
-           'Inversioni: il dettaglio e il sommario non contano lo stesso numero');
 
-    % La penetrazione DICHIARATA nella scheda contro quella CONTATA dai profili:
-    % la prima e' un dato di configurazione, la seconda viene dal fatto che un
-    % membro porti o no generazione nel gioco. Se divergono, l'asse su cui si
-    % misura la dipendenza dalla composizione non e' quello che si crede.
-    contata = 100 * arrayfun(@(r) sum(r.isProsumer)/r.nUsers, RESULTS);
-    assert(max(abs(AGR.penetrazione - contata)) <= 0.5, ...
-           'Inversioni: penetrazione dichiarata e contata divergono di piu'' di 0.5 punti');
+    %% ========================================================================
+    %  7b) ACCORDO FRA INDICATORI E INVERSIONI DI GRADUATORIA
+    %
+    %  Le due clausole finali della domanda di ricerca (§2.6 della tesi): "to what
+    %  extent do different fairness indicators agree in evaluating them; and to what
+    %  extent does this ranking depend on the composition of the community".
+    %
+    %  Fin qui il progetto rispondeva a entrambe con delle FIGURE. Il README §7.0
+    %  racconta il caso piu' netto - l'Equal Split primo su EI e Gini e ultimo sulla
+    %  stabilita', il Nucleolo l'opposto - plot_fairness_tradeoff lo rende geometrico
+    %  e plot_gini_3d mostra se l'ordine fra i metodi regga al cambio di comunita'.
+    %  Ma sono racconto e figura: quanto due indicatori concordino, e dove due metodi
+    %  si scambino di posto, andava ricostruito a occhio. Qui si estrae.
+    %
+    %  NON STA DIETRO A FIG. E' analisi, non presentazione, e la §8 fa gia' quella
+    %  distinzione ("il calcolo e' quello che serve, l'export delle figure e' un
+    %  servizio"). Con FIG.esporta spento un blocco messo dentro if FIG.confrontoCER
+    %  non girerebbe mai. Solo la SCRITTURA e' condizionata, e al suo flag.
+    %
+    %  L'ORDINE DELLE COMUNITA' NON E' QUELLO DI RESULTS. La §0 ordina le schede in
+    %  modo lessicografico, che con schede a una cifra le mette in penetrazione
+    %  DECRESCENTE: extract_ranking_reversals riordina per penetrazione crescente
+    %  leggendola dal [RIEPILOGO], che load_cer_input valida contro la tabella membri.
+    %  ========================================================================
 
-    % MAIN2: l'avviso sul pavimento 1/n di Jain e MinMax non serve piu', perche'
-    % entrambi sono fuori da Tfair.
-else
-    GRID = [];
-    REV  = struct('inversioni', table(), 'sommario', table(), 'perSweep', table());
-    fprintf('\n  Una sola comunita'': le inversioni non sono definite.\n');
-end
+    %% ========================================================================
+    %  7a) MAIN2 - FASE 1: SHAPLEY ESATTO E ADAPTIVE SAMPLING SHAPLEY
+    %
+    %  Due set di risultati distinti, uno per regime:
+    %    <= 18 utenti  Shapley esatto e Adaptive Sampling Shapley affiancati,
+    %                  con lo scarto del secondo dal primo
+    %    >  18 utenti  il solo Adaptive Sampling Shapley, che sostituisce lo
+    %                  Shapley esatto non calcolabile
+    %  Tabelle e figure si scrivono sempre: sono il risultato della fase, non un
+    %  servizio di presentazione. Nomi di file e titoli dichiarano il regime.
+    %  ========================================================================
 
-if CSV.esporta
-    cartellaCSV = fullfile(CSV.cartella, "confronto");
-    fprintf('\n=== Tabelle di confronto su file ===\n');
-    daScrivere = struct( ...
-        'accordo_indicatori', AGR.table, ...
-        'orientamenti',       AGR.orientation);
+    if lv == 0
+        F1 = fase1_shapley_vs_as(RESULTS, struct( ...
+                'cartellaTabelle', fullfile(CSV.cartella, "fase1"), ...
+                'cartellaFigure',  fullfile(FIG.cartella, "fase1")));
+    end
+
+    % --- Cosa entra nell'analisi (revisione del 13/10/2026, README §7.6) -------
+    % METODI. L'Adaptive Sampling Shapley approssima lo Shapley con uno scarto
+    % dell'1% circa: dove lo Shapley esatto c'e' in TUTTE le comunita' lo
+    % duplicherebbe, raddoppiando coppie, pareggi e presenze sul fronte. Esce da
+    % tau, inversioni, vincitori e Pareto e resta in Tfair. Sopra i 18 membri lo
+    % Shapley esatto non c'e', e l'AS resta come suo sostituto.
+    % INDICATORI. Restano in Tfair come diagnostica, ma non sono criteri:
+    %   QuoteNulle               discrimina i metodi in 1 comunita' su 20
+    %   ForzaIncentivante_lordo  denominatore quasi nullo sui profili lordi:
+    %                            valori fino a +-13 e inversioni nell'82% delle
+    %                            serie; come controllo resta il coseno lordo
+    %   EccessoMax_pct_vN        dentro una comunita' ordina come EccessoMax_EUR
+    haShapleyOvunque = all(arrayfun(@(r) any([r.metodi.nome] == "Shapley"), RESULTS));
+    if haShapleyOvunque
+        ESCLUSI_METODI = "Adaptive Sampling Shapley";
+    else
+        ESCLUSI_METODI = strings(0, 1);
+    end
+    ESCLUSI_INDICATORI = ["QuoteNulle", "ForzaIncentivante_lordo", "EccessoMax_pct_vN"];
+    testoEsclusi = "(nessuno)";
+    if ~isempty(ESCLUSI_METODI), testoEsclusi = strjoin(ESCLUSI_METODI, ', '); end
+    fprintf('\n  Fuori dall''analisi - metodi: %s; indicatori: %s\n', ...
+            testoEsclusi, strjoin(ESCLUSI_INDICATORI, ', '));
+
+    AGR = compute_indicator_agreement(RESULTS, struct( ...
+              'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
+
+    % --- L'ancora esatta: EI_orig = 1 - Gini ---------------------------------
+    % fairness_indicators_lem calcola eiOrig = 1 - gini sullo STESSO vettore di
+    % risparmi, quindi dopo l'orientamento il tau fra i due deve valere +1 esatto, e
+    % puo' valerlo perche' le strutture di pareggio sono identiche per costruzione.
+    % Un singolo assert che esercita insieme la tabella dei versi, la regola dei
+    % pareggi e l'implementazione del tau-b: se cade, l'orientamento e' sbagliato e
+    % la tabella delle inversioni direbbe il contrario del vero.
+    iEI   = find(AGR.indicators == "EI_orig", 1);
+    iGini = find(AGR.indicators == "Gini",    1);
+    for c = 1:numel(AGR.schede)
+        if AGR.discrimina(iEI, c) && AGR.discrimina(iGini, c)
+            assert(abs(AGR.tau(iEI, iGini, c) - 1) < 1e-12, ...
+                   'Accordo fra indicatori: tau(EI_orig, Gini) diverso da +1 su %s', ...
+                   AGR.schede(c));
+        end
+        % Simmetria e diagonale unitaria: la matrice deve restare una matrice di
+        % correlazione anche dove qualche indicatore non ordina niente.
+        M = AGR.tau(:, :, c);
+        assert(isequaln(M, M.'), ...
+               'Accordo fra indicatori: matrice non simmetrica su %s', AGR.schede(c));
+        assert(all(abs(diag(M) - 1) < 1e-12), ...
+               'Accordo fra indicatori: diagonale diversa da 1 su %s', AGR.schede(c));
+        assert(all(abs(M(~isnan(M))) <= 1 + 1e-12), ...
+               'Accordo fra indicatori: un tau e'' uscito da [-1,1] su %s', AGR.schede(c));
+    end
+
+    % --- MAIN2, Fase 5: soglia di rilevanza pratica ---------------------------
+    % Due metodi sono A PARI su un indicatore se distano meno della soglia di
+    % rilevanza: una differenza piu' piccola non cambia in modo apprezzabile la
+    % convenienza di nessuno. Indicatori in euro annui (EccessoMax_EUR): 5% di
+    % v(N). Tutti gli altri: 10% dell'escursione fra i metodi della comunita'.
+    % Prima la tolleranza era solo numerica (indicator_tie_tol.m) e la soglia
+    % valeva per il solo EccessoMax_EUR. Dettagli: help apply_relevance_threshold.
+    %
+    % Agisce su cio' che legge AGR.tolTie, cioe' inversioni di graduatoria
+    % (extract_ranking_reversals) e vincitori della griglia (ranking_grid). NON
+    % sul tau di Kendall, gia' calcolato dentro compute_indicator_agreement con
+    % la tolleranza numerica.
+    SOGLIA_RILEVANZA = 0.05;                       % frazione di v(N), indicatori in euro
+    SOGLIA_ESCURSIONE = 0.10;                      % frazione dell'escursione, gli altri
+    AGR = apply_relevance_threshold(AGR, [RESULTS.vGrand], struct( ...
+              'fracVN', SOGLIA_RILEVANZA, 'fracEscursione', SOGLIA_ESCURSIONE));
+    fprintf('\n  Soglia di rilevanza: %.0f%% di v(N) sugli indicatori in euro (%s), %.0f%% dell''escursione sugli altri\n', ...
+            100 * SOGLIA_RILEVANZA, strjoin(AGR.indicators(AGR.regolaSoglia == "vN"), ', '), 100 * SOGLIA_ESCURSIONE);
+
     if numel(RESULTS) > 1
-        daScrivere.inversioni_di_graduatoria = REV.inversioni;
-        daScrivere.inversioni_sommario       = REV.sommario;
-        daScrivere.inversioni_per_sweep      = REV.perSweep;
-        daScrivere.griglia_vincitori         = GRID.table;
-        daScrivere.griglia_interazione       = GRID.interazione;
-    end
-    save_tables(cartellaCSV, daScrivere);
-end
+        % Con piu' taglie la penetrazione si ripete (50% a 8, 10, 18, 20 membri) e
+        % un asse unico non e' ordinabile: la griglia taglia x penetrazione si legge
+        % un fattore alla volta, con l'altro fermo. Con una taglia sola resta lo
+        % sweep di penetrazione, cioe' la scansione di sempre.
+        GRID = ranking_grid(AGR, RESULTS);
+        REV  = reversals_by_axis(AGR, GRID);
 
-%% ========================================================================
-%  7c) SINTESI: ACCORDO PER FASCIA E TAGLIA, FRONTE DI PARETO, QUOTE AI PROSUMER
-%
-%  Le tabelle di §7b sono in formato lungo e rispondono alla domanda di ricerca
-%  solo dopo una rilettura. Queste tre la riassumono: come cambia il tau-b fra
-%  indicatori con la penetrazione e con la taglia, quali metodi restano non
-%  dominati guardando piu' criteri insieme (con la stessa soglia di rilevanza
-%  delle inversioni), quanto premio va ai prosumer rispetto alla loro quota di
-%  membri. Dettagli: help sintesi_risultati. Si scrive sotto CSV.cartella/sintesi.
-%  ========================================================================
+        if FIG.confrontoCER
+            plot_ranking_grid(GRID);
+            if FIG.esporta
+                save_figures(fullfile(FIG.cartella, "confronto"), ...
+                             struct('chiudi', FIG.chiudi));
+            end
+        end
 
-if numel(RESULTS) > 1
-    cartellaSintesi = "";
-    if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
-    fprintf('\n=== Sintesi dei risultati ===\n');
-    % escludiMetodi vuoto: l'AS e' gia' escluso a monte (§7b), e solo dove lo
-    % Shapley esatto c'e'; sopra i 18 membri deve restare sul fronte.
-    SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi, ...
-                                                  'escludiMetodi', strings(0, 1)));
+        % Il dettaglio e il sommario devono contare la stessa cosa: sono due viste
+        % della stessa scansione, e uno scarto vorrebbe dire che una delle due perde
+        % righe.
+        assert(height(REV.inversioni) == sum(REV.sommario.nInversioni), ...
+               'Inversioni: il dettaglio e il sommario non contano lo stesso numero');
 
-    % --- Punti (ii) e (iii) della domanda (revisione 13/10/2026) --------------
-    % (ii) QUANTO costa un criterio in termini di un altro: il rimpianto di
-    %      ogni metodo e la perdita su B di chi vince su A (help tradeoff_losses).
-    % (iii) QUALI indicatori bastano: gruppi di indicatori che ordinano i metodi
-    %      allo stesso modo, un rappresentante per gruppo, e due prove che il
-    %      sottoinsieme basti (help indicator_clusters).
-    PERD = tradeoff_losses(AGR, RESULTS);
-    CLUS = indicator_clusters(AGR);
+        % La penetrazione DICHIARATA nella scheda contro quella CONTATA dai profili:
+        % la prima e' un dato di configurazione, la seconda viene dal fatto che un
+        % membro porti o no generazione nel gioco. Se divergono, l'asse su cui si
+        % misura la dipendenza dalla composizione non e' quello che si crede.
+        contata = 100 * arrayfun(@(r) sum(r.isProsumer)/r.nUsers, RESULTS);
+        assert(max(abs(AGR.penetrazione - contata)) <= 0.5, ...
+               'Inversioni: penetrazione dichiarata e contata divergono di piu'' di 0.5 punti');
 
-    % Sensibilita' alla soglia di rilevanza (0, 5, 10, 20% dell'escursione,
-    % con la meta' in % di v(N) sugli indicatori in euro): stessi RESULTS e
-    % stesse esclusioni di §7b, soglia diversa. Vedi help sensibilita_soglia.
-    SENS = sensibilita_soglia(RESULTS, struct( ...
-               'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
-    fprintf('\n=== Sensibilita'' alla soglia di rilevanza (quota di coppie invertite) ===\n');
-    for s = unique(SENS.perSweep.FracEscursione).'
-        q = SENS.perSweep.QuotaInvertite(SENS.perSweep.FracEscursione == s & ...
-                                         SENS.perSweep.Sweep == "penetrazione");
-        fprintf('  soglia %4.1f%% dell''escursione: penetrazione %3.0f%% - %3.0f%%\n', ...
-                100 * s, 100 * min(q), 100 * max(q));
-    end
-
-    fprintf('\n=== Sottoinsieme minimo di indicatori (tau medio >= 0.5) ===\n');
-    gP = CLUS.gruppi(CLUS.gruppi.TaglioTau == 0.5, :);
-    for g = 1:height(gP)
-        fprintf('  %-26s <- %s\n', gP.Rappresentante(g), gP.Indicatori(g));
-    end
-    fprintf('  Concordanza delle coppie con il rappresentante: minima %.3f\n', ...
-            min(CLUS.sufficienza.ConcordanzaCoppie(CLUS.sufficienza.TaglioTau == 0.5)));
-    fprintf('  Fronte di Pareto uguale con i soli rappresentanti: %d comunita'' su %d\n', ...
-            nnz(CLUS.pareto.Coincidono), height(CLUS.pareto));
-    if ~isempty(CLUS.esclusi)
-        fprintf('  Non ammessi (discriminano in poche comunita''): %s\n', strjoin(CLUS.esclusi, ', '));
+        % MAIN2: l'avviso sul pavimento 1/n di Jain e MinMax non serve piu', perche'
+        % entrambi sono fuori da Tfair.
+    else
+        GRID = [];
+        REV  = struct('inversioni', table(), 'sommario', table(), 'perSweep', table());
+        fprintf('\n  Una sola comunita'': le inversioni non sono definite.\n');
     end
 
     if CSV.esporta
-        save_tables(cartellaSintesi, struct( ...
-            'rimpianto_per_comunita', PERD.rimpianto, ...
-            'rimpianto_medio',        PERD.rimpiantoMedio, ...
-            'perdite_tradeoff',       PERD.perdite, ...
-            'perdite_tradeoff_fascia', PERD.perditeFascia, ...
-            'perdite_dettaglio',      PERD.perditeDettaglio, ...
-            'cluster_fusioni',        CLUS.fusioni, ...
-            'cluster_gruppi',         CLUS.gruppi, ...
-            'cluster_sufficienza',    CLUS.sufficienza, ...
-            'cluster_pareto',         CLUS.pareto, ...
-            'sensibilita_soglia_sweep',     SENS.perSweep, ...
-            'sensibilita_soglia_vincitori', SENS.vincitori));
+        cartellaCSV = fullfile(CSV.cartella, "confronto");
+        fprintf('\n=== Tabelle di confronto su file ===\n');
+        daScrivere = struct( ...
+            'accordo_indicatori', AGR.table, ...
+            'orientamenti',       AGR.orientation);
+        if numel(RESULTS) > 1
+            daScrivere.inversioni_di_graduatoria = REV.inversioni;
+            daScrivere.inversioni_sommario       = REV.sommario;
+            daScrivere.inversioni_per_sweep      = REV.perSweep;
+            daScrivere.griglia_vincitori         = GRID.table;
+            daScrivere.griglia_interazione       = GRID.interazione;
+        end
+        save_tables(cartellaCSV, daScrivere);
     end
+
+    %% ========================================================================
+    %  7c) SINTESI: ACCORDO PER FASCIA E TAGLIA, FRONTE DI PARETO, QUOTE AI PROSUMER
+    %
+    %  Le tabelle di §7b sono in formato lungo e rispondono alla domanda di ricerca
+    %  solo dopo una rilettura. Queste tre la riassumono: come cambia il tau-b fra
+    %  indicatori con la penetrazione e con la taglia, quali metodi restano non
+    %  dominati guardando piu' criteri insieme (con la stessa soglia di rilevanza
+    %  delle inversioni), quanto premio va ai prosumer rispetto alla loro quota di
+    %  membri. Dettagli: help sintesi_risultati. Si scrive sotto CSV.cartella/sintesi.
+    %  ========================================================================
+
+    if numel(RESULTS) > 1
+        cartellaSintesi = "";
+        if CSV.esporta, cartellaSintesi = fullfile(CSV.cartella, "sintesi"); end
+        fprintf('\n=== Sintesi dei risultati ===\n');
+        % escludiMetodi vuoto: l'AS e' gia' escluso a monte (§7b), e solo dove lo
+        % Shapley esatto c'e'; sopra i 18 membri deve restare sul fronte.
+        SINT = sintesi_risultati(RESULTS, AGR, struct('cartella', cartellaSintesi, ...
+                                                      'escludiMetodi', strings(0, 1)));
+
+        % --- Punti (ii) e (iii) della domanda (revisione 13/10/2026) --------------
+        % (ii) QUANTO costa un criterio in termini di un altro: il rimpianto di
+        %      ogni metodo e la perdita su B di chi vince su A (help tradeoff_losses).
+        % (iii) QUALI indicatori bastano: gruppi di indicatori che ordinano i metodi
+        %      allo stesso modo, un rappresentante per gruppo, e due prove che il
+        %      sottoinsieme basti (help indicator_clusters).
+        PERD = tradeoff_losses(AGR, RESULTS);
+        CLUS = indicator_clusters(AGR);
+
+        % Sensibilita' alla soglia di rilevanza (0, 5, 10, 20% dell'escursione,
+        % con la meta' in % di v(N) sugli indicatori in euro): stessi RESULTS e
+        % stesse esclusioni di §7b, soglia diversa. Vedi help sensibilita_soglia.
+        SENS = sensibilita_soglia(RESULTS, struct( ...
+                   'escludiMetodi', ESCLUSI_METODI, 'escludiIndicatori', ESCLUSI_INDICATORI));
+        fprintf('\n=== Sensibilita'' alla soglia di rilevanza (quota di coppie invertite) ===\n');
+        for s = unique(SENS.perSweep.FracEscursione).'
+            q = SENS.perSweep.QuotaInvertite(SENS.perSweep.FracEscursione == s & ...
+                                             SENS.perSweep.Sweep == "penetrazione");
+            fprintf('  soglia %4.1f%% dell''escursione: penetrazione %3.0f%% - %3.0f%%\n', ...
+                    100 * s, 100 * min(q), 100 * max(q));
+        end
+
+        fprintf('\n=== Sottoinsieme minimo di indicatori (tau medio >= 0.5) ===\n');
+        gP = CLUS.gruppi(CLUS.gruppi.TaglioTau == 0.5, :);
+        for g = 1:height(gP)
+            fprintf('  %-26s <- %s\n', gP.Rappresentante(g), gP.Indicatori(g));
+        end
+        fprintf('  Concordanza delle coppie con il rappresentante: minima %.3f\n', ...
+                min(CLUS.sufficienza.ConcordanzaCoppie(CLUS.sufficienza.TaglioTau == 0.5)));
+        fprintf('  Fronte di Pareto uguale con i soli rappresentanti: %d comunita'' su %d\n', ...
+                nnz(CLUS.pareto.Coincidono), height(CLUS.pareto));
+        if ~isempty(CLUS.esclusi)
+            fprintf('  Non ammessi (discriminano in poche comunita''): %s\n', strjoin(CLUS.esclusi, ', '));
+        end
+
+        if CSV.esporta
+            save_tables(cartellaSintesi, struct( ...
+                'rimpianto_per_comunita', PERD.rimpianto, ...
+                'rimpianto_medio',        PERD.rimpiantoMedio, ...
+                'perdite_tradeoff',       PERD.perdite, ...
+                'perdite_tradeoff_fascia', PERD.perditeFascia, ...
+                'perdite_dettaglio',      PERD.perditeDettaglio, ...
+                'cluster_fusioni',        CLUS.fusioni, ...
+                'cluster_gruppi',         CLUS.gruppi, ...
+                'cluster_sufficienza',    CLUS.sufficienza, ...
+                'cluster_pareto',         CLUS.pareto, ...
+                'sensibilita_soglia_sweep',     SENS.perSweep, ...
+                'sensibilita_soglia_vincitori', SENS.vincitori));
+        end
+    end
+
+    % Tutto cio' che il confronto fra livelli (§7d) deve poter rileggere: gli
+    % indici delle comunita' di questo livello dentro RESULTS_TUTTE, e le
+    % strutture di analisi. AGR porta i punteggi orientati e le tolleranze di pareggio.
+    LIV(end+1) = struct('livello', lv, 'idx', idxLivello, 'cartella', CSV.cartella, ...
+                        'AGR', AGR, 'GRID', GRID, 'REV', REV, 'SINT', SINT, ...
+                        'PERD', PERD, 'CLUS', CLUS, 'SENS', SENS); %#ok<SAGROW>
+
 end
+
+RESULTS = RESULTS_TUTTE;
+CSV     = CSV_BASE;
+FIG     = FIG_BASE;
+
 
 %% ========================================================================
 %  8) TEMPO DI ESECUZIONE

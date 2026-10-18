@@ -603,6 +603,20 @@ riepilogo di fine batch.
  4.3  Dopo il ciclo
 --------------------------------------------------------------------------------
 
+  UN LIVELLO PA ALLA VOLTA (dal 18 ottobre). Le funzioni di 7a-7c identificano
+  le comunita' dal nome base della scheda (CER_5_5_0), che si ripete in ogni
+  livello PA: su RESULTS mescolato ranking_grid si ferma e le tabelle non
+  saprebbero di quale livello parlano. I passi 7-7c sono percio' dentro un
+  ciclo sui livelli (nPA = 0, 1, 2, 3, letto dai dati della scheda): dentro il
+  ciclo RESULTS e' il sottoinsieme del livello, RESULTS_TUTTE tiene tutto, LIV(l)
+  conserva AGR, GRID, REV, SINT, PERD, CLUS, SENS per il confronto fra livelli.
+    livello 0   uscite di sempre: <tabelle>/{confronto,fase1,sintesi}, figure
+                e Fase 1 (Shapley contro AS) comprese
+    livello k   <tabelle>/PAk/{confronto,sintesi}; niente figure, niente Fase 1
+  Un livello con una sola comunita' non ha inversioni (GRID e REV vuoti) ma ha
+  comunque AGR: serve al confronto con / senza PA. Il livello 0 produce tabelle
+  identiche bit a bit a quelle del 13 ottobre (verificato sul .mat salvato).
+
   7)  Se FIG.confrontoCER e piu' di una comunita': plot_cer_comparison_main2
       (bilancio, montepremi contro vendita, quota ai prosumer per metodo,
       escursione di EI ed eccesso fra i metodi) e plot_gini_3d.

@@ -1474,6 +1474,14 @@ run finali stanno in `tables_main2/` (fino a 18 membri) e `tables_main2_griglia2
 | `cluster_fusioni.csv`, `cluster_gruppi.csv`, `cluster_sufficienza.csv`, `cluster_pareto.csv` | sottoinsieme minimo di indicatori (§7.8) |
 | `sensibilita_soglia_sweep.csv`, `sensibilita_soglia_vincitori.csv` | inversioni e vincitori a quattro soglie di rilevanza (§7.9) |
 
+**Un livello PA alla volta.** Dal 18 ottobre `MAIN2.m` esegue le analisi fra comunità (`confronto/`,
+`fase1/`, `sintesi/`) separatamente per ogni livello di composizione (§7.10): il livello 0 (solo
+domestici) scrive nelle cartelle di sempre, con tabelle identiche bit a bit a quelle del 13
+ottobre; i livelli con PA scrivono in `tables_main2[_<suffisso>]/PA1/`, `PA2/`, `PA3/`
+(`confronto/` e `sintesi/`, senza `fase1/`, che è una verifica dei metodi e non dipende dalla
+composizione). La ragione è tecnica: la stessa scheda esiste in ogni livello con lo stesso nome
+base, e le funzioni di §7b-§7c identificano le comunità da quello.
+
 Questi CSV **si versionano**, a differenza delle figure: sono ASCII, pesano poche decine di
 KB e si leggono in diff. `save_tables` arrotonda **in scrittura e solo lì** — due decimali
 fissi sugli euro, sei **cifre significative** sul resto, con uno zero vero sotto `1e-12` —

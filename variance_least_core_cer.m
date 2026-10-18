@@ -299,9 +299,21 @@ function x = solve_master_vlc(Gamma, vGamma, vGrand, n, thetaLC, relax, qpOpts, 
     beq   = vGrand;
     lb    = zeros(n, 1);
 
-    [x, ~, exitflag] = quadprog(2*eye(n), zeros(n, 1), Aineq, bineq, ...
-                                Aeq, beq, lb, [], [], qpOpts);
-    if exitflag ~= 1
+    [x, ~, exitflag, output] = quadprog(2*eye(n), zeros(n, 1), Aineq, bineq, ...
+                                        Aeq, beq, lb, [], [], qpOpts);
+
+    % exitflag 2 = "Solver stalled, constraints satisfied": il punto interno si e'
+    % fermato prima di toccare la tolleranza di ottimalita'. Succede quando due
+    % giocatori pesano molto piu' degli altri e il Least Core e' sottile (PA2 di
+    % CER_2_3_0, 5 membri: comune e scuola valgono l'85% del montepremi; i due
+    % finiscono allo stesso valore, 950,16 EUR, che e' il minimo di varianza).
+    % Si accetta SOLO se i vincoli sono rispettati ben dentro il rilassamento e
+    % l'ottimalita' del primo ordine e' praticamente raggiunta (qui 3e-8): in ogni
+    % altro caso l'errore resta quello di prima. Con exitflag 1 niente cambia.
+    stallaMaValido = exitflag == 2 ...
+                     && output.constrviolation <= 1e-3 * relax ...
+                     && output.firstorderopt   <= 1e-6;
+    if exitflag ~= 1 && ~stallaMaValido
         error('variance_least_core_cer:masterVlcFail', ...
               'Master VLC non risolto (exitflag %d) all''iterazione %d.', exitflag, it);
     end

@@ -4,8 +4,10 @@ Oltre alla **taglia** (numero di membri) e alla **penetrazione** (quota di prosu
 cartella aggiunge un terzo asse alla griglia: la **composizione**, cioè quante e quali
 pubbliche amministrazioni (PA) ci sono dentro la comunità.
 
-`MAIN2.m` **non legge questa cartella**: legge solo `CER_configuration/` (`CARTELLA_CER`).
-Per analizzarla va cambiato quel parametro, e il cambio si concorda a parte.
+`MAIN2.m` legge questa cartella dal 18 ottobre 2026: `elenco_schede_cer.m` prende le schede di
+`CER_configuration/` (livello 0) e quelle di `PA1/`, `PA2/`, `PA3/`, fino a `MAIN2_MAX_UTENTI`
+membri (default 18). `PA0/` **non si legge**: è una copia di `CER_configuration/` (stessi dati,
+solo i percorsi cambiano). Il confronto con / senza PA è `confronto_pa.m` (README §7.10).
 
 ## Struttura
 
@@ -47,7 +49,11 @@ diagnosi); costo impianto 730 €/kWp, cioè (180+270)×1,40+(50+50) dai paramet
 
 Tutte le 156 schede (40+40+39+37) sono state lette con `load_cer_input`, `load_cer_data` e
 `align_members_to_users` in MATLAB R2024b, senza errori (gli avvisi non sono stati registrati). N, numero di
-prosumer e numero di PA tornano a ogni livello. **Non è stato eseguito `MAIN2.m`** su queste schede.
+prosumer e numero di PA tornano a ogni livello. **`MAIN2.m` è stato eseguito il 18 ottobre su
+`CER_2_3_0` e `CER_5_5_0` nei livelli 1-3** (prova, non i risultati finali): nessun errore sui
+membri PA, tariffa identica fra i livelli (scaglione unico imposto in `scenario_economico.txt`,
+perché il palazzetto da 310,5 kWp altrimenti cadrebbe in un altro scaglione). Un caso ha rivelato
+uno stallo del solver del Variance Least Core, ora gestito (README §7.10, avvertenza 4).
 
 ## Punti aperti
 

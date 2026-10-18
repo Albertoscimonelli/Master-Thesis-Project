@@ -2665,6 +2665,24 @@ FIG     = FIG_BASE;
 
 
 %% ========================================================================
+%  7d) LA PRESENZA DI PA CAMBIA LA GRADUATORIA?
+%
+%  La parte "composizione per categoria" della domanda di ricerca. Per ogni
+%  scheda presente a livello 0 e a un livello con PA (stesso N, stessi C e P:
+%  cambia solo CHI sono i prosumer) si mettono a fianco i punteggi orientati e le
+%  tolleranze di pareggio che §7b ha gia' calcolato per ciascun livello, e si
+%  chiede: quali coppie di metodi si scambiano di posto, cambia il vincitore,
+%  quanto va ai membri PA, reggono i trade-off e il sottoinsieme minimo.
+%  Niente viene ricalcolato: stessa soglia di rilevanza delle inversioni lungo
+%  penetrazione e taglia, quindi i numeri sono confrontabili con quelli. Dettagli
+%  e definizioni: help confronto_pa. Tabelle in <tabelle>/confronto_PA/.
+%  ========================================================================
+
+cartellaPA = "";
+if CSV.esporta, cartellaPA = fullfile(CSV.cartella, "confronto_PA"); end
+C_PA = confronto_pa(RESULTS, LIV, struct('cartella', cartellaPA));
+
+%% ========================================================================
 %  8) TEMPO DI ESECUZIONE
 %
 %  Il conto si chiude qui, e si chiude DAVVERO: la somma dei tempi per

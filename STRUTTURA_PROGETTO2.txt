@@ -647,6 +647,11 @@ riepilogo di fine batch.
       indicator_clusters, SENS = sensibilita_soglia -> <tabelle>/sintesi/.
       Stampa la sensibilita' alla soglia e il sottoinsieme minimo.
 
+  7d) Fuori dal ciclo sui livelli: C_PA = confronto_pa(RESULTS_TUTTE, LIV).
+      PA0 contro PA1-3, scheda per scheda, riusando AGR di ciascun livello
+      (stesse soglie di rilevanza delle inversioni). Tabelle in
+      <tabelle>/confronto_PA/ (7.1). README 7.10.
+
   8)  Riepilogo dei tempi: una riga per comunita' (analisi e figure
       separate), le due somme, il confronto fra CER (cioe' tutto il dopo
       ciclo) e il totale. Solo ASCII nelle stampe: simboli come il paragrafo
@@ -926,6 +931,11 @@ riepilogo di fine batch.
                             rappresentante per gruppo, due prove di
                             sufficienza (concordanza delle coppie, fronte di
                             Pareto). Auto-test.
+  confronto_pa.m            Con / senza PA: PA0 contro PA1-3 a N, C, P invariati.
+                            Riusa AGR di ciascun livello (extract_ranking_reversals
+                            su due configurazioni, asse [0 k]); vincitori con
+                            pareggi, quote ai membri PA, perdite fra criteri sulle
+                            sole schede comuni, gruppi di indicatori. Auto-test.
   sensibilita_soglia.m      Inversioni e vincitori ricalcolati dagli stessi
                             RESULTS a quattro soglie (0/0, 5/2,5, 10/5,
                             20/10% dell'escursione / di v(N)).
@@ -1136,6 +1146,22 @@ riepilogo di fine batch.
     sensibilita_soglia_sweep.csv, sensibilita_soglia_vincitori.csv
                                     (nel run griglia25 prodotti dopo il run,
                                     con la stessa funzione e gli stessi RESULTS)
+
+  confronto_PA/   (7d, solo se ci sono il livello 0 e almeno un livello con PA)
+    pa_inversioni.csv               una riga per cambio di segno PA0 -> PAk
+    pa_per_scheda.csv               per scheda e confronto (PA0-PA1..3, asse PA):
+                                    serie, valutabili, invertite, quote
+    pa_vincitori.csv                primo classificato per indicatore, comunita'
+                                    e livello; se cambia rispetto a PA0
+    pa_sommario.csv                 per indicatore e confronto, e "(tutti)"
+    pa_effetti.csv                  v(N), quote ai membri PA per metodo, errore
+                                    massimo dello scaglione unico
+    pa_perdite_tradeoff.csv         perdite fra criteri a PA0 e PAk sulle schede
+                                    comuni
+    pa_cluster.csv                  gruppi di indicatori e rappresentanti per livello
+
+  PA1/ PA2/ PA3/  {confronto, sintesi}: le stesse tabelle del livello 0, una
+                  cartella per livello (senza fase1/)
 
 --------------------------------------------------------------------------------
  7.2  Le figure

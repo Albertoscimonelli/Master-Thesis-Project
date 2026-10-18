@@ -233,6 +233,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `extract_ranking_reversals.m`, `reversals_by_axis.m`, `ranking_grid.m`, `plot_ranking_grid.m` | Inversioni di graduatoria e lettura della griglia **taglia × penetrazione**, un fattore alla volta più la vista congiunta (§7.6) |
 | `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
+| `confronto_pa.m` | **Presenza di PA**: PA0 contro PA1-3 a N, C, P invariati — inversioni, vincitori, quote ai membri PA, trade-off e sottoinsieme minimo per livello; auto-test su dati a penna (§7.10) |
 | `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
 | `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
 | `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
@@ -1255,6 +1256,76 @@ soglia un altro metodo prende il primo posto; cambia solo quante celle diventano
 > file sono stati prodotti con la stessa funzione dagli stessi `RESULTS` salvati, e la riga
 > al 10% riproduce esattamente le inversioni del run.
 
+### 7.10 La presenza di PA: la composizione per categoria
+
+La griglia varia taglia e penetrazione, ma tutte le comunità sono di soli domestici: i risultati
+non separano l'effetto di quei due fattori da quello del mix di categorie (§12). Il terzo asse,
+la **composizione**, sta in [`CER_configuration_PA/`](CER_configuration_PA/README.md): per ogni
+scheda della griglia quattro livelli, `PA0` (solo domestici), `PA1` (+ comune), `PA2` (+ scuola),
+`PA3` (+ palazzetto di Lucca, §15). **A N, C e P invariati**: ogni PA è un prosumer col proprio
+impianto, e per ogni PA che entra esce un prosumer domestico (l'ultimo per id). Cambia quindi solo
+*chi* sono i prosumer, non quanti sono né quanti membri ci sono. PA2 ha 39 schede e PA3 37: mancano
+quelle con meno prosumer che PA, cioè sempre le più a bassa penetrazione.
+
+**Come gira.** `MAIN2.m` legge le schede di tutti i livelli (§3) e le analizza un livello alla
+volta (§11.0); dopo di che `confronto_pa.m` (§7d di `MAIN2.m`) mette a fianco il livello 0 e ogni
+livello con PA, scheda per scheda. Non ricalcola nulla: usa i punteggi orientati e le tolleranze di
+pareggio già prodotti per ciascun livello, quindi la soglia di rilevanza (§7.6.3) è la stessa
+delle inversioni lungo penetrazione e taglia e i numeri sono confrontabili con quelli.
+
+**Che cosa si misura**, in `outputs/tables_main2[_<suffisso>]/confronto_PA/`:
+
+| File | Cosa contiene |
+|---|---|
+| `pa_inversioni.csv` | una riga per cambio di segno: quale coppia di metodi, su quale indicatore, da PA0 a PAk, con i due divari |
+| `pa_per_scheda.csv` | per ogni scheda e confronto (`PA0-PA1`, `PA0-PA2`, `PA0-PA3`, `asse PA` = scansione PA0>PA1>PA2>PA3): serie esaminate (indicatore × coppia di metodi), serie *valutabili* (non a pari in entrambi i livelli), coppie invertite e le due quote |
+| `pa_vincitori.csv` | primo classificato per (indicatore, comunità, livello), metodi a pari, distacco, e se il vincitore *cambia* rispetto a PA0 |
+| `pa_sommario.csv` | per indicatore e confronto: quota di comunità in cui cambia il vincitore e quota di coppie invertite, più la riga «PA0 contro PA>=1» |
+| `pa_effetti.csv` | per comunità e metodo: v(N), rapporto con PA0, energia condivisa e non condivisa, quota di v(N) ai membri PA, rapporto con la loro quota di membri |
+| `pa_perdite_tradeoff.csv` | perdite fra criteri (§7.8) a PA0 e a PAk, **sulle sole schede comuni ai due livelli**, con la differenza |
+| `pa_cluster.csv` | gruppi di indicatori e rappresentanti (§7.8) di ciascun livello: dice se il sottoinsieme minimo cambia con la PA |
+
+Una coppia di metodi si dice *invertita* se in un livello batte l'altra oltre la tolleranza e
+nell'altro è battuta oltre la tolleranza (`extract_ranking_reversals`, su due configurazioni con
+asse `[0 k]`). La quota di serie invertite è calcolata come in `inversioni_per_sweep.csv`
+(serie invertite / serie esaminate, 605 per comunità con 11 metodi), così è confrontabile col
+22-35% dell'asse penetrazione; la quota «sulle valutabili» toglie le coppie a pari. Il vincitore
+*cambia* quando gli insiemi dei metodi a pari col primo nei due livelli non hanno elementi in
+comune, perché con i pareggi un cambio di nome fra due pari non è un cambio di vincitore. Le
+perdite si confrontano sulle sole schede comuni perché PA2 e PA3 hanno meno schede di PA0, e una
+media su insiemi diversi mescolerebbe l'effetto della PA con quello delle schede che mancano.
+
+**Cinque avvertenze, da leggere prima dei numeri.**
+
+1. **Scaglione unico.** Il palazzetto (310,5 kWp) è sopra i 200 kW: per norma avrebbe 70/110 €/MWh
+   contro gli 80/120 dei domestici, e `MAIN2.m` si fermava (§14.4.1). Lo scenario impone ora il
+   primo scaglione a tutte le schede (`tip_potenza_rif_kW = 100`), quindi **la tariffa è identica
+   nei quattro livelli** (127,31 €/MWh medi) e la differenza fra livelli è solo composizione. Il
+   prezzo è una sovrastima di al più 0,010 €/kWh sull'energia condivisa di PA3; la colonna
+   `ErroreMaxScaglione_EUR` di `pa_effetti.csv` la riporta come limite superiore (nelle prove su
+   `CER_2_3_0`: 343 € su 4 345 €, il 7,9% di v(N), ipotizzando che *tutta* l'energia condivisa
+   venga dal palazzetto).
+2. **Le PA cambiano la scala, non solo la composizione.** Comune, scuola e palazzetto portano
+   carichi e impianti di uno o due ordini di grandezza sopra quelli di una famiglia. Nelle prove
+   del 18 ottobre v(N) di `CER_2_3_0` passa da 198 € (PA0) a 265 € (PA1) a 4 345 € (PA3), cioè
+   ×22. Una differenza fra livelli può dipendere da questa scala oltre che dalla *forma* della
+   comunità, e il confronto non la separa.
+3. **Griglie incomplete.** PA2 e PA3 non hanno le schede con meno prosumer che PA: i confronti
+   riguardano le schede presenti in entrambi i livelli, e le medie per livello non sono fatte
+   sullo stesso insieme.
+4. **Variance Least Core.** Con PA il Least Core può diventare sottile (due giocatori valgono
+   l'85% del montepremi) e il QP del master esce con `exitflag` 2, «solver stalled, constraints
+   satisfied». Dal 18 ottobre `variance_least_core_cer.m` accetta quell'esito solo se i vincoli
+   sono rispettati ben dentro il rilassamento (≤ 1e-3 × `relax`) e l'ottimalità del primo ordine
+   è praticamente raggiunta (≤ 1e-6): sulla scheda che lo ha rivelato valgono 4,5e-13 e 3,4e-8.
+   Con `exitflag` 1 niente cambia, e i risultati del livello 0 sono identici bit a bit.
+5. **Dati PA ancora da controllare** ([README della cartella](CER_configuration_PA/README.md)):
+   FV del comune 5,2 volte il suo carico, FV del palazzetto 1,37 volte, e i 448 kW di potenza
+   impegnata del palazzetto, che pesano sul Remuneration Model 1 (§12). Le schede PA non sono
+   versionate: si rigenerano con `genera_varianti_PA.py`.
+
+**Risultati: da inserire dopo il run finale** (`MAIN2` con i dati LIHC compilati; §12).
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di analisi: è uno script indipendente di
@@ -1608,12 +1679,14 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   ogni tipologia, entrambi perturbati in modo sintetico. Sotto i 100 membri l'archetipo
   dichiarato nelle schede non coincide con il profilo simulato. L'elenco completo è in
   [DATA_SOURCES.md](DATA_SOURCES.md) §Limiti noti.
-- **La griglia varia due assi, ma non la composizione per categoria.** Le 40 schede di
-  `CER_configuration/` coprono taglie da 5 a 100 membri e quattro livelli di penetrazione;
+- **La griglia di `CER_configuration/` varia due assi, ma non la composizione per categoria.**
+  Le 40 schede coprono taglie da 5 a 100 membri e quattro livelli di penetrazione;
   l'analisi usa le 28 fino a 25 membri, un fattore alla volta più la vista congiunta
-  (§7.6, §7.9). Tutti i membri sono domestici: i risultati non separano l'effetto della
-  taglia o della penetrazione da quello del mix di categorie, e sulla griglia fattore F e
-  soglia GSE non hanno effetto (§7.4, §7.5). Le schede da 50, 75 e 100 membri non sono
+  (§7.6, §7.9). Tutti i membri sono domestici: i risultati dei run del 13 ottobre non
+  separano l'effetto della taglia o della penetrazione da quello del mix di categorie, e
+  sulla griglia fattore F e soglia GSE non hanno effetto (§7.4, §7.5). **Il terzo asse
+  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge, ma i suoi
+  risultati si producono col run finale, dopo i dati LIHC. Le schede da 50, 75 e 100 membri non sono
   analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo

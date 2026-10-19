@@ -1,6 +1,6 @@
 [MERCATO]
 prezzo_vendita_EUR_kWh = 0.110
-markup_retail          = ?
+markup_retail          = 3.02
 prezzo_gas_EUR_kWh     = 0.120
 tip_potenza_rif_kW     = 100
 tip_fattore_riduzione  = ?
@@ -20,8 +20,8 @@ om_variabile_EUR_MWp_anno     = 10000
 om_fisso_EUR_anno             = 5000
 contributo_conto_capitale_pct = ?
 [POVERTA_ENERGETICA]
-mediana_spesa_energetica_EUR  = ?
-soglia_poverta_EUR_percettore = ?
+mediana_spesa_energetica_EUR  = 1652
+soglia_poverta_EUR_equivalente = 13237
 quota_n_pct                   = 0.0132
 tetto_quota_EP                = 0.33
 usa_profondita_poverta        = false

@@ -1077,19 +1077,31 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 
 ### 7.7 Inclusione: quanto va ai vulnerabili LIHC (`inclusion_index.m`)
 
-> ⚠ **DA FARE (Alberto) prima del run finale: compilare tre dati in
-> `CER_configuration/scenario_economico.txt`**, con la fonte accanto. Oggi sono a `?` e il
-> codice usa i segnaposto del Tri-level EP, dichiarandoli a ogni esecuzione:
+> ✅ **Compilati il 19 ottobre 2026** in `CER_configuration/scenario_economico.txt` i tre dati che
+> decidono **chi** è vulnerabile (fonti in `Paper/PARAMETRI_TESI_fonti.md` della sessione di ricerca
+> del 19/10; qui il riassunto):
 >
-> | Chiave | Cosa è | Segnaposto oggi | Fonte suggerita |
-> |---|---|---:|---|
-> | `[POVERTA_ENERGETICA].mediana_spesa_energetica_EUR` | P50: mediana nazionale della spesa energetica annua delle famiglie (elettricità + gas) | 1 323 € | Istat, spese per consumi delle famiglie; ARERA |
-> | `[POVERTA_ENERGETICA].soglia_poverta_EUR_percettore` | y*: soglia di povertà per percettore di reddito | 10 052 € | Istat / Eurostat, soglia di povertà relativa |
-> | `[MERCATO].markup_retail` | rapporto fra prezzo finale in bolletta e PUN all'ingrosso | ×2,5 | ARERA, prezzi domestici di riferimento |
+> | Chiave | Valore | Come si ricava | Stato |
+> |---|---:|---|---|
+> | `[MERCATO].markup_retail` | 3,02 | prezzo finale medio domestici 2025 0,3512 €/kWh (ARERA, Relazione annuale 2025, p. 9) / PUN medio 2025 0,11615 €/kWh | dedotto; è la media di tutti i domestici, non del cliente da 3 kW; il PUN viene da una fonte secondaria |
+> | `[POVERTA_ENERGETICA].mediana_spesa_energetica_EUR` | 1 652 € | 2 105 kWh (mediana annua delle cento famiglie simulate) × 0,3512 €/kWh + 630 smc × 10,57 kWh/smc × 0,1371 €/kWh | **stimato**: il paper non dà P50 e l'Istat non scorpora elettricità e gas; è una ricostruzione lombarda, non la mediana nazionale |
+> | `[POVERTA_ENERGETICA].soglia_poverta_EUR_equivalente` | 13 237 € | 60% del reddito mediano equivalente, Istat 2025 (redditi 2024) | letto; è **per adulto equivalente**, non per percettore |
 >
-> Sono questi tre numeri a decidere **chi** è vulnerabile; con i segnaposto lo è una sola
-> famiglia (`household_2`) in tutte le comunità da 8 membri in su, nessuna a 5. Dopo averli
-> compilati va rifatto il run: cambia l'indicatore e, con esso, il Tri-level EP.
+> **La soglia del nucleo** è y* × `scala_equiv` (colonna di `[MEMBRI]`, scala OCSE modificata:
+> 1,0 il primo adulto, 0,5 ogni altra persona di 14+ anni, 0,3 ogni minore di 14, calcolata dalle
+> età dell'archetipo con `CER_LoadProfiles/compila_scala_equiv.py`; la collaboratrice domestica di
+> CHR19 non conta). `MAIN2.m` la converte per percettore, `y* × scala / n_perc`, e `lihc_index.m`
+> accetta ora una soglia per nucleo. Il 10 052 € del paper non compare in nessuna serie ufficiale
+> e non si usa più. Il vecchio nome della chiave, `soglia_poverta_EUR_percettore`, non esiste più
+> (la leggeva solo `MAIN.m`).
+>
+> ⚠ **Con questi valori nessun nucleo della società da cento famiglie è vulnerabile.** I redditi
+> delle schede sono la media Istat della tipologia familiare ±15% (§9): il minimo è 21 333 € e il
+> rapporto fra reddito netto e soglia del nucleo non scende sotto 1,14, quindi la condizione
+> *Low Income* non scatta mai (55 famiglie su 100 sono *High Cost*, ma nessuna è anche povera).
+> L'indicatore di inclusione è `NaN` in tutte le comunità e il livello di solidarietà del Tri-level
+> EP si azzera. Non è un errore di codice: la distribuzione dei redditi è troppo compressa per
+> contenere poveri. Da decidere prima del run finale.
 
 È la nozione di *inclusione* della domanda di ricerca. Per ogni metodo:
 

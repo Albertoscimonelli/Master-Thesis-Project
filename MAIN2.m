@@ -1247,7 +1247,6 @@ for iCER = PRIMO:N_CER
 
     optTL = opts_from_config(CFG.poverta, CFG.noto.poverta, [ ...
         "mediana_spesa_energetica_EUR",  "medianEnergyExpense"
-        "soglia_poverta_EUR_percettore", "povertyThreshold"
         "quota_n_pct",                   "nPct"
         "tetto_quota_EP",                "capEP"
         "usa_profondita_poverta",        "useContinuous"
@@ -1257,6 +1256,21 @@ for iCER = PRIMO:N_CER
     % dedotto dal nome. Un "comune_1_kWh" di categoria domestica sfuggirebbe
     % all'euristica sui nomi; la categoria no.
     optTL.isHousehold = M.isHousehold;
+
+    % y*: soglia di poverta' per ADULTO EQUIVALENTE (Istat/Eurostat, 60% del reddito
+    % mediano equivalente), non per percettore: per percettore non e' pubblicata.
+    % L'indice LIHC (eq. 12) confronta il reddito netto PER PERCETTORE con y*, quindi
+    % la soglia del nucleo i, y*_eq x scala_equiv_i, si converte in soglia per
+    % percettore dividendo per n_perc_i: (y - s_e)/N_inc < y*_i  <=>  y - s_e <
+    % y*_eq x scala_equiv. Famiglie piu' numerose hanno cosi' una soglia piu' alta
+    % (la scala OCSE modificata pesa 1,0 / 0,5 / 0,3, vedi compila_scala_equiv.py).
+    if CFG.noto.poverta.soglia_poverta_EUR_equivalente
+        assert(M.noto.scala_equiv && M.noto.n_perc, ...
+               ['soglia_poverta_EUR_equivalente e'' compilata ma le schede non hanno ' ...
+                'scala_equiv e n_perc: lanciare CER_LoadProfiles/compila_scala_equiv.py e compila_n_perc.py']);
+        optTL.povertyThreshold = CFG.poverta.soglia_poverta_EUR_equivalente ...
+                                 .* M.scala_equiv ./ M.n_perc;
+    end
 
     if M.noto.reddito_EUR,    optTL.income          = M.reddito_EUR;    end
     if M.noto.n_perc,         optTL.nIncomeEarners  = M.n_perc;         end
@@ -1653,7 +1667,7 @@ for iCER = PRIMO:N_CER
     % Tri-level usa i propri segnaposto, e l'indicatore poggia su quelli.
     parSegnaposto = strings(0, 1);
     if ~CFG.noto.poverta.mediana_spesa_energetica_EUR,  parSegnaposto(end+1) = "mediana_spesa_energetica_EUR"; end
-    if ~CFG.noto.poverta.soglia_poverta_EUR_percettore, parSegnaposto(end+1) = "soglia_poverta_EUR_percettore"; end
+    if ~CFG.noto.poverta.soglia_poverta_EUR_equivalente, parSegnaposto(end+1) = "soglia_poverta_EUR_equivalente"; end
     if ~CFG.noto.mercato.markup_retail,                 parSegnaposto(end+1) = "markup_retail"; end
     fprintf('\n=== Inclusione (vulnerabili LIHC) ===\n');
     fprintf('  Vulnerabili: %d su %d membri', INC.nVulnerable, nUsers);

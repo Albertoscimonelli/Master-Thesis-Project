@@ -1101,7 +1101,13 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 > *Low Income* non scatta mai (55 famiglie su 100 sono *High Cost*, ma nessuna è anche povera).
 > L'indicatore di inclusione è `NaN` in tutte le comunità e il livello di solidarietà del Tri-level
 > EP si azzera. Non è un errore di codice: la distribuzione dei redditi è troppo compressa per
-> contenere poveri. Da decidere prima del run finale.
+> contenere poveri. **Decisione dell'autore (19/10/2026): si accetta.** I redditi vengono da Istat, e se
+> nessun nucleo risulta povero non è un problema del modello: l'inclusione LIHC non è valutabile su questa
+> società e si dichiara come tale (l'indicatore è `NaN` e compute_indicator_agreement lo tratta come non
+> discriminante). **Limite sul gas:** la categoria d'uso del gas si estrae dalle stesse quote ARERA per
+> ogni famiglia, indipendentemente dalla tipologia (stesse proporzioni di cottura e riscaldamento in tutte
+> le classi di reddito): il gas non varia per tipologia familiare. Oggi non incide sui risultati, perché senza
+> famiglie a basso reddito la spesa energetica alta non basta a renderle vulnerabili.
 
 È la nozione di *inclusione* della domanda di ricerca. Per ogni metodo:
 

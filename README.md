@@ -411,11 +411,11 @@ richiesta per restare scalabile — come fanno anche i metodi 13-15, tramite l'h
 > funzione (`help tri_level_ep_cer`) conta undici ipotesi, marcate nel codice come
 > `[IPOTESI n]` (`grep -n IPOTESI tri_level_ep_cer.m`) e **stampate a ogni esecuzione**, ma
 > solo quelle ancora in vigore: un'ipotesi sparisce dall'elenco appena il dato vero viene
-> passato via `opts`. Sulle schede della griglia ne restano attive **otto** (3, 4, 5, 6, 7,
-> 9, 10, 11): reddito, spesa gas e quote di investimento sono compilati, mentre markup dal
-> PUN al prezzo di bolletta, mediana nazionale della spesa energetica, soglia di povertà,
-> numero di percettori, n% e tetto della quota sono ancora a `?` (§7.7, §9). La stessa lista
-> è esposta come `S.assumptions`.
+> passato via `opts`. Sulle schede della griglia ne restano attive **sei** (3, 4, 5, 6, 7,
+> 9): reddito, spesa gas, quote di investimento, numero di percettori (dal 19 ottobre) e
+> n% e tetto della quota (valori del paper) sono compilati, mentre markup dal PUN al prezzo
+> di bolletta, mediana nazionale della spesa energetica e soglia di povertà sono ancora a
+> `?` (§7.7, §9). La stessa lista è esposta come `S.assumptions`.
 >
 > Il metodo 16 è anche l'unico che ripartisce **entrambi** i montepremi (energia
 > condivisa *e* vendita in rete), perché il suo livello di proprietà redistribuisce
@@ -1386,9 +1386,24 @@ l'intestazione), commenti con `#`.
 vero toglie una riga da quel registro, scriverci il valore che il modello userebbe
 comunque la toglierebbe senza che nulla sia stato verificato. Sulle schede della griglia
 reddito, spesa gas e quote di investimento sono compilati, quindi delle 11 ipotesi del
-Tri-level EP ne restano attive 8 (3, 4, 5, 6, 7, 9, 10, 11): markup, P50, y*, numero di
-percettori, n% e tetto sono ancora a `?`. Compilandoli scenderebbero a 3 — le sole tre che
-sono correzioni dichiarate (ipotesi 6, 7, 9) e non dati mancanti.
+Tri-level EP ne restano attive 6 (3, 4, 5, 6, 7, 9): markup, P50 e y* sono ancora a `?`.
+Compilandoli scenderebbero a 3 — le sole tre che sono correzioni dichiarate (ipotesi 6, 7, 9)
+e non dati mancanti. Dal 19 ottobre sono compilati il **numero di percettori** (ipotesi 10) e
+**n% e tetto** (ipotesi 11):
+
+- `n_perc` viene dall'archetipo dichiarato del membro, con
+  `CER_LoadProfiles/compila_n_perc.py` e `data/mapping_archetipo_nperc.csv` (55 archetipi,
+  con il criterio riga per riga). Regola: contano uno ciascuno gli occupati e i pensionati;
+  un nucleo senza occupati conta 1, perché il reddito per percettore non è definito con 0; la
+  collaboratrice domestica (CHR19) non conta; CHR14 vale 3 (coppia di lavoratori + anziana
+  con pensione) e CHR15 vale 4. Distribuzione sulle 40 schede e sulle varianti PA: 1 percettore
+  in 4 172 celle, 2 in 1 778, 3 in 271, 4 in 47. Il conteggio dei lavoratori viene dalle
+  etichette degli archetipi LPG, non da una statistica Istat: l'Istat non pubblica i percettori
+  per tipologia (solo 2,14-2,2 per le coppie con figli).
+- `quota_n_pct = 0,0132` e `tetto_quota_EP = 0,33` sono i valori di Campagna et al. 2024,
+  tarati dagli autori su una CER di 16 membri. Con 5-18 membri i vulnerabili sono pochi e la
+  fetta di solidarietà `min(tetto, n% × vulnerabili)` vale pochi punti: il livello pesa
+  poco, ed è una scelta dichiarata.
 
 **Reddito e spesa gas nelle schede operative.** Nelle schede di `CER_configuration/` le
 colonne `reddito_EUR` ed `euro_gas` dei membri domestici non sono più a `?`. Le compila
@@ -1425,7 +1440,7 @@ sei nella scheda della comunità.
 **Le schede della griglia:** 40 comunità domestiche da 5 a 100 membri. I membri sono
 `household_1 … household_N`, le prime N colonne della società da cento famiglie
 (`N_utenti.xlsx`; `100_utenti.csv` a 100 membri): tutti in tariffa monoraria con 3 kW
-impegnati, `n_perc` a `?`, reddito ed `euro_gas` compilati. Ogni prosumer ha un impianto
+impegnati, `n_perc`, reddito ed `euro_gas` compilati. Ogni prosumer ha un impianto
 dimensionato sul nucleo — 3,4 kWp per 1-2 componenti, 4,2 per 3-4, 5,9 per 5 o più, con la
 stessa curva PVsyst per fascia e una quota di investimento di 7 000 / 7 400 / 9 100 € — e
 la governance è la stessa ovunque. Tabella completa e convenzioni in

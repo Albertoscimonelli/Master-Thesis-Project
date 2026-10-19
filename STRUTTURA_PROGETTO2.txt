@@ -374,7 +374,9 @@ LA PIPELINE E' DETERMINISTICA
     categoria       domestico: persone fisiche, quindi esenti dal fattore F e
                     non imprese per la soglia GSE
     tariffa         MONORARIA per tutti;  P_prel_kW = 3 per tutti
-    n_perc          '?' ovunque: il Tri-level EP assume 2 percettori
+    n_perc          dal 19 ottobre compilato da compila_n_perc.py (archetipo ->
+                    data/mapping_archetipo_nperc.csv). Prima: '?' ovunque, il
+                    Tri-level EP assumeva 2 percettori
     reddito_EUR,    compilati da arricchisci_schede.py (6.3), con le colonne
     euro_gas        di provenienza in coda a [MEMBRI]
     impianti        uno per prosumer, dimensionato sul nucleo:
@@ -813,8 +815,8 @@ riepilogo di fine batch.
                                 vendita). Ripartisce ENTRAMBI i montepremi:
                                 in Tcmp entra phiFromShared. PROVVISORIO:
                                 registro di 11 ipotesi, stampa quelle ancora
-                                attive (8 sulle schede attuali: 3, 4, 5, 6, 7,
-                                9, 10, 11).
+                                attive (6 sulle schede attuali: 3, 4, 5, 6, 7,
+                                9).
   lihc_index.m                  Indice LIHC booleano (eq. 12, con AND) e
                                 continuo (eq. 13, con gate). P50 e' una
                                 costante nazionale, mai la mediana del
@@ -1371,13 +1373,14 @@ SOTTOINSIEME MINIMO (tau >= 0,5)
             categoria. Inoltre, sotto i 100 membri, archetipo dichiarato e
             profilo simulato non coincidono (2.1).
   DATI      Redditi e spesa gas sono stime statistiche (DATA_SOURCES.md);
-            n_perc a '?' (2 percettori per nucleo); stessa curva PVsyst per
+            n_perc dall'archetipo dichiarato (mapping, non una statistica Istat);
+            stessa curva PVsyst per
             tutti gli impianti di una fascia; tariffa monoraria e 3 kW per
             tutti.
   ECONOMIA  Flussi costanti su 20 anni (escalation, inflazione OPEX e degrado
             dichiarati e non applicati); quote di investimento da stima di
             mercato.
-  TRI-LEVEL EP  Provvisorio: 8 ipotesi attive; il livello di proprieta'
+  TRI-LEVEL EP  Provvisorio: 6 ipotesi attive (markup, P50, y* a '?'); il livello di proprieta'
             redistribuisce la vendita, che sulla griglia vale fino al 99% del
             montepremi del metodo.
   RIPRODUCIBILITA'  Le schede della griglia, gli N_utenti.xlsx e gli export

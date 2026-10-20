@@ -130,3 +130,67 @@ Limiti aggiuntivi emersi durante l'implementazione:
     l'archetipo dichiarato.
 11. **Classe `coppia_3piu_figli`**: campione Istat piccolo e media molto sopra la mediana
     (72.138 € contro 58.688 €). È la stima meno affidabile.
+
+## Palazzetto dello sport di Lucca (consumo e produzione FV 2024)
+
+Cartella: [`data/external/palazzetto_lucca/`](data/external/palazzetto_lucca/). Metodo completo,
+affidabilità e limiti: [`GUIDA_dati_e_metodi.md`](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md).
+Script: [`scripts/`](data/external/palazzetto_lucca/scripts/). **Non sono ancora letti da
+`MAIN2.m`**: sono dati archiviati con la loro documentazione.
+
+Perimetro: solo il palazzetto di Lucca. I dati ENEA della palestra "Volley" e il relativo
+input RAMP sono stati scartati.
+
+[LUCCA-DIAGNOSI] Comune di Lucca, *Diagnosi energetica – Palazzetto dello Sport, Via delle
+Tagliate, Lucca*, cod. 047.24.01.R.01, novembre 2025 (edificio esistente). Un solo POD in MT
+(448 kW, 15 kV); consumo 2024 di 290,136 MWh (290.136 kWh, notazione italiana); Fig. 2
+(energia mensile), Fig. 3 (massimo e minimo giornalieri), Fig. 4 (settimana tipo
+22-28 gennaio 2024); cap. 12.1 (nuovo palazzetto, FV da 310,5 kWp; tabella di producibilità
+a pag. 246 del PDF: **usata** come bersaglio mensile della produzione FV).
+
+[LUCCA-PE] Comune di Lucca, *IE FV – Relazione tecnica impianto fotovoltaico*, progetto
+esecutivo PE Silver 1 (approvato 2026):
+https://allegatiatti.comune.lucca.it/Anno%202026/PALALUCCA/PE%20SILVER%201-APPROVATO/PDF/05_Impianti/ELT/IE_FV_RELAZIONE_TECNICA_IMPIANTO_FOTOVOLTAICO.pdf
+134,4 kWp: impianto diverso da quello a 310 kWp, **non usato**. Letto tramite un riassunto
+automatico della pagina e non sul PDF intero: da ricontrollare prima di citarlo.
+
+[PVGIS] Commissione Europea, JRC, PVGIS 5 (banca dati PVGIS-SARAH3; TMY 2005-2023, Lucca
+43,844 N 10,489 E): https://re.jrc.ec.europa.eu/pvg_tools/en/. File scaricati dall'autore;
+tabella mensile per 310 kWp, 15° di inclinazione, azimut sud, perdite 14%: 391.231,88 kWh/anno
+(termine di confronto: la serie finale è riscalata alla tabella della diagnosi).
+
+[PVLIB] pvlib python 0.16.1 (posizione solare, Hay-Davies, Faiman, IAM ASHRAE).
+
+Elaborazione nostra:
+- **Consumo** (`lucca_anno_2024_ricostruito_kW.csv`, 8.784 righe orarie, kW). Non è una
+  misura: è ricostruito leggendo come immagini i grafici della diagnosi (barre mensili,
+  massimo e minimo giornalieri, settimana tipo), con `P(h) = min + (max − min)·s(h)^γ` e γ
+  scelto mese per mese per riprodurre l'energia mensile. Energia annua 290.131 kWh, minimo
+  9,9 kW, massimo 114,0 kW (circa 117 letti). Affidabilità: alta su energia mensile e
+  annua, media sulla forma oraria (una sola settimana di gennaio ripetuta tutto l'anno),
+  più bassa d'estate. Scarto quadratico medio sulla settimana nota 8,6 kW, correlazione
+  0,94, verifica ottimistica perché la stessa settimana fornisce la forma.
+- **Produzione FV** (`lucca_pv_2024_kW.csv`, 8.784 righe orarie, kW, colonna `origine`).
+  TMY orario PVGIS portato sul piano dei moduli (310 kWp, 15° sud) con pvlib, mappato sul
+  calendario 2024 con ora legale, ogni mese riscalato alla tabella mensile della diagnosi
+  ([LUCCA-DIAGNOSI], pag. 246: 398.902 kWh/anno, stima del progetto, senza inclinazione né
+  orientamento dichiarati). Energia annua 398.902 kWh, picco 280,2 kW. Scartata una tabella in
+  immagine di fonte ignota (393,5 MWh). Rispetto a PVGIS-SARAH3 (391.232 kWh) la serie ha più
+  inverno e meno estate: gennaio +14%, febbraio +16%, luglio −10%.
+- Il FV è del **nuovo** palazzetto, il carico dell'edificio **esistente**: il confronto
+  (circa 30% di autoconsumo, circa 40% di copertura) è indicativo.
+
+Limiti noti:
+1. Il carico non è adatto a dimensionare FV, accumuli o CER: servirebbero le curve orarie o
+   quartorarie vere del POD, richiedibili al distributore tramite il Comune.
+2. Il FV è un anno tipico, non il 2024: i giorni nuvolosi non cadono nelle date reali.
+3. Inclinazione e orientamento reali dei moduli non sono nella diagnosi: si è usato 15° sud.
+4. 21 ore diurne (colonna `origine` = `tmy_riempito`) sono riempite perché a zero nel TMY,
+   24 righe del 29 febbraio sono la copia del 28 (`copia_28feb`). Il criterio di
+   riempimento va confermato dall'autore.
+5. I file in `data/external/palazzetto_lucca/` sono le serie **allineate alla pipeline** (8.760 ore,
+   ora standard, FV senza 29 febbraio, carico su griglia 2025 a parità di giorno della settimana);
+   gli originali 2024 sono in `originali_2024/`. Il passaggio è in
+   `scripts/allinea_alla_pipeline.py`. Energie: FV 398.112 kWh (originale 398.902), carico 289.706
+   kWh (originale 290.131).
+6. Picco FV di 280,2 kW contro 270 kW di inverter, taglio non applicato (4 ore, circa 15 kWh/anno).

@@ -60,9 +60,15 @@ function L = lihc_index(energyExpense, income, nIncomeEarners, opts)
 %                       .medianEnergyExpense  P50(s_e), mediana nazionale della
 %                                             spesa energetica (def. 1323
 %                                             EUR/anno, vedi NOTA sotto)
-%                       .povertyThreshold     y*, soglia di poverta'
+%                       .povertyThreshold     y*, soglia di poverta' PER PERCETTORE
 %                                             (def. 10052 EUR/anno/contribuente,
-%                                             il valore dichiarato dal paper)
+%                                             il valore dichiarato dal paper).
+%                                             SCALARE, oppure [n x 1] con una soglia
+%                                             per nucleo (NaN per i non domestici):
+%                                             MAIN2 passa y*_equivalente x scala di
+%                                             equivalenza / percettori, cosi' il
+%                                             confronto (y - s_e)/N_inc < y*_i
+%                                             equivale a y - s_e < y*_eq x scala.
 %                       .validatePaper        riproduce la Tabella 7 del paper
 %                                             sui suoi 12 nuclei (def. false)
 %
@@ -111,10 +117,11 @@ function L = lihc_index(energyExpense, income, nIncomeEarners, opts)
                'finito (ricevuto %s). E'' una costante NAZIONALE: non va mai ' ...
                'calcolata come mediana del campione, vedi header.'], mat2str(P50));
     end
-    if ~isscalar(yStar) || ~isfinite(yStar) || yStar <= 0
+    yStar = yStar(:);
+    if ~isscalar(yStar) && numel(yStar) ~= n
         error('lihc_index:invalidThreshold', ...
-              'opts.povertyThreshold deve essere uno scalare positivo e finito (ricevuto %s).', ...
-              mat2str(yStar));
+              ['opts.povertyThreshold deve essere uno scalare o un vettore con un ' ...
+               'elemento per membro (%d), ricevuto %d elementi.'], n, numel(yStar));
     end
 
     % --- Chi e' una famiglia -------------------------------------------------
@@ -144,9 +151,14 @@ function L = lihc_index(energyExpense, income, nIncomeEarners, opts)
     netIncomePerEarner = nan(n, 1);
 
     hh = isHousehold;
+    yStarHH = yStar; if ~isscalar(yStar), yStarHH = yStar(hh); end
+    if any(~isfinite(yStarHH) | yStarHH <= 0)
+        error('lihc_index:invalidThreshold', ...
+              'opts.povertyThreshold deve essere positivo e finito per ogni nucleo domestico.');
+    end
     expenseRatio(hh)       = energyExpense(hh) / P50;
     netIncomePerEarner(hh) = (income(hh) - energyExpense(hh)) ./ nIncomeEarners(hh);
-    incomeRatio(hh)        = netIncomePerEarner(hh) / yStar;
+    incomeRatio(hh)        = netIncomePerEarner(hh) ./ yStarHH;
 
     highCost  = false(n, 1);   highCost(hh)  = expenseRatio(hh) > 1;
     lowIncome = false(n, 1);   lowIncome(hh) = incomeRatio(hh)  < 1;
@@ -175,7 +187,7 @@ function L = lihc_index(energyExpense, income, nIncomeEarners, opts)
                                       'RapportoReddito', 'LIHC', 'LIHC_cont'});
 
     if opts.validatePaper
-        validate_against_paper(P50, yStar);
+        validate_against_paper(P50, yStar(1));
     end
 end
 

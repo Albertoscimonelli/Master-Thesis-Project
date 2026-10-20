@@ -258,22 +258,15 @@ outputs/figures/
 # CSV PVsyst si rigenerano a ogni ridimensionamento dell'impianto: tracciarle
 # tutte riempirebbe la storia di rumore senza aggiungere informazione.
 #
-# Il set minimo e' CER_3_1_0.txt (4 membri, societa' lombarda domestica +
-# office, §"generazione di una societa' a 100 famiglie") piu' lo scenario, il
-# CSV di produzione che quella scheda dichiara in [IMPIANTI] (PV4.CSV) e il
-# CSV dei profili di carico che referenzia in [FILE] (3_utenti.xlsx, sotto
-# CER_LoadProfiles/outputs/csv_lombardia100/). Cambiando la scheda di
-# riferimento vanno cambiati anche i file riammessi qui sotto e piu' in basso,
-# altrimenti MAIN.m si ferma sul file mancante.
-# Era CER_5_2_0.txt fino a settembre 2026; spostata dall'utente in
-# CER_configuration/Provvsiorio/ insieme al resto del sweep scheda9, mai
-# sostituita prima d'ora.
+# Si versionano le schede CER_C_P_E.txt (la griglia di comunita' domestiche) e lo
+# scenario. Restano locali i profili di carico (N_utenti.xlsx) e gli export PVsyst
+# PROVA_CER_*: un clone pulito ha le schede ma non i file che dichiarano.
 #
 # NOTA: '/*' e non '/'. Con la barra sola git non entra nella cartella e le
 # righe di riammissione qui sotto non verrebbero nemmeno lette.
 CER_configuration/*
 !CER_configuration/scenario_economico.txt
-!CER_configuration/CER_3_1_0.txt
+!CER_configuration/CER_*.txt
 
 PV_Generation/*
 !PV_Generation/PV1.CSV
@@ -321,11 +314,7 @@ CER_LoadProfiles/outputs/csv_milano20/
 # stessa regola dei run sopra: dati derivati, riproducibili dai seed
 # deterministici, non si versionano. Quello che si versiona sono la
 # configurazione e i numeri misurati in outputs/report/validazione_lombardia100.md.
-# ECCEZIONE: 3_utenti.xlsx e' il CSV di profili_carico della scheda minima
-# CER_configuration/CER_3_1_0.txt (vedi sopra) - senza, MAIN.m non gira da un
-# clone pulito.
 CER_LoadProfiles/outputs/csv_lombardia100/*
-!CER_LoadProfiles/outputs/csv_lombardia100/3_utenti.xlsx
 
 # Scomposizione del POD nelle due meta' del contatore (output.dettaglio_domestici).
 # Viene riscritta a ogni run e nessun file a valle la legge: e' diagnostica,
@@ -339,3 +328,17 @@ CER_LoadProfiles/outputs/csv/profili_famiglie_HT07_*.csv
 
 # Workspace MATLAB dei run (binari da 10-14 MB): restano solo in locale, vedi outputs/workspace/LEGGIMI.md
 outputs/workspace/*.mat
+
+# Prodotti locali dei run MAIN2 e materiale di lavoro: non si versionano.
+# Le tabelle dei run stanno in outputs/tables_main2*/ (versionate), le figure si rigenerano.
+outputs/figures_main2/
+outputs/figures_main2_*/
+outputs/run_logs/
+outputs/checkpoint_main2*.mat
+outputs/report/griglia_recap.html
+backup_schede_*/
+test_regressione/
+
+# Varianti PA delle schede (asse composizione): per ora non versionate, si rigenerano con
+# CER_configuration_PA/genera_varianti_PA.py (vedi CER_configuration_PA/README.md)
+CER_configuration_PA/PA*/

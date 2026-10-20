@@ -216,9 +216,12 @@ mediana_spesa_energetica_EUR  = ?   # P50 nazionale [EUR/anno]. Fallback: 1323,
                                     # che il paper non pubblica ed e' stata
                                     # ricavata invertendo l'eq. 13. Si sostituisce
                                     # con la mediana ARERA/ISTAT dell'annata.
-soglia_poverta_EUR_percettore = ?   # y* [EUR/anno/percettore]. Fallback: 10052,
-                                    # il valore dichiarato dal paper - che pero'
-                                    # con quel valore riconosce 2 dei 3 nuclei
+soglia_poverta_EUR_equivalente = ?  # y* [EUR/anno/adulto equivalente], Istat/Eurostat
+                                    # (13237 nel 2025). La soglia del nucleo e'
+                                    # y* x scala_equiv (colonna di [MEMBRI]) e MAIN2
+                                    # la converte per percettore. Fallback senza
+                                    # dato: 10052 per percettore, il valore del paper
+                                    # - che con quel valore riconosce 2 dei 3 nuclei
                                     # che esso stesso elenca come vulnerabili.
 quota_n_pct                   = ?   # n%: quota del montepremi per ogni nucleo
                                     # vulnerabile. Fallback: 0.0132, tarato su

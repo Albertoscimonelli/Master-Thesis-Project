@@ -1,0 +1,56 @@
+codice_lpg,n_perc,scala_equiv,criterio
+CHR01,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR02,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR03,2,1.8,"coppia con figli, entrambi lavorano (CHR20: uno lavora da casa): 2 percettori"
+CHR04,1,1.5,"coppia senza figli, uno a casa: 1 percettore"
+CHR05,2,2.4,"coppia con figli, entrambi lavorano (CHR20: uno lavora da casa): 2 percettori"
+CHR06,1,1.0,"persona sola senza lavoro: nessun percettore da lavoro, si assume 1 (minimo, il reddito per percettore non e' definito con 0)"
+CHR07,1,1.0,persona sola occupata: 1 percettore
+CHR08,1,1.6,monogenitore che lavora: 1 percettore
+CHR09,1,1.0,persona sola occupata: 1 percettore
+CHR10,1,1.0,persona sola occupata: 1 percettore
+CHR12,1,1.0,studente: 1 percettore (LPG simula una sola persona)
+CHR13,1,1.0,studente: 1 percettore (LPG simula una sola persona)
+CHR14,3,2.0,"coppia di lavoratori + anziana convivente (80 anni, pensione): 3 percettori"
+CHR15,4,3.3,famiglia multigenerazionale: coppia di lavoratori + coppia anziana (pensioni): 4 percettori
+CHR16,2,1.5,"coppia 65+: pensionati, 2 pensioni"
+CHR17,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR18,1,2.1,"coppia con figli, nessuno lavora: si assume 1 (minimo)"
+CHR19,2,1.5,coppia di lavoratori + collaboratrice domestica: 2 percettori (il reddito della colf non e' della famiglia)
+CHR20,2,2.4,"coppia con figli, entrambi lavorano (CHR20: uno lavora da casa): 2 percettori"
+CHR23,1,1.0,"persona sola 65+: pensionata, 1 pensione"
+CHR24,1,1.0,"persona sola 65+: pensionata, 1 pensione"
+CHR25,1,1.0,persona sola occupata: 1 percettore
+CHR26,1,1.0,"persona sola senza lavoro: nessun percettore da lavoro, si assume 1 (minimo, il reddito per percettore non e' definito con 0)"
+CHR27,2,2.1,"coppia con figli, entrambi lavorano (CHR20: uno lavora da casa): 2 percettori"
+CHR28,1,1.0,"persona sola senza lavoro: nessun percettore da lavoro, si assume 1 (minimo, il reddito per percettore non e' definito con 0)"
+CHR29,1,1.0,persona sola occupata: 1 percettore
+CHR30,1,1.0,"persona sola 65+: pensionata, 1 pensione"
+CHR31,1,1.0,"persona sola 65+: pensionata, 1 pensione"
+CHR32,1,1.5,"coppia senza figli, nessuno lavora: si assume 1 (minimo)"
+CHR33,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR34,1,1.5,"coppia senza figli, uno a casa: 1 percettore"
+CHR35,1,1.0,persona sola occupata: 1 percettore
+CHR36,1,1.0,"persona sola senza lavoro: nessun percettore da lavoro, si assume 1 (minimo, il reddito per percettore non e' definito con 0)"
+CHR37,1,1.0,persona sola occupata: 1 percettore
+CHR39,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR40,1,1.5,"coppia senza figli, nessuno lavora: si assume 1 (minimo)"
+CHR42,1,1.6,monogenitore che lavora: 1 percettore
+CHR44,1,2.5,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR45,1,2.0,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR46,1,1.3,monogenitore che non lavora: si assume 1 (minimo)
+CHR47,1,1.6,monogenitore che non lavora: si assume 1 (minimo)
+CHR49,1,1.8,"coppia con figli, nessuno lavora: si assume 1 (minimo)"
+CHR51,2,1.5,"coppia 65+: pensionati, 2 pensioni"
+CHR53,1,2.3,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR54,2,1.5,"coppia 65+: pensionati, 2 pensioni"
+CHR55,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+CHR56,1,2.5,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR57,1,2.5,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR58,2,1.5,"coppia 65+: pensionati, 2 pensioni"
+CHR60,1,1.8,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHR61,2,1.8,"coppia con figli, entrambi lavorano (CHR20: uno lavora da casa): 2 percettori"
+CHS01,1,2.3,"coppia con figli, un solo genitore lavora: 1 percettore"
+CHS04,2,1.5,"coppia 65+: pensionati, 2 pensioni"
+CHS12,2,1.5,"coppia senza figli, entrambi lavorano: 2 percettori"
+OR01,1,1.0,persona sola occupata: 1 percettore

@@ -22,7 +22,7 @@ function M = align_members_to_users(CFG, userNames)
 %     .nome            nome_csv
 %     .ruolo .categoria .tariffa           string
 %     .P_prel_kW                           double, potenza impegnata [kW]
-%     .n_comp .n_perc                      double
+%     .n_comp .n_perc .scala_equiv         double
 %     .reddito_EUR                         double
 %     .euro_gas                            double, spesa gas annua [EUR]
 %     .gas_kWh                             double, formato precedente [kWh]
@@ -73,7 +73,7 @@ function M = align_members_to_users(CFG, userNames)
 
     % Colonne facoltative: assenti dalla scheda -> vettore di NaN, cosi' il
     % chiamante puo' sempre indicizzarle senza controllare prima se esistono.
-    facoltative = ["n_comp", "n_perc", "reddito_EUR", "euro_gas", "gas_kWh", ...
+    facoltative = ["n_comp", "n_perc", "scala_equiv", "reddito_EUR", "euro_gas", "gas_kWh", ...
                    "quota_inv_EUR", "mutuo_EUR_anno"];
     presenti = string(T.Properties.VariableNames);
     for c = facoltative

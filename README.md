@@ -22,9 +22,11 @@ varia taglia e penetrazione dei prosumer.
 > leggere il codice sorgente per capire cosa fa il progetto e come è strutturato — solo per
 > modificarlo.
 >
-> **Stato al 16 ottobre 2026:** codice al commit `3340111`, risultati dei due run finali del
-> 13 ottobre (§7.9). Prima della versione definitiva mancano tre dati in
-> `scenario_economico.txt` — P50, y* e markup (§7.7) — e un nuovo run.
+> **Stato al 20 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
+> 20 ottobre, con i parametri LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10).
+> L'inclusione LIHC non è valutabile (nessuna famiglia vulnerabile). Le tabelle del run a 25 membri
+> (`tables_main2_griglia25/`) restano del 13 ottobre, con i segnaposto. Sintesi dei risultati e del
+> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md`.
 
 ---
 

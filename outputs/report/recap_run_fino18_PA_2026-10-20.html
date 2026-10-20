@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recap run fino a 18 membri con PA</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;  --surface: #fcfcfb;
+  --ink: #0b0b0b;   --ink2: #52514e;  --muted: #898781;
+  --grid: #e1e0d9;  --axis: #c3c2b7;  --border: rgba(11,11,11,0.10);
+  --wash: rgba(11,11,11,0.045);
+  --s1: #2a78d6;    --ref: #898781;
+  --lv0: #86b6ef;   --lv1: #3987e5;   --lv2: #1c5cab;   --lv3: #0d366b;
+  --chg: #cde2fb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;  --surface: #1a1a19;
+    --ink: #f0efec;   --ink2: #c3c2b7;  --muted: #898781;
+    --grid: #2c2c2a;  --axis: #383835;  --border: rgba(255,255,255,0.10);
+    --wash: rgba(255,255,255,0.06);
+    --s1: #3987e5;    --ref: #898781;
+    --lv0: #184f95;   --lv1: #2a78d6;   --lv2: #6da7ec;   --lv3: #b7d3f6;
+    --chg: #184f95;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;  --surface: #1a1a19;
+  --ink: #f0efec;   --ink2: #c3c2b7;  --muted: #898781;
+  --grid: #2c2c2a;  --axis: #383835;  --border: rgba(255,255,255,0.10);
+  --wash: rgba(255,255,255,0.06);
+  --s1: #3987e5;    --ref: #898781;
+  --lv0: #184f95;   --lv1: #2a78d6;   --lv2: #6da7ec;   --lv3: #b7d3f6;
+  --chg: #184f95;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; font-weight: 650; }
+h2 { font-size: 19px; margin: 40px 0 4px; font-weight: 650; }
+h3 { font-size: 15px; margin: 0 0 2px; font-weight: 650; }
+p { margin: 0 0 10px; }
+.sub { color: var(--ink2); margin: 0 0 14px; }
+.top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.badge { display: inline-flex; gap: 8px; align-items: center; padding: 4px 10px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink2); font-size: 13px; }
+.badge b { width: 8px; height: 8px; border-radius: 50%; background: #fab219; display: inline-block; }
+button.ghost { font: inherit; font-size: 13px; color: var(--ink2); background: transparent;
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+button.ghost:hover { background: var(--wash); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 14px 0 6px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .l { color: var(--ink2); font-size: 13px; }
+.tile .v { font-size: 30px; font-weight: 650; line-height: 1.15; margin: 2px 0; }
+.tile .d { color: var(--muted); font-size: 12.5px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 16px 12px; margin: 14px 0; }
+.card .cap { color: var(--ink2); font-size: 13.5px; margin: 0 0 10px; }
+.card .note { color: var(--muted); font-size: 12.5px; margin: 8px 0 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 8px; font-size: 12.5px; color: var(--ink2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.chart { width: 100%; }
+.chart svg { display: block; max-width: 100%; }
+.twin { margin-top: 8px; }
+.twin-t { display: none; margin-top: 8px; overflow-x: auto; }
+.twin-t.on { display: block; }
+svg text { font-family: inherit; }
+svg .grid { stroke: var(--grid); stroke-width: 1; }
+svg .axis { stroke: var(--axis); stroke-width: 1; }
+svg .tick { fill: var(--muted); font-size: 10.5px; }
+svg .lab { fill: var(--ink2); font-size: 12px; }
+svg .head { fill: var(--ink); font-size: 12px; font-weight: 650; }
+svg .ptitle { fill: var(--ink2); font-size: 12px; font-weight: 600; }
+svg .val { fill: var(--ink); font-size: 12px; font-variant-numeric: tabular-nums; }
+svg .wash { fill: transparent; }
+svg .row:hover .wash, svg .row:focus .wash { fill: var(--wash); }
+svg .row { outline: none; }
+svg .row:focus-visible .wash { stroke: var(--ink2); stroke-width: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { color: var(--ink2); font-weight: 600; font-size: 12.5px; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+td.chg { background: var(--chg); font-weight: 600; }
+table.heat td, table.heat th { padding: 0; border: 0; }
+table.heat th { padding: 6px 8px; font-size: 12.5px; }
+table.heat th.rl { text-align: left; white-space: nowrap; padding-right: 14px; }
+table.heat td > div { margin: 1px; padding: 8px 6px; text-align: center; border-radius: 4px; min-width: 62px;
+  font-variant-numeric: tabular-nums; font-size: 13px; outline: none; }
+table.heat td > div:focus-visible { box-shadow: 0 0 0 2px var(--ink2); }
+.scale { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.scale .bar { width: 140px; height: 8px; border-radius: 4px; }
+ul.bul { margin: 0 0 10px; padding-left: 20px; }
+ul.bul li { margin: 3px 0; }
+.small { font-size: 13px; color: var(--ink2); }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--axis); border-radius: 8px; padding: 6px 10px; font-size: 12.5px; max-width: 320px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+#tip .v { font-weight: 650; font-size: 13.5px; }
+#tip div + div { color: var(--ink2); margin-top: 1px; }
+.cl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.cl .lv { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.cl .lv h4 { margin: 0 0 6px; font-size: 13.5px; }
+.cl .lv .g { font-size: 12.5px; margin: 4px 0; color: var(--ink2); }
+.cl .lv .g b { color: var(--ink); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+@media (max-width: 560px) { h1 { font-size: 22px; } .tile .v { font-size: 26px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>Recap del run fino a 18 membri, con e senza PA</h1>
+      <p class="sub" id="sub"></p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="badge"><b></b>Inclusione LIHC non valutabile: nessuna famiglia vulnerabile</span>
+      <button class="ghost" id="theme" type="button">Tema: auto</button>
+    </div>
+  </div>
+
+  <div class="tiles" id="tiles-run"></div>
+
+  <h2>In sintesi</h2>
+  <ul class="bul" id="sintesi"></ul>
+
+  <h2>1. Livello 0: la griglia di soli domestici</h2>
+  <p class="sub">Rispetto al run del 13 ottobre le quote di tutti i metodi sono identiche, tranne il Tri-level EP: con i parametri LIHC definitivi nessuna famiglia è vulnerabile, quindi l'inclusione sparisce e il Tri-level EP perde la fetta di solidarietà. Per questo le inversioni calano. Serve come termine di paragone per le PA.</p>
+  <div class="card" id="fig-sweep">
+    <h3>Quanto cambia la graduatoria dei metodi al variare di un fattore</h3>
+    <p class="cap">Quota di serie (indicatore × coppia di metodi, 605 per scansione) in cui l'ordine fra i due metodi si inverte almeno una volta.</p>
+    <div class="chart" id="c-sweep"></div>
+    <p class="note">Soglia di rilevanza del 10% dell'escursione (5% di v(N) sugli indicatori in euro). Una scansione ha 4-5 configurazioni, quindi più passi e più occasioni di invertirsi.</p>
+  </div>
+
+  <h2>2. Con e senza PA</h2>
+  <p class="sub">Per ogni scheda presente a livello 0 e a un livello con PA (stessi N, C, P: cambia solo <i>chi</i> sono i prosumer) si confrontano i punteggi già calcolati, con la stessa soglia di rilevanza.</p>
+  <div class="tiles" id="tiles-pa"></div>
+
+  <div class="card" id="fig-conf">
+    <h3>Le PA invertono l'ordine dei metodi quanto un cambio di penetrazione?</h3>
+    <p class="cap">Stessa misura della sezione 1, calcolata sulle comunità che hanno la scheda a livello 0 e a livello PA.</p>
+    <div class="legend" id="l-conf"></div>
+    <div class="chart" id="c-conf"></div>
+    <p class="note">Il confronto giusto per le scansioni di livello 0 è la riga «lungo l'asse PA0 → PA3» (4 configurazioni). I confronti a coppie hanno solo due configurazioni, quindi meno occasioni di invertirsi.</p>
+  </div>
+
+  <div class="card" id="fig-ind">
+    <h3>Quali indicatori sentono la presenza di PA</h3>
+    <p class="cap">PA0 contro i tre livelli con PA insieme (56 confronti). A sinistra la quota di coppie invertite, a destra la quota di comunità in cui cambia il primo classificato.</p>
+    <div class="legend" id="l-ind"></div>
+    <div class="chart" id="c-ind"></div>
+  </div>
+
+  <div class="card" id="fig-win">
+    <h3>Chi vince per nozione, livello per livello</h3>
+    <p class="cap">Primo classificato per indicatore, sulle comunità di ciascun livello. Celle in azzurro: la distribuzione dei vincitori si sposta di oltre 20 punti rispetto a PA0.</p>
+    <div class="twin-t on" id="t-win"></div>
+    <p class="note">«A pari»: i primi due metodi distano meno della soglia di rilevanza. «Non ordina»: l'indicatore è piatto fra i metodi di quella comunità.</p>
+  </div>
+
+  <div class="card" id="fig-heat">
+    <h3>Dove la PA pesa di più: taglia e penetrazione</h3>
+    <p class="cap">Quota media di coppie invertite passando da PA0 a PAk, per taglia (membri) e per fascia di penetrazione (1 = meno prosumer).</p>
+    <div id="h-taglia"></div>
+    <div id="h-fascia" style="margin-top:14px"></div>
+    <div class="scale"><span>0%</span><span class="bar" id="sc-seq"></span><span>20% e oltre</span></div>
+  </div>
+
+  <div class="card" id="fig-tr">
+    <h3>Quanto costa scegliere un criterio, con e senza PA</h3>
+    <p class="cap">Si sceglie il metodo migliore sul primo criterio e si legge quanto perde sul secondo (0 = nulla, 1 = quanto il peggiore). Il punto chiaro è PA0 sulle stesse schede, il punto scuro il livello con PA.</p>
+    <div class="legend" id="l-tr"></div>
+    <div class="chart" id="c-tr"></div>
+    <p class="note">Lettura ottimistica: fra i metodi a pari sul primo criterio, il migliore sul secondo. Medie sulle sole schede comuni ai due livelli.</p>
+  </div>
+
+  <div class="card" id="fig-cl">
+    <h3>Il sottoinsieme minimo di indicatori regge?</h3>
+    <p class="cap">Gruppi di indicatori che ordinano i metodi allo stesso modo (τ medio ≥ 0,5) e rappresentante di ciascun gruppo.</p>
+    <div class="cl" id="cl"></div>
+    <p class="note">L'inclusione LIHC è fuori dall'analisi (nessuna famiglia vulnerabile).</p>
+  </div>
+
+  <h2>3. Scala e quote ai membri PA</h2>
+  <div class="tiles" id="tiles-sc"></div>
+  <div class="card" id="fig-q">
+    <h3>Quanto prendono i membri PA rispetto alla loro quota di membri</h3>
+    <p class="cap">Quota di v(N) ai membri PA divisa per la quota di membri PA, mediana sulle comunità. 1 = in proporzione al numero di membri (Equal Split).</p>
+    <div id="h-quota"></div>
+    <div class="scale"><span>meno della quota</span><span class="bar" id="sc-div"></span><span>più della quota</span></div>
+    <p class="note">Il Remuneration Model 1 a PA1 (4,8) dipende dalla potenza impegnata dichiarata per le PA, ancora da confermare.</p>
+  </div>
+
+  <h2>4. Da leggere con cautela</h2>
+  <ul class="bul" id="cautela"></ul>
+
+  <p class="small" id="fonti"></p>
+</main>
+<div id="tip" hidden></div>
+
+<script>
+const D = {"sweeps": [{"sweep": "penetrazione", "fisso": "n = 5", "conf": 4, "serie": 605, "inv": 164, "quota": 0.271074}, {"sweep": "penetrazione", "fisso": "n = 8", "conf": 4, "serie": 605, "inv": 161, "quota": 0.266116}, {"sweep": "penetrazione", "fisso": "n = 10", "conf": 4, "serie": 605, "inv": 137, "quota": 0.226446}, {"sweep": "penetrazione", "fisso": "n = 15", "conf": 4, "serie": 605, "inv": 127, "quota": 0.209917}, {"sweep": "penetrazione", "fisso": "n = 18", "conf": 4, "serie": 605, "inv": 112, "quota": 0.185124}, {"sweep": "taglia", "fisso": "fascia 1 (~27%)", "conf": 5, "serie": 605, "inv": 91, "quota": 0.150413}, {"sweep": "taglia", "fisso": "fascia 2 (~50%)", "conf": 5, "serie": 605, "inv": 51, "quota": 0.0842975}, {"sweep": "taglia", "fisso": "fascia 3 (~75%)", "conf": 5, "serie": 605, "inv": 3, "quota": 0.00495868}, {"sweep": "taglia", "fisso": "fascia 4 (~100%)", "conf": 5, "serie": 605, "inv": 35, "quota": 0.0578512}], "vincitori": [{"ind": "Uniformità (EI)", "liv": [{"livello": 0, "n": 20, "conta": {"Equal Split": 20}}, {"livello": 1, "n": 20, "conta": {"Equal Split": 20}}, {"livello": 2, "n": 19, "conta": {"Equal Split": 19}}, {"livello": 3, "n": 17, "conta": {"Equal Split": 17}}]}, {"ind": "Uniformità (Gini)", "liv": [{"livello": 0, "n": 20, "conta": {"Equal Split": 20}}, {"livello": 1, "n": 20, "conta": {"Equal Split": 20}}, {"livello": 2, "n": 19, "conta": {"Equal Split": 19}}, {"livello": 3, "n": 17, "conta": {"Equal Split": 17}}]}, {"ind": "Merito (Fairness Index)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 20}}, {"livello": 1, "n": 20, "conta": {"(pari)": 17, "Nucleolo": 2, "Shapley": 1}}, {"livello": 2, "n": 19, "conta": {"(pari)": 19}}, {"livello": 3, "n": 17, "conta": {"(pari)": 17}}]}, {"ind": "Merito (σ)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 20}}, {"livello": 1, "n": 20, "conta": {"(pari)": 15, "Shapley": 4, "Nucleolo": 1}}, {"livello": 2, "n": 19, "conta": {"(pari)": 19}}, {"livello": 3, "n": 17, "conta": {"(pari)": 17}}]}, {"ind": "Stabilità (eccesso max)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 20}}, {"livello": 1, "n": 20, "conta": {"(pari)": 20}}, {"livello": 2, "n": 19, "conta": {"(pari)": 19}}, {"livello": 3, "n": 17, "conta": {"(pari)": 17}}]}, {"ind": "Stabilità (coalizioni instabili)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 20}}, {"livello": 1, "n": 20, "conta": {"(pari)": 20}}, {"livello": 2, "n": 19, "conta": {"(pari)": 19}}, {"livello": 3, "n": 17, "conta": {"(pari)": 17}}]}, {"ind": "Forza incentivante (netta)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 19, "Similarity-Utilization": 1}}, {"livello": 1, "n": 20, "conta": {"(pari)": 13, "Similarity-Utilization": 7}}, {"livello": 2, "n": 19, "conta": {"Similarity-Utilization": 14, "(pari)": 5}}, {"livello": 3, "n": 17, "conta": {"Similarity-Utilization": 12, "(pari)": 5}}]}, {"ind": "Allineamento virtuosità (netto)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 19, "Similarity-Utilization": 1}}, {"livello": 1, "n": 20, "conta": {"(pari)": 18, "Similarity-Utilization": 2}}, {"livello": 2, "n": 19, "conta": {"Similarity-Utilization": 14, "(pari)": 5}}, {"livello": 3, "n": 17, "conta": {"Similarity-Utilization": 12, "(pari)": 5}}]}, {"ind": "Allineamento virtuosità (lordo)", "liv": [{"livello": 0, "n": 20, "conta": {"(pari)": 12, "Similarity-Utilization": 5, "Weighted Solidarity": 2, "Equal Split": 1}}, {"livello": 1, "n": 20, "conta": {"(pari)": 20}}, {"livello": 2, "n": 19, "conta": {"(pari)": 17, "Variance Least Core": 2}}, {"livello": 3, "n": 17, "conta": {"(pari)": 11, "Nucleolo": 6}}]}, {"ind": "VAN del membro peggiore", "liv": [{"livello": 0, "n": 20, "conta": {"Equal Split": 17, "(pari)": 3}}, {"livello": 1, "n": 20, "conta": {"Equal Split": 19, "Similarity-Utilization": 1}}, {"livello": 2, "n": 19, "conta": {"Equal Split": 17, "Similarity-Utilization": 1, "(pari)": 1}}, {"livello": 3, "n": 17, "conta": {"Equal Split": 15, "Similarity-Utilization": 2}}]}], "pa_tot": [{"conf": "PA0-PA1", "com": 20, "quota": 0.0957851, "valide": 0.157859, "cambia": 0.125, "serie": 12100, "inv": 1159}, {"conf": "PA0-PA2", "com": 19, "quota": 0.119269, "valide": 0.217274, "cambia": 0.0842105, "serie": 11495, "inv": 1371}, {"conf": "PA0-PA3", "com": 17, "quota": 0.112299, "valide": 0.208936, "cambia": 0.117647, "serie": 10285, "inv": 1155}, {"conf": "PA0 contro PA>=1", "com": 56, "quota": 0.108766, "valide": 0.192127, "cambia": 0.108929, "serie": 33880, "inv": 3685}], "pa_ind": [{"ind": "Allineamento virtuosità (lordo)", "inv": 0.318182, "valide": 0.606811, "cambia": 0.642857, "nv": 56}, {"ind": "Merito (σ)", "inv": 0.185065, "valide": 0.250439, "cambia": 0.267857, "nv": 56}, {"ind": "Merito (Fairness Index)", "inv": 0.146429, "valide": 0.208893, "cambia": 0.0535714, "nv": 56}, {"ind": "Stabilità (coalizioni instabili)", "inv": 0.104545, "valide": 0.155932, "cambia": 0.0, "nv": 56}, {"ind": "Uniformità (Gini)", "inv": 0.100325, "valide": 0.153961, "cambia": 0.0, "nv": 56}, {"ind": "Uniformità (EI)", "inv": 0.100325, "valide": 0.153961, "cambia": 0.0, "nv": 56}, {"ind": "Forza incentivante (netta)", "inv": 0.0912338, "valide": 0.127438, "cambia": 0.0535714, "nv": 56}, {"ind": "Allineamento virtuosità (netto)", "inv": 0.061039, "valide": 0.128415, "cambia": 0.0, "nv": 56}, {"ind": "VAN del membro peggiore", "inv": 0.0457792, "valide": 0.0797511, "cambia": 0.0714286, "nv": 56}, {"ind": "Stabilità (eccesso max)", "inv": 0.0435065, "valide": 0.0830235, "cambia": 0.0, "nv": 56}], "pa_ind_liv": [{"ind": "Uniformità (EI)", "inv1": 0.111818, "cambia1": 0.0, "inv2": 0.0842105, "cambia2": 0.0, "inv3": 0.104813, "cambia3": 0.0}, {"ind": "Uniformità (Gini)", "inv1": 0.111818, "cambia1": 0.0, "inv2": 0.0842105, "cambia2": 0.0, "inv3": 0.104813, "cambia3": 0.0}, {"ind": "Merito (Fairness Index)", "inv1": 0.0590909, "cambia1": 0.05, "inv2": 0.205742, "cambia2": 0.0, "inv3": 0.182888, "cambia3": 0.117647}, {"ind": "Merito (σ)", "inv1": 0.0809091, "cambia1": 0.15, "inv2": 0.242105, "cambia2": 0.157895, "inv3": 0.24385, "cambia3": 0.529412}, {"ind": "Stabilità (eccesso max)", "inv1": 0.0272727, "cambia1": 0.0, "inv2": 0.0574163, "cambia2": 0.0, "inv3": 0.0470588, "cambia3": 0.0}, {"ind": "Stabilità (coalizioni instabili)", "inv1": 0.107273, "cambia1": 0.0, "inv2": 0.100478, "cambia2": 0.0, "inv3": 0.105882, "cambia3": 0.0}, {"ind": "Forza incentivante (netta)", "inv1": 0.0618182, "cambia1": 0.15, "inv2": 0.109091, "cambia2": 0.0, "inv3": 0.105882, "cambia3": 0.0}, {"ind": "Allineamento virtuosità (netto)", "inv1": 0.0236364, "cambia1": 0.0, "inv2": 0.0755981, "cambia2": 0.0, "inv3": 0.0887701, "cambia3": 0.0}, {"ind": "Allineamento virtuosità (lordo)", "inv1": 0.414545, "cambia1": 0.85, "inv2": 0.316746, "cambia2": 0.631579, "inv3": 0.206417, "cambia3": 0.411765}, {"ind": "VAN del membro peggiore", "inv1": 0.0554545, "cambia1": 0.05, "inv2": 0.0363636, "cambia2": 0.0526316, "inv3": 0.0449198, "cambia3": 0.117647}], "asse": {"n": 20, "quota": 0.23314044999999997, "min": 0.152066, "max": 0.312397}, "by_taglia": {"PA0-PA1": {"5": 0.11942125, "8": 0.09628085, "10": 0.082644575, "15": 0.087189925, "18": 0.09338830000000001}, "PA0-PA2": {"5": 0.12396693333333335, "8": 0.13057825, "10": 0.11859525, "15": 0.115702475, "18": 0.10867785}, "PA0-PA3": {"5": 0.10909075, "8": 0.12561966666666666, "10": 0.11942150000000001, "15": 0.10991725, "18": 0.09917342500000001}}, "by_fascia": {"PA0-PA1": {"1": 0.1411568, "2": 0.08066118, "3": 0.05123956, "4": 0.11008238000000001}, "PA0-PA2": {"1": 0.12231425, "2": 0.1504132, "3": 0.12396692000000001, "4": 0.0809917}, "PA0-PA3": {"1": 0.11955900000000001, "2": 0.129752, "3": 0.11074366, "4": 0.09553718}}, "per_conf_range": {"PA0-PA1": [0.0363636, 0.152066], "PA0-PA2": [0.0628099, 0.166942], "PA0-PA3": [0.0694215, 0.14876]}, "tradeoff": [{"scelto": "uniformità", "perde": "stabilità", "k": 1, "pa0": 0.722462, "pak": 0.789093, "n": 20}, {"scelto": "uniformità", "perde": "stabilità", "k": 2, "pa0": 0.736381, "pak": 0.848168, "n": 19}, {"scelto": "uniformità", "perde": "stabilità", "k": 3, "pa0": 0.768918, "pak": 0.898206, "n": 17}, {"scelto": "uniformità", "perde": "incentivo", "k": 1, "pa0": 0.792226, "pak": 0.715377, "n": 20}, {"scelto": "uniformità", "perde": "incentivo", "k": 2, "pa0": 0.817393, "pak": 0.70997, "n": 19}, {"scelto": "uniformità", "perde": "incentivo", "k": 3, "pa0": 0.84229, "pak": 0.674687, "n": 17}, {"scelto": "stabilità", "perde": "uniformità", "k": 1, "pa0": 0.613165, "pak": 0.671298, "n": 20}, {"scelto": "stabilità", "perde": "uniformità", "k": 2, "pa0": 0.608074, "pak": 0.73026, "n": 19}, {"scelto": "stabilità", "perde": "uniformità", "k": 3, "pa0": 0.630526, "pak": 0.812868, "n": 17}, {"scelto": "stabilità", "perde": "incentivo", "k": 1, "pa0": 0.237938, "pak": 0.113707, "n": 20}, {"scelto": "stabilità", "perde": "incentivo", "k": 2, "pa0": 0.210217, "pak": 0.32441, "n": 19}, {"scelto": "stabilità", "perde": "incentivo", "k": 3, "pa0": 0.178192, "pak": 0.160921, "n": 17}, {"scelto": "incentivo", "perde": "uniformità", "k": 1, "pa0": 0.929691, "pak": 0.82285, "n": 20}, {"scelto": "incentivo", "perde": "uniformità", "k": 2, "pa0": 0.951424, "pak": 0.63292, "n": 19}, {"scelto": "incentivo", "perde": "uniformità", "k": 3, "pa0": 0.960039, "pak": 0.643748, "n": 17}, {"scelto": "incentivo", "perde": "stabilità", "k": 1, "pa0": 0.292138, "pak": 0.228301, "n": 20}, {"scelto": "incentivo", "perde": "stabilità", "k": 2, "pa0": 0.270435, "pak": 0.740748, "n": 19}, {"scelto": "incentivo", "perde": "stabilità", "k": 3, "pa0": 0.26017, "pak": 0.712618, "n": 17}], "cluster": {"0": [{"rep": "Uniformità (EI)", "ind": ["Uniformità (EI)", "Uniformità (Gini)", "VAN del membro peggiore"]}, {"rep": "Merito (σ)", "ind": ["Merito (Fairness Index)", "Merito (σ)", "Stabilità (coalizioni instabili)", "Stabilità (eccesso max)"]}, {"rep": "Forza incentivante (netta)", "ind": ["Forza incentivante (netta)", "Allineamento virtuosità (netto)"]}, {"rep": "Allineamento virtuosità (lordo)", "ind": ["Allineamento virtuosità (lordo)"]}], "1": [{"rep": "Uniformità (EI)", "ind": ["Uniformità (EI)", "Uniformità (Gini)", "VAN del membro peggiore"]}, {"rep": "Merito (Fairness Index)", "ind": ["Merito (Fairness Index)", "Merito (σ)", "Stabilità (coalizioni instabili)", "Stabilità (eccesso max)"]}, {"rep": "Forza incentivante (netta)", "ind": ["Forza incentivante (netta)", "Allineamento virtuosità (netto)"]}, {"rep": "Allineamento virtuosità (lordo)", "ind": ["Allineamento virtuosità (lordo)"]}], "2": [{"rep": "Uniformità (EI)", "ind": ["Uniformità (EI)", "Uniformità (Gini)", "VAN del membro peggiore"]}, {"rep": "Merito (Fairness Index)", "ind": ["Merito (Fairness Index)", "Merito (σ)", "Allineamento virtuosità (lordo)", "Stabilità (eccesso max)", "Stabilità (coalizioni instabili)"]}, {"rep": "Forza incentivante (netta)", "ind": ["Forza incentivante (netta)", "Allineamento virtuosità (netto)"]}], "3": [{"rep": "Uniformità (EI)", "ind": ["Uniformità (EI)", "Uniformità (Gini)", "VAN del membro peggiore"]}, {"rep": "Merito (Fairness Index)", "ind": ["Merito (Fairness Index)", "Merito (σ)", "Stabilità (eccesso max)", "Stabilità (coalizioni instabili)"]}, {"rep": "Forza incentivante (netta)", "ind": ["Forza incentivante (netta)", "Allineamento virtuosità (netto)"]}, {"rep": "Allineamento virtuosità (lordo)", "ind": ["Allineamento virtuosità (lordo)"]}]}, "scala": {"0": {"med": 1.0, "min": 1.0, "max": 1.0, "n": 20}, "1": {"med": 1.31692, "min": 1.17307, "max": 2.25515, "n": 20}, "2": {"med": 5.74397, "min": 2.78487, "max": 51.3458, "n": 19}, "3": {"med": 11.4229, "min": 4.96743, "max": 106.596, "n": 17}}, "err_scaglione": {"med": 7.8882, "min": 7.8596, "max": 7.91308}, "quota_pa": [{"metodo": "Proportional to Consumption", "v": [0.9201705, 4.65264, 3.27381]}, {"metodo": "Tri-level EP", "v": [0.4393645, 4.52174, 3.26789]}, {"metodo": "Pearson Key", "v": [0.3736305, 4.33085, 3.25019]}, {"metodo": "Nucleolo", "v": [2.1815100000000003, 4.15023, 3.20717]}, {"metodo": "Variance Least Core", "v": [1.9889299999999999, 4.09465, 3.19043]}, {"metodo": "Remuneration Model 1", "v": [4.78693, 4.08519, 3.10751]}, {"metodo": "Shapley", "v": [2.20904, 4.00975, 3.06685]}, {"metodo": "Adaptive Sampling Shapley", "v": [2.221255, 4.01619, 3.06177]}, {"metodo": "Cascading Tree", "v": [3.9035400000000005, 3.34074, 2.58336]}, {"metodo": "Weighted Solidarity", "v": [1.2670849999999998, 3.21406, 2.45547]}, {"metodo": "Equal Split", "v": [1.0, 1.0, 1.0]}, {"metodo": "Similarity-Utilization", "v": [0.1597375, 0.653828, 0.836536]}]};
+const LV = ['PA0', 'PA1', 'PA2', 'PA3'];
+const LVC = ['var(--lv0)', 'var(--lv1)', 'var(--lv2)', 'var(--lv3)'];
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- utilita' ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const pct = (x, d = 1) => (x * 100).toFixed(d).replace('.', ',') + '%';
+const num = (x, d = 2) => x.toFixed(d).replace('.', ',');
+const sgn = (x, d = 2) => (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d).replace('.', ',');
+function S(tag, attrs, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+function H(tag, attrs, text) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+function isDark() {
+  const t = document.documentElement.dataset.theme;
+  return t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+}
+
+/* ---------- tooltip ---------- */
+const tip = $('#tip');
+function showTip(evt, lines) {
+  tip.replaceChildren();
+  lines.forEach((t, i) => { const d = document.createElement('div'); d.textContent = t; if (i === 0) d.className = 'v'; tip.appendChild(d); });
+  tip.hidden = false;
+  moveTip(evt);
+}
+function moveTip(evt) {
+  const r = tip.getBoundingClientRect();
+  let x = evt.clientX + 14, y = evt.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - 14;
+  tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+function attachTip(node, lines) {
+  node.addEventListener('pointermove', e => showTip(e, lines));
+  node.addEventListener('pointerleave', hideTip);
+  node.addEventListener('focus', () => { const r = node.getBoundingClientRect(); showTip({ clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 }, lines); });
+  node.addEventListener('blur', hideTip);
+}
+
+/* ---------- colori per le mappe ---------- */
+const RAMP = ['#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', '#3987e5', '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b'];
+const hex2 = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => { const A = hex2(a), B = hex2(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
+function lum(h) { const c = hex2(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function textOn(bg) { const L = lum(bg); return (1.05 / (L + 0.05)) > ((L + 0.05) / 0.0555) ? '#ffffff' : '#0b0b0b'; }
+function rampAt(t) {
+  t = Math.min(1, Math.max(0, t));
+  if (isDark()) t = 1 - t;                     // sul fondo scuro il valore alto e' il piu' chiaro
+  const x = t * (RAMP.length - 1), i = Math.min(RAMP.length - 2, Math.floor(x));
+  return mix(RAMP[i], RAMP[i + 1], x - i);
+}
+function divAt(r) {                            // r = rapporto, 1 = neutro
+  const dark = isDark();
+  const mid = dark ? '#383835' : '#f0efec', blue = dark ? '#3987e5' : '#2a78d6', red = dark ? '#e66767' : '#e34948';
+  const x = Math.max(-3, Math.min(3, Math.log2(Math.max(r, 1e-3)))) / 3;
+  return x >= 0 ? mix(mid, blue, x * 0.85) : mix(mid, red, -x * 0.85);
+}
+
+/* ---------- tabella gemella ---------- */
+function twin(card, headers, rows) {
+  const old = card.querySelector('.twin'); if (old) { old.remove(); const o2 = card.querySelector('.twin-t.gen'); if (o2) o2.remove(); }
+  const btn = H('button', { class: 'ghost twin', type: 'button' }, 'Mostra la tabella dei valori');
+  const box = H('div', { class: 'twin-t gen' });
+  const t = H('table'); const th = H('thead'); const trh = H('tr');
+  headers.forEach((h, i) => trh.appendChild(H('th', { class: i ? 'n' : '' }, h)));
+  th.appendChild(trh); t.appendChild(th);
+  const tb = H('tbody');
+  rows.forEach(r => { const tr = H('tr'); r.forEach((c, i) => tr.appendChild(H('td', { class: i ? 'n' : '' }, String(c)))); tb.appendChild(tr); });
+  t.appendChild(tb); box.appendChild(t);
+  btn.addEventListener('click', () => { const on = box.classList.toggle('on'); btn.textContent = on ? 'Nascondi la tabella dei valori' : 'Mostra la tabella dei valori'; });
+  card.appendChild(btn); card.appendChild(box);
+}
+
+/* ---------- barre orizzontali, una o piu' colonne di pannelli ---------- */
+function wrapText(text, max) {
+  const w = text.split(' '); const lines = []; let cur = '';
+  for (const t of w) { if (cur && (cur + ' ' + t).length > max) { lines.push(cur); cur = t; } else cur = (cur ? cur + ' ' : '') + t; }
+  if (cur) lines.push(cur);
+  return lines.slice(0, 3);
+}
+function barPath(x, y, w, h, r) {
+  if (w <= 0) return '';
+  if (w < 2 * r) return `M${x},${y} h${w} v${h} h${-w} Z`;
+  return `M${x},${y} H${x + w - r} A${r},${r} 0 0 1 ${x + w},${y + r} V${y + h - r} A${r},${r} 0 0 1 ${x + w - r},${y + h} H${x} Z`;
+}
+function hbar(host, spec) {
+  host.replaceChildren();
+  const W = Math.max(300, Math.floor(host.clientWidth || 640));
+  const labW = W < 560 ? Math.round(W * 0.38) : Math.min(270, Math.round(W * 0.34));
+  const cpl = Math.floor((labW - 8) / 6.4);
+  const P = spec.panels, gap = 14, labSpace = 46;
+  const pw = (W - labW - gap * (P.length - 1)) / P.length, pl = Math.max(40, pw - labSpace);
+  const topH = P.length > 1 ? 26 : 8, axisH = 24, headH = 28, rowH = 32, bar = 18;
+  let y = topH; const items = [];
+  for (const r of spec.rows) {
+    if (r.head) { items.push({ head: r.head, y }); y += headH; }
+    else { const lines = wrapText(r.label, cpl); const h = Math.max(rowH, lines.length * 14 + 12); items.push({ r, lines, y, h }); y += h; }
+  }
+  const Ht = y + axisH;
+  const svg = S('svg', { width: W, height: Ht, viewBox: `0 0 ${W} ${Ht}`, role: 'img', 'aria-label': spec.aria });
+  P.forEach((p, i) => {
+    const x0 = labW + i * (pw + gap);
+    if (P.length > 1) svg.appendChild(S('text', { x: x0, y: 14, class: 'ptitle' }, p.title));
+    p.ticks.forEach(t => {
+      const x = x0 + t / p.max * pl;
+      svg.appendChild(S('line', { x1: x, x2: x, y1: topH - 4, y2: y, class: 'grid' }));
+      svg.appendChild(S('text', { x: x, y: y + 16, class: 'tick', 'text-anchor': 'middle' }, p.axisFmt(t)));
+    });
+    svg.appendChild(S('line', { x1: x0, x2: x0, y1: topH - 4, y2: y, class: 'axis' }));
+  });
+  for (const it of items) {
+    if (it.head) { svg.appendChild(S('text', { x: 0, y: it.y + 18, class: 'head' }, it.head)); continue; }
+    const r = it.r;
+    const g = S('g', { class: 'row', tabindex: '0', 'aria-label': r.tip.join('. ') });
+    g.appendChild(S('rect', { x: 0, y: it.y, width: W, height: it.h, class: 'wash', rx: 4 }));
+    const ty = it.y + it.h / 2 - (it.lines.length - 1) * 7 + 4;
+    const lt = S('text', { x: 0, y: ty, class: 'lab' });
+    it.lines.forEach((ln, k) => { const ts = S('tspan', { x: 0, dy: k ? 14 : 0 }, ln); lt.appendChild(ts); });
+    g.appendChild(lt);
+    P.forEach((p, i) => {
+      const v = r.values[p.key]; if (v == null) return;
+      const x0 = labW + i * (pw + gap), w = Math.max(0, v / p.max * pl), cy = it.y + it.h / 2;
+      g.appendChild(S('path', { d: barPath(x0, cy - bar / 2, w, bar, 4), style: `fill:${r.color || 'var(--s1)'}` }));
+      g.appendChild(S('text', { x: x0 + w + 6, y: cy + 4, class: 'val' }, p.fmt(v)));
+    });
+    attachTip(g, r.tip);
+    svg.appendChild(g);
+  }
+  host.appendChild(svg);
+}
+
+/* ---------- dumbbell (prima -> dopo) ---------- */
+function dumbbell(host, spec) {
+  host.replaceChildren();
+  const W = Math.max(300, Math.floor(host.clientWidth || 640));
+  const labW = 92, right = 56, pl = W - labW - right, rowH = 26, headH = 30, topH = 6, axisH = 24;
+  let y = topH; const layout = [];
+  for (const g of spec.groups) { layout.push({ head: g.title, y }); y += headH; for (const r of g.rows) { layout.push({ r, y }); y += rowH; } y += 6; }
+  const Ht = y + axisH;
+  const svg = S('svg', { width: W, height: Ht, viewBox: `0 0 ${W} ${Ht}`, role: 'img', 'aria-label': spec.aria });
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const x = labW + t * pl;
+    svg.appendChild(S('line', { x1: x, x2: x, y1: topH, y2: y, class: 'grid' }));
+    svg.appendChild(S('text', { x: x, y: y + 16, class: 'tick', 'text-anchor': 'middle' }, num(t, t === 0 || t === 1 ? 0 : 2)));
+  });
+  svg.appendChild(S('line', { x1: labW, x2: labW, y1: topH, y2: y, class: 'axis' }));
+  for (const it of layout) {
+    if (it.head) { svg.appendChild(S('text', { x: 0, y: it.y + 20, class: 'head' }, it.head)); continue; }
+    const r = it.r, cy = it.y + rowH / 2, xa = labW + r.a * pl, xb = labW + r.b * pl;
+    const g = S('g', { class: 'row', tabindex: '0', 'aria-label': r.tip.join('. ') });
+    g.appendChild(S('rect', { x: 0, y: it.y, width: W, height: rowH, class: 'wash', rx: 4 }));
+    g.appendChild(S('text', { x: 0, y: cy + 4, class: 'lab' }, r.label));
+    g.appendChild(S('line', { x1: xa, x2: xb, y1: cy, y2: cy, style: 'stroke:var(--muted);stroke-width:2;stroke-linecap:round' }));
+    g.appendChild(S('circle', { cx: xa, cy: cy, r: 5, style: `fill:${LVC[0]};stroke:var(--surface);stroke-width:2` }));
+    g.appendChild(S('circle', { cx: xb, cy: cy, r: 5, style: `fill:${r.colorB};stroke:var(--surface);stroke-width:2` }));
+    g.appendChild(S('text', { x: W - right + 8, y: cy + 4, class: 'val' }, sgn(r.b - r.a)));
+    attachTip(g, r.tip);
+    svg.appendChild(g);
+  }
+  host.appendChild(svg);
+}
+
+/* ---------- mappe (tabelle colorate) ---------- */
+function heat(host, spec) {
+  host.replaceChildren();
+  const t = H('table', { class: 'heat' });
+  const thead = H('thead'); const trh = H('tr'); trh.appendChild(H('th', {}, spec.corner || ''));
+  spec.cols.forEach(c => trh.appendChild(H('th', { scope: 'col' }, c)));
+  thead.appendChild(trh); t.appendChild(thead);
+  const tb = H('tbody');
+  spec.rows.forEach(r => {
+    const tr = H('tr'); tr.appendChild(H('th', { scope: 'row', class: 'rl' }, r.label));
+    r.cells.forEach(c => {
+      const td = H('td'); const d = H('div', { tabindex: '0', 'aria-label': c.tip.join('. ') }, c.text);
+      d.style.background = c.bg; d.style.color = textOn(c.bg);
+      attachTip(d, c.tip); td.appendChild(d); tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); host.appendChild(t);
+}
+
+/* ---------- testo e tessere (una volta) ---------- */
+const tot = Object.fromEntries(D.pa_tot.map(r => [r.conf, r]));
+const ge1 = tot['PA0 contro PA>=1'];
+const sw = D.sweeps;
+const mediaPen = sw.filter(s => s.sweep === 'penetrazione').reduce((a, s) => a + s.quota, 0) / 5;
+const mediaTag = sw.filter(s => s.sweep === 'taglia').reduce((a, s) => a + s.quota, 0) / 4;
+const zero = D.pa_ind.filter(r => r.cambia === 0).map(r => r.ind);
+const ind1 = D.pa_ind[0], ind2 = D.pa_ind[1];
+
+function tile(l, v, d) { const t = H('div', { class: 'tile' }); t.appendChild(H('div', { class: 'l' }, l)); t.appendChild(H('div', { class: 'v' }, v)); t.appendChild(H('div', { class: 'd' }, d)); return t; }
+$('#sub').textContent = 'MAIN2 del 20 ottobre 2026 · tutte le schede fino a 18 membri, livelli PA0-PA3 · 76 comunità · 2 h 31 min · parametri LIHC definitivi';
+const tr = $('#tiles-run');
+tr.append(tile('Comunità analizzate', '76', '20 + 20 + 19 + 17 nei livelli PA0, PA1, PA2, PA3'),
+          tile('Errori e avvisi', '0', 'run concluso senza interruzioni'),
+          tile('Livello 0 vs 13 ottobre', 'stesse quote', 'cambia solo il Tri-level EP; inclusione non valutabile'),
+          tile('Confronti con / senza PA', String(ge1.com), 'schede presenti a livello 0 e a un livello con PA'));
+const tp = $('#tiles-pa');
+tp.append(tile('Coppie di metodi invertite', pct(ge1.quota), `${pct(ge1.valide)} sulle coppie valutabili (non a pari in entrambi i livelli)`),
+          tile('Il vincitore cambia', pct(ge1.cambia), 'quota di (indicatore, comunità) senza vincitori in comune'),
+          tile('Lungo l’asse PA0 → PA3', pct(D.asse.quota), `media su ${D.asse.n} schede (da ${pct(D.asse.min, 0)} a ${pct(D.asse.max, 0)})`));
+const ts = $('#tiles-sc');
+ts.append(tile('v(N) a PA1 rispetto a PA0', '×' + num(D.scala[1].med, 1), `mediana; da ×${num(D.scala[1].min, 1)} a ×${num(D.scala[1].max, 1)}`),
+          tile('v(N) a PA2', '×' + num(D.scala[2].med, 1), `mediana; da ×${num(D.scala[2].min, 1)} a ×${num(D.scala[2].max, 0)}`),
+          tile('v(N) a PA3', '×' + num(D.scala[3].med, 1), `mediana; da ×${num(D.scala[3].min, 1)} a ×${num(D.scala[3].max, 0)}`));
+
+const sint = $('#sintesi');
+[
+  `Aggiungere PA inverte l’ordine di ${pct(ge1.quota)} delle coppie di metodi (${pct(ge1.valide)} di quelle valutabili); lungo tutto l’asse PA0 → PA3 si arriva a ${pct(D.asse.quota)}, come una scansione di penetrazione (${pct(mediaPen)}) e molto più di una di taglia (${pct(mediaTag)}).`,
+  `Il primo classificato cambia nel ${pct(ge1.cambia)} dei casi, ma non per tutte le nozioni: non cambia mai per ${zero.join(', ')}. Sull’uniformità vince sempre l’Equal Split.`,
+  `Gli indicatori più sensibili alla PA sono ${ind1.ind} (${pct(ind1.inv)} di coppie invertite, vincitore diverso nel ${pct(ind1.cambia, 0)} dei casi) e ${ind2.ind} (${pct(ind2.inv)}).`,
+  `Con PA il metodo che vince sulla forza incentivante è molto peggiore sulla stabilità: la perdita passa da ${num(D.tradeoff.find(t => t.scelto === 'incentivo' && t.perde === 'stabilità' && t.k === 3).pa0)} a ${num(D.tradeoff.find(t => t.scelto === 'incentivo' && t.perde === 'stabilità' && t.k === 3).pak)} a PA3.`,
+  `Il sottoinsieme minimo di indicatori dipende dalla composizione: ${D.cluster[0].length}, ${D.cluster[1].length}, ${D.cluster[2].length} e ${D.cluster[3].length} gruppi a PA0, PA1, PA2, PA3.`,
+  `Le PA cambiano la scala del problema, non solo la composizione: v(N) mediano ×${num(D.scala[3].med, 1)} a PA3 rispetto a PA0.`
+].forEach(t => $('#sintesi').appendChild(H('li', {}, t)));
+
+const cau = [
+  'Inclusione LIHC: con y* = 13.237 € per adulto equivalente e redditi pari alla media Istat della tipologia (±15%) nessuna famiglia è vulnerabile, quindi l’indicatore non è valutabile e il Tri-level EP non ha fetta di solidarietà. P50 (1.652 €) è una ricostruzione lombarda, il markup (3,02) una media di tutti i domestici.',
+  `Scaglione unico: la tariffa è identica nei quattro livelli, ma a PA3 il palazzetto (310,5 kWp) per norma avrebbe 70/110 €/MWh. L’errore massimo è ${num(D.err_scaglione.med, 1)}% di v(N) (${num(D.err_scaglione.min, 1)}–${num(D.err_scaglione.max, 1)}%), nell’ipotesi che tutta l’energia condivisa venga dal palazzetto.`,
+  'Griglie incomplete: PA2 ha 19 schede e PA3 17 (mancano quelle con meno prosumer che PA). I confronti sono fatti sulle schede presenti in entrambi i livelli.',
+  'Il confronto a coppie ha due configurazioni, la scansione di livello 0 ne ha quattro o cinque: i numeri a coppie vanno letti accanto alla riga «lungo l’asse».',
+  'Dati PA da confermare: FV del comune 5,2 volte il suo carico, FV del palazzetto 1,37 volte, 448 kW di potenza impegnata che pesano sul Remuneration Model 1.',
+  'Le schede PA non sono versionate (si rigenerano con genera_varianti_PA.py) e le tabelle nuove non sono ancora state committate.'
+];
+cau.forEach(t => $('#cautela').appendChild(H('li', {}, t)));
+$('#fonti').textContent = 'Fonti: outputs/tables_main2/ (confronto/, sintesi/), outputs/tables_main2/PA1-PA3/ e outputs/tables_main2/confronto_PA/. Definizioni: README §7.10.';
+
+/* ---------- legende ---------- */
+function legend(host, items) {
+  host.replaceChildren();
+  items.forEach(it => { const s = H('span'); const i = H('i'); i.style.background = it.color; s.appendChild(i); s.appendChild(document.createTextNode(it.label)); host.appendChild(s); });
+}
+legend($('#l-conf'), [{ color: 'var(--ref)', label: 'livello 0, lungo un fattore (riferimento)' }, { color: 'var(--s1)', label: 'presenza di PA' }]);
+legend($('#l-ind'), [{ color: 'var(--s1)', label: 'quota osservata' }]);
+legend($('#l-tr'), LV.map((l, i) => ({ color: LVC[i], label: l })));
+
+/* ---------- tabelle statiche: vincitori e gruppi ---------- */
+function fmtWin(cell) {
+  const e = Object.entries(cell.conta).sort((a, b) => b[1] - a[1]);
+  const nm = k => k === '(pari)' ? 'a pari' : k === 'non discrimina' ? 'non ordina' : k;
+  if (e.length === 1) return `${nm(e[0][0])} · ${e[0][1]}/${cell.n}`;
+  return e.map(([k, c]) => `${nm(k)} ${c}`).join(' · ');
+}
+function buildWinners() {
+  const box = $('#t-win'); box.replaceChildren();
+  const t = H('table'); const trh = H('tr');
+  ['Indicatore', ...LV].forEach(h => trh.appendChild(H('th', {}, h)));
+  t.appendChild(H('thead')).appendChild(trh);
+  const tb = H('tbody');
+  D.vincitori.forEach(row => {
+    const tr = H('tr'); tr.appendChild(H('td', {}, row.ind));
+    const share = c => Object.fromEntries(Object.entries(c.conta).map(([k, v]) => [k, v / c.n]));
+    const base = share(row.liv[0]);
+    // una cella si evidenzia se la distribuzione dei vincitori si sposta di oltre 20 punti rispetto a PA0
+    const differs = c => { const s = share(c); return [...new Set([...Object.keys(base), ...Object.keys(s)])].some(k => Math.abs((s[k] || 0) - (base[k] || 0)) > 0.2); };
+    row.liv.forEach((c, i) => {
+      const td = H('td', i && differs(c) ? { class: 'chg' } : {}, fmtWin(c));
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); box.appendChild(t);
+}
+function buildClusters() {
+  const host = $('#cl'); host.replaceChildren();
+  LV.forEach((l, i) => {
+    const d = H('div', { class: 'lv' });
+    const h = H('h4'); const s = H('span', { class: 'sw' }); s.style.background = LVC[i];
+    h.appendChild(s); h.appendChild(document.createTextNode(`${l} · ${D.cluster[i].length} gruppi`)); d.appendChild(h);
+    D.cluster[i].forEach(g => {
+      const p = H('div', { class: 'g' }); p.appendChild(H('b', {}, g.rep)); p.appendChild(document.createTextNode(' ← ' + g.ind.join(', ')));
+      d.appendChild(p);
+    });
+    host.appendChild(d);
+  });
+}
+buildWinners(); buildClusters();
+
+/* ---------- disegno dei grafici (ripetuto al resize e al cambio tema) ---------- */
+function renderAll() {
+  $('#sc-seq').style.background = 'linear-gradient(90deg,' + [0, .25, .5, .75, 1].map(t => rampAt(t)).join(',') + ')';
+  // 1. sweep di livello 0
+  const rowsS = [{ head: 'Penetrazione dei prosumer (a taglia fissa)' }];
+  sw.filter(s => s.sweep === 'penetrazione').forEach(s => rowsS.push({ label: s.fisso.replace('n = ', '') + ' membri', values: { q: s.quota }, tip: [pct(s.quota), `${s.inv} serie invertite su ${s.serie}`, `scansione di ${s.conf} configurazioni, ${s.fisso}`] }));
+  rowsS.push({ head: 'Taglia della comunità (a penetrazione fissa)' });
+  sw.filter(s => s.sweep === 'taglia').forEach(s => rowsS.push({ label: s.fisso.replace('fascia', 'fascia'), values: { q: s.quota }, tip: [pct(s.quota), `${s.inv} serie invertite su ${s.serie}`, `scansione di ${s.conf} configurazioni, ${s.fisso}`] }));
+  hbar($('#c-sweep'), { aria: 'Coppie invertite per scansione di livello 0', rows: rowsS,
+    panels: [{ key: 'q', max: 0.4, ticks: [0, 0.1, 0.2, 0.3, 0.4], axisFmt: t => pct(t, 0), fmt: v => pct(v) }] });
+  twin($('#fig-sweep'), ['Scansione', 'Fisso', 'Configurazioni', 'Serie invertite', 'Quota'], sw.map(s => [s.sweep, s.fisso, s.conf, s.inv, pct(s.quota)]));
+
+  // 2. confronto con riferimento
+  const t1 = tot['PA0-PA1'], t2 = tot['PA0-PA2'], t3 = tot['PA0-PA3'];
+  const mk = (label, t) => ({ label: `${label} (${t.com} comunità)`, color: 'var(--s1)', values: { q: t.quota }, tip: [pct(t.quota), `${pct(t.valide)} sulle coppie valutabili`, `${t.inv} serie invertite su ${t.serie}`] });
+  hbar($('#c-conf'), { aria: 'Coppie invertite: riferimento e confronti con PA',
+    rows: [{ head: 'Riferimento: livello 0, un fattore alla volta' },
+      { label: 'Penetrazione (media su 5 taglie)', color: 'var(--ref)', values: { q: mediaPen }, tip: [pct(mediaPen), 'media delle 5 scansioni di penetrazione'] },
+      { label: 'Taglia (media su 4 fasce)', color: 'var(--ref)', values: { q: mediaTag }, tip: [pct(mediaTag), 'media delle 4 scansioni di taglia'] },
+      { head: 'Presenza di PA' },
+      mk('PA0 → PA1', t1), mk('PA0 → PA2', t2), mk('PA0 → PA3', t3),
+      { label: `Lungo l’asse PA0 → PA3 (${D.asse.n} schede)`, color: 'var(--s1)', values: { q: D.asse.quota }, tip: [pct(D.asse.quota), `da ${pct(D.asse.min)} a ${pct(D.asse.max)} secondo la scheda`, 'scansione di 4 configurazioni'] }],
+    panels: [{ key: 'q', max: 0.4, ticks: [0, 0.1, 0.2, 0.3, 0.4], axisFmt: t => pct(t, 0), fmt: v => pct(v) }] });
+  twin($('#fig-conf'), ['Confronto', 'Comunità', 'Coppie invertite', 'Sulle valutabili', 'Vincitore cambia'],
+    [['Penetrazione (media)', '-', pct(mediaPen), '-', '-'], ['Taglia (media)', '-', pct(mediaTag), '-', '-'],
+     ...D.pa_tot.map(t => [t.conf, t.com, pct(t.quota), pct(t.valide), pct(t.cambia)]), ['Asse PA0>PA3', D.asse.n, pct(D.asse.quota), '-', '-']]);
+
+  // 3. per indicatore
+  const seg = r => false;
+  hbar($('#c-ind'), { aria: 'Sensibilità degli indicatori alla presenza di PA',
+    rows: D.pa_ind.map(r => ({ label: r.ind, color: seg(r) ? 'var(--ref)' : 'var(--s1)', values: { inv: r.inv, cb: r.cambia },
+      tip: [`${pct(r.inv)} coppie invertite`, `${pct(r.valide)} sulle valutabili`, `vincitore diverso in ${pct(r.cambia, 0)} dei casi (${r.nv} confronti)`] })),
+    panels: [{ key: 'inv', title: 'Coppie invertite', max: 0.4, ticks: [0, 0.2, 0.4], axisFmt: t => pct(t, 0), fmt: v => pct(v, 0) },
+             { key: 'cb', title: 'Il vincitore cambia', max: 0.8, ticks: [0, 0.4, 0.8], axisFmt: t => pct(t, 0), fmt: v => pct(v, 0) }] });
+  twin($('#fig-ind'), ['Indicatore', 'Coppie invertite', 'Sulle valutabili', 'Vincitore cambia', 'Confronti'],
+    D.pa_ind.map(r => [r.ind, pct(r.inv), pct(r.valide), pct(r.cambia, 0), r.nv]));
+
+  // 4. mappe taglia / fascia
+  const confs = ['PA0-PA1', 'PA0-PA2', 'PA0-PA3'];
+  const cell = (v, ctx) => ({ bg: rampAt(v / 0.2), text: pct(v, 0), tip: [pct(v), ctx] });
+  const taglie = [5, 8, 10, 15, 18], fasce = [1, 2, 3, 4];
+  heat($('#h-taglia'), { corner: 'Per taglia', cols: taglie.map(n => n + ' membri'),
+    rows: confs.map((c, i) => ({ label: c.replace('PA0-', 'PA0 → '), cells: taglie.map(n => cell(D.by_taglia[c][n], `${c.replace('PA0-', 'PA0 → ')}, ${n} membri`)) })) });
+  heat($('#h-fascia'), { corner: 'Per fascia di penetrazione', cols: fasce.map(f => 'fascia ' + f),
+    rows: confs.map((c, i) => ({ label: c.replace('PA0-', 'PA0 → '), cells: fasce.map(f => cell(D.by_fascia[c][f], `${c.replace('PA0-', 'PA0 → ')}, fascia ${f}`)) })) });
+
+  // 5. dumbbell trade-off
+  const pairs = {};
+  D.tradeoff.forEach(t => { const k = `Scelgo ${t.scelto} → perdo in ${t.perde}`; (pairs[k] = pairs[k] || []).push(t); });
+  const groups = Object.entries(pairs).map(([title, rows]) => ({ title, mean: rows.reduce((a, r) => a + Math.abs(r.pak - r.pa0), 0) / rows.length,
+    rows: rows.sort((a, b) => a.k - b.k).map(r => ({ label: `PA${r.k} · ${r.n} sch.`, a: r.pa0, b: r.pak, colorB: LVC[r.k],
+      tip: [`${num(r.pa0)} → ${num(r.pak)} (${sgn(r.pak - r.pa0)})`, `PA0 → PA${r.k}, ${r.n} schede comuni`, title] })) }))
+    .sort((a, b) => b.mean - a.mean);
+  dumbbell($('#c-tr'), { aria: 'Perdite fra criteri a PA0 e con PA', groups });
+  twin($('#fig-tr'), ['Scelgo → perdo', 'Livello', 'Schede', 'PA0', 'PAk', 'Differenza'],
+    D.tradeoff.map(t => [`${t.scelto} → ${t.perde}`, 'PA' + t.k, t.n, num(t.pa0), num(t.pak), sgn(t.pak - t.pa0)]));
+
+  // 6. quote ai membri PA
+  heat($('#h-quota'), { corner: 'Metodo', cols: ['PA1', 'PA2', 'PA3'],
+    rows: D.quota_pa.map(m => ({ label: m.metodo, cells: m.v.map((v, i) => ({ bg: divAt(v), text: num(v), tip: [num(v) + '× la quota di membri', `${m.metodo}, PA${i + 1}`, v < 1 ? 'le PA ricevono meno della loro quota di membri' : v > 1 ? 'le PA ricevono più della loro quota di membri' : 'in proporzione al numero di membri'] })) })) });
+  $('#sc-div').style.background = 'linear-gradient(90deg,' + [1 / 8, 1 / 4, 1 / 2, 1, 2, 4, 8].map(divAt).join(',') + ')';
+}
+renderAll();
+
+let lastW = innerWidth, timer;
+addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(() => { if (innerWidth !== lastW) { lastW = innerWidth; renderAll(); } }, 120); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { renderAll(); });
+const modes = ['auto', 'light', 'dark']; let mi = 0;
+$('#theme').addEventListener('click', () => {
+  mi = (mi + 1) % 3; const m = modes[mi];
+  if (m === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = m;
+  $('#theme').textContent = 'Tema: ' + m; renderAll();
+});
+</script>
+</body>
+</html>

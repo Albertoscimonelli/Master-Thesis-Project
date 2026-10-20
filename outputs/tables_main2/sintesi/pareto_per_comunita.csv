@@ -5,7 +5,7 @@ Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_18_0,18,4,100,6,11,S
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_5_0,5,4,100,7,11,Shapley; Equal Split; Remuneration Model 1; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_8_0,8,4,100,5,11,Shapley; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_11_4_0,15,1,26.67,3,11,Equal Split; Proportional to Consumption; Similarity-Utilization
-Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,4,11,Equal Split; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,3,11,Equal Split; Pearson Key; Similarity-Utilization
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_3_0,5,3,60,9,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_6_0,8,3,75,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Similarity-Utilization; Tri-level EP
 Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_8_0,10,3,80,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Similarity-Utilization
@@ -44,7 +44,7 @@ Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_15_0,15,4,100,4,11,Nucleol
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_18_0,18,4,100,4,11,Nucleolo; Variance Least Core; Pearson Key; Tri-level EP
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_5_0,5,4,100,5,11,Nucleolo; Variance Least Core; Pearson Key; Similarity-Utilization; Tri-level EP
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_8_0,8,4,100,4,11,Nucleolo; Variance Least Core; Pearson Key; Tri-level EP
-Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_11_4_0,15,1,26.67,4,11,Nucleolo; Variance Least Core; Proportional to Consumption; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_11_4_0,15,1,26.67,3,11,Nucleolo; Variance Least Core; Proportional to Consumption
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_13_5_0,18,1,27.78,4,11,Nucleolo; Variance Least Core; Proportional to Consumption; Pearson Key
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_2_3_0,5,3,60,4,11,Nucleolo; Variance Least Core; Pearson Key; Tri-level EP
 Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_2_6_0,8,3,75,2,11,Nucleolo; Variance Least Core
@@ -64,7 +64,7 @@ Tutti i criteri normativi + IS + VAN_min,CER_0_15_0,15,4,100,8,11,Shapley; Nucle
 Tutti i criteri normativi + IS + VAN_min,CER_0_18_0,18,4,100,8,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_0_5_0,5,4,100,9,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_0_8_0,8,4,100,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
-Tutti i criteri normativi + IS + VAN_min,CER_11_4_0,15,1,26.67,5,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_11_4_0,15,1,26.67,4,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption
 Tutti i criteri normativi + IS + VAN_min,CER_13_5_0,18,1,27.78,5,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Pearson Key
 Tutti i criteri normativi + IS + VAN_min,CER_2_3_0,5,3,60,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_2_6_0,8,3,75,5,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1
@@ -76,6 +76,6 @@ Tutti i criteri normativi + IS + VAN_min,CER_4_1_0,5,1,20,6,11,Shapley; Equal Sp
 Tutti i criteri normativi + IS + VAN_min,CER_4_4_0,8,2,50,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_5_5_0,10,2,50,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_6_2_0,8,1,25,8,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
-Tutti i criteri normativi + IS + VAN_min,CER_7_3_0,10,1,30,6,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key
+Tutti i criteri normativi + IS + VAN_min,CER_7_3_0,10,1,30,7,11,Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization
 Tutti i criteri normativi + IS + VAN_min,CER_7_8_0,15,2,53.33,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP
 Tutti i criteri normativi + IS + VAN_min,CER_9_9_0,18,2,50,7,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Pearson Key; Tri-level EP

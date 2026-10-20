@@ -1,0 +1,69 @@
+InsiemeCriteri,Scheda,Membri,Fascia,Penetrazione_pct,NMetodiNonDominati,NMetodiTotali,MetodiNonDominati
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_10_0,10,4,100,4,11,Equal Split; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_15_0,15,4,100,4,11,Equal Split; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_18_0,18,4,100,5,11,Nucleolo; Equal Split; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_5_0,5,2,100,4,11,Equal Split; Weighted Solidarity; Pearson Key; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_8_0,8,3,100,4,11,Equal Split; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_11_4_0,15,1,26.67,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_3_0,5,1,60,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_6_0,8,2,75,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_2_8_0,10,3,80,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_4_11_0,15,3,73.33,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_4_14_0,18,3,77.78,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_4_4_0,8,1,50,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_5_5_0,10,2,50,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_7_3_0,10,1,30,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_7_8_0,15,2,53.33,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_9_9_0,18,2,50,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_10_0,10,4,100,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_15_0,15,4,100,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_18_0,18,4,100,5,11,Nucleolo; Equal Split; Cascading Tree; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_5_0,5,2,100,3,11,Nucleolo; Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_8_0,8,3,100,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_11_4_0,15,1,26.67,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,3,11,Nucleolo; Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_2_3_0,5,1,60,4,11,Nucleolo; Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_2_6_0,8,2,75,3,11,Shapley; Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_2_8_0,10,3,80,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_4_11_0,15,3,73.33,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_4_14_0,18,3,77.78,4,11,Nucleolo; Equal Split; Cascading Tree; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_4_4_0,8,1,50,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_5_5_0,10,2,50,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_7_3_0,10,1,30,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_7_8_0,15,2,53.33,2,11,Equal Split; Weighted Solidarity
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_9_9_0,18,2,50,3,11,Nucleolo; Equal Split; Weighted Solidarity
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_10_0,10,4,100,5,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_15_0,15,4,100,5,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_18_0,18,4,100,3,11,Nucleolo; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_5_0,5,2,100,6,11,Shapley; Nucleolo; Proportional to Consumption; Remuneration Model 1; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_8_0,8,3,100,5,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_11_4_0,15,1,26.67,7,11,Shapley; Nucleolo; Variance Least Core; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_13_5_0,18,1,27.78,7,11,Shapley; Variance Least Core; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_2_3_0,5,1,60,7,11,Shapley; Nucleolo; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_2_6_0,8,2,75,6,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_2_8_0,10,3,80,6,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_4_11_0,15,3,73.33,7,11,Shapley; Nucleolo; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_4_14_0,18,3,77.78,5,11,Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_4_4_0,8,1,50,7,11,Shapley; Proportional to Consumption; Remuneration Model 1; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_5_5_0,10,2,50,6,11,Shapley; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_7_3_0,10,1,30,7,11,Shapley; Variance Least Core; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_7_8_0,15,2,53.33,7,11,Shapley; Variance Least Core; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_9_9_0,18,2,50,7,11,Shapley; Variance Least Core; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_10_0,10,4,100,9,11,Shapley; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_15_0,15,4,100,8,11,Shapley; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_18_0,18,4,100,8,11,Shapley; Nucleolo; Equal Split; Remuneration Model 1; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_5_0,5,2,100,10,11,Shapley; Nucleolo; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_8_0,8,3,100,9,11,Shapley; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_11_4_0,15,1,26.67,10,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_13_5_0,18,1,27.78,11,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_2_3_0,5,1,60,9,11,Shapley; Nucleolo; Equal Split; Proportional to Consumption; Remuneration Model 1; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_2_6_0,8,2,75,9,11,Shapley; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_2_8_0,10,3,80,9,11,Shapley; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_4_11_0,15,3,73.33,11,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_4_14_0,18,3,77.78,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_4_4_0,8,1,50,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_5_5_0,10,2,50,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_7_3_0,10,1,30,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_7_8_0,15,2,53.33,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_9_9_0,18,2,50,10,11,Shapley; Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP

@@ -1209,6 +1209,12 @@ la correzione della §5.2 lo massimizza l'Equal Split.
 
 ### 7.9 Il run finale: due run, due cartelle (13 ottobre 2026)
 
+> ⚠ **Superato per il run fino a 18 membri.** I numeri di questa sezione, di §7.6.4 e di §7.8 sono del
+> 13 ottobre, con i segnaposto LIHC e senza le PA. Il 20 ottobre `outputs/tables_main2/` è stato
+> riscritto con i parametri LIHC definitivi (76 comunità: livello 0 più PA1-3, §7.10); nel livello 0 le
+> quote di tutti i metodi sono identiche, tranne il Tri-level EP, e l'inclusione non è più valutabile.
+> Le tabelle `outputs/tables_main2_griglia25/` restano quelle del 13 ottobre, con i segnaposto.
+
 > ⚠ **Gira ancora con i segnaposto LIHC** (§7.7): dopo aver compilato P50, y* e markup
 > vanno rifatti entrambi i run. Cambiano l'inclusione e il Tri-level EP, non il resto.
 
@@ -1342,7 +1348,36 @@ media su insiemi diversi mescolerebbe l'effetto della PA con quello delle schede
    impegnata del palazzetto, che pesano sul Remuneration Model 1 (§12). Le schede PA non sono
    versionate: si rigenerano con `genera_varianti_PA.py`.
 
-**Risultati: da inserire dopo il run finale** (`MAIN2` con i dati LIHC compilati; §12).
+**Risultati** (run del 20 ottobre 2026, 76 comunità fino a 18 membri, 2 h 31 min, parametri LIHC
+definitivi; tabelle in `outputs/tables_main2/`, pagina `outputs/report/recap_run_fino18_PA_2026-10-20.html`).
+PA2 ha 19 schede e PA3 17, PA1 20: 56 confronti con il livello 0.
+
+| Confronto | Comunità | Coppie invertite | Sulle valutabili | Il vincitore cambia |
+|---|---:|---:|---:|---:|
+| PA0 → PA1 | 20 | 9,6% | 15,8% | 12,5% |
+| PA0 → PA2 | 19 | 11,9% | 21,7% | 8,4% |
+| PA0 → PA3 | 17 | 11,2% | 20,9% | 11,8% |
+| PA0 contro PA ≥ 1 | 56 | 10,9% | 19,2% | 10,9% |
+| lungo l'asse PA0 → PA3 | 20 schede | 23,3% (da 15% a 31%) | – | – |
+
+- **Confronto con gli altri fattori.** Lungo la penetrazione, a taglia fissa, si invertono il 18,5-27,1% delle
+  coppie (media 23,2%); lungo la taglia, a penetrazione fissa, lo 0,5-15,0% (media 7,4%). La scansione
+  lungo l'asse PA (23,3%) è paragonabile a quella di penetrazione; i confronti a coppie, con due sole
+  configurazioni, hanno meno occasioni di invertirsi.
+- **Il vincitore** non cambia mai per Gini, EI, eccesso di coalizione, coalizioni instabili e allineamento
+  netto (vince l'Equal Split sull'uniformità); cambia nel 64% dei casi per l'allineamento lordo e nel 27%
+  per σ. Gli indicatori con più coppie invertite sono l'allineamento lordo (31,8%), σ (18,5%) e il
+  Fairness Index (14,6%).
+- **Trade-off.** Scegliere il metodo migliore sulla forza incentivante costa in stabilità 0,26-0,29 a PA0 (secondo le
+  schede comuni) e 0,23 a PA1, ma 0,74 a PA2 e 0,71 a PA3 (perdita ottimistica, sulle schede comuni): con PA2 e PA3 chi vince
+  sull'incentivo è molto peggiore sulla stabilità.
+- **Sottoinsieme minimo** (τ ≥ 0,5): 4 gruppi a PA0 e PA1, 3 a PA2, 4 a PA3.
+- **Scala.** v(N) mediano rispetto a PA0: ×1,3 a PA1, ×5,7 a PA2, ×11,4 a PA3 (fino a ×107): una differenza
+  fra livelli può dipendere dalla scala e non solo dalla composizione.
+- **Inclusione.** Nessuna famiglia è vulnerabile (§7.7): l'indicatore è `NaN` e fuori dall'analisi, e il
+  Tri-level EP perde la fetta di solidarietà. È il motivo per cui le inversioni lungo penetrazione e taglia
+  sono più basse di quelle del 13 ottobre (26-33% lungo la penetrazione, 21% alla fascia 1 della taglia): quelle includevano
+  un'inclusione e un Tri-level EP calcolati su segnaposto.
 
 ## 8. Dimensionamento impianto PV (standalone)
 

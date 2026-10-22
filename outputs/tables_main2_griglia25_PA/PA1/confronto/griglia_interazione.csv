@@ -1,0 +1,12 @@
+Indicatore,TaglieValide,SequenzeDistinte,QuotaModale,SequenzaModale
+EI_orig,7,1,1,Equal Split > Equal Split > Equal Split > Equal Split
+Gini,7,1,1,Equal Split > Equal Split > Equal Split > Equal Split
+FairnessIndex,7,3,0.571429,(pari) > (pari) > (pari) > (pari)
+Sigma,7,1,1,Adaptive Sampling Shapley > (pari) > (pari) > (pari)
+InclusioneLIHC,0,0,NaN,
+EccessoMax_EUR,5,1,1,(pari) > (pari) > (pari) > (pari)
+CoalizioniInstabili,5,4,0.4,(pari) > (pari) > Variance Least Core > (pari)
+ForzaIncentivante,7,5,0.428571,(pari) > (pari) > Similarity-Utilization > (pari)
+AllineamentoVirtu,7,3,0.428571,(pari) > (pari) > (pari) > (pari)
+AllineamentoVirtu_lordo,7,1,1,(pari) > (pari) > (pari) > (pari)
+VAN_min_EUR,7,2,0.857143,Equal Split > Equal Split > Equal Split > Equal Split

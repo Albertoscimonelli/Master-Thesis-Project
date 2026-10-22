@@ -22,11 +22,14 @@ varia taglia e penetrazione dei prosumer.
 > leggere il codice sorgente per capire cosa fa il progetto e come è strutturato — solo per
 > modificarlo.
 >
-> **Stato al 20 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
-> 20 ottobre, con i parametri LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10).
-> L'inclusione LIHC non è valutabile (nessuna famiglia vulnerabile). Le tabelle del run a 25 membri
-> (`tables_main2_griglia25/`) restano del 13 ottobre, con i segnaposto. Sintesi dei risultati e del
-> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md`.
+> **Stato al 23 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
+> 20 ottobre; il run **fino a 25 membri con PA** (108 comunità, livello 0 più PA1-3) è del
+> 21 ottobre e sta in `outputs/tables_main2_griglia25_PA/` (§7.10.1). Entrambi usano i parametri
+> LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10). L'inclusione LIHC non è valutabile
+> (nessuna famiglia vulnerabile). Le tabelle `tables_main2_griglia25/` sono del 13 ottobre, con i
+> segnaposto e senza PA: sono **superate** da quelle del 21 ottobre. Sintesi dei risultati e del
+> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md` (precedente al
+> run a 25 membri con PA).
 
 ---
 
@@ -158,12 +161,13 @@ identica del livello 0). Quattro variabili d'ambiente, tutte facoltative:
 | Variabile | Cosa fa |
 |---|---|
 | `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vince sul tetto di membri. Un nome senza cartella è una scheda di `CER_configuration/`; `PA2/CER_5_5_0` è la variante PA2 |
-| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
+| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`, o `griglia25_PA` per il run con le PA del 21 ottobre, §7.10.1); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
 
-I due run di riferimento — fino a 18 membri e griglia fino a 25 — sono descritti nella
-§7.9; l'elenco completo delle schede di ciascuno è in
+I run di riferimento — fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e
+la griglia a 25 membri del 13 ottobre, superata — sono descritti nelle §7.9 e §7.10.1;
+l'elenco completo delle schede di ciascuno è in
 [STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) §2.3. Per una prova su poche schede
 conviene un suffisso (`MAIN2_CARTELLA=prova`): senza, le tabelle della prova
 sovrascriverebbero quelle versionate in `outputs/tables_main2/`.
@@ -174,7 +178,8 @@ letta dal codice.
 
 **Tempi** (analisi senza figure, run del 13 ottobre): 42 min per le 20 comunità fino a 18
 membri, 2 h 28 min per le 28 fino a 25; una comunità da 5 membri costa pochi secondi, una
-da 25 fino a mezz'ora (§11.2). La pipeline è **deterministica** — l'unica sorgente casuale,
+da 25 fino a mezz'ora (§11.2). Il run del 21 ottobre, 108 comunità fino a 25 membri con PA,
+ha richiesto 9 h 9 min di analisi (due sessioni, §7.10.1). La pipeline è **deterministica** — l'unica sorgente casuale,
 l'Adaptive Sampling, ha un seed esplicito — e rilanciata senza modifiche riscrive le tabelle
 identiche al byte: il confronto prima/dopo una modifica è un test di regressione. Per
 ripartire dai run finali senza rilanciarli vedi
@@ -249,7 +254,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m`, `plot_load_profiles.m` | Energia: mensili, PV contro domanda, mappa oraria con le ore sature, curve di durata, TIP_h contro prezzo zonale, profili tipo (§11.1) |
 | `plot_financial_metrics.m` | VAN, tempo di ritorno, composizione del flusso di cassa (§11.1) |
 | `optimizer_PV.m`, `pv_*.m` | Pre-dimensionamento di un impianto PV su copertura (standalone, §8) |
-| `outputs/tables_main2/`, `outputs/tables_main2_griglia25/` | Le tabelle dei due run finali, versionate (§11.0) |
+| `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run finali, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre), e quelle del 13 ottobre a 25 membri, superate |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
 | `outputs/report/` | Pagina dei risultati finali (`regole_ripartizione_cer.html`), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
@@ -1215,7 +1220,9 @@ la correzione della §5.2 lo massimizza l'Equal Split.
 > 13 ottobre, con i segnaposto LIHC e senza le PA. Il 20 ottobre `outputs/tables_main2/` è stato
 > riscritto con i parametri LIHC definitivi (76 comunità: livello 0 più PA1-3, §7.10); nel livello 0 le
 > quote di tutti i metodi sono identiche, tranne il Tri-level EP, e l'inclusione non è più valutabile.
-> Le tabelle `outputs/tables_main2_griglia25/` restano quelle del 13 ottobre, con i segnaposto.
+> Le tabelle `outputs/tables_main2_griglia25/` restano quelle del 13 ottobre, con i segnaposto e senza
+> PA: il 21 ottobre il run a 25 membri è stato rifatto con le PA e i parametri definitivi
+> (`outputs/tables_main2_griglia25_PA/`, §7.10.1), e quelle tabelle sono superate.
 
 > ⚠ **Gira ancora con i segnaposto LIHC** (§7.7): dopo aver compilato P50, y* e markup
 > vanno rifatti entrambi i run. Cambiano l'inclusione e il Tri-level EP, non il resto.
@@ -1380,6 +1387,88 @@ PA2 ha 19 schede e PA3 17, PA1 20: 56 confronti con il livello 0.
   Tri-level EP perde la fetta di solidarietà. È il motivo per cui le inversioni lungo penetrazione e taglia
   sono più basse di quelle del 13 ottobre (26-33% lungo la penetrazione, 21% alla fascia 1 della taglia): quelle includevano
   un'inclusione e un Tri-level EP calcolati su segnaposto.
+
+### 7.10.1 Il run fino a 25 membri con PA (21 ottobre 2026)
+
+**Cosa è.** 108 comunità: 28 al livello 0, 28 a PA1, 27 a PA2, 25 a PA3 (le schede da 5, 8, 10, 15,
+18, 20 e 25 membri, quattro fasce di penetrazione per taglia). Parametri LIHC definitivi, stesso
+codice del run a 18 membri. Tabelle in `outputs/tables_main2_griglia25_PA/` (`PA1/`, `PA2/`, `PA3/`,
+`confronto/`, `confronto_PA/`, `fase1/`, `sintesi/`).
+
+```bash
+MAIN2_MAX_UTENTI=25 MAIN2_CARTELLA=griglia25_PA matlab -batch "MAIN2"
+MAIN2_MAX_UTENTI=25 MAIN2_CARTELLA=griglia25_PA MAIN2_RIPRENDI=1 matlab -batch "MAIN2"   # ripresa
+```
+
+**Durata e interruzione.** 9 h 9 min di analisi in due sessioni. La prima si è fermata alla comunità
+87 (`PA3/CER_0_20_0`) con `Separation problem non risolto (exitflag 2)`: `intlinprog` ha superato
+`MaxTime = 7200 s` nel Variance Least Core (lo stesso limite della §14.1). Il checkpoint
+dell'ultima comunità completata è delle 04:25 e l'errore delle 11:21: la causa più probabile è la
+sospensione del PC, che ha fatto scattare un limite a tempo reale su un calcolo che di norma dura
+minuti. Ripreso da `MAIN2_RIPRENDI=1` (86 comunità già fatte), la comunità 87 si è chiusa in meno di
+8 minuti e le altre 21 sono seguite senza errori. Non è stato verificato che il risultato sia
+identico al byte a quello di un run unico senza interruzioni. **Prima di un run lungo conviene
+disattivare la sospensione del PC.**
+
+**Metodi.** Nell'analisi fra comunità sono 10: Shapley esatto e Nucleolo non si calcolano sopra i
+18 membri (§14.1), quindi restano fuori anche dalle comunità piccole e l'Adaptive Sampling Shapley
+prende il loro posto. Stabilità (eccesso massimo, coalizioni instabili) valutabile solo fino a 18
+membri: 20 comunità su 28 al livello 0 e a PA1, 19 su 27 a PA2, 17 su 25 a PA3. Nelle comunità fino a 18 membri l'Adaptive Sampling si misura contro lo Shapley
+esatto: scarto relativo medio 0,9-1,5% per taglia (massimo 7,2% a 15 membri), Spearman minimo 0,90
+(8 membri). Oltre 18 membri non c'è un riferimento.
+
+**Livello 0 (28 comunità senza PA).**
+- *Vincitori.* Equal Split primo su EI e Gini in 28 comunità su 28 e sul VAN minimo in 24 (a pari in 4);
+  Variance Least Core primo su Fairness Index e σ in circa metà delle celle, a pari nelle altre;
+  `ForzaIncentivante` a pari in 27 su 28; solo l'allineamento lordo discrimina (13 celle su 28 con un
+  vincitore) e cambia sequenza da una taglia all'altra.
+- *Trade-off.* τ medio fra EI e forza incentivante da −0,48 a −0,79 in ogni taglia; EI e Fairness
+  Index da −0,04 a −0,21. Scegliere l'uniformità costa 0,69 sul merito, 0,80 sulla forza incentivante
+  e 0,72 sull'eccesso (78 €, il 20% di v(N)); scegliere l'incentivo costa 0,94 sull'uniformità.
+- *Inversioni.* Lungo la penetrazione, a taglia fissa, si invertono il 28,9% delle coppie a 5 membri
+  e il 15,6% a 25; lungo la taglia, a penetrazione fissa, il 16,2%, 10,5%, 5,1% e 8,7% nelle quattro
+  fasce (la fascia ~100% sta sopra la ~75%).
+- *Sottoinsieme minimo.* τ ≥ 0,5: tre gruppi, con rappresentanti EI, σ e allineamento netto; τ ≥ 0,7:
+  quattro. Concordanza delle coppie col rappresentante ≥ 0,96 per tutti tranne l'allineamento
+  lordo (0,80). L'ultima fusione del dendrogramma (uniformità contro il resto) ha τ equivalente −0,30.
+- *Fronte di Pareto.* Weighted Solidarity non è mai sul fronte, in nessuno dei quattro insiemi di
+  criteri; Cascading Tree 0-2 volte su 20-28.
+
+**Effetto delle PA.**
+
+| Confronto | Comunità | Coppie invertite | Sulle valutabili | Il vincitore cambia |
+|---|---:|---:|---:|---:|
+| PA0 → PA1 | 28 | 9,9% | 16,8% | 14,4% |
+| PA0 → PA2 | 27 | 11,5% | 21,6% | 9,8% |
+| PA0 → PA3 | 25 | 10,3% | 19,6% | 11,5% |
+| PA0 contro PA ≥ 1 | 80 | 10,6% | 19,2% | 12,0% |
+
+- *Il vincitore* non cambia mai per Gini, EI, eccesso, coalizioni instabili e allineamento netto;
+  cambia nel 70% delle comunità per l'allineamento lordo, nel 29% per σ e nel 5% per Fairness Index
+  e VAN minimo.
+- *Scala.* v(N) rispetto a PA0 ha mediana ×1,3 (PA1), ×5,3 (PA2) e ×9,5 (PA3), fino a ×107: la
+  differenza fra livelli può dipendere dalla scala e non solo dalla composizione.
+- *Quota delle PA* (quota delle PA su v(N) divisa per la quota dei membri): 1,0 con l'Equal Split;
+  tra 3 e 6,2 con tutti gli altri metodi a PA2 e PA3; 0,5 (PA1), 1,8 (PA2) e 1,4 (PA3) col
+  Similarity-Utilization. Alcuni metodi non sono monotoni nel numero di PA: Pearson Key passa da 0,86
+  a 5,5.
+- *Gruppi di indicatori.* A τ ≥ 0,5: 3 gruppi a PA0 e PA2, 4 a PA1 e PA3. A τ ≥ 0,7: 4 gruppi a PA0 e
+  PA3, 7 a PA1 e PA2: con una o due PA gli indicatori di stabilità e il VAN minimo si staccano dai
+  loro gruppi.
+
+**Comunità al 100% di prosumer.** Il valore da distribuire dipende dalle PA: a PA0 è 40-186 €
+l'anno (7,5 € a membro, contro 47 € sotto il 100%), a PA1 91-294 € (13,9 € a membro), a PA2
+2073-2958 € (217 € a membro) e a PA3 4304-5178 € (418 € a membro). L'argomento «c'è poco da spartire»
+vale quindi solo a PA0 e PA1.
+
+**Limiti.**
+- L'inclusione LIHC è `NaN` in tutte le comunità (§7.7); il Tri-level EP ha quota di povertà
+  energetica 0,00% del montepremi.
+- A PA3 lo scaglione tariffario unico imposto (§7.10) introduce un errore medio del 7,9% di v(N)
+  (circa 400-470 €), sopra la soglia di rilevanza del 5%: i risultati di PA3 non vanno presentati
+  come robusti. A PA1 e PA2 l'errore è nullo.
+- Quattro comunità per taglia, un solo campione di famiglie e nessun intervallo di confidenza.
+- La composizione è solo la presenza di 0-3 PA: non ci sono altre categorie di membri.
 
 ## 8. Dimensionamento impianto PV (standalone)
 
@@ -1581,7 +1670,8 @@ Dopo il ciclo: le tabelle su file (§11.0), le figure della fase 1 e, a richiest
 Le scrive `save_tables` con l'interruttore `CSV` della §0b — **separato** da quello delle
 figure, perché le figure sono un servizio e queste tabelle sono un risultato. Con
 `MAIN2_CARTELLA=<suffisso>` la cartella diventa `outputs/tables_main2_<suffisso>/`: i due
-run finali stanno in `tables_main2/` (fino a 18 membri) e `tables_main2_griglia25/` (§7.9).
+run finali stanno in `tables_main2/` (fino a 18 membri, 20 ottobre) e `tables_main2_griglia25_PA/`
+(fino a 25 membri con PA, 21 ottobre, §7.10.1); `tables_main2_griglia25/` (13 ottobre, §7.9) è superata.
 
 **`confronto/`** (§7b: accordo fra indicatori e inversioni, §7.6):
 
@@ -1719,7 +1809,8 @@ Per taglia, nei due run: 5 membri 3-8 s; 8 membri 7,5-44 s; 10 membri 15 s-1,5 m
 membri 1-6 min; 18 membri 2,7-10 min; 20 membri 2,5-14 min; 25 membri 7,5-31 min. A parità
 di taglia costano di più le comunità a bassa penetrazione (dagli 8 membri in su), e dai 15
 membri in su il tempo è dominato dal Variance Least Core (§14.1). La griglia fino a 25
-membri dura 2 h 28 min.
+membri dura 2 h 28 min; il run del 21 ottobre, con le PA e 108 comunità, 9 h 9 min (il solo
+Variance Least Core di `CER_12_13_0`, 25 membri, ha richiesto 21 min 45 s).
 
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
@@ -1755,8 +1846,9 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   (§7.6, §7.9). Tutti i membri sono domestici: i risultati dei run del 13 ottobre non
   separano l'effetto della taglia o della penetrazione da quello del mix di categorie, e
   sulla griglia fattore F e soglia GSE non hanno effetto (§7.4, §7.5). **Il terzo asse
-  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge, ma i suoi
-  risultati si producono col run finale, dopo i dati LIHC. Le schede da 50, 75 e 100 membri non sono
+  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge e i risultati
+  con i dati LIHC definitivi sono quelli del 20 e del 21 ottobre (§7.10, §7.10.1). Copre solo
+  la presenza di 0-3 PA, non altre categorie di membri. Le schede da 50, 75 e 100 membri non sono
   analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo
@@ -1976,7 +2068,8 @@ settembre, a 50 membri, non convergeva in 5 ore, e tolleranze allentate o arrest
 anticipato del MILP non hanno dato guadagni. C'è anche un limite di robustezza:
 `intlinprog` usa il limite di tempo di default (7200 s) e, se scatta, la separazione si
 ferma con un errore invece di usare la migliore soluzione trovata — è successo il 5
-ottobre su `CER_18_7_0` (log in `outputs/run_logs/`). Per questo le schede da 50-100 membri
+ottobre su `CER_18_7_0` (log in `outputs/run_logs/`) e il 21 ottobre su `PA3/CER_0_20_0`, dove
+la causa più probabile è la sospensione del PC (il limite è a tempo reale, §7.10.1). Per questo le schede da 50-100 membri
 non sono nell'analisi: è il primo punto da sistemare per andare oltre i 25 membri.
 
 Gli otto metodi non cooperativi (Equal Split, Proportional to Consumption,

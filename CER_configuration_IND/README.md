@@ -2,8 +2,10 @@
 
 Dopo l'asse **PA** (`CER_configuration_PA/`), questa cartella aggiunge le **imprese**: utenti non
 domestici privati, con consumi reali (tre) o RAMP (due) e impianto FV proprio. Le schede si
-generano con `genera_varianti_IND.py` e **non sono ancora lette da `MAIN2.m`** (serve estendere
-`elenco_schede_cer.m`, da concordare): nessun run è stato lanciato.
+generano con `genera_varianti_IND.py`. `elenco_schede_cer.m` le elenca con `opts.conIND = true`
+(spento di default: l'elenco di `MAIN2` resta quello di prima, 76 schede a 18 membri), ma **`MAIN2.m`
+non le legge ancora**: raggruppa e analizza per numero di PA, e i livelli ND vanno aggiunti con
+un passo a parte. Nessun run è stato lanciato.
 
 ## Livelli
 

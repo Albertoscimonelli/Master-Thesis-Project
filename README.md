@@ -156,13 +156,14 @@ quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`li
 18 membri**: il livello 0 di `CER_configuration/` (solo domestici) e le varianti con PA di
 `CER_configuration_PA/PA1..PA3` (asse composizione, §7.10). L'elenco lo costruisce
 `elenco_schede_cer.m`, che legge N = C+P+E dal nome della scheda e salta `PA0/` (copia
-identica del livello 0). Quattro variabili d'ambiente, tutte facoltative:
+identica del livello 0). Cinque variabili d'ambiente, tutte facoltative:
 
 | Variabile | Cosa fa |
 |---|---|
 | `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vince sul tetto di membri. Un nome senza cartella è una scheda di `CER_configuration/`; `PA2/CER_5_5_0` è la variante PA2 |
 | `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`, o `griglia25_PA` per il run con le PA del 21 ottobre, §7.10.1); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
+| `MAIN2_IND` | `1` = aggiunge l'asse imprese (§7.11): le schede di `CER_configuration_IND/` con 1-3 imprese (`ND1`-`ND3`) e con imprese e PA (`ND2_PA1`, …), fino al tetto di membri (92 a 18 membri). In `MAIN2_SCHEDE` si scrivono come `ND2_PA1/CER_9_9_0`. Ogni livello ha le sue tabelle (`<tabelle>/ND1/`, …) e il confronto con il livello 0 sta in `confronto_PA/` (§7.11). Senza, il run è identico a prima |
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
 
 I run di riferimento — fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e
@@ -207,9 +208,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_LoadProfiles/arricchisci_schede.py` | **Compila reddito e spesa gas dei membri domestici** nelle schede (`reddito_EUR`, `euro_gas` più le colonne di provenienza), da Istat EU-SILC e ARERA. Test in `CER_LoadProfiles/tests/` |
 | `data/external/` | Dati esterni versionati con la fonte riga per riga (reddito Istat, quote gas ARERA) e i parametri dell'arricchimento. Fonti in [DATA_SOURCES.md](DATA_SOURCES.md) |
 | `data/external/palazzetto_lucca/` | **Consumo e produzione FV 2024 del palazzetto dello sport di Lucca** (CSV orari), guida al metodo e script Python. Dati archiviati, non letti da `MAIN2.m`. Vedi §15 |
-| `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Non lette da `MAIN2.m`. Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
+| `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
-| `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, non ancora lette da `MAIN2.m`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
+| `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -1512,10 +1513,30 @@ Koltunov et al. [K26] e dal loro database pubblico [DB], letto con lo script e l
 Profili, kWp, tariffe e punti aperti in [`CER_configuration_IND/README.md`](CER_configuration_IND/README.md).
 
 **Stato.** Le 331 schede (92 a 15-18 membri, 95 a 20-25, 144 a 50-100) sono generate e lette senza
-errori da `load_cer_input`, `load_cer_data` e `align_members_to_users`. `elenco_schede_cer.m` le
-elenca con `opts.conIND = true` (spento di default), ma **`MAIN2.m` non le legge ancora**: raggruppa
-le comunità per numero di PA, e una scheda con imprese e senza PA finirebbe nel gruppo delle sole
-famiglie. Nessun run è stato fatto.
+errori da `load_cer_input`, `load_cer_data` e `align_members_to_users`. `MAIN2.m` le legge con
+`MAIN2_IND=1` (§3). Nessun run con le imprese è stato ancora fatto.
+
+**Come le analizza `MAIN2.m`.** Il gruppo di analisi non è più il numero di PA ma il *livello* =
+10 × imprese + PA (`etichetta_livello.m`: 0 → `PA0`, 2 → `PA2`, 10 → `ND1`, 21 → `ND2_PA1`):
+altrimenti una scheda con imprese e senza PA finirebbe insieme alle sole famiglie, con due comunità
+di uguale taglia e penetrazione nello stesso gruppo. Ogni livello ha la sua analisi e le sue tabelle
+(`<tabelle>/ND1/`, `<tabelle>/ND2_PA1/`, …), come i livelli PA. `MAIN2.m` verifica che il livello
+letto dai dati (categorie `terziario`, `commerciale`, `industriale` = imprese) coincida con la
+cartella. `confronto_pa.m` mette ogni livello a fianco del livello 0 omonimo (stessi N, C, P) e, con
+le imprese, aggiunge:
+- i confronti `PA0-ND1`, …, `PA0-ND3_PA3`;
+- la riga di sommario `PA0 contro ND>=1`;
+- la scansione `asse ND` (PA0 > ND1 > ND2 > ND3, senza PA: gli assi non si mescolano);
+- in `pa_effetti.csv`, le colonne `MembriND`, `QuotaND_pct_vN`, `QuotaMembriND_pct` e
+  `RapportoQuotaND` (quota del montepremi alle imprese divisa per la loro quota di membri).
+
+**Verifica (26 ottobre 2026).** Le stesse 8 comunità (`CER_2_3_0` e `CER_5_5_0` ai livelli 0, PA1,
+PA2, PA3) girate con il codice di prima e con quello nuovo, senza `MAIN2_IND`, danno 110 tabelle
+identiche al byte e lo stesso log a parte i nomi delle cartelle. Gli auto-test di `confronto_pa.m`
+(con un caso a livelli 0, ND1, ND2, ND2_PA1) e di `elenco_schede_cer.m` passano. Una prova con le
+imprese (`CER_7_8_0` e `CER_11_4_0` ai livelli 0, ND1, ND1_PA1, ND2; `MAIN2_CARTELLA=prova_ind`)
+gira senza errori in 40 minuti, circa 5 minuti a comunità da 15 membri: è solo una prova di
+funzionamento (due schede per livello), non un risultato.
 
 **Due test lasciati per la fine.**
 1. *Filtro sulla penetrazione.* Nel database l'**83%** delle CER del Nord ha prosumer ≤ 50% dei
@@ -1913,7 +1934,7 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge e i risultati
   con i dati LIHC definitivi sono quelli del 20 e del 21 ottobre (§7.10, §7.10.1). Copre solo
   la presenza di 0-3 PA. **Le imprese** (1-3 per comunità, §7.11, `CER_configuration_IND/`) sono
-  generate ma non ancora lette da `MAIN2.m`. Le schede da 50, 75 e 100 membri non sono
+  generate e lette da `MAIN2.m` con `MAIN2_IND=1`, ma non ancora analizzate. Le schede da 50, 75 e 100 membri non sono
   analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo

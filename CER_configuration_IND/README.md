@@ -2,11 +2,17 @@
 
 Dopo l'asse **PA** (`CER_configuration_PA/`), questa cartella aggiunge le **imprese** (ND = non
 domestici privati: PMI, uffici e simili; le PA restano a parte). Le schede si generano con
-`genera_varianti_IND.py`. `elenco_schede_cer.m` le elenca con `opts.conIND = true` (spento di
-default: l'elenco di `MAIN2` resta quello di prima, 76 schede a 18 membri), ma **`MAIN2.m` non le
-legge ancora**: raggruppa e analizza per numero di PA, e i livelli ND vanno aggiunti con un passo a
-parte. Nessun run è stato lanciato. Il quadro generale (strati D, D+PA, D+ND, D+ND+PA) è nel
-README principale, §7.11.
+`genera_varianti_IND.py`. `MAIN2.m` le legge con `MAIN2_IND=1` (spento di default: senza, il run
+è identico a prima), ad esempio:
+
+```bash
+MAIN2_IND=1 matlab -batch "MAIN2"                                     # tutte fino a 18 membri
+MAIN2_IND=1 MAIN2_SCHEDE="CER_9_9_0;ND2/CER_9_9_0" matlab -batch "MAIN2"   # poche schede
+```
+
+Ogni livello (`ND1`, `ND2_PA1`, …) ha la sua analisi e le sue tabelle; il confronto con il livello
+0 è in `confronto_PA/`. Il quadro generale (strati D, D+PA, D+ND, D+ND+PA) e come `MAIN2` li
+raggruppa sono nel README principale, §7.11. Il run completo non è ancora stato lanciato.
 
 ## Livelli
 
@@ -126,7 +132,7 @@ Tutte le **331 schede** sono state lette con `load_cer_input`, `load_cer_data` e
 e PA sempre sotto il 50% dei membri (massimo 40,0%). N, numero di prosumer e potenza installata
 tornano a ogni livello (`assert` del generatore). `elenco_schede_cer` con `conIND = true` elenca
 92 schede con imprese fino a 18 membri e 331 in tutto; il suo auto-test passa e l'elenco di default
-resta di 76 schede. **`MAIN2.m` non è stato eseguito su nessuna di esse.**
+resta di 76 schede.
 
 **Quota dei consumi di imprese e PA sul carico della comunità** (mediana per livello):
 

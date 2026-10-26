@@ -96,13 +96,19 @@ else
     nomiVoluti = strings(0, 1);
 end
 
+% Asse imprese (CER_configuration_IND/, README 7.11), spento di default:
+% MAIN2_IND=1 aggiunge le schede con 1-3 imprese (ND1..ND3) e con imprese e PA
+% (ND{k}_PA{p}). Senza, l'elenco e quindi il run sono quelli di prima.
+CON_IND = strtrim(string(getenv("MAIN2_IND"))) == "1";
+
 % Percorsi con '/' e non fullfile: MATLAB lo accetta su ogni sistema, ed e' la
 % stessa barra dei percorsi [FILE] dentro le schede. Livello 0 per primo, poi
-% PA1, PA2, PA3; dentro ogni cartella in ordine alfabetico (l'ordine di dir
-% dipende dal filesystem, quello dei risultati no).
+% PA1, PA2, PA3 (e con MAIN2_IND ND1, ND1_PA1, ..., ND3_PA3); dentro ogni
+% cartella in ordine alfabetico (l'ordine di dir dipende dal filesystem, quello
+% dei risultati no).
 [SCHEDE, INFO_SCHEDE] = elenco_schede_cer(struct( ...
         'cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
-        'selezione', nomiVoluti));
+        'selezione', nomiVoluti, 'conIND', CON_IND));
 N_CER  = numel(SCHEDE);
 
 fprintf('\n=== CER da analizzare: %d ===\n', N_CER);
@@ -112,7 +118,8 @@ else
     fprintf('  Tetto: %d membri (MAIN2_MAX_UTENTI)\n', MAX_UTENTI);
 end
 for lv = unique(INFO_SCHEDE.LivelloCartella).'
-    fprintf('  Livello PA%d: %d comunita''\n', lv, nnz(INFO_SCHEDE.LivelloCartella == lv));
+    fprintf('  Livello %s: %d comunita''\n', etichetta_livello(lv), ...
+            nnz(INFO_SCHEDE.LivelloCartella == lv));
 end
 fprintf('  %s\n', SCHEDE);
 
@@ -127,7 +134,8 @@ RESULTS = struct('scheda', {}, 'nome', {}, 'nUsers', {}, 'userNames', {}, ...
                  'isProsumer', {}, 'forza', {}, 'forzaLorda', {}, ...
                  'penetrazione', {}, 'NPV', {}, 'tempo_analisi_s', {}, ...
                  'tempo_figure_s', {}, 'CFG', {}, 'fase1', {}, ...
-                 'etichetta', {}, 'nPA', {}, 'isPA', {});
+                 'etichetta', {}, 'nPA', {}, 'isPA', {}, ...
+                 'nND', {}, 'isND', {}, 'livello', {});
 
 
 %% ========================================================================
@@ -216,6 +224,15 @@ if strtrim(string(getenv("MAIN2_RIPRENDI"))) == "1"
             'l''inizio dell''elenco attuale (MAIN2_SCHEDE, MAIN2_MAX_UTENTI o ' ...
             'MAIN2_CARTELLA diversi dal run interrotto).'], nFatte);
     RESULTS = K.RESULTS;
+    % Checkpoint scritti prima dell'asse imprese: senza imprese il livello e' il
+    % numero di PA, e i campi nuovi si ricostruiscono senza ambiguita'.
+    if ~isfield(RESULTS, 'livello')
+        for c = 1:nFatte
+            RESULTS(c).nND     = 0;
+            RESULTS(c).isND    = false(size(RESULTS(c).isPA));
+            RESULTS(c).livello = RESULTS(c).nPA;
+        end
+    end
     PRIMO   = nFatte + 1;
     fprintf('  RIPRESA: %d comunita'' gia'' fatte, si riparte dalla %d.\n', nFatte, PRIMO);
     clear K nFatte
@@ -390,11 +407,19 @@ for iCER = PRIMO:N_CER
     % legge dai DATI della scheda e si confronta con la cartella da cui viene:
     % una variante finita nella cartella sbagliata si ferma qui, prima di
     % produrre numeri attribuiti al livello sbagliato.
+    % Con l'asse imprese (MAIN2_IND) il livello e' il codice 10*imprese + PA
+    % (etichetta_livello): le imprese sono i membri terziario, commerciale e
+    % industriale, cioe' i non domestici privati. Senza imprese il codice e' il
+    % numero di PA di sempre.
     isPA = (string(M.categoria) == "PA");
     nPA  = sum(isPA);
-    assert(nPA == INFO_SCHEDE.LivelloCartella(iCER), ...
-           '%s: ha %d membri PA ma sta nella cartella del livello %d.', ...
-           SCHEDA, nPA, INFO_SCHEDE.LivelloCartella(iCER));
+    isND = ismember(string(M.categoria), ["terziario", "commerciale", "industriale"]);
+    nND  = sum(isND);
+    livello = 10 * nND + nPA;
+    assert(nPA <= 9 && livello == INFO_SCHEDE.LivelloCartella(iCER), ...
+           '%s: ha %d imprese e %d PA (livello %s) ma sta nella cartella del livello %s.', ...
+           SCHEDA, nND, nPA, etichetta_livello(livello), ...
+           etichetta_livello(INFO_SCHEDE.LivelloCartella(iCER)));
 
 
     %% ========================================================================
@@ -2275,6 +2300,9 @@ for iCER = PRIMO:N_CER
     RESULTS(iCER).etichetta      = INFO_SCHEDE.Etichetta(iCER);
     RESULTS(iCER).nPA            = nPA;
     RESULTS(iCER).isPA           = isPA;
+    RESULTS(iCER).nND            = nND;      % imprese (asse MAIN2_IND)
+    RESULTS(iCER).isND           = isND;
+    RESULTS(iCER).livello        = livello;  % 10*nND + nPA: il gruppo della §7
 
     % Serviti dal confronto fra CER della §7, e non ricavabili da quello che
     % c'e' gia': v(N) e' il montepremi in palio (il resto del ricavo e'
@@ -2362,10 +2390,15 @@ end
 %                figure e Fase 1 (Shapley contro Adaptive Sampling) comprese
 %    livello k   <tabelle>/PAk/{confronto,sintesi}; niente figure e niente Fase 1,
 %                che e' una verifica dei metodi e non dipende dalla composizione
+%                (con MAIN2_IND anche <tabelle>/ND1/, <tabelle>/ND2_PA1/, ...)
 %
-%  Il confronto fra i livelli, cioe' "con / senza PA", viene dopo (§7d).
+%  Il livello e' il codice 10*imprese + PA (etichetta_livello), non il solo
+%  numero di PA: una scheda con imprese e senza PA non e' una scheda del livello 0.
+%  Senza imprese i due coincidono e il run e' quello di sempre.
+%  Il confronto fra i livelli, cioe' "con / senza PA" e "con / senza imprese",
+%  viene dopo (§7d).
 RESULTS_TUTTE = RESULTS;
-LIVELLI       = unique([RESULTS_TUTTE.nPA]);
+LIVELLI       = unique([RESULTS_TUTTE.livello]);
 CSV_BASE      = CSV;
 FIG_BASE      = FIG;
 LIV = struct('livello', {}, 'idx', {}, 'cartella', {}, 'AGR', {}, 'GRID', {}, ...
@@ -2373,13 +2406,13 @@ LIV = struct('livello', {}, 'idx', {}, 'cartella', {}, 'AGR', {}, 'GRID', {}, ..
 
 for lv = LIVELLI
 
-    idxLivello = find([RESULTS_TUTTE.nPA] == lv);
+    idxLivello = find([RESULTS_TUTTE.livello] == lv);
     RESULTS    = RESULTS_TUTTE(idxLivello);
 
     CSV.cartella = CSV_BASE.cartella;
     FIG          = FIG_BASE;
     if lv > 0
-        CSV.cartella     = fullfile(CSV_BASE.cartella, "PA" + lv);
+        CSV.cartella     = fullfile(CSV_BASE.cartella, etichetta_livello(lv));
         FIG.confrontoCER = false;
     end
 
@@ -2388,7 +2421,8 @@ for lv = LIVELLI
     F1 = [];  GRID = [];  SINT = [];  PERD = [];  CLUS = [];  SENS = [];
 
     fprintf('\n\n########################################################################\n');
-    fprintf('#  ANALISI FRA COMUNITA'' - LIVELLO PA%d (%d comunita'')\n', lv, numel(RESULTS));
+    fprintf('#  ANALISI FRA COMUNITA'' - LIVELLO %s (%d comunita'')\n', ...
+            etichetta_livello(lv), numel(RESULTS));
     fprintf('########################################################################\n');
 
     %% ========================================================================
@@ -2690,6 +2724,9 @@ FIG     = FIG_BASE;
 %  Niente viene ricalcolato: stessa soglia di rilevanza delle inversioni lungo
 %  penetrazione e taglia, quindi i numeri sono confrontabili con quelli. Dettagli
 %  e definizioni: help confronto_pa. Tabelle in <tabelle>/confronto_PA/.
+%  Con MAIN2_IND lo stesso confronto vale per i livelli con imprese (ND1,
+%  ND2_PA1, ...): ogni livello si mette a fianco del livello 0 omonimo, e c'e'
+%  in piu' la scansione lungo l'asse delle imprese PA0 > ND1 > ND2 > ND3.
 %  ========================================================================
 
 cartellaPA = "";

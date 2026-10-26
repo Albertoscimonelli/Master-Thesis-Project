@@ -38,6 +38,14 @@ function C = confronto_pa(RESULTS, LIV, opts)
 %        l'effetto della PA con quello delle schede che mancano. Poi i gruppi di
 %        indicatori (indicator_clusters) di ciascun livello.
 %
+%   CON LE IMPRESE (MAIN2_IND, README 7.11)
+%     I livelli sono codici 10*imprese + PA (etichetta_livello: 10 = ND1,
+%     21 = ND2_PA1). Ogni livello si confronta con il livello 0 omonimo come i
+%     livelli PA ("PA0-ND1", ...); in piu' il sommario "PA0 contro ND>=1", la
+%     scansione "asse ND" (PA0 > ND1 > ND2 > ND3, solo livelli senza PA: gli
+%     assi non si mescolano) e in .effetti le colonne MembriND, QuotaND_pct_vN,
+%     QuotaMembriND_pct, RapportoQuotaND. Senza imprese l'uscita e' quella di prima.
+%
 %   ERRORE DELLO SCAGLIONE UNICO
 %     Con il palazzetto (310,5 kWp) lo scenario impone lo scaglione 80/120 a tutte le
 %     schede (tip_potenza_rif_kW, README 14.4.1): per norma il palazzetto avrebbe
@@ -119,7 +127,7 @@ function C = confronto_pa(RESULTS, LIV, opts)
     for l = 1:nL
         nomi = string(LIV(l).AGR.schede(:));
         assert(numel(unique(nomi)) == numel(nomi), ...
-               'confronto_pa: due comunita'' omonime nel livello PA%d.', LIV(l).livello);
+               'confronto_pa: due comunita'' omonime nel livello %s.', etichetta_livello(LIV(l).livello));
         assert(numel(LIV(l).idx) == numel(nomi), ...
                'confronto_pa: LIV(%d).idx e AGR descrivono un numero diverso di comunita''.', l);
         for c = 1:numel(nomi)
@@ -150,14 +158,14 @@ function C = confronto_pa(RESULTS, LIV, opts)
         r = find(levK == 0 & nomeK == nomeK(q));
         if isempty(r)
             warning('confronto_pa:senzaOmonimo', ...
-                    '%s (livello PA%d) non ha la scheda omonima a livello 0: si salta.', ...
-                    nomeK(q), levK(q));
+                    '%s (livello %s) non ha la scheda omonima a livello 0: si salta.', ...
+                    nomeK(q), etichetta_livello(levK(q)));
             continue
         end
         assert(nUs(r) == nUs(q) && abs(pen(r) - pen(q)) < 1e-9, ...
                ['confronto_pa: %s ha taglia o penetrazione diverse a livello 0 e a ' ...
-                'livello PA%d: la regola della sostituzione non e'' rispettata.'], ...
-               nomeK(q), levK(q));
+                'livello %s: la regola della sostituzione non e'' rispettata.'], ...
+               nomeK(q), etichetta_livello(levK(q)));
         omo(q) = r;
         fasciaK(q) = fasciaK(r);
     end
@@ -237,28 +245,40 @@ function C = confronto_pa(RESULTS, LIV, opts)
         C.inversioni = table();
     end
 
-    % --- Scansione lungo l'asse PA0 > PA1 > PA2 > PA3, scheda per scheda -----
-    nomiAsse = unique(nomeK(levK > 0)).';
+    % --- Scansione lungo un asse, scheda per scheda ---------------------------
+    %  "asse PA":  PA0 > PA1 > PA2 > PA3 (livelli 0-9, solo PA)
+    %  "asse ND":  PA0 > ND1 > ND2 > ND3 (imprese senza PA; solo con MAIN2_IND)
+    %  Gli assi non si mescolano: ND2_PA1 non sta "fra" PA1 e PA2.
+    assi = {"asse PA", @(v) v < 10};
+    if any(levK >= 10)
+        assi(end+1, :) = {"asse ND", @(v) v == 0 | (v >= 10 & mod(v, 10) == 0)};
+    end
     aSch = strings(0, 1);  aN = zeros(0, 1);  aPen = zeros(0, 1);  aFas = zeros(0, 1);
     aSer = zeros(0, 1);  aVal = zeros(0, 1);  aInv = zeros(0, 1);  aEst = zeros(0, 1);
-    for nm = nomiAsse
-        rr = find(nomeK == nm);
-        [~, o] = sort(levK(rr));
-        rr = rr(o);
-        if numel(rr) < 2 || levK(rr(1)) ~= 0, continue; end
-        [X, ~] = local_scansione(rr, LIV, lK, cK, mi, ii, metodi, indic, levK, nomeK);
-        S = X.sommario;
-        valida = isfinite(S.PenetrazioneSegnoIniziale_pct) & isfinite(S.PenetrazioneSegnoFinale_pct) ...
-                 & (S.PenetrazioneSegnoIniziale_pct ~= S.PenetrazioneSegnoFinale_pct);
-        aSch(end+1, 1) = nm;           aN(end+1, 1)  = nUs(rr(1));       %#ok<AGROW>
-        aPen(end+1, 1) = pen(rr(1));   aFas(end+1, 1) = fasciaK(rr(1));  %#ok<AGROW>
-        aSer(end+1, 1) = height(S);    aVal(end+1, 1) = nnz(valida);     %#ok<AGROW>
-        aInv(end+1, 1) = nnz(S.nInversioni > 0);                          %#ok<AGROW>
-        aEst(end+1, 1) = nnz(S.InvertitoAgliEstremi);                     %#ok<AGROW>
+    aNome = strings(0, 1);
+    for g = 1:size(assi, 1)
+        nelAsse = assi{g, 2};
+        nomiAsse = unique(nomeK(levK > 0 & nelAsse(levK))).';
+        for nm = nomiAsse
+            rr = find(nomeK == nm & nelAsse(levK));
+            [~, o] = sort(levK(rr));
+            rr = rr(o);
+            if numel(rr) < 2 || levK(rr(1)) ~= 0, continue; end
+            [X, ~] = local_scansione(rr, LIV, lK, cK, mi, ii, metodi, indic, levK, nomeK);
+            S = X.sommario;
+            valida = isfinite(S.PenetrazioneSegnoIniziale_pct) & isfinite(S.PenetrazioneSegnoFinale_pct) ...
+                     & (S.PenetrazioneSegnoIniziale_pct ~= S.PenetrazioneSegnoFinale_pct);
+            aSch(end+1, 1) = nm;           aN(end+1, 1)  = nUs(rr(1));       %#ok<AGROW>
+            aPen(end+1, 1) = pen(rr(1));   aFas(end+1, 1) = fasciaK(rr(1));  %#ok<AGROW>
+            aSer(end+1, 1) = height(S);    aVal(end+1, 1) = nnz(valida);     %#ok<AGROW>
+            aInv(end+1, 1) = nnz(S.nInversioni > 0);                          %#ok<AGROW>
+            aEst(end+1, 1) = nnz(S.InvertitoAgliEstremi);                     %#ok<AGROW>
+            aNome(end+1, 1) = assi{g, 1};                                     %#ok<AGROW>
+        end
     end
 
     % --- Tabella per scheda ---------------------------------------------------
-    confr = "PA0-PA" + pLiv;
+    confr = "PA0-" + etichetta_livello(pLiv);
     perScheda = table(pSch, pN, pPen, pFas, confr, sum(pSer, 2), sum(pVal, 2), sum(pInv, 2), ...
                       sum(pInv, 2) ./ sum(pSer, 2), sum(pInv, 2) ./ sum(pVal, 2), ...
                       sum(pInv, 2), ...
@@ -266,7 +286,7 @@ function C = confronto_pa(RESULTS, LIV, opts)
                           'SerieEsaminate', 'SerieValide', 'CoppieInvertite', ...
                           'QuotaInvertite', 'QuotaInvertiteSuValide', 'InvertiteAgliEstremi'});
     if ~isempty(aSch)
-        asse = table(aSch, aN, aPen, aFas, repmat("asse PA", numel(aSch), 1), aSer, aVal, aInv, ...
+        asse = table(aSch, aN, aPen, aFas, aNome, aSer, aVal, aInv, ...
                      aInv ./ aSer, aInv ./ aVal, aEst, ...
             'VariableNames', perScheda.Properties.VariableNames);
         perScheda = [perScheda; asse];
@@ -276,14 +296,20 @@ function C = confronto_pa(RESULTS, LIV, opts)
     % --- Sommario per indicatore e confronto ---------------------------------
     livPA = unique(pLiv).';
     righe = {};
-    gruppi = [num2cell(livPA), {0}];                 % 0 = tutti i livelli con PA insieme
+    % -1 = tutti i livelli con sole PA insieme; -2 = tutti i livelli con imprese
+    % (con o senza PA), solo se ce ne sono
+    gruppi = [num2cell(livPA), {-1}];
+    if any(pLiv >= 10), gruppi{end+1} = -2; end
     for g = 1:numel(gruppi)
         k = gruppi{g};
-        if k == 0
-            selP = true(nP, 1);          nomeConf = "PA0 contro PA>=1";
-            selV = vLiv > 0;
+        if k == -1
+            selP = pLiv > 0 & pLiv < 10;   nomeConf = "PA0 contro PA>=1";
+            selV = vLiv > 0 & vLiv < 10;
+        elseif k == -2
+            selP = pLiv >= 10;             nomeConf = "PA0 contro ND>=1";
+            selV = vLiv >= 10;
         else
-            selP = (pLiv == k);          nomeConf = "PA0-PA" + k;
+            selP = (pLiv == k);            nomeConf = "PA0-" + etichetta_livello(k);
             selV = (vLiv == k);
         end
         for j = [1:nI, 0]
@@ -310,6 +336,9 @@ function C = confronto_pa(RESULTS, LIV, opts)
     % ======================================================================
     %  3) EFFETTI sul montepremi e sulle quote dei membri PA
     % ======================================================================
+    % Con le imprese (livelli >= 10) le stesse tre colonne per i membri impresa
+    % si aggiungono in coda; senza, la tabella resta quella di sempre.
+    conND = any(levK >= 10);
     E = {};
     for q = 1:nK
         R = RESULTS(iResK(q));
@@ -317,22 +346,36 @@ function C = confronto_pa(RESULTS, LIV, opts)
         if isempty(q0), vN0 = NaN; else, vN0 = RESULTS(iResK(q0)).vGrand; end
         nPAq = nnz(R.isPA);
         quotaMembri = 100 * nPAq / R.nUsers;
+        if conND
+            if isfield(R, 'isND') && ~isempty(R.isND), isND = R.isND(:); else, isND = false(R.nUsers, 1); end
+            nNDq = nnz(isND);
+            quotaMembriND = 100 * nNDq / R.nUsers;
+        end
         grande = any(R.CFG.impianti.kWp > opts.sogliaKwp);
         errEUR = opts.deltaTariffa * R.shared_annual * grande;
         for k = 1:numel(R.metodi)
             phi = R.metodi(k).phi(:);
             quotaPA = 100 * sum(phi(R.isPA(:))) / sum(phi);
             if nPAq == 0, rapporto = NaN; else, rapporto = quotaPA / quotaMembri; end
-            E(end+1, :) = {nomeK(q), levK(q), R.nUsers, R.penetrazione, nPAq, string(R.metodi(k).nome), ...  %#ok<AGROW>
-                           R.vGrand, R.vGrand / vN0, R.shared_annual, R.sold_annual, ...
-                           quotaPA, quotaMembri, rapporto, errEUR, 100 * errEUR / R.vGrand};
+            riga = {nomeK(q), levK(q), R.nUsers, R.penetrazione, nPAq, string(R.metodi(k).nome), ...
+                    R.vGrand, R.vGrand / vN0, R.shared_annual, R.sold_annual, ...
+                    quotaPA, quotaMembri, rapporto, errEUR, 100 * errEUR / R.vGrand};
+            if conND
+                quotaND = 100 * sum(phi(isND)) / sum(phi);
+                if nNDq == 0, rapND = NaN; else, rapND = quotaND / quotaMembriND; end
+                riga = [riga, {nNDq, quotaND, quotaMembriND, rapND}]; %#ok<AGROW>
+            end
+            E(end+1, :) = riga; %#ok<AGROW>
         end
     end
-    C.effetti = cell2table(E, 'VariableNames', ...
-        {'Scheda', 'Livello', 'Membri', 'Penetrazione_pct', 'MembriPA', 'Metodo', ...
-         'vN_EUR', 'vN_rapportoPA0', 'Condivisa_kWh', 'NonCondivisa_kWh', ...
-         'QuotaPA_pct_vN', 'QuotaMembriPA_pct', 'RapportoQuotaPA', ...
-         'ErroreMaxScaglione_EUR', 'ErroreMaxScaglione_pct_vN'});
+    nomiE = {'Scheda', 'Livello', 'Membri', 'Penetrazione_pct', 'MembriPA', 'Metodo', ...
+             'vN_EUR', 'vN_rapportoPA0', 'Condivisa_kWh', 'NonCondivisa_kWh', ...
+             'QuotaPA_pct_vN', 'QuotaMembriPA_pct', 'RapportoQuotaPA', ...
+             'ErroreMaxScaglione_EUR', 'ErroreMaxScaglione_pct_vN'};
+    if conND
+        nomiE = [nomiE, {'MembriND', 'QuotaND_pct_vN', 'QuotaMembriND_pct', 'RapportoQuotaND'}];
+    end
+    C.effetti = cell2table(E, 'VariableNames', nomiE);
 
     % ======================================================================
     %  4) TRADE-OFF E SOTTOINSIEME MINIMO, livello per livello
@@ -422,7 +465,7 @@ function [X, sub] = local_scansione(righe, LIV, lK, cK, mi, ii, metodi, indic, l
         S(:, :, u) = A.scores(mi{lK(q)}, ii{lK(q)}, cK(q));
         D(:, u)    = A.discrimina(ii{lK(q)}, cK(q));
         T(:, u)    = A.tolTie(ii{lK(q)}, cK(q));
-        etichette(u) = nomeK(q) + "@PA" + levK(q);
+        etichette(u) = nomeK(q) + "@" + etichetta_livello(levK(q));
     end
     sub = struct('indicators', indic, 'methods', metodi, 'schede', etichette, ...
                  'penetrazione', levK(righe).', 'scores', S, 'discrimina', D, 'tolTie', T);
@@ -468,8 +511,12 @@ end
 function local_stampa(C, nP)
 %LOCAL_STAMPA  Una pagina di sintesi. Solo ASCII: i simboli escono corrotti dallo
 %   stdout di MATLAB in modalita' batch.
-    fprintf('\n=== Presenza di PA: PA0 contro i livelli con PA (%d confronti) ===\n', nP);
-    S = C.sommario(C.sommario.Indicatore == "(tutti)", :);
+    if any(C.sommario.Confronto == "PA0 contro ND>=1")
+        fprintf('\n=== Presenza di PA e imprese: PA0 contro gli altri livelli (%d confronti) ===\n', nP);
+    else
+        fprintf('\n=== Presenza di PA: PA0 contro i livelli con PA (%d confronti) ===\n', nP);
+    end
+    S = C.sommario(C.sommario.Indicatore == "(tutti)" & C.sommario.Comunita > 0, :);
     for q = 1:height(S)
         fprintf('  %-18s %3d comunita'': coppie invertite %5.1f%% (sulle valutabili %5.1f%%), vincitore cambia %5.1f%%\n', ...
                 S.Confronto(q), S.Comunita(q), 100 * S.QuotaInvertite(q), ...
@@ -478,6 +525,11 @@ function local_stampa(C, nP)
     a = C.perScheda(C.perScheda.Confronto == "asse PA", :);
     if ~isempty(a)
         fprintf('  lungo l''asse PA0>PA3 (%d schede): coppie invertite %5.1f%% in media\n', ...
+                height(a), 100 * mean(a.QuotaInvertite, 'omitnan'));
+    end
+    a = C.perScheda(C.perScheda.Confronto == "asse ND", :);
+    if ~isempty(a)
+        fprintf('  lungo l''asse PA0>ND1>ND2>ND3 (%d schede): coppie invertite %5.1f%% in media\n', ...
                 height(a), 100 * mean(a.QuotaInvertite, 'omitnan'));
     end
     I = C.sommario(C.sommario.Confronto == "PA0 contro PA>=1" & C.sommario.Indicatore ~= "(tutti)", :);
@@ -561,4 +613,42 @@ function local_validate_self()
     e0 = C.effetti(C.effetti.Livello == 0 & C.effetti.Metodo == "M1", :);
     assert(e0.ErroreMaxScaglione_EUR == 0 && isnan(e0.RapportoQuotaPA), ...
            'confronto_pa: a livello 0 non ci sono PA ne'' errore di scaglione');
+    assert(~any(C.perScheda.Confronto == "asse ND") && ~ismember('MembriND', C.effetti.Properties.VariableNames), ...
+           'confronto_pa: senza imprese non ci sono asse ND ne'' colonne delle imprese');
+
+    % --- Asse imprese: livelli 0, 10 (ND1), 20 (ND2), 21 (ND2_PA1) -----------
+    %  ND1 identico a PA0, ND2 rovescia IndB, ND2_PA1 identico a PA0. L'asse ND
+    %  (PA0 > ND1 > ND2) non contiene ND2_PA1; il sommario ha "PA0 contro ND>=1".
+    scoreB = {[1 2 3], [1 2 3], [3 2 1], [1 2 3]};
+    isND   = {false(3, 1), [false; false; true], [false; true; true], [false; true; true]};
+    isPA   = {false(3, 1), false(3, 1), false(3, 1), [true; false; false]};
+    liv    = [0 10 20 21];
+    clear LIV RES
+    for l = 1:4
+        AGR = struct('indicators', indic, 'methods', metodi, 'schede', "CER_T", ...
+                     'penetrazione', 33, 'scores', cat(2, [3; 2; 1], scoreB{l}(:)), ...
+                     'discrimina', [true; true], 'tolTie', [0.1; 0.1]);
+        LIV(l) = struct('livello', liv(l), 'idx', l, 'AGR', AGR, 'PERD', [], 'CLUS', []); %#ok<AGROW>
+        RES(l) = struct('scheda', "x/CER_T.txt", 'nUsers', 3, 'penetrazione', 33, ...      %#ok<AGROW>
+                        'vGrand', 6, 'shared_annual', 100, 'sold_annual', 20, ...
+                        'metodi', struct('nome', {"M1", "M2"}, 'phi', {[1; 2; 3], [2; 2; 2]}), ...
+                        'isPA', isPA{l}, 'isND', isND{l}, ...
+                        'CFG', struct('impianti', table(3.4, 'VariableNames', {'kWp'})));
+    end
+    C = confronto_pa(RES, LIV, struct('validateSelf', false, 'quiet', true));
+    assert(all(ismember(["PA0-ND1"; "PA0-ND2"; "PA0-ND2_PA1"], C.perScheda.Confronto)), ...
+           'confronto_pa: auto-test, etichette dei confronti con imprese sbagliate');
+    pn2 = C.perScheda(C.perScheda.Confronto == "PA0-ND2", :);
+    assert(pn2.CoppieInvertite == 3, 'confronto_pa: auto-test, inversioni PA0-ND2');
+    an = C.perScheda(C.perScheda.Confronto == "asse ND", :);
+    assert(height(an) == 1 && an.CoppieInvertite == 3, ...
+           'confronto_pa: auto-test, asse ND (PA0 > ND1 > ND2)');
+    assert(~any(C.perScheda.Confronto == "asse PA"), ...
+           'confronto_pa: auto-test, senza livelli di sole PA non c''e'' l''asse PA');
+    snd = C.sommario(C.sommario.Indicatore == "(tutti)" & C.sommario.Confronto == "PA0 contro ND>=1", :);
+    assert(snd.Comunita == 3, 'confronto_pa: auto-test, sommario PA0 contro ND>=1');
+    e = C.effetti(C.effetti.Livello == 20 & C.effetti.Metodo == "M1", :);
+    assert(e.MembriND == 2 && abs(e.QuotaND_pct_vN - 500 / 6) < 1e-9 ...
+           && abs(e.RapportoQuotaND - (500 / 6) / (200 / 3)) < 1e-9, ...
+           'confronto_pa: auto-test, quota ai membri impresa');
 end

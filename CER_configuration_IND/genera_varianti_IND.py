@@ -2,7 +2,7 @@
 
 Per ogni scheda CER_C_P_E.txt di CER_configuration/ con N >= 15 produce, in
 CER_configuration_IND/<livello>/:
-  ND{k}        k imprese (k = 1, 3, 5)             -> D + ND
+  ND{k}        k imprese (k = 1, 2, 3)             -> D + ND
   ND{k}_PA{p}  k imprese + p PA (p = 1, 2, 3)      -> D + ND + PA
 e i CSV dei profili di carico di ogni variante in profili/<livello>/.
 
@@ -13,8 +13,15 @@ prosumer domestico (l'ultimo per id), con il suo impianto. Vincoli:
     ND + PA <= ceil(N/2) - 1;
   - i prosumer domestici di partenza devono bastare: ND + PA <= P.
 Le imprese entrano in quest'ordine: antigelo, office_zummo, small_industry,
-plastica, office. Le PA (comune, scuola, palazzetto) sono quelle di
+plastica, office. Con al massimo 3 imprese plastica e office non entrano: per
+plastica (2 GWh/anno) e' una scelta, resta un test di sensibilita' da fare alla
+fine (README). Le PA (comune, scuola, palazzetto) sono quelle di
 genera_varianti_PA.py, di cui si riusano funzioni e parametri.
+
+Perche' 1-3 imprese: nel database pubblico delle CER italiane (Koltunov et al.
+2026, Energy Policy 218, 115518; github.com/maksym-koltunov/energy-communities-Italy)
+le CER del Nord con imprese prosumer (PMI o NPO) ne hanno 1 in 18 casi, 2 in 10,
+3 in 2, 4 o piu' in 8: 1-2 imprese nel 74% dei casi. Dettagli in README.md.
 
 Uso (dalla radice del progetto):
     python -I CER_configuration_IND/genera_varianti_IND.py
@@ -38,7 +45,7 @@ gpa = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gpa)       # il blocco __main__ del modulo PA non parte
 
 EUR_KWP = gpa.EUR_KWP               # 730 EUR/kWp, come per le PA
-ND_LEVELS = (1, 3, 5)               # imprese per livello
+ND_LEVELS = (1, 2, 3)               # imprese per livello (vedi docstring)
 PA_LEVELS = (1, 2, 3)               # PA per livello
 N_MIN = 15                          # i ND si inseriscono da 15 membri
 
@@ -212,11 +219,11 @@ def build(src_path, label, add, ts):
         f"# Quota non domestici: {k}/{n} = {100.0 * k / n:.1f}% (regola: sotto il 50%).",
         "# Le righe domestiche restano quelle della scheda di partenza (stessi reddito/gas).",
         "# ASSUNZIONI ND (da confermare):",
-        "#  - antigelo, office_zummo, plastica: consumi orari REALI 2024 (CER_LoadProfiles/outputs/",
-        "#    Valencia/), riportati sul 2025 mantenendo il giorno della settimana; FV simulato in",
-        "#    PVsyst su Milano (Duomo) dall'autore; small_industry e office: profili RAMP (csv_scheda9);",
-        "#  - kWp STIMATI (produzione/1480 kWh/kWp): antigelo 33, zummo 129, small_industry 69,",
-        "#    plastica 250, office 17,5;",
+        "#  - antigelo, office_zummo: consumi orari REALI 2024 (CER_LoadProfiles/outputs/Valencia/),",
+        "#    riportati sul 2025 mantenendo il giorno della settimana; FV simulato in PVsyst su",
+        "#    Milano (Duomo) dall'autore; small_industry: profilo RAMP (csv_scheda9);",
+        "#  - kWp STIMATI (produzione/1480 kWh/kWp): antigelo 33, zummo 129, small_industry 69",
+        "#    (coerenti con la taglia media PMI al Nord, 107 kW: Koltunov et al. 2026, Fig. 7);",
         f"#  - costo impianto {EUR_KWP} EUR/kWp (come le PA), P_prel_kW dal picco del profilo per i dati",
         "#    reali, da CER_input.txt per i RAMP; tariffa BIORARIA per i terziari, ORARIO_VARIABILE",
         "#    per gli industriali; categoria industriale/terziario: NON esenti dal fattore F;",

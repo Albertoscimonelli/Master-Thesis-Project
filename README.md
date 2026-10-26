@@ -209,6 +209,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `data/external/palazzetto_lucca/` | **Consumo e produzione FV 2024 del palazzetto dello sport di Lucca** (CSV orari), guida al metodo e script Python. Dati archiviati, non letti da `MAIN2.m`. Vedi §15 |
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Non lette da `MAIN2.m`. Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
+| `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, non ancora lette da `MAIN2.m`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -1470,6 +1471,69 @@ vale quindi solo a PA0 e PA1.
 - Quattro comunità per taglia, un solo campione di famiglie e nessun intervallo di confidenza.
 - La composizione è solo la presenza di 0-3 PA: non ci sono altre categorie di membri.
 
+### 7.11 Come costruiamo i casi da simulare: famiglie, PA, imprese
+
+Le comunità simulate si costruiscono a strati, sempre a partire dalle schede di sole famiglie di
+`CER_configuration/`:
+
+| Strato | Cartella | Cosa cambia | Da quali schede |
+|---|---|---|---|
+| **D** (domestici) | `CER_configuration/` | taglia N e penetrazione (quota di famiglie prosumer) | tutte, 5-100 membri |
+| **D + PA** | `CER_configuration_PA/PA1..PA3` | entrano comune, scuola, palazzetto (§7.10) | tutte |
+| **D + ND** | `CER_configuration_IND/ND1..ND3` | entrano 1, 2 o 3 imprese (ND = non domestici privati: PMI, uffici) | N ≥ 15 |
+| **D + ND + PA** | `CER_configuration_IND/ND{k}_PA{p}` | k imprese e p PA insieme | N ≥ 15 |
+
+**Una sola regola per tutti gli strati.** N, consumatori e prosumer restano quelli della scheda di
+partenza: ogni PA e ogni impresa è un prosumer col proprio impianto, e per ognuno che entra esce
+l'ultimo prosumer domestico (per id). Cambia solo *chi* sono i prosumer. Esempio su `CER_9_9_0`
+(18 membri, 9 famiglie consumatrici e 9 prosumer): `ND2_PA1` = 9 famiglie consumatrici, 6 famiglie
+prosumer, antigelo, office_zummo e comune. Per le imprese valgono due vincoli in più: si entra solo
+da **15 membri**, e imprese più PA restano **sotto il 50% dei membri** (al massimo ⌈N/2⌉ − 1).
+
+**Perché proprio questi livelli: i dati sulle CER reali.** I numeri vengono dal paper di
+Koltunov et al. [K26] e dal loro database pubblico [DB], letto con lo script e le avvertenze di
+[`data/external/koltunov2026/`](data/external/koltunov2026/README.md):
+
+- *Imprese 1-3.* Nelle CER del Nord con imprese prosumer (PMI o enti non profit) ce n'è 1 in 18
+  casi, 2 in 10, 3 in 2, 4 o più in 8 [DB]: una o due nel 74% dei casi. Da qui ND1, ND2, ND3; le
+  schede con 5 imprese generate il 25 ottobre sono state tolte.
+- *PA 1-3.* Le CER del Nord con PA prosumer ne hanno 1-3 nel 67% dei casi [DB].
+- *Taglia.* Mediana 17 membri al Nord (quartili 6 / 17 / 128, n = 181) [DB]: le schede da 15-25
+  membri, dove entrano le imprese, sono attorno alla mediana.
+- *Taglia degli impianti.* Potenza media di un impianto al Nord: residenziale 5,3 kW, PMI 107 kW,
+  pubblico 122,4 kW [K26, Fig. 7]. I nostri valori: famiglie 3,4-5,9 kWp, imprese 33-129 kWp,
+  comune 47, scuola 35, palazzetto 310,5.
+- *FV per membro.* Nelle CER reali da 15-25 membri: quartili 1,95 / 5,84 / 22,3 kWp a membro
+  [DB]. Le nostre schede di sole famiglie stanno a 1,0-1,9 (sotto il primo quartile), con una PA o
+  un'impresa a 2,2-5,8 (attorno alla mediana), con 3 imprese a 10-14, con 3 PA a 16-23 (in alto).
+
+**Le imprese** sono cinque, in quest'ordine: antigelo e office_zummo (consumi reali), small_industry
+(RAMP), plastica (consumi reali), office (RAMP). Con al massimo 3 imprese entrano solo le prime tre.
+Profili, kWp, tariffe e punti aperti in [`CER_configuration_IND/README.md`](CER_configuration_IND/README.md).
+
+**Stato.** Le 331 schede (92 a 15-18 membri, 95 a 20-25, 144 a 50-100) sono generate e lette senza
+errori da `load_cer_input`, `load_cer_data` e `align_members_to_users`. `elenco_schede_cer.m` le
+elenca con `opts.conIND = true` (spento di default), ma **`MAIN2.m` non le legge ancora**: raggruppa
+le comunità per numero di PA, e una scheda con imprese e senza PA finirebbe nel gruppo delle sole
+famiglie. Nessun run è stato fatto.
+
+**Due test lasciati per la fine.**
+1. *Filtro sulla penetrazione.* Nel database l'**83%** delle CER del Nord ha prosumer ≤ 50% dei
+   membri (mediana 28%, quartili 10% / 28% / 50%, n = 64; il 9° decile è 85%) [DB]. Le schede al 75%
+   e al 100% di prosumer sono quindi poco rappresentative. Nel primo run restano tutte; se lì non
+   emergono risultati notevoli si può limitare l'analisi alle schede con prosumer ≤ ~55% dei membri,
+   dichiarando che in Italia, secondo [K26]/[DB], la grande maggioranza delle CER resta sotto metà
+   (non tutte: circa una su sei la supera).
+2. *Plastica.* Consuma 2 GWh/anno, circa 40 volte una CER di 18 famiglie, e con 1-3 imprese non
+   entra mai. Un livello di sensibilità `ND3p` = antigelo + office_zummo + plastica dirà quanto pesa
+   un'impresa grande sui risultati.
+
+[K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
+communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
+115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).
+[DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
+dati a gennaio 2025, commit `7560715`.
+
 ## 8. Dimensionamento impianto PV (standalone)
 
 `optimizer_PV.m` non fa parte della pipeline di analisi: è uno script indipendente di
@@ -1848,11 +1912,16 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   sulla griglia fattore F e soglia GSE non hanno effetto (§7.4, §7.5). **Il terzo asse
   esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge e i risultati
   con i dati LIHC definitivi sono quelli del 20 e del 21 ottobre (§7.10, §7.10.1). Copre solo
-  la presenza di 0-3 PA, non altre categorie di membri. Le schede da 50, 75 e 100 membri non sono
+  la presenza di 0-3 PA. **Le imprese** (1-3 per comunità, §7.11, `CER_configuration_IND/`) sono
+  generate ma non ancora lette da `MAIN2.m`. Le schede da 50, 75 e 100 membri non sono
   analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo
   stadio Python.
+- **Filtro opzionale sulla penetrazione** (da decidere dopo il primo run con le imprese, §7.11):
+  l'83% delle CER reali del Nord ha prosumer ≤ 50% dei membri [K26]/[DB]. Se le schede al 75% e
+  al 100% non danno risultati degni di nota, l'analisi si può limitare a prosumer ≤ ~55%.
+- **Test finale con plastica** (§7.11): l'impresa da 2 GWh/anno non entra nei livelli ND1-ND3.
 - **Un clone pulito non riproduce la griglia.** Le 40 schede, lo scenario e tutti i
   risultati (tabelle dei due run, CSV esportati dai workspace, pagina dei risultati) sono
   versionati; non lo sono i profili di carico (`N_utenti.xlsx`, `100_utenti.csv`) e gli
@@ -1974,6 +2043,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
 | [data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md) | Serve il metodo completo con cui sono state costruite le curve di consumo e di produzione FV del palazzetto di Lucca, con affidabilità e limiti |
 | [CER_configuration_PA/README.md](CER_configuration_PA/README.md) | Serve la regola con cui si inseriscono le PA nelle schede, le assunzioni sulle tre PA e i punti aperti dell'asse composizione |
+| [CER_configuration_IND/README.md](CER_configuration_IND/README.md) | Serve sapere come entrano le imprese nelle schede, i loro profili e kWp, e i punti aperti dell'asse imprese |
+| [data/external/koltunov2026/README.md](data/external/koltunov2026/README.md) | Serve un numero sulle CER italiane reali (taglia, prosumer, imprese, PA, potenza) con la sua fonte e i suoi limiti |
 | [docs/mapping_household_istat.md](docs/mapping_household_istat.md) | Serve sapere perché un archetipo LPG ha quella tipologia familiare Istat (età e componenti dal catalogo LPG) |
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei modelli di ripartizione o degli indicatori |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |

@@ -1,0 +1,171 @@
+# =============================================================================
+# VARIANTE ND1_PA3: imprese (antigelo) + PA (comune, scuola, palazzetto) - asse 'non domestici'
+# Derivata da CER_configuration/CER_0_18_0.txt: stessi N=18, C=0, P=18
+# (penetrazione prosumer invariata). Ogni ND e ogni PA e' un prosumer con il proprio
+# impianto; per ognuno che entra esce un prosumer domestico, con il suo impianto:
+#   rimossi: household_15_kWh (PV21), household_16_kWh (PV08), household_17_kWh (PV22), household_18_kWh (PV14)
+# Quota non domestici: 4/18 = 22.2% (regola: sotto il 50%).
+# Le righe domestiche restano quelle della scheda di partenza (stessi reddito/gas).
+# ASSUNZIONI ND (da confermare):
+#  - antigelo, office_zummo: consumi orari REALI 2024 (CER_LoadProfiles/outputs/Valencia/),
+#    riportati sul 2025 mantenendo il giorno della settimana; FV simulato in PVsyst su
+#    Milano (Duomo) dall'autore; small_industry: profilo RAMP (csv_scheda9);
+#  - kWp STIMATI (produzione/1480 kWh/kWp): antigelo 33, zummo 129, small_industry 69
+#    (coerenti con la taglia media PMI al Nord, 107 kW: Koltunov et al. 2026, Fig. 7);
+#  - costo impianto 730 EUR/kWp (come le PA), P_prel_kW dal picco del profilo per i dati
+#    reali, da CER_input.txt per i RAMP; tariffa BIORARIA per i terziari, ORARIO_VARIABILE
+#    per gli industriali; categoria industriale/terziario: NON esenti dal fattore F;
+#  - le PA sono quelle di CER_configuration_PA/ (stesse assunzioni).
+# I profili di carico sono in ../profili/ e si rigenerano con
+# CER_configuration_IND/genera_varianti_IND.py.
+# =============================================================================
+# =============================================================================
+# BOZZA di scheda CER - PIANIFICAZIONE, nessun profilo ancora generato
+#
+# Composizione domestica derivata da ISTAT AVQ 2024 (microdati Lombardia,
+# 1.831 famiglie) + Censimento permanente della popolazione 2021 (rilascio
+# 2023), allocazione a resto maggiore su 18 famiglie
+# (tipologie_famiglie.py --famiglie 18).
+#
+# MEMBRO 'office' RIMOSSO: la CER e' ora puramente domestica. Il
+# membro terziario (PV04, 17.5 kWp) e la sua colonna office_1_kWh nel
+# CSV di profili_carico vanno tolti insieme - allineamento a cura
+# dell'utente sul file xlsx/csv: load_cer_input.m/align_members_to_users.m
+# rifiutano altrimenti la scheda (colonna del CSV senza riga in [MEMBRI]).
+#
+# PV01 (small_industry) OMESSO: quella scheda non ha un membro
+# small_industry, quindi la riga sarebbe stata un riferimento a vuoto.
+#
+# PENETRAZIONE PROSUMER: 18/18 membri (100.0%),
+# target ~100%. Scheda duplicata da CER_13_5_0.txt (~25%,
+# 5/18 membri): aggiunte 13 famiglie prosumer
+# per portare la quota a ~100%, scelte con lo stesso criterio della
+# versione ~25% (centro del gap piu' largo rimasto fra gli indici
+# gia' assegnati, per non toccare le famiglie gia' prosumer). Indici
+# finali (nella lista delle sole famiglie), non a caso: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].
+# Ciascuna: impianto dimensionato sull'archetipo domestico (n_comp) del
+# titolare, dai profili reali PROVA_CER_1_Project_*_componenti.CSV:
+# 1-2 componenti = 3.4 kWp, 3-4 componenti = 4.2 kWp, 5+ componenti =
+# 5.9 kWp.
+#
+# COSTI (capex_EUR in [IMPIANTI], quota_inv_EUR in [MEMBRI]): stima da
+# tariffario di mercato indicato dall'utente (impianti senza accumulo),
+# EUR/kW al punto medio della fascia dichiarata per categoria, kWp
+# fisso per archetipo come sopra:
+#   1-2 comp. (2-3 kW, ~1900-2200 EUR/kW): 3.4 kWp x 2050 EUR/kW ~= 7000 EUR
+#   3-4 comp. (3-4,5 kW, ~1600-1900 EUR/kW): 4.2 kWp x 1750 EUR/kW ~= 7400 EUR
+#   5+ comp.  (4,5-6 kW, ~1400-1700 EUR/kW): 5.9 kWp x 1550 EUR/kW ~= 9100 EUR
+# Il titolare finanzia per intero il proprio impianto, quindi
+# quota_inv_EUR = capex_EUR dell'impianto posseduto. Valori arrotondati
+# a 100 EUR: indicativi da fascia di mercato, non un preventivo.
+#
+# ATTENZIONE MODELLO: load_cer_data.m legge ogni file_produzione come
+# export PVsyst ASSOLUTO (kWh orari), non normalizzato per kWp. Piu'
+# famiglie nello stesso archetipo (1-2, 3-4 o 5+ componenti) condividono
+# lo stesso file_produzione e ne sommano quindi N volte la stessa curva:
+# e' corretto SOLO se si intende N impianti realmente identici (stessa
+# taglia, stesso orientamento) per archetipo - qui e' cosi' per
+# costruzione (kWp fisso per fascia di componenti).
+#
+# NON e' ancora caricabile. DA COMPILARE A MANO PRIMA DI ATTIVARLA:
+#
+#   [FILE]      profili_carico: percorso del CSV con questi membri,
+#               nell'ORDINE elencato qui sotto
+#   [CER]       nome, comune, provincia, zona_mercato (nord|centro|sud)
+#   [IMPIANTI]  tilt, azimut, opex_EUR_anno per ogni impianto (capex_EUR
+#               e quota_inv_EUR sono compilati: stima di mercato, vedi sopra)
+#
+# PER ATTIVARLA: rinominare in CER_<C>_<P>_<E>.txt (consumatori, prosumer,
+#                produttori puri), stessa cartella. MAIN.m carica i soli
+#                file che iniziano per 'CER_', quindi finche' si chiama
+#                'bozza_' questa scheda viene ignorata e non puo' rompere
+#                nulla.
+#
+# Le sezioni [MERCATO], [INVESTIMENTO] e [POVERTA_ENERGETICA] non stanno
+# qui: le innesta il loader da scenario_economico.txt.
+# =============================================================================
+[CER]
+nome            = ?
+comune          = ?
+provincia       = ?
+zona_mercato    = nord
+cabina_primaria = ?
+forma_giuridica = ?
+anno            = 2025
+n_ore           = 8760
+[RIEPILOGO]
+membri_totali             = 18
+consumatori               = 0
+prosumer                  = 18
+produttori_puri           = 0
+penetrazione_prosumer_pct = 100.00
+potenza_installata_kWp    = 474.7
+impianti_totali           = 18
+[FILE]
+profili_carico     = ../profili/ND1_PA3/CER_0_18_0_ND1_PA3.csv
+prezzi_zonali      = ../../20250101_20251231_MGP_PrezziZonali_Nord.xlsx
+cartella_pv        = ../../PV_Generation
+scenario_economico = ../../CER_configuration/scenario_economico.txt
+[GOVERNANCE]
+ct_riserva        = 0.00
+ct_quota_fissa    = 0.30
+ct_quota_prelievi = 0.50
+ct_quota_prosumer = 0.60
+psk_alpha         = 0.50
+as_campioni       = 1000
+as_seed           = 42
+[MEMBRI]
+# >>> arricchimento socio-economico (CER_LoadProfiles/arricchisci_schede.py)
+# Righe e colonne reddito_*, gas_*, euro_gas GENERATE: non modificarle a mano,
+# rilanciare lo script. Fonti: DATA_SOURCES.md; mapping archetipo -> classe:
+# docs/mapping_household_istat.md.
+# reddito_EUR = reddito_base_EUR x reddito_f. Base: media Istat EU-SILC della
+#   classe (Nord-ovest, redditi 2024, netto, senza affitti figurativi).
+#   reddito_f ~ N(1, 0.075) troncata a [0.85, 1.15] per riestrazione. [ISTAT-EUSILC]
+# euro_gas = spesa gas annua [EUR] = gas_Smc x 10.70 kWh/Smc x 0.120 EUR/kWh
+#   (prezzo_gas_EUR_kWh di scenario_economico.txt al momento della generazione).
+#   gas_categoria estratta dalle quote ARERA lombardia 2023-24 per gruppo di consumo
+#   (<=250 | 250-500 | >500 Smc), ciascuna x gas_f ~ U(0.95, 1.05) e
+#   rinormalizzate (gas_quote). [ARERA-CONSUMI-GAS]
+#   ASSUNZIONE: soglie 250/500 Smc e consumo per uso (120 / 480 / 1400 Smc). [ARERA-PROFILI]
+# Seed: sha256(seed_base=42, nome_csv, campo).
+# <<< arricchimento socio-economico
+id | nome_csv               | ruolo | categoria   | archetipo                               | tariffa          | P_prel_kW | n_comp | n_perc | scala_equiv | reddito_EUR | euro_gas | quota_inv_EUR | mutuo_EUR_anno | impianto | reddito_classe                | reddito_base_EUR | reddito_f | reddito_src  | gas_categoria       | gas_Smc | gas_quote_base    | gas_f                | gas_quote            | gas_src
+ 1 | household_1_kWh        | P     | domestico   | CHR06_uomo_disoccupato                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       26392 |      616 |          7000 |              0 | PV15     | persona_sola_under65          |            27444 |  0.961662 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0313;1.0178;1.0324 | 0.3205;0.1591;0.5204 | ARERA-CONSUMI-GAS:lombardia
+ 2 | household_2_kWh        | P     | domestico   | CHR23_uomo_over65_solo                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       22142 |     1798 |          7000 |              0 | PV05     | persona_sola_65piu            |            22973 |  0.963834 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9826;0.9575;1.0254 | 0.3142;0.1540;0.5318 | ARERA-CONSUMI-GAS:lombardia
+ 3 | household_3_kWh        | P     | domestico   | CHR24_donna_over65_sola                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       25391 |     1798 |          7000 |              0 | PV16     | persona_sola_65piu            |            22973 |  1.105263 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9901;0.9594;1.0115 | 0.3180;0.1550;0.5269 | ARERA-CONSUMI-GAS:lombardia
+ 4 | household_4_kWh        | P     | domestico   | CHR30_pensionato_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       25034 |      154 |          7000 |              0 | PV09     | persona_sola_65piu            |            22973 |  1.089720 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9848;1.0166;1.0141 | 0.3135;0.1628;0.5236 | ARERA-CONSUMI-GAS:lombardia
+ 5 | household_5_kWh        | P     | domestico   | CHR07_giovane_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       26944 |      616 |          7000 |              0 | PV17     | persona_sola_under65          |            27444 |  0.981774 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0376;1.0133;0.9864 | 0.3297;0.1620;0.5083 | ARERA-CONSUMI-GAS:lombardia
+ 6 | household_6_kWh        | P     | domestico   | CHR09_donna_35_che_lavora               | MONORARIA        |         3 |      1 |      1 |         1.0 |       26970 |     1798 |          7000 |              0 | PV12     | persona_sola_under65          |            27444 |  0.982732 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9778;0.9995;0.9743 | 0.3195;0.1643;0.5162 | ARERA-CONSUMI-GAS:lombardia
+ 7 | household_7_kWh        | P     | domestico   | CHR10_uomo_turnista                     | MONORARIA        |         3 |      1 |      1 |         1.0 |       26918 |      154 |          7000 |              0 | PV06     | persona_sola_under65          |            27444 |  0.980824 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0428;0.9879;1.0019 | 0.3295;0.1571;0.5134 | ARERA-CONSUMI-GAS:lombardia
+ 8 | household_8_kWh        | P     | domestico   | CHR32_coppia_under30_senza_lavoro       | MONORARIA        |         3 |      2 |      1 |         1.5 |       50195 |      154 |          7000 |              0 | PV18     | coppia_senza_figli_PR_under65 |            51915 |  0.966873 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0217;0.9795;1.0331 | 0.3203;0.1545;0.5252 | ARERA-CONSUMI-GAS:lombardia
+ 9 | household_9_kWh        | P     | domestico   | CHR16_coppia_over65                     | MONORARIA        |         3 |      2 |      2 |         1.5 |       48343 |     1798 |          7000 |              0 | PV11     | coppia_senza_figli_PR_65piu   |            45366 |  1.065618 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9751;0.9504;0.9659 | 0.3229;0.1583;0.5188 | ARERA-CONSUMI-GAS:lombardia
+10 | household_10_kWh       | P     | domestico   | CHR51_coppia_over65_bis                 | MONORARIA        |         3 |      2 |      2 |         1.5 |       42427 |      154 |          7000 |              0 | PV19     | coppia_senza_figli_PR_65piu   |            45366 |  0.935214 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9636;0.9624;0.9968 | 0.3144;0.1580;0.5275 | ARERA-CONSUMI-GAS:lombardia
+11 | household_11_kWh       | P     | domestico   | CHR04_coppia_uno_a_casa                 | MONORARIA        |         3 |      2 |      1 |         1.5 |       53608 |      154 |          7000 |              0 | PV07     | coppia_senza_figli_PR_under65 |            51915 |  1.032604 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0203;1.0200;0.9606 | 0.3300;0.1660;0.5040 | ARERA-CONSUMI-GAS:lombardia
+12 | household_12_kWh       | P     | domestico   | CHR01_coppia_entrambi_lavorano          | MONORARIA        |         3 |      2 |      2 |         1.5 |       53550 |      154 |          7000 |              0 | PV13     | coppia_senza_figli_PR_under65 |            51915 |  1.031500 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9811;0.9926;1.0035 | 0.3157;0.1607;0.5236 | ARERA-CONSUMI-GAS:lombardia
+13 | household_13_kWh       | P     | domestico   | CHR14_coppia_lavoratori_con_anziano     | MONORARIA        |         3 |      3 |      3 |         2.0 |       44115 |     1798 |          7400 |              0 | PV20     | altra_tipologia               |            47378 |  0.931119 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9783;0.9690;1.0294 | 0.3120;0.1555;0.5325 | ARERA-CONSUMI-GAS:lombardia
+14 | household_14_kWh       | P     | domestico   | CHR45_famiglia_1figlio_un_adulto_a_casa | MONORARIA        |         3 |      3 |      1 |         2.0 |       63773 |      616 |          7400 |              0 | PV10     | coppia_1_figlio               |            60673 |  1.051091 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9897;1.0362;1.0006 | 0.3158;0.1664;0.5178 | ARERA-CONSUMI-GAS:lombardia
+15 | antigelo_kWh           | P     | industriale | antigelo                                | ORARIO_VARIABILE |        15 | -      | -      | -           | -           | -        |         24100 |              0 | PV_ANT   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+16 | comune_1_kWh           | P     | PA          | comune                                  | BIORARIA         |        10 | -      | -      | -           | -           | -        |         34300 |              0 | PV_COM   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+17 | scuola_superiore_1_kWh | P     | PA          | scuola_superiore                        | BIORARIA         |        85 | -      | -      | -           | -           | -        |         25600 |              0 | PV_SCU   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+18 | palazzetto_lucca_kWh   | P     | PA          | palazzetto_sport                        | BIORARIA         |       448 | -      | -      | -           | -           | -        |        226700 |              0 | PV_PAL   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+[IMPIANTI]
+id     | proprietario           | kWp   | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
+PV05   | household_2_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV06   | household_7_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV07   | household_11_kWh       |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV09   | household_4_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV10   | household_14_kWh       |   4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV11   | household_9_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV12   | household_6_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV13   | household_12_kWh       |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV15   | household_1_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV16   | household_3_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV17   | household_5_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV18   | household_8_kWh        |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV19   | household_10_kWh       |   3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV20   | household_13_kWh       |   4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV_ANT | antigelo_kWh           |    33 | PROVA_CER_1_Project_antigelo.CSV       | ?    | ?      |           2025 |     24100 | ?
+PV_COM | comune_1_kWh           |    47 | PROVA_CER_1_Project_municipio.CSV      | ?    | ?      |           2025 |     34300 | ?
+PV_SCU | scuola_superiore_1_kWh |    35 | PROVA_CER_1_Project_scuola.CSV         | ?    | ?      |           2025 |     25600 | ?
+PV_PAL | palazzetto_lucca_kWh   | 310.5 | palazzetto_lucca_FV.CSV                | ?    | ?      |           2025 |    226700 | ?

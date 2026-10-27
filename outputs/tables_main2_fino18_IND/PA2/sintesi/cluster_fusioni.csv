@@ -1,0 +1,10 @@
+Passo,Distanza,TauEquivalente,GruppoA,GruppoB
+1,0,1,EI_orig,Gini
+2,0.137799,0.862201,FairnessIndex,Sigma
+3,0.143541,0.856459,ForzaIncentivante,AllineamentoVirtu
+4,0.279426,0.720574,EI_orig + Gini,VAN_min_EUR
+5,0.3311,0.6689,FairnessIndex + Sigma,AllineamentoVirtu_lordo
+6,0.408389,0.591611,EccessoMax_EUR,CoalizioniInstabili
+7,0.491189,0.508811,FairnessIndex + Sigma + AllineamentoVirtu_lordo,EccessoMax_EUR + CoalizioniInstabili
+8,1.01928,-0.0192834,EI_orig + Gini + VAN_min_EUR,FairnessIndex + Sigma + AllineamentoVirtu_lordo + EccessoMax_EUR + CoalizioniInstabili
+9,1.37662,-0.376617,EI_orig + Gini + VAN_min_EUR + FairnessIndex + Sigma + AllineamentoVirtu_lordo + EccessoMax_EUR + CoalizioniInstabili,ForzaIncentivante + AllineamentoVirtu

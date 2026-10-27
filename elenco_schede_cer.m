@@ -26,6 +26,15 @@ function [schede, info] = elenco_schede_cer(opts)
 %     (2^n), e oltre 25 il Variance Least Core non converge: il default e' 18,
 %     il run a 25 si ottiene con MAIN2_MAX_UTENTI=25.
 %
+%   L'ASSE IMPRESE (non domestici), SPENTO DI DEFAULT
+%     CER_configuration_IND/ND<k>/        k imprese
+%     CER_configuration_IND/ND<k>_PA<p>/  k imprese + p PA
+%     Si legge solo con opts.conIND = true (il default lascia l'elenco identico a
+%     prima). LivelloCartella diventa il codice 10*k + p (0..3 per base e PA, 10, 11,
+%     ..., 53 per le imprese) e la tabella ha due colonne in piu': LivelloND = k e
+%     LivelloPA = p. L'etichetta e' "ND3_PA2/CER_9_9_0". MAIN2 NON le legge ancora:
+%     il suo controllo "livello della cartella = numero di PA" si ferma sui codici ND.
+%
 %   LA SELEZIONE ESPLICITA
 %     opts.selezione (MAIN2_SCHEDE) vince sul tetto: chi elenca una scheda la
 %     vuole. Un nome senza cartella e' una scheda di CER_configuration/ (e' la
@@ -35,6 +44,8 @@ function [schede, info] = elenco_schede_cer(opts)
 %   INPUT (struct opzionale)
 %     .cartellaBase   def. "CER_configuration"
 %     .cartellaPA     def. "CER_configuration_PA"
+%     .cartellaIND    def. "CER_configuration_IND"
+%     .conIND         def. false; true aggiunge le cartelle ND (vedi sopra)
 %     .maxUtenti      def. 18
 %     .selezione      string array di nomi senza ".txt" (def. vuoto = tutte)
 %     .validateSelf   auto-test su una cartella temporanea (def. true)
@@ -51,6 +62,8 @@ function [schede, info] = elenco_schede_cer(opts)
     if nargin < 1 || isempty(opts), opts = struct(); end
     if ~isfield(opts, 'cartellaBase'), opts.cartellaBase = "CER_configuration"; end
     if ~isfield(opts, 'cartellaPA'),   opts.cartellaPA   = "CER_configuration_PA"; end
+    if ~isfield(opts, 'cartellaIND'),  opts.cartellaIND  = "CER_configuration_IND"; end
+    if ~isfield(opts, 'conIND'),       opts.conIND       = false; end
     if ~isfield(opts, 'maxUtenti'),    opts.maxUtenti    = 18; end
     if ~isfield(opts, 'selezione'),    opts.selezione    = strings(0, 1); end
     if ~isfield(opts, 'validateSelf'), opts.validateSelf = true; end
@@ -59,7 +72,9 @@ function [schede, info] = elenco_schede_cer(opts)
 
     base = string(opts.cartellaBase);
     pa   = string(opts.cartellaPA);
-    T    = local_scansiona(base, pa);
+    ind  = "";
+    if opts.conIND, ind = string(opts.cartellaIND); end
+    T    = local_scansiona(base, pa, ind);
 
     assert(any(T.LivelloCartella == 0), ...
            'Nessuna scheda CER_*.txt in %s: non c''e'' niente da analizzare.', base);
@@ -76,7 +91,9 @@ function [schede, info] = elenco_schede_cer(opts)
             if startsWith(nome, "PA0/")
                 nome = extractAfter(nome, "PA0/");           % livello 0 = base
             end
-            if contains(nome, "/")
+            if startsWith(nome, "ND")
+                voluti(q) = ind + "/" + nome + ".txt";        % ND3/CER_9_9_0, ND3_PA2/CER_9_9_0
+            elseif contains(nome, "/")
                 voluti(q) = pa + "/" + nome + ".txt";
             else
                 voluti(q) = base + "/" + nome + ".txt";
@@ -99,11 +116,12 @@ end
 %  FUNZIONI LOCALI
 % ===========================================================================
 
-function T = local_scansiona(base, pa)
+function T = local_scansiona(base, pa, ind)
 %LOCAL_SCANSIONA  Tutte le schede delle cartelle, livello 0 per primo.
 
     cartelle = base;
     livelli  = 0;
+    lvND     = 0;
     if isfolder(pa)
         d    = dir(pa);
         nomi = string({d([d.isdir]).name});
@@ -117,10 +135,40 @@ function T = local_scansiona(base, pa)
         nomi     = nomi(ok);
         cartelle = [cartelle, pa + "/" + nomi(o)];
         livelli  = [livelli, k];
+        lvND     = [lvND, zeros(size(k))];
+    end
+
+    % Asse "non domestici" (CER_configuration_IND/): ND<k> = k imprese,
+    % ND<k>_PA<p> = k imprese + p PA. Il livello e' il codice 10*k + p, cosi'
+    % le cartelle PA (k = 0) restano 0..3 e un ND non si confonde con loro.
+    % Ordine: per codice crescente, dopo il livello 0 e le PA.
+    etichIND = strings(1, 0);
+    if strlength(ind) > 0 && isfolder(ind)
+        d    = dir(ind);
+        nomi = string({d([d.isdir]).name});
+        kk = nan(size(nomi));  pp = nan(size(nomi));
+        for q = 1:numel(nomi)
+            % due pattern e non uno con gruppo facoltativo: regexp(...,'once') non
+            % restituisce il secondo token di un gruppo dentro (?:...)?
+            tok = regexp(nomi(q), '^ND([1-9]\d*)_PA([1-9]\d*)$', 'tokens', 'once');
+            if numel(tok) == 2
+                kk(q) = str2double(tok(1));  pp(q) = str2double(tok(2));
+            else
+                tok = regexp(nomi(q), '^ND([1-9]\d*)$', 'tokens', 'once');
+                if ~isempty(tok), kk(q) = str2double(tok(1));  pp(q) = 0; end
+            end
+        end
+        ok = ~isnan(kk);
+        [~, o] = sort(10 * kk(ok) + pp(ok));
+        nomi = nomi(ok);  kk = kk(ok);  pp = pp(ok);
+        cartelle = [cartelle, ind + "/" + nomi(o)];
+        livelli  = [livelli, pp(o)];
+        lvND     = [lvND, kk(o)];
+        etichIND = nomi(o);
     end
 
     Scheda = strings(0, 1);  Etichetta = strings(0, 1);  Cartella = strings(0, 1);
-    Livello = zeros(0, 1);   NCPE = zeros(0, 4);
+    Livello = zeros(0, 1);   NCPE = zeros(0, 4);   LvND = zeros(0, 1);
     for q = 1:numel(cartelle)
         e    = dir(cartelle(q) + "/CER_*.txt");
         nomi = sort(string({e.name}).');
@@ -134,19 +182,24 @@ function T = local_scansiona(base, pa)
             c = str2double(string(tok));
             stem = erase(f, ".txt");
             Scheda(end+1, 1)    = cartelle(q) + "/" + f;                 %#ok<AGROW>
-            if livelli(q) == 0
+            if lvND(q) > 0
+                Etichetta(end+1, 1) = etichIND(q - (numel(cartelle) - numel(etichIND))) + "/" + stem; %#ok<AGROW>
+            elseif livelli(q) == 0
                 Etichetta(end+1, 1) = stem;                              %#ok<AGROW>
             else
                 Etichetta(end+1, 1) = "PA" + livelli(q) + "/" + stem;    %#ok<AGROW>
             end
             Cartella(end+1, 1)  = cartelle(q);                           %#ok<AGROW>
-            Livello(end+1, 1)   = livelli(q);                            %#ok<AGROW>
+            Livello(end+1, 1)   = 10 * lvND(q) + livelli(q);             %#ok<AGROW>
+            LvND(end+1, 1)      = lvND(q);                               %#ok<AGROW>
             NCPE(end+1, :)      = [sum(c) c];                            %#ok<AGROW>
         end
     end
+    LivelloPA = mod(Livello, 10);
     T = table(Scheda, Etichetta, Cartella, Livello, NCPE(:, 1), NCPE(:, 2), ...
-              NCPE(:, 3), NCPE(:, 4), 'VariableNames', ...
-              {'Scheda', 'Etichetta', 'Cartella', 'LivelloCartella', 'N', 'C', 'P', 'E'});
+              NCPE(:, 3), NCPE(:, 4), LvND, LivelloPA, 'VariableNames', ...
+              {'Scheda', 'Etichetta', 'Cartella', 'LivelloCartella', 'N', 'C', 'P', 'E', ...
+               'LivelloND', 'LivelloPA'});
 end
 
 
@@ -194,6 +247,42 @@ function local_validate_self()
     [~, I3] = elenco_schede_cer(o3);
     assert(isequal(I3.Etichetta, ["CER_0_20_0"; "CER_2_3_0"; "PA2/CER_4_4_0"]), ...
            'elenco_schede_cer: selezione, ordine o alias PA0 sbagliati');
+
+    % --- 3b) Asse imprese: spento di default, acceso con conIND
+    i = radice + "/ind";
+    for d = [i + "/ND1", i + "/ND1_PA2", i + "/ND3", i + "/ND3_PA1", i + "/ND3_PA3"]
+        mkdir(d);
+    end
+    crea(i + "/ND1",     ["CER_4_4_0.txt", "CER_0_20_0.txt"]);
+    crea(i + "/ND1_PA2", ["CER_4_4_0.txt"]);
+    crea(i + "/ND3",     ["CER_0_20_0.txt", "CER_4_4_0.txt"]);
+    crea(i + "/ND3_PA1", ["CER_4_4_0.txt"]);
+    crea(i + "/ND3_PA3", ["CER_0_20_0.txt"]);
+    o5 = o;  o5.cartellaIND = i;
+    [~, I5] = elenco_schede_cer(o5);
+    assert(isequal(I5.Etichetta, I.Etichetta) && all(I5.LivelloND == 0), ...
+           'elenco_schede_cer: senza conIND le cartelle ND non vanno lette');
+    o5.conIND = true;  o5.maxUtenti = Inf;
+    [~, I5] = elenco_schede_cer(o5);
+    ND = I5(I5.LivelloND > 0, :);
+    assert(isequal(ND.Etichetta, ["ND1/CER_0_20_0"; "ND1/CER_4_4_0"; "ND1_PA2/CER_4_4_0"; ...
+                                  "ND3/CER_0_20_0"; "ND3/CER_4_4_0"; "ND3_PA1/CER_4_4_0"; ...
+                                  "ND3_PA3/CER_0_20_0"]) && ...
+           isequal(ND.LivelloCartella, [10; 10; 12; 30; 30; 31; 33]) && ...
+           isequal(ND.LivelloND, [1; 1; 1; 3; 3; 3; 3]) && ...
+           isequal(ND.LivelloPA, [0; 0; 2; 0; 0; 1; 3]), ...
+           'elenco_schede_cer: ordine, codici o etichette delle cartelle ND sbagliati');
+    o6 = o5;  o6.conIND = false;
+    [~, I6] = elenco_schede_cer(o6);
+    assert(isequal(I5.Etichetta(I5.LivelloND == 0), I6.Etichetta), ...
+           'elenco_schede_cer: con conIND il livello 0 e le PA non devono cambiare');
+    o5.maxUtenti = 8;
+    [~, I5b] = elenco_schede_cer(o5);
+    assert(all(I5b.N <= 8), 'elenco_schede_cer: il tetto deve valere anche per le ND');
+    o5.selezione = "ND3_PA1/CER_4_4_0";
+    [~, I5c] = elenco_schede_cer(o5);
+    assert(isequal(I5c.Etichetta, "ND3_PA1/CER_4_4_0"), ...
+           'elenco_schede_cer: la selezione "ND3_PA1/..." non funziona');
 
     % --- 4) Errori parlanti
     esito = 'nessun errore';

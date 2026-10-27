@@ -1549,6 +1549,59 @@ funzionamento (due schede per livello), non un risultato.
    entra mai. Un livello di sensibilità `ND3p` = antigelo + office_zummo + plastica dirà quanto pesa
    un'impresa grande sui risultati.
 
+#### 7.11.1 Risultati del blocco 15-18 membri (run del 26-27 ottobre 2026)
+
+**Cosa è.** 168 comunità: le 76 senza imprese (livello 0, PA1-PA3) e le 92 con imprese (ND1-ND3
+e ND{k}_PA{p}), tutte quelle di N = 15 e 18 (`0_15_0`, `4_11_0`, `7_8_0`, `11_4_0`, `0_18_0`, `4_14_0`,
+`9_9_0`, `13_5_0`). 9 h 52 min di analisi in una sola sessione, senza errori né interruzioni.
+Tabelle in `outputs/tables_main2_fino18_IND/`; il workspace (`RESULTS`) in
+`outputs/workspace/run_2026-10-27_fino18_IND.mat` e il log in
+`outputs/run_logs/main2_run_2026-10-27_fino18_IND.log`, entrambi non versionati.
+
+```bash
+MAIN2_IND=1 MAIN2_CARTELLA=fino18_IND matlab -batch "MAIN2"
+```
+
+**Regressione.** I 76 livelli senza imprese (`confronto/`, `sintesi/`, `PA1/`-`PA3/`) sono
+**identici al byte** al run del 20 ottobre (§7.10). Cambiano solo `confronto_PA/`, che ora contiene
+anche le imprese.
+
+**Effetto delle imprese** (`confronto_PA/`, stessa soglia di rilevanza degli altri assi):
+
+| Confronto con PA0 | Comunità | Coppie invertite | Sulle valutabili | Il vincitore cambia |
+|---|---:|---:|---:|---:|
+| PA ≥ 1 (già in §7.10) | 56 | 10,9% | 19,2% | 10,9% |
+| **ND ≥ 1** (imprese, con o senza PA) | **92** | **9,9%** | **17,6%** | **9,3%** |
+| ND1 / ND2 / ND3 (senza PA) | 8 + 8 + 8 | 7,1% / 10,7% / 10,4% | 11,9% / 18,6% / 18,4% | 10,0% / 10,0% / 7,5% |
+| lungo l'asse PA0 > ND1 > ND2 > ND3 | 8 schede | 17,9% (da 9,8% a 28,4%) | – | – |
+| (lungo l'asse PA0 > PA3, §7.10) | 20 schede | 23,3% | – | – |
+
+- **Le imprese spostano la graduatoria quanto le PA**, non di più: circa un'inversione su dieci,
+  e la scansione lungo l'asse delle imprese (17,9%) è sotto quella delle PA (23,3%) e di quella
+  lungo la penetrazione (§7.10).
+- **Vincitore.** Cambia soprattutto per l'allineamento lordo (81,5% delle comunità con imprese,
+  37,4% di coppie invertite) e per σ (4,3%); non cambia mai per Gini, EI e Fairness Index.
+- **Scala.** v(N) rispetto a PA0 ha mediana ×1,3 (ND1), ×1,5 (ND2), ×2,2 (ND3) senza PA, e ×11-12 con
+  3 PA (fino a ×55): il montepremi cresce con le imprese quanto con le PA, ed è il
+  limite già noto di §7.10. Qui un'impresa pesa più di una PA piccola: ND3 vale già ×2,2.
+- **Quota alle imprese.** Quota media del montepremi alle imprese divisa per la loro quota di
+  membri: 3,2 con Remuneration Model 1, 2,8 Cascading Tree, 2,1-2,2 con Shapley, Nucleolo, Variance
+  Least Core e Proportional to Consumption, 1,0 con l'Equal Split, 0,57 col Similarity-Utilization. Le
+  imprese prendono il 25% del montepremi con Shapley, il 12% con l'Equal Split.
+- **Gruppi di indicatori** (τ ≥ 0,5): 4 gruppi nella maggior parte dei livelli, 5 a ND1_PA1 e ND2_PA1,
+  3 a PA2: il sottoinsieme minimo di indicatori non cambia con le imprese.
+
+**Limiti.**
+- **Poche schede per livello.** 8 comunità per livello (6-7 a ND3_PA3), un solo campione di
+  famiglie e di imprese, nessun intervallo di confidenza.
+- **Le imprese pesano molto in energia** (80-97% del carico già con 2-3 imprese): una differenza fra
+  livelli dipende dalla scala e non solo dalla composizione.
+- **Scaglione unico.** A PA3 e ND{k}_PA3 (38 comunità) l'errore dello scaglione vale in media il 7,9% di v(N),
+  sopra la soglia di rilevanza del 5%: quei livelli non vanno presentati come robusti (§7.10).
+- **Nessun filtro sulla penetrazione:** le schede al 75% e al 100% di prosumer sono dentro (§12).
+- **Solo N = 15 e 18.** Shapley esatto e Nucleolo valgono fino a 18 membri; i blocchi da 20 e 25
+  membri non sono ancora stati fatti.
+
 [K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
 communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
 115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).

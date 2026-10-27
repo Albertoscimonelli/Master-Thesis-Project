@@ -1,0 +1,29 @@
+InsiemeCriteri,Scheda,Membri,Fascia,Penetrazione_pct,NMetodiNonDominati,NMetodiTotali,MetodiNonDominati
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_15_0,15,3,100,6,11,Equal Split; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_18_0,18,4,100,5,11,Equal Split; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_4_11_0,15,2,73.33,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_4_14_0,18,3,77.78,3,11,Equal Split; Weighted Solidarity; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_7_8_0,15,1,53.33,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_9_9_0,18,2,50,2,11,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_15_0,15,3,100,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_18_0,18,4,100,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_13_5_0,18,1,27.78,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_4_11_0,15,2,73.33,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_4_14_0,18,3,77.78,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_7_8_0,15,1,53.33,2,11,Equal Split; Cascading Tree
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_9_9_0,18,2,50,2,11,Equal Split; Cascading Tree
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_15_0,15,3,100,4,11,Nucleolo; Variance Least Core; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_18_0,18,4,100,4,11,Nucleolo; Variance Least Core; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_13_5_0,18,1,27.78,6,11,Shapley; Nucleolo; Variance Least Core; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_4_11_0,15,2,73.33,4,11,Nucleolo; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_4_14_0,18,3,77.78,6,11,Shapley; Nucleolo; Variance Least Core; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_7_8_0,15,1,53.33,4,11,Nucleolo; Pearson Key; Similarity-Utilization; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_9_9_0,18,2,50,6,11,Shapley; Nucleolo; Variance Least Core; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_15_0,15,3,100,8,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Cascading Tree; Weighted Solidarity; Pearson Key; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_0_18_0,18,4,100,7,11,Nucleolo; Variance Least Core; Equal Split; Cascading Tree; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_13_5_0,18,1,27.78,9,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_4_11_0,15,2,73.33,7,11,Nucleolo; Equal Split; Cascading Tree; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_4_14_0,18,3,77.78,8,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_7_8_0,15,1,53.33,6,11,Nucleolo; Equal Split; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_9_9_0,18,2,50,8,11,Shapley; Nucleolo; Variance Least Core; Equal Split; Weighted Solidarity; Pearson Key; Similarity-Utilization; Tri-level EP

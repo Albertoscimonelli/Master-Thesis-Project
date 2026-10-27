@@ -50,8 +50,12 @@ Figure per la tesi e numeri che le accompagnano (tabelle del 20 ottobre per tutt
 export per i valori grezzi del livello 0):
 
 ```bash
-python -I outputs/workspace/strumenti/grafici_metodi.py      # -> outputs/figures_tesi/, outputs/tables_tesi/
+python -I outputs/workspace/strumenti/grafici_metodi.py --apri  # -> outputs/figures_tesi/, outputs/tables_tesi/
 ```
+
+Alla fine scrive `outputs/figures_tesi/index.html`: tutte le figure con spiegazione e risultato, in un file
+unico da aprire con un doppio clic o da inviare (`--apri` lo apre nel browser). Si rigenera da solo con
+`pagina_risultati.py`, anche senza rifare le figure.
 
 Analisi e scelte statistiche in `outputs/report/ANALISI_risultati_e_figure_2026-10-27.md`.
 `esporta_run.m` scrive dal 27 ottobre la colonna `Composizione` e legge i punteggi da `LIV`:

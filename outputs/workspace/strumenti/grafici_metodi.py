@@ -290,6 +290,8 @@ def f01_grezzi(tf, lab_fascia, out, tab):
     salva(fig, out, "F01_valori_grezzi")
     pd.DataFrame(righe, columns=["Indicatore", "Metodo", "Mediana", "Q1", "Q3", "Min", "Max", "Comunita"]) \
       .to_csv(tab / "F01_valori_grezzi.csv", index=False)
+    tf[["Livello", "Scheda", "Membri", "Fascia", "Penetrazione_pct", "Metodo"] + [m.grezza for m in METRICHE]] \
+      .to_csv(tab / "valori_grezzi_per_comunita.csv", index=False)
 
 
 # ============================================================ F02: profilo normalizzato per metodo
@@ -754,6 +756,8 @@ def main():
     ap.add_argument("--export", default="outputs/workspace/export_fino18")
     ap.add_argument("--out", default="outputs/figures_tesi")
     ap.add_argument("--numeri", default="outputs/tables_tesi")
+    ap.add_argument("--apri", action="store_true", help="apre la pagina dei risultati nel browser")
+    ap.add_argument("--senza-pagina", action="store_true", help="non genera la pagina HTML")
     a = ap.parse_args()
     out, tab = Path(a.out), Path(a.numeri)
     tab.mkdir(parents=True, exist_ok=True)
@@ -803,6 +807,13 @@ def main():
     (tab / "controlli.txt").write_text("\n\n".join(controlli) + "\n", encoding="utf-8")
     print("\n\n".join(controlli))
     print(f"\nfigure in {out}, numeri in {tab}")
+
+    if not a.senza_pagina:
+        # la pagina sta in un file a parte; con python -I la cartella dello script non e' in
+        # sys.path, quindi si carica per percorso invece che con import
+        import runpy
+        pagina = runpy.run_path(str(Path(__file__).with_name("pagina_risultati.py")), run_name="pagina")
+        pagina["costruisci"](out, tab, apri=a.apri)
 
 
 if __name__ == "__main__":

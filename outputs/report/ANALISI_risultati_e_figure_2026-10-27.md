@@ -274,7 +274,7 @@ Ogni risultato è letto su cinque punti: dati, rilevanza, interpretazione, verif
   - Spostamento medio |Δ punteggio| sulle 17 schede comuni ai tre livelli: 0,21 con PA1, **0,31**
     con PA2, 0,28 con PA3. PA2 sposta più di PA3 anche se v(N) cresce meno (mediana ×5,7 contro
     ×11,4).
-  - Sommando i livelli, lo spostamento correla con la scala (Spearman 0,66). Dentro ciascun
+  - Sommando i livelli, lo spostamento correla con la scala (Spearman 0,56). Dentro ciascun
     livello la correlazione è 0,59 con PA1 e **negativa** con PA2 (−0,30) e PA3 (−0,49).
   - Effetti grandi e coerenti in segno: il Cascading Tree guadagna in stabilità (+0,7) e merito
     con PA2 e PA3; Nucleolo e VLC perdono sull'allineamento netto (da −0,6 a −0,8); la

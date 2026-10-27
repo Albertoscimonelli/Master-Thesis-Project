@@ -194,3 +194,31 @@ Limiti noti:
    `scripts/allinea_alla_pipeline.py`. Energie: FV 398.112 kWh (originale 398.902), carico 289.706
    kWh (originale 290.131).
 6. Picco FV di 280,2 kW contro 270 kW di inverter, taglio non applicato (4 ore, circa 15 kWh/anno).
+
+## CER italiane reali: composizione, taglia, imprese (Koltunov et al. 2026)
+
+Cartella: [`data/external/koltunov2026/`](data/external/koltunov2026/README.md), con lo script
+`analisi_database_cer.py` che stampa tutti i numeri citati. **Non sono dati delle schede**: servono a
+scegliere quali composizioni simulare (README §7.11), in particolare i livelli 1-3 imprese di
+`CER_configuration_IND/`.
+
+[K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
+communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
+115518. doi:10.1016/j.enpol.2026.115518. Preprint arXiv:2510.13517v3 (citato per pagine e figure).
+
+[DB] Database del paper: https://github.com/maksym-koltunov/energy-communities-Italy, file
+`CER database 2025 PUBLIC.xlsm`, foglio `Main CERs`, dati a gennaio 2025, letto al commit `7560715`.
+Il repository non dichiara licenza: il file **non è copiato** nel progetto, va clonato a parte.
+
+Limiti noti:
+1. Metà delle CER è in progetto (177 su 384 righe): i dati vengono spesso dai business plan.
+2. Le quote di potenza FV per categoria della zona Nord (pubblico 41,5%, residenziale 11,2%,
+   PMI 16,6%, NPO 9,1%, standalone 21,5%) sono medie su tutte le CER, zeri compresi, non sulle
+   sole CER dove la categoria c'è come dice l'Eq. 7 del paper.
+3. I numeri medi di edifici per CER (4,4 pubblici, 17,7 residenziali, 2,3 PMI, 2,3 NPO) contano
+   solo i prosumer e solo dove la categoria c'è: non sono quote di membri. Il paper è incoerente
+   sul residenziale (17,7 × 36 ≈ 637 contro 949 edifici in Fig. 8).
+4. L'autoconsumo del 49,1% è quasi sempre un 50% dichiarato nei business plan (quartili 50/50/50):
+   non è una misura.
+5. Il rapporto prosumer/membri (83% delle CER del Nord ≤ 50%) è **calcolato da noi** su 64 CER,
+   contando i tetti e non i POD.

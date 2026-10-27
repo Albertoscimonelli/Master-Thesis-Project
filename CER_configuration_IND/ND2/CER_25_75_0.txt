@@ -1,0 +1,310 @@
+# =============================================================================
+# VARIANTE ND2: imprese (antigelo, office_zummo) + PA (nessuna) - asse 'non domestici'
+# Derivata da CER_configuration/CER_25_75_0.txt: stessi N=100, C=25, P=75
+# (penetrazione prosumer invariata). Ogni ND e ogni PA e' un prosumer con il proprio
+# impianto; per ognuno che entra esce un prosumer domestico, con il suo impianto:
+#   rimossi: household_98_kWh (PV28), household_100_kWh (PV56)
+# Quota non domestici: 2/100 = 2.0% (regola: sotto il 50%).
+# Le righe domestiche restano quelle della scheda di partenza (stessi reddito/gas).
+# ASSUNZIONI ND (da confermare):
+#  - antigelo, office_zummo: consumi orari REALI 2024 (CER_LoadProfiles/outputs/Valencia/),
+#    riportati sul 2025 mantenendo il giorno della settimana; FV simulato in PVsyst su
+#    Milano (Duomo) dall'autore; small_industry: profilo RAMP (csv_scheda9);
+#  - kWp STIMATI (produzione/1480 kWh/kWp): antigelo 33, zummo 129, small_industry 69
+#    (coerenti con la taglia media PMI al Nord, 107 kW: Koltunov et al. 2026, Fig. 7);
+#  - costo impianto 730 EUR/kWp (come le PA), P_prel_kW dal picco del profilo per i dati
+#    reali, da CER_input.txt per i RAMP; tariffa BIORARIA per i terziari, ORARIO_VARIABILE
+#    per gli industriali; categoria industriale/terziario: NON esenti dal fattore F;
+#  - le PA sono quelle di CER_configuration_PA/ (stesse assunzioni).
+# I profili di carico sono in ../profili/ e si rigenerano con
+# CER_configuration_IND/genera_varianti_IND.py.
+# =============================================================================
+# =============================================================================
+# BOZZA di scheda CER - PIANIFICAZIONE, nessun profilo ancora generato
+#
+# Composizione domestica derivata da ISTAT AVQ 2024 (microdati Lombardia,
+# 1.831 famiglie) + Censimento permanente della popolazione 2021 (rilascio
+# 2023), allocazione a resto maggiore su 100 famiglie
+# (tipologie_famiglie.py --famiglie 100).
+#
+# MEMBRO 'office' RIMOSSO: la CER e' ora puramente domestica. Il
+# membro terziario (PV04, 17.5 kWp) e la sua colonna office_1_kWh nel
+# CSV di profili_carico vanno tolti insieme - allineamento a cura
+# dell'utente sul file xlsx/csv: load_cer_input.m/align_members_to_users.m
+# rifiutano altrimenti la scheda (colonna del CSV senza riga in [MEMBRI]).
+#
+# PV01 (small_industry) OMESSO: quella scheda non ha un membro
+# small_industry, quindi la riga sarebbe stata un riferimento a vuoto.
+#
+# PENETRAZIONE PROSUMER: 75/100 membri (75.0%),
+# target ~75%. Scheda duplicata da CER_75_25_0.txt (~25%,
+# 25/100 membri): aggiunte 50 famiglie prosumer
+# per portare la quota a ~75%, scelte con lo stesso criterio della
+# versione ~25% (centro del gap piu' largo rimasto fra gli indici
+# gia' assegnati, per non toccare le famiglie gia' prosumer). Indici
+# finali (nella lista delle sole famiglie), non a caso: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 50, 52, 54, 56, 58, 60, 62, 64, 65, 67, 69, 71, 73, 75, 77, 79, 81, 83, 85, 86, 88, 90, 92, 94, 96, 98, 100].
+# Ciascuna: impianto dimensionato sull'archetipo domestico (n_comp) del
+# titolare, dai profili reali PROVA_CER_1_Project_*_componenti.CSV:
+# 1-2 componenti = 3.4 kWp, 3-4 componenti = 4.2 kWp, 5+ componenti =
+# 5.9 kWp.
+#
+# COSTI (capex_EUR in [IMPIANTI], quota_inv_EUR in [MEMBRI]): stima da
+# tariffario di mercato indicato dall'utente (impianti senza accumulo),
+# EUR/kW al punto medio della fascia dichiarata per categoria, kWp
+# fisso per archetipo come sopra:
+#   1-2 comp. (2-3 kW, ~1900-2200 EUR/kW): 3.4 kWp x 2050 EUR/kW ~= 7000 EUR
+#   3-4 comp. (3-4,5 kW, ~1600-1900 EUR/kW): 4.2 kWp x 1750 EUR/kW ~= 7400 EUR
+#   5+ comp.  (4,5-6 kW, ~1400-1700 EUR/kW): 5.9 kWp x 1550 EUR/kW ~= 9100 EUR
+# Il titolare finanzia per intero il proprio impianto, quindi
+# quota_inv_EUR = capex_EUR dell'impianto posseduto. Valori arrotondati
+# a 100 EUR: indicativi da fascia di mercato, non un preventivo.
+#
+# ATTENZIONE MODELLO: load_cer_data.m legge ogni file_produzione come
+# export PVsyst ASSOLUTO (kWh orari), non normalizzato per kWp. Piu'
+# famiglie nello stesso archetipo (1-2, 3-4 o 5+ componenti) condividono
+# lo stesso file_produzione e ne sommano quindi N volte la stessa curva:
+# e' corretto SOLO se si intende N impianti realmente identici (stessa
+# taglia, stesso orientamento) per archetipo - qui e' cosi' per
+# costruzione (kWp fisso per fascia di componenti).
+#
+# NON e' ancora caricabile. DA COMPILARE A MANO PRIMA DI ATTIVARLA:
+#
+#   [FILE]      profili_carico: percorso del CSV con questi membri,
+#               nell'ORDINE elencato qui sotto
+#   [CER]       nome, comune, provincia, zona_mercato (nord|centro|sud)
+#   [IMPIANTI]  tilt, azimut, opex_EUR_anno per ogni impianto (capex_EUR
+#               e quota_inv_EUR sono compilati: stima di mercato, vedi sopra)
+#
+# PER ATTIVARLA: rinominare in CER_<C>_<P>_<E>.txt (consumatori, prosumer,
+#                produttori puri), stessa cartella. MAIN.m carica i soli
+#                file che iniziano per 'CER_', quindi finche' si chiama
+#                'bozza_' questa scheda viene ignorata e non puo' rompere
+#                nulla.
+#
+# Le sezioni [MERCATO], [INVESTIMENTO] e [POVERTA_ENERGETICA] non stanno
+# qui: le innesta il loader da scenario_economico.txt.
+# =============================================================================
+[CER]
+nome            = ?
+comune          = ?
+provincia       = ?
+zona_mercato    = nord
+cabina_primaria = ?
+forma_giuridica = ?
+anno            = 2025
+n_ore           = 8760
+[RIEPILOGO]
+membri_totali             = 100
+consumatori               = 25
+prosumer                  = 75
+produttori_puri           = 0
+penetrazione_prosumer_pct = 75.00
+potenza_installata_kWp    = 422.2
+impianti_totali           = 75
+[FILE]
+profili_carico     = ../profili/ND2/CER_25_75_0_ND2.csv
+prezzi_zonali      = ../../20250101_20251231_MGP_PrezziZonali_Nord.xlsx
+cartella_pv        = ../../PV_Generation
+scenario_economico = ../../CER_configuration/scenario_economico.txt
+[GOVERNANCE]
+ct_riserva        = 0.00
+ct_quota_fissa    = 0.30
+ct_quota_prelievi = 0.50
+ct_quota_prosumer = 0.60
+psk_alpha         = 0.50
+as_campioni       = 1000
+as_seed           = 42
+[MEMBRI]
+# >>> arricchimento socio-economico (CER_LoadProfiles/arricchisci_schede.py)
+# Righe e colonne reddito_*, gas_*, euro_gas GENERATE: non modificarle a mano,
+# rilanciare lo script. Fonti: DATA_SOURCES.md; mapping archetipo -> classe:
+# docs/mapping_household_istat.md.
+# reddito_EUR = reddito_base_EUR x reddito_f. Base: media Istat EU-SILC della
+#   classe (Nord-ovest, redditi 2024, netto, senza affitti figurativi).
+#   reddito_f ~ N(1, 0.075) troncata a [0.85, 1.15] per riestrazione. [ISTAT-EUSILC]
+# euro_gas = spesa gas annua [EUR] = gas_Smc x 10.70 kWh/Smc x 0.120 EUR/kWh
+#   (prezzo_gas_EUR_kWh di scenario_economico.txt al momento della generazione).
+#   gas_categoria estratta dalle quote ARERA lombardia 2023-24 per gruppo di consumo
+#   (<=250 | 250-500 | >500 Smc), ciascuna x gas_f ~ U(0.95, 1.05) e
+#   rinormalizzate (gas_quote). [ARERA-CONSUMI-GAS]
+#   ASSUNZIONE: soglie 250/500 Smc e consumo per uso (120 / 480 / 1400 Smc). [ARERA-PROFILI]
+# Seed: sha256(seed_base=42, nome_csv, campo).
+# <<< arricchimento socio-economico
+id  | nome_csv         | ruolo | categoria   | archetipo                                | tariffa          | P_prel_kW | n_comp | n_perc | scala_equiv | reddito_EUR | euro_gas | quota_inv_EUR | mutuo_EUR_anno | impianto | reddito_classe                | reddito_base_EUR | reddito_f | reddito_src  | gas_categoria       | gas_Smc | gas_quote_base    | gas_f                | gas_quote            | gas_src
+  1 | household_1_kWh  | P     | domestico   | CHR06_uomo_disoccupato                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       26392 |      616 |          7000 |              0 | PV57     | persona_sola_under65          |            27444 |  0.961662 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0313;1.0178;1.0324 | 0.3205;0.1591;0.5204 | ARERA-CONSUMI-GAS:lombardia
+  2 | household_2_kWh  | P     | domestico   | CHR26_donna_under30_senza_lavoro         | MONORARIA        |         3 |      1 |      1 |         1.0 |       26451 |     1798 |          7000 |              0 | PV05     | persona_sola_under65          |            27444 |  0.963834 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9826;0.9575;1.0254 | 0.3142;0.1540;0.5318 | ARERA-CONSUMI-GAS:lombardia
+  3 | household_3_kWh  | P     | domestico   | CHR28_uomo_under30_senza_lavoro          | MONORARIA        |         3 |      1 |      1 |         1.0 |       30333 |     1798 |          7000 |              0 | PV58     | persona_sola_under65          |            27444 |  1.105263 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9901;0.9594;1.0115 | 0.3180;0.1550;0.5269 | ARERA-CONSUMI-GAS:lombardia
+  4 | household_4_kWh  | P     | domestico   | CHR36_donna_senza_lavoro                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       29906 |      154 |          7000 |              0 | PV33     | persona_sola_under65          |            27444 |  1.089720 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9848;1.0166;1.0141 | 0.3135;0.1628;0.5236 | ARERA-CONSUMI-GAS:lombardia
+  5 | household_5_kWh  | P     | domestico   | CHR23_uomo_over65_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       22554 |      616 |          7000 |              0 | PV59     | persona_sola_65piu            |            22973 |  0.981774 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0376;1.0133;0.9864 | 0.3297;0.1620;0.5083 | ARERA-CONSUMI-GAS:lombardia
+  6 | household_6_kWh  | P     | domestico   | CHR23_uomo_over65_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       22576 |     1798 |          7000 |              0 | PV06     | persona_sola_65piu            |            22973 |  0.982732 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9778;0.9995;0.9743 | 0.3195;0.1643;0.5162 | ARERA-CONSUMI-GAS:lombardia
+  7 | household_7_kWh  | P     | domestico   | CHR23_uomo_over65_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       22532 |      154 |          7000 |              0 | PV60     | persona_sola_65piu            |            22973 |  0.980824 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0428;0.9879;1.0019 | 0.3295;0.1571;0.5134 | ARERA-CONSUMI-GAS:lombardia
+  8 | household_8_kWh  | P     | domestico   | CHR23_uomo_over65_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       22212 |      154 |          7000 |              0 | PV34     | persona_sola_65piu            |            22973 |  0.966873 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0217;0.9795;1.0331 | 0.3203;0.1545;0.5252 | ARERA-CONSUMI-GAS:lombardia
+  9 | household_9_kWh  | P     | domestico   | CHR23_uomo_over65_solo                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       24480 |     1798 |          7000 |              0 | PV61     | persona_sola_65piu            |            22973 |  1.065618 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9751;0.9504;0.9659 | 0.3229;0.1583;0.5188 | ARERA-CONSUMI-GAS:lombardia
+ 10 | household_10_kWh | P     | domestico   | CHR24_donna_over65_sola                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       21485 |      154 |          7000 |              0 | PV07     | persona_sola_65piu            |            22973 |  0.935214 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9636;0.9624;0.9968 | 0.3144;0.1580;0.5275 | ARERA-CONSUMI-GAS:lombardia
+ 11 | household_11_kWh | P     | domestico   | CHR24_donna_over65_sola                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       23722 |      154 |          7000 |              0 | PV62     | persona_sola_65piu            |            22973 |  1.032604 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0203;1.0200;0.9606 | 0.3300;0.1660;0.5040 | ARERA-CONSUMI-GAS:lombardia
+ 12 | household_12_kWh | P     | domestico   | CHR24_donna_over65_sola                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       23697 |      154 |          7000 |              0 | PV29     | persona_sola_65piu            |            22973 |  1.031500 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9811;0.9926;1.0035 | 0.3157;0.1607;0.5236 | ARERA-CONSUMI-GAS:lombardia
+ 13 | household_13_kWh | P     | domestico   | CHR24_donna_over65_sola                  | MONORARIA        |         3 |      1 |      1 |         1.0 |       21391 |     1798 |          7000 |              0 | PV63     | persona_sola_65piu            |            22973 |  0.931119 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9783;0.9690;1.0294 | 0.3120;0.1555;0.5325 | ARERA-CONSUMI-GAS:lombardia
+ 14 | household_14_kWh | P     | domestico   | CHR30_pensionato_solo                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       24147 |      616 |          7000 |              0 | PV52     | persona_sola_65piu            |            22973 |  1.051091 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9897;1.0362;1.0006 | 0.3158;0.1664;0.5178 | ARERA-CONSUMI-GAS:lombardia
+ 15 | household_15_kWh | P     | domestico   | CHR30_pensionato_solo                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       25528 |      154 |          7000 |              0 | PV08     | persona_sola_65piu            |            22973 |  1.111216 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9792;0.9899;1.0183 | 0.3130;0.1592;0.5279 | ARERA-CONSUMI-GAS:lombardia
+ 16 | household_16_kWh | P     | domestico   | CHR30_pensionato_solo                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       24249 |     1798 |          7000 |              0 | PV64     | persona_sola_65piu            |            22973 |  1.055529 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9864;0.9533;0.9693 | 0.3247;0.1579;0.5175 | ARERA-CONSUMI-GAS:lombardia
+ 17 | household_17_kWh | P     | domestico   | CHR30_pensionato_solo                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       21333 |      616 |          7000 |              0 | PV35     | persona_sola_65piu            |            22973 |  0.928604 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9921;1.0096;1.0112 | 0.3160;0.1618;0.5223 | ARERA-CONSUMI-GAS:lombardia
+ 18 | household_18_kWh | P     | domestico   | CHR31_pensionata_sola                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       25846 |      616 |          7000 |              0 | PV65     | persona_sola_65piu            |            22973 |  1.125065 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9800;0.9911;0.9872 | 0.3182;0.1619;0.5199 | ARERA-CONSUMI-GAS:lombardia
+ 19 | household_19_kWh | P     | domestico   | CHR31_pensionata_sola                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       22942 |     1798 |          7000 |              0 | PV09     | persona_sola_65piu            |            22973 |  0.998644 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9786;1.0166;0.9916 | 0.3159;0.1651;0.5191 | ARERA-CONSUMI-GAS:lombardia
+ 20 | household_20_kWh | P     | domestico   | CHR31_pensionata_sola                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       25278 |     1798 |          7000 |              0 | PV66     | persona_sola_65piu            |            22973 |  1.100318 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9831;0.9847;1.0037 | 0.3165;0.1595;0.5240 | ARERA-CONSUMI-GAS:lombardia
+ 21 | household_21_kWh | P     | domestico   | CHR31_pensionata_sola                    | MONORARIA        |         3 |      1 |      1 |         1.0 |       23608 |     1798 |          7000 |              0 | PV36     | persona_sola_65piu            |            22973 |  1.027638 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0230;0.9811;1.0456 | 0.3184;0.1537;0.5279 | ARERA-CONSUMI-GAS:lombardia
+ 22 | household_22_kWh | P     | domestico   | CHR07_giovane_che_lavora                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       26129 |     1798 |          7000 |              0 | PV67     | persona_sola_under65          |            27444 |  0.952089 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9598;0.9575;0.9868 | 0.3155;0.1584;0.5261 | ARERA-CONSUMI-GAS:lombardia
+ 23 | household_23_kWh | P     | domestico   | CHR07_giovane_che_lavora                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       26371 |      616 |          7000 |              0 | PV10     | persona_sola_under65          |            27444 |  0.960886 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0134;1.0357;0.9933 | 0.3222;0.1657;0.5122 | ARERA-CONSUMI-GAS:lombardia
+ 24 | household_24_kWh | P     | domestico   | CHR09_donna_35_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       27797 |     1798 |          7000 |              0 | PV68     | persona_sola_under65          |            27444 |  1.012849 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0487;0.9564;0.9954 | 0.3335;0.1530;0.5134 | ARERA-CONSUMI-GAS:lombardia
+ 25 | household_25_kWh | P     | domestico   | CHR09_donna_35_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       26161 |      616 |          7000 |              0 | PV37     | persona_sola_under65          |            27444 |  0.953258 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0136;0.9733;0.9859 | 0.3267;0.1578;0.5154 | ARERA-CONSUMI-GAS:lombardia
+ 26 | household_26_kWh | P     | domestico   | CHR10_uomo_turnista                      | MONORARIA        |         3 |      1 |      1 |         1.0 |       24565 |     1798 |          7000 |              0 | PV69     | persona_sola_under65          |            27444 |  0.895099 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9590;1.0266;1.0482 | 0.3020;0.1627;0.5353 | ARERA-CONSUMI-GAS:lombardia
+ 27 | household_27_kWh | P     | domestico   | CHR10_uomo_turnista                      | MONORARIA        |         3 |      1 |      1 |         1.0 |       26276 |     1798 |          7000 |              0 | PV11     | persona_sola_under65          |            27444 |  0.957451 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9611;1.0116;1.0064 | 0.3098;0.1641;0.5261 | ARERA-CONSUMI-GAS:lombardia
+ 28 | household_28_kWh | P     | domestico   | CHR13_studente_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       26950 |     1798 |          7000 |              0 | PV70     | persona_sola_under65          |            27444 |  0.982012 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9600;1.0061;1.0274 | 0.3065;0.1616;0.5320 | ARERA-CONSUMI-GAS:lombardia
+ 29 | household_29_kWh | P     | domestico   | CHR13_studente_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       27723 |     1798 |          7000 |              0 | PV38     | persona_sola_under65          |            27444 |  1.010155 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0141;0.9632;1.0031 | 0.3244;0.1550;0.5205 | ARERA-CONSUMI-GAS:lombardia
+ 30 | household_30_kWh | P     | domestico   | CHR25_donna_under30_che_lavora           | MONORARIA        |         3 |      1 |      1 |         1.0 |       24462 |      154 |          7000 |              0 | PV71     | persona_sola_under65          |            27444 |  0.891339 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0236;0.9817;1.0305 | 0.3210;0.1549;0.5241 | ARERA-CONSUMI-GAS:lombardia
+ 31 | household_31_kWh | P     | domestico   | CHR25_donna_under30_che_lavora           | MONORARIA        |         3 |      1 |      1 |         1.0 |       29445 |     1798 |          7000 |              0 | PV12     | persona_sola_under65          |            27444 |  1.072926 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0379;1.0017;0.9759 | 0.3322;0.1613;0.5065 | ARERA-CONSUMI-GAS:lombardia
+ 32 | household_32_kWh | P     | domestico   | CHR29_uomo_under30_che_lavora            | MONORARIA        |         3 |      1 |      1 |         1.0 |       29465 |     1798 |          7000 |              0 | PV72     | persona_sola_under65          |            27444 |  1.073628 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0098;1.0416;1.0331 | 0.3146;0.1633;0.5221 | ARERA-CONSUMI-GAS:lombardia
+ 33 | household_33_kWh | P     | domestico   | CHR29_uomo_under30_che_lavora            | MONORARIA        |         3 |      1 |      1 |         1.0 |       28071 |     1798 |          7000 |              0 | PV39     | persona_sola_under65          |            27444 |  1.022862 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0238;0.9635;1.0314 | 0.3218;0.1524;0.5258 | ARERA-CONSUMI-GAS:lombardia
+ 34 | household_34_kWh | P     | domestico   | CHR35_donna_42_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       30960 |     1798 |          7000 |              0 | PV73     | persona_sola_under65          |            27444 |  1.128099 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9821;0.9971;1.0410 | 0.3096;0.1582;0.5322 | ARERA-CONSUMI-GAS:lombardia
+ 35 | household_35_kWh | P     | domestico   | CHR35_donna_42_che_lavora                | MONORARIA        |         3 |      1 |      1 |         1.0 |       30016 |     1798 |          7000 |              0 | PV13     | persona_sola_under65          |            27444 |  1.093718 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0403;1.0024;1.0108 | 0.3267;0.1584;0.5149 | ARERA-CONSUMI-GAS:lombardia
+ 36 | household_36_kWh | P     | domestico   | CHR37_uomo_48_che_lavora                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       25936 |     1798 |          7000 |              0 | PV53     | persona_sola_under65          |            27444 |  0.945041 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0219;1.0340;1.0175 | 0.3201;0.1630;0.5169 | ARERA-CONSUMI-GAS:lombardia
+ 37 | household_37_kWh | P     | domestico   | CHR37_uomo_48_che_lavora                 | MONORARIA        |         3 |      1 |      1 |         1.0 |       26748 |     1798 |          7000 |              0 | PV74     | persona_sola_under65          |            27444 |  0.974656 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9520;1.0218;1.0018 | 0.3080;0.1663;0.5257 | ARERA-CONSUMI-GAS:lombardia
+ 38 | household_38_kWh | P     | domestico   | OR01_impiegato_ufficio                   | MONORARIA        |         3 |      1 |      1 |         1.0 |       26873 |      154 |          7000 |              0 | PV30     | persona_sola_under65          |            27444 |  0.979193 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0296;0.9766;0.9835 | 0.3304;0.1577;0.5119 | ARERA-CONSUMI-GAS:lombardia
+ 39 | household_39_kWh | P     | domestico   | CHR32_coppia_under30_senza_lavoro        | MONORARIA        |         3 |      2 |      1 |         1.5 |       55078 |      154 |          7000 |              0 | PV75     | coppia_senza_figli_PR_under65 |            51915 |  1.060928 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0040;1.0239;1.0197 | 0.3164;0.1624;0.5212 | ARERA-CONSUMI-GAS:lombardia
+ 40 | household_40_kWh | P     | domestico   | CHR40_coppia_senza_lavoro                | MONORARIA        |         3 |      2 |      1 |         1.5 |       55173 |      154 |          7000 |              0 | PV14     | coppia_senza_figli_PR_under65 |            51915 |  1.062751 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0241;1.0454;1.0025 | 0.3225;0.1656;0.5119 | ARERA-CONSUMI-GAS:lombardia
+ 41 | household_41_kWh | P     | domestico   | CHR12_coinquilini_studenti               | MONORARIA        |         3 |      1 |      1 |         1.0 |       28697 |      154 |          7000 |              0 | PV76     | persona_sola_under65          |            27444 |  1.045666 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0377;0.9711;0.9677 | 0.3352;0.1578;0.5070 | ARERA-CONSUMI-GAS:lombardia
+ 42 | household_42_kWh | P     | domestico   | CHR46_madre_sola_1figlio_no_lavoro       | MONORARIA        |         3 |      2 |      1 |         1.3 |       41709 |     1798 |          7000 |              0 | PV40     | monogenitore                  |            43290 |  0.963489 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9558;1.0041;1.0187 | 0.3070;0.1623;0.5307 | ARERA-CONSUMI-GAS:lombardia
+ 43 | household_43_kWh | P     | domestico   | CHR16_coppia_over65                      | MONORARIA        |         3 |      2 |      2 |         1.5 |       41966 |      616 |          7000 |              0 | PV77     | coppia_senza_figli_PR_65piu   |            45366 |  0.925053 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9540;0.9837;1.0064 | 0.3096;0.1606;0.5297 | ARERA-CONSUMI-GAS:lombardia
+ 44 | household_44_kWh | P     | domestico   | CHR16_coppia_over65                      | MONORARIA        |         3 |      2 |      2 |         1.5 |       49560 |      616 |          7000 |              0 | PV15     | coppia_senza_figli_PR_65piu   |            45366 |  1.092453 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9594;1.0166;1.0374 | 0.3042;0.1622;0.5336 | ARERA-CONSUMI-GAS:lombardia
+ 45 | household_45_kWh | P     | domestico   | CHR51_coppia_over65_bis                  | MONORARIA        |         3 |      2 |      2 |         1.5 |       44525 |      154 |          7000 |              0 | PV78     | coppia_senza_figli_PR_65piu   |            45366 |  0.981464 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0216;0.9722;0.9779 | 0.3299;0.1579;0.5122 | ARERA-CONSUMI-GAS:lombardia
+ 46 | household_46_kWh | P     | domestico   | CHR51_coppia_over65_bis                  | MONORARIA        |         3 |      2 |      2 |         1.5 |       46122 |     1798 |          7000 |              0 | PV41     | coppia_senza_figli_PR_65piu   |            45366 |  1.016654 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0386;0.9721;1.0040 | 0.3291;0.1550;0.5160 | ARERA-CONSUMI-GAS:lombardia
+ 47 | household_47_kWh | P     | domestico   | CHR54_coppia_pensionati                  | MONORARIA        |         3 |      2 |      2 |         1.5 |       45768 |      154 |          7000 |              0 | PV79     | coppia_senza_figli_PR_65piu   |            45366 |  1.008869 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0085;1.0160;0.9631 | 0.3272;0.1659;0.5069 | ARERA-CONSUMI-GAS:lombardia
+ 48 | household_48_kWh | P     | domestico   | CHR54_coppia_pensionati                  | MONORARIA        |         3 |      2 |      2 |         1.5 |       44290 |      154 |          7000 |              0 | PV16     | coppia_senza_figli_PR_65piu   |            45366 |  0.976282 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0236;1.0072;1.0485 | 0.3168;0.1569;0.5263 | ARERA-CONSUMI-GAS:lombardia
+ 49 | household_49_kWh | C     | domestico   | CHR58_coppia_pensionati_no_cucina        | MONORARIA        |         3 |      2 |      2 |         1.5 |       48872 |     1798 |             0 |              0 | -        | coppia_senza_figli_PR_65piu   |            45366 |  1.077292 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0031;1.0403;1.0089 | 0.3172;0.1655;0.5174 | ARERA-CONSUMI-GAS:lombardia
+ 50 | household_50_kWh | P     | domestico   | CHR58_coppia_pensionati_no_cucina        | MONORARIA        |         3 |      2 |      2 |         1.5 |       46147 |     1798 |          7000 |              0 | PV42     | coppia_senza_figli_PR_65piu   |            45366 |  1.017218 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0399;1.0078;0.9697 | 0.3333;0.1625;0.5041 | ARERA-CONSUMI-GAS:lombardia
+ 51 | household_51_kWh | C     | domestico   | CHS04_coppia_pensionati_bis              | MONORARIA        |         3 |      2 |      2 |         1.5 |       42698 |     1798 |             0 |              0 | -        | coppia_senza_figli_PR_65piu   |            45366 |  0.941181 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9677;1.0050;1.0265 | 0.3084;0.1611;0.5305 | ARERA-CONSUMI-GAS:lombardia
+ 52 | household_52_kWh | P     | domestico   | CHR04_coppia_uno_a_casa                  | MONORARIA        |         3 |      2 |      1 |         1.5 |       47863 |      616 |          7000 |              0 | PV17     | coppia_senza_figli_PR_under65 |            51915 |  0.921941 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0343;0.9868;1.0259 | 0.3238;0.1554;0.5208 | ARERA-CONSUMI-GAS:lombardia
+ 53 | household_53_kWh | C     | domestico   | CHR04_coppia_uno_a_casa                  | MONORARIA        |         3 |      2 |      1 |         1.5 |       53479 |      154 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  1.030122 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0372;0.9762;0.9694 | 0.3345;0.1584;0.5071 | ARERA-CONSUMI-GAS:lombardia
+ 54 | household_54_kWh | P     | domestico   | CHR04_coppia_uno_a_casa                  | MONORARIA        |         3 |      2 |      1 |         1.5 |       53886 |      616 |          7000 |              0 | PV43     | coppia_senza_figli_PR_under65 |            51915 |  1.037974 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0393;0.9663;1.0342 | 0.3245;0.1518;0.5237 | ARERA-CONSUMI-GAS:lombardia
+ 55 | household_55_kWh | C     | domestico   | CHR04_coppia_uno_a_casa                  | MONORARIA        |         3 |      2 |      1 |         1.5 |       48857 |     1798 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  0.941089 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0122;1.0174;1.0210 | 0.3183;0.1610;0.5207 | ARERA-CONSUMI-GAS:lombardia
+ 56 | household_56_kWh | P     | domestico   | CHR34_coppia_under30_uno_a_casa          | MONORARIA        |         3 |      2 |      1 |         1.5 |       51429 |      154 |          7000 |              0 | PV18     | coppia_senza_figli_PR_under65 |            51915 |  0.990633 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9597;1.0452;0.9952 | 0.3096;0.1696;0.5207 | ARERA-CONSUMI-GAS:lombardia
+ 57 | household_57_kWh | C     | domestico   | CHR34_coppia_under30_uno_a_casa          | MONORARIA        |         3 |      2 |      1 |         1.5 |       44815 |      154 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  0.863229 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0402;1.0242;1.0243 | 0.3234;0.1602;0.5165 | ARERA-CONSUMI-GAS:lombardia
+ 58 | household_58_kWh | P     | domestico   | CHR34_coppia_under30_uno_a_casa          | MONORARIA        |         3 |      2 |      1 |         1.5 |       52925 |     1798 |          7000 |              0 | PV44     | coppia_senza_figli_PR_under65 |            51915 |  1.019450 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9656;0.9602;0.9954 | 0.3152;0.1577;0.5270 | ARERA-CONSUMI-GAS:lombardia
+ 59 | household_59_kWh | C     | domestico   | CHR34_coppia_under30_uno_a_casa          | MONORARIA        |         3 |      2 |      1 |         1.5 |       57325 |      616 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  1.104213 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9752;0.9823;1.0093 | 0.3139;0.1591;0.5270 | ARERA-CONSUMI-GAS:lombardia
+ 60 | household_60_kWh | P     | domestico   | CHR01_coppia_entrambi_lavorano           | MONORARIA        |         3 |      2 |      2 |         1.5 |       54412 |     1798 |          7000 |              0 | PV19     | coppia_senza_figli_PR_under65 |            51915 |  1.048096 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9619;1.0231;1.0134 | 0.3083;0.1650;0.5268 | ARERA-CONSUMI-GAS:lombardia
+ 61 | household_61_kWh | C     | domestico   | CHR02_coppia_lavoratori                  | MONORARIA        |         3 |      2 |      2 |         1.5 |       51038 |     1798 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  0.983099 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9778;0.9709;1.0214 | 0.3131;0.1564;0.5305 | ARERA-CONSUMI-GAS:lombardia
+ 62 | household_62_kWh | P     | domestico   | CHR17_coppia_turnisti                    | MONORARIA        |         3 |      2 |      2 |         1.5 |       52840 |      154 |          7000 |              0 | PV31     | coppia_senza_figli_PR_under65 |            51915 |  1.017812 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9676;0.9602;0.9664 | 0.3206;0.1601;0.5193 | ARERA-CONSUMI-GAS:lombardia
+ 63 | household_63_kWh | C     | domestico   | CHR19_coppia_lavoratori_con_aiuto        | MONORARIA        |         3 |      3 |      2 |         1.5 |       46560 |     1798 |             0 |              0 | -        | altra_tipologia               |            47378 |  0.982743 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0382;0.9746;1.0124 | 0.3274;0.1547;0.5179 | ARERA-CONSUMI-GAS:lombardia
+ 64 | household_64_kWh | P     | domestico   | CHR33_coppia_under30_lavoratori          | MONORARIA        |         3 |      2 |      2 |         1.5 |       54204 |      154 |          7000 |              0 | PV54     | coppia_senza_figli_PR_under65 |            51915 |  1.044083 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0087;1.0231;0.9889 | 0.3225;0.1646;0.5129 | ARERA-CONSUMI-GAS:lombardia
+ 65 | household_65_kWh | P     | domestico   | CHR39_coppia_lavoratori_bis              | MONORARIA        |         3 |      2 |      2 |         1.5 |       48657 |      154 |          7000 |              0 | PV20     | coppia_senza_figli_PR_under65 |            51915 |  0.937252 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9535;1.0116;0.9963 | 0.3098;0.1653;0.5249 | ARERA-CONSUMI-GAS:lombardia
+ 66 | household_66_kWh | C     | domestico   | CHR55_coppia_lavoratori_40enni           | MONORARIA        |         3 |      2 |      2 |         1.5 |       49004 |      616 |             0 |              0 | -        | coppia_senza_figli_PR_under65 |            51915 |  0.943931 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9783;0.9790;1.0111 | 0.3145;0.1583;0.5272 | ARERA-CONSUMI-GAS:lombardia
+ 67 | household_67_kWh | P     | domestico   | CHS12_coppia_turnisti_bis                | MONORARIA        |         3 |      2 |      2 |         1.5 |       52907 |     1798 |          7000 |              0 | PV45     | coppia_senza_figli_PR_under65 |            51915 |  1.019110 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9620;1.0332;1.0279 | 0.3055;0.1651;0.5294 | ARERA-CONSUMI-GAS:lombardia
+ 68 | household_68_kWh | C     | domestico   | CHR47_madre_sola_2figli_no_lavoro        | MONORARIA        |         3 |      3 |      1 |         1.6 |       41380 |      154 |             0 |              0 | -        | monogenitore                  |            43290 |  0.955882 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9756;0.9691;1.0456 | 0.3088;0.1543;0.5368 | ARERA-CONSUMI-GAS:lombardia
+ 69 | household_69_kWh | P     | domestico   | CHR49_famiglia_1figlio_senza_lavoro      | MONORARIA        |         3 |      3 |      1 |         1.8 |       59031 |     1798 |          7400 |              0 | PV21     | coppia_1_figlio               |            60673 |  0.972933 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0490;0.9576;1.0435 | 0.3254;0.1495;0.5251 | ARERA-CONSUMI-GAS:lombardia
+ 70 | household_70_kWh | C     | domestico   | CHR14_coppia_lavoratori_con_anziano      | MONORARIA        |         3 |      3 |      3 |         2.0 |       46458 |     1798 |             0 |              0 | -        | altra_tipologia               |            47378 |  0.980583 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0064;0.9501;0.9559 | 0.3316;0.1575;0.5109 | ARERA-CONSUMI-GAS:lombardia
+ 71 | household_71_kWh | P     | domestico   | CHR14_coppia_lavoratori_con_anziano      | MONORARIA        |         3 |      3 |      3 |         2.0 |       40968 |     1798 |          7400 |              0 | PV46     | altra_tipologia               |            47378 |  0.864696 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9537;1.0090;1.0469 | 0.3019;0.1607;0.5374 | ARERA-CONSUMI-GAS:lombardia
+ 72 | household_72_kWh | C     | domestico   | CHR14_coppia_lavoratori_con_anziano      | MONORARIA        |         3 |      3 |      3 |         2.0 |       48936 |      154 |             0 |              0 | -        | altra_tipologia               |            47378 |  1.032894 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0481;1.0157;0.9727 | 0.3341;0.1629;0.5029 | ARERA-CONSUMI-GAS:lombardia
+ 73 | household_73_kWh | P     | domestico   | CHR45_famiglia_1figlio_un_adulto_a_casa  | MONORARIA        |         3 |      3 |      1 |         2.0 |       62592 |      616 |          7400 |              0 | PV22     | coppia_1_figlio               |            60673 |  1.031636 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9925;1.0267;0.9641 | 0.3230;0.1681;0.5089 | ARERA-CONSUMI-GAS:lombardia
+ 74 | household_74_kWh | C     | domestico   | CHR45_famiglia_1figlio_un_adulto_a_casa  | MONORARIA        |         3 |      3 |      1 |         2.0 |       57991 |     1798 |             0 |              0 | -        | coppia_1_figlio               |            60673 |  0.955792 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9718;0.9850;0.9890 | 0.3164;0.1614;0.5222 | ARERA-CONSUMI-GAS:lombardia
+ 75 | household_75_kWh | P     | domestico   | CHR45_famiglia_1figlio_un_adulto_a_casa  | MONORARIA        |         3 |      3 |      1 |         2.0 |       63600 |     1798 |          7400 |              0 | PV47     | coppia_1_figlio               |            60673 |  1.048245 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9565;0.9898;1.0231 | 0.3072;0.1599;0.5329 | ARERA-CONSUMI-GAS:lombardia
+ 76 | household_76_kWh | C     | domestico   | CHR60_famiglia_bimbo_piccolo             | MONORARIA        |         3 |      3 |      1 |         1.8 |       61264 |     1798 |             0 |              0 | -        | coppia_1_figlio               |            60673 |  1.009749 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0463;1.0230;0.9715 | 0.3336;0.1641;0.5023 | ARERA-CONSUMI-GAS:lombardia
+ 77 | household_77_kWh | P     | domestico   | CHR60_famiglia_bimbo_piccolo             | MONORARIA        |         3 |      3 |      1 |         1.8 |       63486 |     1798 |          7400 |              0 | PV23     | coppia_1_figlio               |            60673 |  1.046360 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0371;1.0289;0.9699 | 0.3316;0.1655;0.5029 | ARERA-CONSUMI-GAS:lombardia
+ 78 | household_78_kWh | C     | domestico   | CHR60_famiglia_bimbo_piccolo             | MONORARIA        |         3 |      3 |      1 |         1.8 |       60858 |     1798 |             0 |              0 | -        | coppia_1_figlio               |            60673 |  1.003049 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0380;1.0191;1.0006 | 0.3271;0.1616;0.5114 | ARERA-CONSUMI-GAS:lombardia
+ 79 | household_79_kWh | P     | domestico   | CHR03_famiglia_1figlio                   | MONORARIA        |         3 |      3 |      2 |         1.8 |       60831 |     1798 |          7400 |              0 | PV48     | coppia_1_figlio               |            60673 |  1.002605 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9671;0.9518;0.9639 | 0.3214;0.1591;0.5195 | ARERA-CONSUMI-GAS:lombardia
+ 80 | household_80_kWh | C     | domestico   | CHR03_famiglia_1figlio                   | MONORARIA        |         3 |      3 |      2 |         1.8 |       63133 |      154 |             0 |              0 | -        | coppia_1_figlio               |            60673 |  1.040541 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0096;1.0413;0.9939 | 0.3210;0.1666;0.5125 | ARERA-CONSUMI-GAS:lombardia
+ 81 | household_81_kWh | P     | domestico   | CHR08_madre_sola_2figli_lavora           | MONORARIA        |         3 |      3 |      1 |         1.6 |       48059 |      616 |          7400 |              0 | PV24     | monogenitore                  |            43290 |  1.110166 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0129;0.9703;0.9794 | 0.3279;0.1580;0.5141 | ARERA-CONSUMI-GAS:lombardia
+ 82 | household_82_kWh | C     | domestico   | CHR08_madre_sola_2figli_lavora           | MONORARIA        |         3 |      3 |      1 |         1.6 |       48220 |      616 |             0 |              0 | -        | monogenitore                  |            43290 |  1.113889 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9618;1.0354;0.9798 | 0.3131;0.1696;0.5173 | ARERA-CONSUMI-GAS:lombardia
+ 83 | household_83_kWh | P     | domestico   | CHR42_padre_solo_2figli_lavora           | MONORARIA        |         3 |      3 |      1 |         1.6 |       39961 |      154 |          7400 |              0 | PV49     | monogenitore                  |            43290 |  0.923109 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9787;0.9686;1.0241 | 0.3130;0.1559;0.5312 | ARERA-CONSUMI-GAS:lombardia
+ 84 | household_84_kWh | C     | domestico   | CHR61_famiglia_1figlio_entrambi_lavorano | MONORARIA        |         3 |      3 |      2 |         1.8 |       51673 |      154 |             0 |              0 | -        | coppia_1_figlio               |            60673 |  0.851659 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9901;1.0285;1.0230 | 0.3126;0.1634;0.5240 | ARERA-CONSUMI-GAS:lombardia
+ 85 | household_85_kWh | P     | domestico   | CHR18_famiglia_2figli_senza_lavoro       | MONORARIA        |         3 |      4 |      1 |         2.1 |       60878 |     1798 |          7400 |              0 | PV25     | coppia_2_figli                |            66472 |  0.915844 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9707;0.9997;0.9799 | 0.3169;0.1642;0.5189 | ARERA-CONSUMI-GAS:lombardia
+ 86 | household_86_kWh | P     | domestico   | CHR44_famiglia_2figli_un_adulto_a_casa   | MONORARIA        |         3 |      4 |      1 |         2.5 |       74587 |     1798 |          7400 |              0 | PV55     | coppia_2_figli                |            66472 |  1.122078 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9524;1.0390;0.9521 | 0.3154;0.1731;0.5114 | ARERA-CONSUMI-GAS:lombardia
+ 87 | household_87_kWh | C     | domestico   | CHR44_famiglia_2figli_un_adulto_a_casa   | MONORARIA        |         3 |      4 |      1 |         2.5 |       60731 |      154 |             0 |              0 | -        | coppia_2_figli                |            66472 |  0.913628 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 1.0230;0.9743;0.9994 | 0.3264;0.1564;0.5172 | ARERA-CONSUMI-GAS:lombardia
+ 88 | household_88_kWh | P     | domestico   | CHR53_famiglia_2figli_uno_lavora         | MONORARIA        |         3 |      4 |      1 |         2.3 |       74955 |      616 |          7400 |              0 | PV32     | coppia_2_figli                |            66472 |  1.127617 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9759;0.9530;0.9621 | 0.3236;0.1590;0.5174 | ARERA-CONSUMI-GAS:lombardia
+ 89 | household_89_kWh | C     | domestico   | CHR56_coppia_2figli_marito_lavora        | MONORARIA        |         3 |      4 |      1 |         2.5 |       61709 |      616 |             0 |              0 | -        | coppia_2_figli                |            66472 |  0.928343 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 0.9709;0.9953;0.9963 | 0.3145;0.1622;0.5234 | ARERA-CONSUMI-GAS:lombardia
+ 90 | household_90_kWh | P     | domestico   | CHR57_famiglia_2figli_uomo_lavora        | MONORARIA        |         3 |      4 |      1 |         2.5 |       64313 |      616 |          7400 |              0 | PV26     | coppia_2_figli                |            66472 |  0.967524 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0141;1.0033;0.9637 | 0.3291;0.1638;0.5071 | ARERA-CONSUMI-GAS:lombardia
+ 91 | household_91_kWh | C     | domestico   | CHS01_coppia_2figli_padre_impiegato      | MONORARIA        |         3 |      4 |      1 |         2.3 |       68148 |     1798 |             0 |              0 | -        | coppia_2_figli                |            66472 |  1.025216 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9914;1.0346;1.0043 | 0.3156;0.1657;0.5186 | ARERA-CONSUMI-GAS:lombardia
+ 92 | household_92_kWh | P     | domestico   | CHR27_famiglia_2figli_entrambi_lavorano  | MONORARIA        |         3 |      4 |      2 |         2.1 |       74422 |     1798 |          7400 |              0 | PV50     | coppia_2_figli                |            66472 |  1.119606 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0219;1.0211;1.0285 | 0.3190;0.1604;0.5207 | ARERA-CONSUMI-GAS:lombardia
+ 93 | household_93_kWh | C     | domestico   | CHR27_famiglia_2figli_entrambi_lavorano  | MONORARIA        |         3 |      4 |      2 |         2.1 |       69892 |      154 |             0 |              0 | -        | coppia_2_figli                |            66472 |  1.051450 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9629;0.9721;0.9956 | 0.3140;0.1595;0.5265 | ARERA-CONSUMI-GAS:lombardia
+ 94 | household_94_kWh | P     | domestico   | CHR27_famiglia_2figli_entrambi_lavorano  | MONORARIA        |         3 |      4 |      2 |         2.1 |       64009 |     1798 |          7400 |              0 | PV27     | coppia_2_figli                |            66472 |  0.962949 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 1.0082;0.9617;1.0453 | 0.3163;0.1518;0.5319 | ARERA-CONSUMI-GAS:lombardia
+ 95 | household_95_kWh | C     | domestico   | CHR27_famiglia_2figli_entrambi_lavorano  | MONORARIA        |         3 |      4 |      2 |         2.1 |       60329 |     1798 |             0 |              0 | -        | coppia_2_figli                |            66472 |  0.907582 | ISTAT-EUSILC | riscaldamento       |    1400 | 0.320;0.161;0.519 | 0.9998;0.9778;0.9654 | 0.3270;0.1609;0.5121 | ARERA-CONSUMI-GAS:lombardia
+ 96 | household_96_kWh | P     | domestico   | CHR27_famiglia_2figli_entrambi_lavorano  | MONORARIA        |         3 |      4 |      2 |         2.1 |       61012 |      154 |          7400 |              0 | PV51     | coppia_2_figli                |            66472 |  0.917860 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9614;1.0487;1.0225 | 0.3055;0.1676;0.5269 | ARERA-CONSUMI-GAS:lombardia
+ 97 | household_97_kWh | C     | domestico   | CHR20_famiglia_3figli_lavoro_da_casa     | MONORARIA        |         3 |      5 |      2 |         2.4 |       71381 |      616 |             0 |              0 | -        | coppia_3piu_figli             |            72138 |  0.989511 | ISTAT-EUSILC | cottura_acqua_calda |     480 | 0.320;0.161;0.519 | 1.0018;1.0462;1.0402 | 0.3116;0.1637;0.5247 | ARERA-CONSUMI-GAS:lombardia
+ 98 | household_99_kWh | C     | domestico   | CHR15_famiglia_multigenerazionale        | MONORARIA        |         3 |      6 |      4 |         3.3 |       52141 |      154 |             0 |              0 | -        | altra_tipologia               |            47378 |  1.100522 | ISTAT-EUSILC | cottura             |     120 | 0.320;0.161;0.519 | 0.9891;0.9660;0.9755 | 0.3235;0.1590;0.5175 | ARERA-CONSUMI-GAS:lombardia
+ 99 | antigelo_kWh     | P     | industriale | antigelo                                 | ORARIO_VARIABILE |        15 | -      | -      | -           | -           | -        |         24100 |              0 | PV_ANT   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+100 | office_zummo_kWh | P     | terziario   | office_zummo                             | BIORARIA         |        35 | -      | -      | -           | -           | -        |         94200 |              0 | PV_ZUM   | -                             | -                | -         | -            | -                   | -       | -                 | -                    | -                    | -
+[IMPIANTI]
+id     | proprietario     | kWp | file_produzione                        | tilt | azimut | anno_esercizio | capex_EUR | opex_EUR_anno
+PV05   | household_2_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV06   | household_6_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV07   | household_10_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV08   | household_15_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV09   | household_19_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV10   | household_23_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV11   | household_27_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV12   | household_31_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV13   | household_35_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV14   | household_40_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV15   | household_44_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV16   | household_48_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV17   | household_52_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV18   | household_56_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV19   | household_60_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV20   | household_65_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV21   | household_69_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV22   | household_73_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV23   | household_77_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV24   | household_81_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV25   | household_85_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV26   | household_90_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV27   | household_94_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV29   | household_12_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV30   | household_38_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV31   | household_62_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV32   | household_88_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV33   | household_4_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV34   | household_8_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV35   | household_17_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV36   | household_21_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV37   | household_25_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV38   | household_29_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV39   | household_33_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV40   | household_42_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV41   | household_46_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV42   | household_50_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV43   | household_54_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV44   | household_58_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV45   | household_67_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV46   | household_71_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV47   | household_75_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV48   | household_79_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV49   | household_83_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV50   | household_92_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV51   | household_96_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV52   | household_14_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV53   | household_36_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV54   | household_64_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV55   | household_86_kWh | 4.2 | PROVA_CER_1_Project_3_4_componenti.CSV | ?    | ?      |           2025 |      7400 | ?
+PV57   | household_1_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV58   | household_3_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV59   | household_5_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV60   | household_7_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV61   | household_9_kWh  | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV62   | household_11_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV63   | household_13_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV64   | household_16_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV65   | household_18_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV66   | household_20_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV67   | household_22_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV68   | household_24_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV69   | household_26_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV70   | household_28_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV71   | household_30_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV72   | household_32_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV73   | household_34_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV74   | household_37_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV75   | household_39_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV76   | household_41_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV77   | household_43_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV78   | household_45_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV79   | household_47_kWh | 3.4 | PROVA_CER_1_Project_1_2_componenti.CSV | ?    | ?      |           2025 |      7000 | ?
+PV_ANT | antigelo_kWh     |  33 | PROVA_CER_1_Project_antigelo.CSV       | ?    | ?      |           2025 |     24100 | ?
+PV_ZUM | office_zummo_kWh | 129 | PROVA_CER_1_Project_office_zummo.CSV   | ?    | ?      |           2025 |     94200 | ?

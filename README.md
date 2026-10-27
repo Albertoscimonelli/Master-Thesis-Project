@@ -22,11 +22,14 @@ varia taglia e penetrazione dei prosumer.
 > leggere il codice sorgente per capire cosa fa il progetto e come è strutturato — solo per
 > modificarlo.
 >
-> **Stato al 20 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
-> 20 ottobre, con i parametri LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10).
-> L'inclusione LIHC non è valutabile (nessuna famiglia vulnerabile). Le tabelle del run a 25 membri
-> (`tables_main2_griglia25/`) restano del 13 ottobre, con i segnaposto. Sintesi dei risultati e del
-> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md`.
+> **Stato al 23 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
+> 20 ottobre; il run **fino a 25 membri con PA** (108 comunità, livello 0 più PA1-3) è del
+> 21 ottobre e sta in `outputs/tables_main2_griglia25_PA/` (§7.10.1). Entrambi usano i parametri
+> LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10). L'inclusione LIHC non è valutabile
+> (nessuna famiglia vulnerabile). Le tabelle `tables_main2_griglia25/` sono del 13 ottobre, con i
+> segnaposto e senza PA: sono **superate** da quelle del 21 ottobre. Sintesi dei risultati e del
+> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md` (precedente al
+> run a 25 membri con PA).
 
 ---
 
@@ -153,17 +156,19 @@ quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`li
 18 membri**: il livello 0 di `CER_configuration/` (solo domestici) e le varianti con PA di
 `CER_configuration_PA/PA1..PA3` (asse composizione, §7.10). L'elenco lo costruisce
 `elenco_schede_cer.m`, che legge N = C+P+E dal nome della scheda e salta `PA0/` (copia
-identica del livello 0). Quattro variabili d'ambiente, tutte facoltative:
+identica del livello 0). Cinque variabili d'ambiente, tutte facoltative:
 
 | Variabile | Cosa fa |
 |---|---|
 | `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vince sul tetto di membri. Un nome senza cartella è una scheda di `CER_configuration/`; `PA2/CER_5_5_0` è la variante PA2 |
-| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
+| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`, o `griglia25_PA` per il run con le PA del 21 ottobre, §7.10.1); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
+| `MAIN2_IND` | `1` = aggiunge l'asse imprese (§7.11): le schede di `CER_configuration_IND/` con 1-3 imprese (`ND1`-`ND3`) e con imprese e PA (`ND2_PA1`, …), fino al tetto di membri (92 a 18 membri). In `MAIN2_SCHEDE` si scrivono come `ND2_PA1/CER_9_9_0`. Ogni livello ha le sue tabelle (`<tabelle>/ND1/`, …) e il confronto con il livello 0 sta in `confronto_PA/` (§7.11). Senza, il run è identico a prima |
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
 
-I due run di riferimento — fino a 18 membri e griglia fino a 25 — sono descritti nella
-§7.9; l'elenco completo delle schede di ciascuno è in
+I run di riferimento — fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e
+la griglia a 25 membri del 13 ottobre, superata — sono descritti nelle §7.9 e §7.10.1;
+l'elenco completo delle schede di ciascuno è in
 [STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) §2.3. Per una prova su poche schede
 conviene un suffisso (`MAIN2_CARTELLA=prova`): senza, le tabelle della prova
 sovrascriverebbero quelle versionate in `outputs/tables_main2/`.
@@ -174,7 +179,8 @@ letta dal codice.
 
 **Tempi** (analisi senza figure, run del 13 ottobre): 42 min per le 20 comunità fino a 18
 membri, 2 h 28 min per le 28 fino a 25; una comunità da 5 membri costa pochi secondi, una
-da 25 fino a mezz'ora (§11.2). La pipeline è **deterministica** — l'unica sorgente casuale,
+da 25 fino a mezz'ora (§11.2). Il run del 21 ottobre, 108 comunità fino a 25 membri con PA,
+ha richiesto 9 h 9 min di analisi (due sessioni, §7.10.1). La pipeline è **deterministica** — l'unica sorgente casuale,
 l'Adaptive Sampling, ha un seed esplicito — e rilanciata senza modifiche riscrive le tabelle
 identiche al byte: il confronto prima/dopo una modifica è un test di regressione. Per
 ripartire dai run finali senza rilanciarli vedi
@@ -202,8 +208,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_LoadProfiles/arricchisci_schede.py` | **Compila reddito e spesa gas dei membri domestici** nelle schede (`reddito_EUR`, `euro_gas` più le colonne di provenienza), da Istat EU-SILC e ARERA. Test in `CER_LoadProfiles/tests/` |
 | `data/external/` | Dati esterni versionati con la fonte riga per riga (reddito Istat, quote gas ARERA) e i parametri dell'arricchimento. Fonti in [DATA_SOURCES.md](DATA_SOURCES.md) |
 | `data/external/palazzetto_lucca/` | **Consumo e produzione FV 2024 del palazzetto dello sport di Lucca** (CSV orari), guida al metodo e script Python. Dati archiviati, non letti da `MAIN2.m`. Vedi §15 |
-| `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Non lette da `MAIN2.m`. Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
+| `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
+| `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -249,7 +256,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m`, `plot_load_profiles.m` | Energia: mensili, PV contro domanda, mappa oraria con le ore sature, curve di durata, TIP_h contro prezzo zonale, profili tipo (§11.1) |
 | `plot_financial_metrics.m` | VAN, tempo di ritorno, composizione del flusso di cassa (§11.1) |
 | `optimizer_PV.m`, `pv_*.m` | Pre-dimensionamento di un impianto PV su copertura (standalone, §8) |
-| `outputs/tables_main2/`, `outputs/tables_main2_griglia25/` | Le tabelle dei due run finali, versionate (§11.0) |
+| `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run finali, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre), e quelle del 13 ottobre a 25 membri, superate |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
 | `outputs/report/` | Pagina dei risultati finali (`regole_ripartizione_cer.html`), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
@@ -1215,7 +1222,9 @@ la correzione della §5.2 lo massimizza l'Equal Split.
 > 13 ottobre, con i segnaposto LIHC e senza le PA. Il 20 ottobre `outputs/tables_main2/` è stato
 > riscritto con i parametri LIHC definitivi (76 comunità: livello 0 più PA1-3, §7.10); nel livello 0 le
 > quote di tutti i metodi sono identiche, tranne il Tri-level EP, e l'inclusione non è più valutabile.
-> Le tabelle `outputs/tables_main2_griglia25/` restano quelle del 13 ottobre, con i segnaposto.
+> Le tabelle `outputs/tables_main2_griglia25/` restano quelle del 13 ottobre, con i segnaposto e senza
+> PA: il 21 ottobre il run a 25 membri è stato rifatto con le PA e i parametri definitivi
+> (`outputs/tables_main2_griglia25_PA/`, §7.10.1), e quelle tabelle sono superate.
 
 > ⚠ **Gira ancora con i segnaposto LIHC** (§7.7): dopo aver compilato P50, y* e markup
 > vanno rifatti entrambi i run. Cambiano l'inclusione e il Tri-level EP, non il resto.
@@ -1380,6 +1389,250 @@ PA2 ha 19 schede e PA3 17, PA1 20: 56 confronti con il livello 0.
   Tri-level EP perde la fetta di solidarietà. È il motivo per cui le inversioni lungo penetrazione e taglia
   sono più basse di quelle del 13 ottobre (26-33% lungo la penetrazione, 21% alla fascia 1 della taglia): quelle includevano
   un'inclusione e un Tri-level EP calcolati su segnaposto.
+
+### 7.10.1 Il run fino a 25 membri con PA (21 ottobre 2026)
+
+**Cosa è.** 108 comunità: 28 al livello 0, 28 a PA1, 27 a PA2, 25 a PA3 (le schede da 5, 8, 10, 15,
+18, 20 e 25 membri, quattro fasce di penetrazione per taglia). Parametri LIHC definitivi, stesso
+codice del run a 18 membri. Tabelle in `outputs/tables_main2_griglia25_PA/` (`PA1/`, `PA2/`, `PA3/`,
+`confronto/`, `confronto_PA/`, `fase1/`, `sintesi/`).
+
+```bash
+MAIN2_MAX_UTENTI=25 MAIN2_CARTELLA=griglia25_PA matlab -batch "MAIN2"
+MAIN2_MAX_UTENTI=25 MAIN2_CARTELLA=griglia25_PA MAIN2_RIPRENDI=1 matlab -batch "MAIN2"   # ripresa
+```
+
+**Durata e interruzione.** 9 h 9 min di analisi in due sessioni. La prima si è fermata alla comunità
+87 (`PA3/CER_0_20_0`) con `Separation problem non risolto (exitflag 2)`: `intlinprog` ha superato
+`MaxTime = 7200 s` nel Variance Least Core (lo stesso limite della §14.1). Il checkpoint
+dell'ultima comunità completata è delle 04:25 e l'errore delle 11:21: la causa più probabile è la
+sospensione del PC, che ha fatto scattare un limite a tempo reale su un calcolo che di norma dura
+minuti. Ripreso da `MAIN2_RIPRENDI=1` (86 comunità già fatte), la comunità 87 si è chiusa in meno di
+8 minuti e le altre 21 sono seguite senza errori. Non è stato verificato che il risultato sia
+identico al byte a quello di un run unico senza interruzioni. **Prima di un run lungo conviene
+disattivare la sospensione del PC.**
+
+**Metodi.** Nell'analisi fra comunità sono 10: Shapley esatto e Nucleolo non si calcolano sopra i
+18 membri (§14.1), quindi restano fuori anche dalle comunità piccole e l'Adaptive Sampling Shapley
+prende il loro posto. Stabilità (eccesso massimo, coalizioni instabili) valutabile solo fino a 18
+membri: 20 comunità su 28 al livello 0 e a PA1, 19 su 27 a PA2, 17 su 25 a PA3. Nelle comunità fino a 18 membri l'Adaptive Sampling si misura contro lo Shapley
+esatto: scarto relativo medio 0,9-1,5% per taglia (massimo 7,2% a 15 membri), Spearman minimo 0,90
+(8 membri). Oltre 18 membri non c'è un riferimento.
+
+**Livello 0 (28 comunità senza PA).**
+- *Vincitori.* Equal Split primo su EI e Gini in 28 comunità su 28 e sul VAN minimo in 24 (a pari in 4);
+  Variance Least Core primo su Fairness Index e σ in circa metà delle celle, a pari nelle altre;
+  `ForzaIncentivante` a pari in 27 su 28; solo l'allineamento lordo discrimina (13 celle su 28 con un
+  vincitore) e cambia sequenza da una taglia all'altra.
+- *Trade-off.* τ medio fra EI e forza incentivante da −0,48 a −0,79 in ogni taglia; EI e Fairness
+  Index da −0,04 a −0,21. Scegliere l'uniformità costa 0,69 sul merito, 0,80 sulla forza incentivante
+  e 0,72 sull'eccesso (78 €, il 20% di v(N)); scegliere l'incentivo costa 0,94 sull'uniformità.
+- *Inversioni.* Lungo la penetrazione, a taglia fissa, si invertono il 28,9% delle coppie a 5 membri
+  e il 15,6% a 25; lungo la taglia, a penetrazione fissa, il 16,2%, 10,5%, 5,1% e 8,7% nelle quattro
+  fasce (la fascia ~100% sta sopra la ~75%).
+- *Sottoinsieme minimo.* τ ≥ 0,5: tre gruppi, con rappresentanti EI, σ e allineamento netto; τ ≥ 0,7:
+  quattro. Concordanza delle coppie col rappresentante ≥ 0,96 per tutti tranne l'allineamento
+  lordo (0,80). L'ultima fusione del dendrogramma (uniformità contro il resto) ha τ equivalente −0,30.
+- *Fronte di Pareto.* Weighted Solidarity non è mai sul fronte, in nessuno dei quattro insiemi di
+  criteri; Cascading Tree 0-2 volte su 20-28.
+
+**Effetto delle PA.**
+
+| Confronto | Comunità | Coppie invertite | Sulle valutabili | Il vincitore cambia |
+|---|---:|---:|---:|---:|
+| PA0 → PA1 | 28 | 9,9% | 16,8% | 14,4% |
+| PA0 → PA2 | 27 | 11,5% | 21,6% | 9,8% |
+| PA0 → PA3 | 25 | 10,3% | 19,6% | 11,5% |
+| PA0 contro PA ≥ 1 | 80 | 10,6% | 19,2% | 12,0% |
+
+- *Il vincitore* non cambia mai per Gini, EI, eccesso, coalizioni instabili e allineamento netto;
+  cambia nel 70% delle comunità per l'allineamento lordo, nel 29% per σ e nel 5% per Fairness Index
+  e VAN minimo.
+- *Scala.* v(N) rispetto a PA0 ha mediana ×1,3 (PA1), ×5,3 (PA2) e ×9,5 (PA3), fino a ×107: la
+  differenza fra livelli può dipendere dalla scala e non solo dalla composizione.
+- *Quota delle PA* (quota delle PA su v(N) divisa per la quota dei membri): 1,0 con l'Equal Split;
+  tra 3 e 6,2 con tutti gli altri metodi a PA2 e PA3; 0,5 (PA1), 1,8 (PA2) e 1,4 (PA3) col
+  Similarity-Utilization. Alcuni metodi non sono monotoni nel numero di PA: Pearson Key passa da 0,86
+  a 5,5.
+- *Gruppi di indicatori.* A τ ≥ 0,5: 3 gruppi a PA0 e PA2, 4 a PA1 e PA3. A τ ≥ 0,7: 4 gruppi a PA0 e
+  PA3, 7 a PA1 e PA2: con una o due PA gli indicatori di stabilità e il VAN minimo si staccano dai
+  loro gruppi.
+
+**Comunità al 100% di prosumer.** Il valore da distribuire dipende dalle PA: a PA0 è 40-186 €
+l'anno (7,5 € a membro, contro 47 € sotto il 100%), a PA1 91-294 € (13,9 € a membro), a PA2
+2073-2958 € (217 € a membro) e a PA3 4304-5178 € (418 € a membro). L'argomento «c'è poco da spartire»
+vale quindi solo a PA0 e PA1.
+
+**Limiti.**
+- L'inclusione LIHC è `NaN` in tutte le comunità (§7.7); il Tri-level EP ha quota di povertà
+  energetica 0,00% del montepremi.
+- A PA3 lo scaglione tariffario unico imposto (§7.10) introduce un errore medio del 7,9% di v(N)
+  (circa 400-470 €), sopra la soglia di rilevanza del 5%: i risultati di PA3 non vanno presentati
+  come robusti. A PA1 e PA2 l'errore è nullo.
+- Quattro comunità per taglia, un solo campione di famiglie e nessun intervallo di confidenza.
+- La composizione è solo la presenza di 0-3 PA: non ci sono altre categorie di membri.
+
+### 7.11 Come costruiamo i casi da simulare: famiglie, PA, imprese
+
+Le comunità simulate si costruiscono a strati, sempre a partire dalle schede di sole famiglie di
+`CER_configuration/`:
+
+| Strato | Cartella | Cosa cambia | Da quali schede |
+|---|---|---|---|
+| **D** (domestici) | `CER_configuration/` | taglia N e penetrazione (quota di famiglie prosumer) | tutte, 5-100 membri |
+| **D + PA** | `CER_configuration_PA/PA1..PA3` | entrano comune, scuola, palazzetto (§7.10) | tutte |
+| **D + ND** | `CER_configuration_IND/ND1..ND3` | entrano 1, 2 o 3 imprese (ND = non domestici privati: PMI, uffici) | N ≥ 15 |
+| **D + ND + PA** | `CER_configuration_IND/ND{k}_PA{p}` | k imprese e p PA insieme | N ≥ 15 |
+
+**Una sola regola per tutti gli strati.** N, consumatori e prosumer restano quelli della scheda di
+partenza: ogni PA e ogni impresa è un prosumer col proprio impianto, e per ognuno che entra esce
+l'ultimo prosumer domestico (per id). Cambia solo *chi* sono i prosumer. Esempio su `CER_9_9_0`
+(18 membri, 9 famiglie consumatrici e 9 prosumer): `ND2_PA1` = 9 famiglie consumatrici, 6 famiglie
+prosumer, antigelo, office_zummo e comune. Per le imprese valgono due vincoli in più: si entra solo
+da **15 membri**, e imprese più PA restano **sotto il 50% dei membri** (al massimo ⌈N/2⌉ − 1).
+
+**Perché proprio questi livelli: i dati sulle CER reali.** I numeri vengono dal paper di
+Koltunov et al. [K26] e dal loro database pubblico [DB], letto con lo script e le avvertenze di
+[`data/external/koltunov2026/`](data/external/koltunov2026/README.md):
+
+- *Imprese 1-3.* Nelle CER del Nord con imprese prosumer (PMI o enti non profit) ce n'è 1 in 18
+  casi, 2 in 10, 3 in 2, 4 o più in 8 [DB]: una o due nel 74% dei casi. Da qui ND1, ND2, ND3; le
+  schede con 5 imprese generate il 25 ottobre sono state tolte.
+- *PA 1-3.* Le CER del Nord con PA prosumer ne hanno 1-3 nel 67% dei casi [DB].
+- *Taglia.* Mediana 17 membri al Nord (quartili 6 / 17 / 128, n = 181) [DB]: le schede da 15-25
+  membri, dove entrano le imprese, sono attorno alla mediana.
+- *Taglia degli impianti.* Potenza media di un impianto al Nord: residenziale 5,3 kW, PMI 107 kW,
+  pubblico 122,4 kW [K26, Fig. 7]. I nostri valori: famiglie 3,4-5,9 kWp, imprese 33-129 kWp,
+  comune 47, scuola 35, palazzetto 310,5.
+- *FV per membro.* Nelle CER reali da 15-25 membri: quartili 1,95 / 5,84 / 22,3 kWp a membro
+  [DB]. Le nostre schede di sole famiglie stanno a 1,0-1,9 (sotto il primo quartile), con una PA o
+  un'impresa a 2,2-5,8 (attorno alla mediana), con 3 imprese a 10-14, con 3 PA a 16-23 (in alto).
+
+**Le imprese** sono cinque, in quest'ordine: antigelo e office_zummo (consumi reali), small_industry
+(RAMP), plastica (consumi reali), office (RAMP). Con al massimo 3 imprese entrano solo le prime tre.
+Profili, kWp, tariffe e punti aperti in [`CER_configuration_IND/README.md`](CER_configuration_IND/README.md).
+
+**Stato.** Le 331 schede (92 a 15-18 membri, 95 a 20-25, 144 a 50-100) sono generate e lette senza
+errori da `load_cer_input`, `load_cer_data` e `align_members_to_users`. `MAIN2.m` le legge con
+`MAIN2_IND=1` (§3). Nessun run con le imprese è stato ancora fatto.
+
+**Come le analizza `MAIN2.m`.** Il gruppo di analisi non è più il numero di PA ma il *livello* =
+10 × imprese + PA (`etichetta_livello.m`: 0 → `PA0`, 2 → `PA2`, 10 → `ND1`, 21 → `ND2_PA1`):
+altrimenti una scheda con imprese e senza PA finirebbe insieme alle sole famiglie, con due comunità
+di uguale taglia e penetrazione nello stesso gruppo. Ogni livello ha la sua analisi e le sue tabelle
+(`<tabelle>/ND1/`, `<tabelle>/ND2_PA1/`, …), come i livelli PA. `MAIN2.m` verifica che il livello
+letto dai dati (categorie `terziario`, `commerciale`, `industriale` = imprese) coincida con la
+cartella. `confronto_pa.m` mette ogni livello a fianco del livello 0 omonimo (stessi N, C, P) e, con
+le imprese, aggiunge:
+- i confronti `PA0-ND1`, …, `PA0-ND3_PA3`;
+- la riga di sommario `PA0 contro ND>=1`;
+- la scansione `asse ND` (PA0 > ND1 > ND2 > ND3, senza PA: gli assi non si mescolano);
+- in `pa_effetti.csv`, le colonne `MembriND`, `QuotaND_pct_vN`, `QuotaMembriND_pct` e
+  `RapportoQuotaND` (quota del montepremi alle imprese divisa per la loro quota di membri).
+
+**Verifica (26 ottobre 2026).** Le stesse 8 comunità (`CER_2_3_0` e `CER_5_5_0` ai livelli 0, PA1,
+PA2, PA3) girate con il codice di prima e con quello nuovo, senza `MAIN2_IND`, danno 110 tabelle
+identiche al byte e lo stesso log a parte i nomi delle cartelle. Gli auto-test di `confronto_pa.m`
+(con un caso a livelli 0, ND1, ND2, ND2_PA1) e di `elenco_schede_cer.m` passano. Una prova con le
+imprese (`CER_7_8_0` e `CER_11_4_0` ai livelli 0, ND1, ND1_PA1, ND2; `MAIN2_CARTELLA=prova_ind`)
+gira senza errori in 40 minuti, circa 5 minuti a comunità da 15 membri: è solo una prova di
+funzionamento (due schede per livello), non un risultato.
+
+**Due test lasciati per la fine.**
+1. *Filtro sulla penetrazione.* Nel database l'**83%** delle CER del Nord ha prosumer ≤ 50% dei
+   membri (mediana 28%, quartili 10% / 28% / 50%, n = 64; il 9° decile è 85%) [DB]. Le schede al 75%
+   e al 100% di prosumer sono quindi poco rappresentative. Nel primo run restano tutte; se lì non
+   emergono risultati notevoli si può limitare l'analisi alle schede con prosumer ≤ ~55% dei membri,
+   dichiarando che in Italia, secondo [K26]/[DB], la grande maggioranza delle CER resta sotto metà
+   (non tutte: circa una su sei la supera).
+2. *Plastica.* Consuma 2 GWh/anno, circa 40 volte una CER di 18 famiglie, e con 1-3 imprese non
+   entra mai. Un livello di sensibilità `ND3p` = antigelo + office_zummo + plastica dirà quanto pesa
+   un'impresa grande sui risultati.
+
+#### 7.11.1 Risultati del blocco 15-18 membri (run del 26-27 ottobre 2026)
+
+**Cosa è.** 168 comunità: le 76 senza imprese (livello 0, PA1-PA3) e le 92 con imprese (ND1-ND3
+e ND{k}_PA{p}), tutte quelle di N = 15 e 18 (`0_15_0`, `4_11_0`, `7_8_0`, `11_4_0`, `0_18_0`, `4_14_0`,
+`9_9_0`, `13_5_0`). 9 h 52 min di analisi in una sola sessione, senza errori né interruzioni.
+Tabelle in `outputs/tables_main2_fino18_IND/`; il workspace (`RESULTS`) in
+`outputs/workspace/run_2026-10-27_fino18_IND.mat` e il log in
+`outputs/run_logs/main2_run_2026-10-27_fino18_IND.log`, entrambi non versionati.
+
+```bash
+MAIN2_IND=1 MAIN2_CARTELLA=fino18_IND matlab -batch "MAIN2"
+```
+
+**Regressione.** I 76 livelli senza imprese (`confronto/`, `sintesi/`, `PA1/`-`PA3/`) sono
+**identici al byte** al run del 20 ottobre (§7.10). Cambiano solo `confronto_PA/`, che ora contiene
+anche le imprese.
+
+**Effetto delle imprese** (`confronto_PA/`, stessa soglia di rilevanza degli altri assi):
+
+| Confronto con PA0 | Comunità | Coppie invertite | Sulle valutabili | Il vincitore cambia |
+|---|---:|---:|---:|---:|
+| PA ≥ 1 (già in §7.10) | 56 | 10,9% | 19,2% | 10,9% |
+| **ND ≥ 1** (imprese, con o senza PA) | **92** | **9,9%** | **17,6%** | **9,3%** |
+| ND1 / ND2 / ND3 (senza PA) | 8 + 8 + 8 | 7,1% / 10,7% / 10,4% | 11,9% / 18,6% / 18,4% | 10,0% / 10,0% / 7,5% |
+| lungo l'asse PA0 > ND1 > ND2 > ND3 | 8 schede | 17,9% (da 9,8% a 28,4%) | – | – |
+| (lungo l'asse PA0 > PA3, §7.10) | 20 schede | 23,3% | – | – |
+
+- **Le imprese spostano la graduatoria quanto le PA**, non di più: circa un'inversione su dieci,
+  e la scansione lungo l'asse delle imprese (17,9%) è sotto quella delle PA (23,3%) e di quella
+  lungo la penetrazione (§7.10).
+- **Vincitore.** Cambia soprattutto per l'allineamento lordo (81,5% delle comunità con imprese,
+  37,4% di coppie invertite) e per σ (4,3%); non cambia mai per Gini, EI e Fairness Index.
+- **Scala.** v(N) rispetto a PA0 ha mediana ×1,3 (ND1), ×1,5 (ND2), ×2,2 (ND3) senza PA, e ×11-12 con
+  3 PA (fino a ×55): il montepremi cresce con le imprese quanto con le PA, ed è il
+  limite già noto di §7.10. Qui un'impresa pesa più di una PA piccola: ND3 vale già ×2,2.
+- **Quota alle imprese.** Quota media del montepremi alle imprese divisa per la loro quota di
+  membri: 3,2 con Remuneration Model 1, 2,8 Cascading Tree, 2,1-2,2 con Shapley, Nucleolo, Variance
+  Least Core e Proportional to Consumption, 1,0 con l'Equal Split, 0,57 col Similarity-Utilization. Le
+  imprese prendono il 25% del montepremi con Shapley, il 12% con l'Equal Split.
+- **Gruppi di indicatori** (τ ≥ 0,5): 4 gruppi nella maggior parte dei livelli, 5 a ND1_PA1 e ND2_PA1,
+  3 a PA2: il sottoinsieme minimo di indicatori non cambia con le imprese.
+
+**Limiti.**
+- **Poche schede per livello.** 8 comunità per livello (6-7 a ND3_PA3), un solo campione di
+  famiglie e di imprese, nessun intervallo di confidenza.
+- **Le imprese pesano molto in energia** (80-97% del carico già con 2-3 imprese): una differenza fra
+  livelli dipende dalla scala e non solo dalla composizione.
+- **Scaglione unico.** A PA3 e ND{k}_PA3 (38 comunità) l'errore dello scaglione vale in media il 7,9% di v(N),
+  sopra la soglia di rilevanza del 5%: quei livelli non vanno presentati come robusti (§7.10).
+- **Nessun filtro sulla penetrazione:** le schede al 75% e al 100% di prosumer sono dentro (§12).
+- **Solo N = 15 e 18.** Shapley esatto e Nucleolo valgono fino a 18 membri; i blocchi da 20 e 25
+  membri non sono ancora stati fatti.
+
+#### 7.11.2 Blocco 20-25 membri con le imprese: run interrotto (27 ottobre 2026)
+
+Il run `MAIN2_IND=1 MAIN2_MAX_UTENTI=25` sulle 127 schede da 20 e 25 membri (livelli PA0-PA3, ND1-ND3
+e ND{k}_PA{p}) **si è fermato alla 46ª comunità**, `ND1_PA1/CER_18_7_0` (25 membri), alle 20:13:
+
+```
+Error using variance_least_core_cer (line 183)
+Row-generation (fase theta_LC) non convergente in 500 iterazioni.
+Error in MAIN2 (line 834)
+```
+
+Il Variance Least Core a 25 membri converge su alcune comunità e su altre no: `ND1/CER_18_7_0`
+(stessa composizione, senza PA) ha chiuso dopo 37 minuti, `ND1_PA1/CER_18_7_0` no. È il limite
+già noto (README §14.1), che per questo blocco volevamo riprovare.
+
+- **Fatte prima dell'errore: 45 comunità su 127**, 8 per livello (PA0, PA1, PA2, PA3, ND1) più 5 di
+  ND1_PA1. Tempo medio 13 min 39 s per comunità, circa 10 h di calcolo. I risultati sono nel
+  checkpoint `outputs/workspace/run_2026-10-27_solo2025_IND_interrotto45.mat` (solo `RESULTS`, non
+  versionato) e nel log `outputs/run_logs/main2_run_2026-10-27_solo2025_IND_interrotto.log`.
+- **Non sono state scritte tabelle** per questo blocco: MAIN2 le produce solo a fine run.
+- **Prossimi passi, in attesa dell'ok:** (1) fare in modo che un VLC non convergente segni il VLC come
+  non disponibile per quella comunità, come già per Shapley e Nucleolo oltre i 18 membri, invece di
+  fermare il run (modifica a `MAIN2.m` riga 834, da concordare); (2) riprendere dal checkpoint con
+  `MAIN2_RIPRENDI=1`; (3) valutare più processi MATLAB in parallelo, perché il run usa circa un
+  core su 14. Le comunità senza VLC andranno elencate e trattate a parte nell'analisi.
+
+[K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
+communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
+115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).
+[DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
+dati a gennaio 2025, commit `7560715`.
 
 ## 8. Dimensionamento impianto PV (standalone)
 
@@ -1581,7 +1834,8 @@ Dopo il ciclo: le tabelle su file (§11.0), le figure della fase 1 e, a richiest
 Le scrive `save_tables` con l'interruttore `CSV` della §0b — **separato** da quello delle
 figure, perché le figure sono un servizio e queste tabelle sono un risultato. Con
 `MAIN2_CARTELLA=<suffisso>` la cartella diventa `outputs/tables_main2_<suffisso>/`: i due
-run finali stanno in `tables_main2/` (fino a 18 membri) e `tables_main2_griglia25/` (§7.9).
+run finali stanno in `tables_main2/` (fino a 18 membri, 20 ottobre) e `tables_main2_griglia25_PA/`
+(fino a 25 membri con PA, 21 ottobre, §7.10.1); `tables_main2_griglia25/` (13 ottobre, §7.9) è superata.
 
 **`confronto/`** (§7b: accordo fra indicatori e inversioni, §7.6):
 
@@ -1719,7 +1973,8 @@ Per taglia, nei due run: 5 membri 3-8 s; 8 membri 7,5-44 s; 10 membri 15 s-1,5 m
 membri 1-6 min; 18 membri 2,7-10 min; 20 membri 2,5-14 min; 25 membri 7,5-31 min. A parità
 di taglia costano di più le comunità a bassa penetrazione (dagli 8 membri in su), e dai 15
 membri in su il tempo è dominato dal Variance Least Core (§14.1). La griglia fino a 25
-membri dura 2 h 28 min.
+membri dura 2 h 28 min; il run del 21 ottobre, con le PA e 108 comunità, 9 h 9 min (il solo
+Variance Least Core di `CER_12_13_0`, 25 membri, ha richiesto 21 min 45 s).
 
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
@@ -1755,12 +2010,18 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
   (§7.6, §7.9). Tutti i membri sono domestici: i risultati dei run del 13 ottobre non
   separano l'effetto della taglia o della penetrazione da quello del mix di categorie, e
   sulla griglia fattore F e soglia GSE non hanno effetto (§7.4, §7.5). **Il terzo asse
-  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge, ma i suoi
-  risultati si producono col run finale, dopo i dati LIHC. Le schede da 50, 75 e 100 membri non sono
+  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge e i risultati
+  con i dati LIHC definitivi sono quelli del 20 e del 21 ottobre (§7.10, §7.10.1). Copre solo
+  la presenza di 0-3 PA. **Le imprese** (1-3 per comunità, §7.11, `CER_configuration_IND/`) sono
+  generate e lette da `MAIN2.m` con `MAIN2_IND=1`, ma non ancora analizzate. Le schede da 50, 75 e 100 membri non sono
   analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
   (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
   (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo
   stadio Python.
+- **Filtro opzionale sulla penetrazione** (da decidere dopo il primo run con le imprese, §7.11):
+  l'83% delle CER reali del Nord ha prosumer ≤ 50% dei membri [K26]/[DB]. Se le schede al 75% e
+  al 100% non danno risultati degni di nota, l'analisi si può limitare a prosumer ≤ ~55%.
+- **Test finale con plastica** (§7.11): l'impresa da 2 GWh/anno non entra nei livelli ND1-ND3.
 - **Un clone pulito non riproduce la griglia.** Le 40 schede, lo scenario e tutti i
   risultati (tabelle dei due run, CSV esportati dai workspace, pagina dei risultati) sono
   versionati; non lo sono i profili di carico (`N_utenti.xlsx`, `100_utenti.csv`) e gli
@@ -1882,6 +2143,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
 | [data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md) | Serve il metodo completo con cui sono state costruite le curve di consumo e di produzione FV del palazzetto di Lucca, con affidabilità e limiti |
 | [CER_configuration_PA/README.md](CER_configuration_PA/README.md) | Serve la regola con cui si inseriscono le PA nelle schede, le assunzioni sulle tre PA e i punti aperti dell'asse composizione |
+| [CER_configuration_IND/README.md](CER_configuration_IND/README.md) | Serve sapere come entrano le imprese nelle schede, i loro profili e kWp, e i punti aperti dell'asse imprese |
+| [data/external/koltunov2026/README.md](data/external/koltunov2026/README.md) | Serve un numero sulle CER italiane reali (taglia, prosumer, imprese, PA, potenza) con la sua fonte e i suoi limiti |
 | [docs/mapping_household_istat.md](docs/mapping_household_istat.md) | Serve sapere perché un archetipo LPG ha quella tipologia familiare Istat (età e componenti dal catalogo LPG) |
 | [GUIDA_modelli_distribuzione.md](GUIDA_modelli_distribuzione.md) | Serve la derivazione matematica, gli assiomi o la mappatura formula→codice di uno dei modelli di ripartizione o degli indicatori |
 | [AUDIT_REPORT.md](AUDIT_REPORT.md) | Serve un elenco di bug noti / debito tecnico (audit 2026-07-10, non aggiornato con modifiche successive) |
@@ -1976,7 +2239,8 @@ settembre, a 50 membri, non convergeva in 5 ore, e tolleranze allentate o arrest
 anticipato del MILP non hanno dato guadagni. C'è anche un limite di robustezza:
 `intlinprog` usa il limite di tempo di default (7200 s) e, se scatta, la separazione si
 ferma con un errore invece di usare la migliore soluzione trovata — è successo il 5
-ottobre su `CER_18_7_0` (log in `outputs/run_logs/`). Per questo le schede da 50-100 membri
+ottobre su `CER_18_7_0` (log in `outputs/run_logs/`) e il 21 ottobre su `PA3/CER_0_20_0`, dove
+la causa più probabile è la sospensione del PC (il limite è a tempo reale, §7.10.1). Per questo le schede da 50-100 membri
 non sono nell'analisi: è il primo punto da sistemare per andare oltre i 25 membri.
 
 Gli otto metodi non cooperativi (Equal Split, Proportional to Consumption,

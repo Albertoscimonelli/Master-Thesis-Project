@@ -69,3 +69,11 @@ Questo `.mat` contiene **solo `RESULTS`**: le strutture di analisi fra comunità
 risultati sono comunque nelle tabelle CSV. Per i blocchi successivi conviene lanciare
 `MAIN2_IND=1 ... matlab -batch "MAIN2; save('outputs/workspace/<nome>.mat','RESULTS','LIV')"`.
 Codice al commit di fase B (`a770725`) più le modifiche al README.
+
+## Run del 27 ottobre 2026: blocco 20-25 membri con le imprese (interrotto)
+
+| File | Contenuto |
+|---|---|
+| `run_2026-10-27_solo2025_IND_interrotto45.mat` | `RESULTS` delle prime 45 comunità su 127 (copia del checkpoint `outputs/checkpoint_main2_solo2025_IND.mat`). Run fermato dal Variance Least Core a 25 membri su `ND1_PA1/CER_18_7_0`. Log in `outputs/run_logs/main2_run_2026-10-27_solo2025_IND_interrotto.log` |
+
+Solo `RESULTS`, nessuna tabella. Dettagli e prossimi passi in README §7.11.2.

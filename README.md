@@ -1602,6 +1602,32 @@ anche le imprese.
 - **Solo N = 15 e 18.** Shapley esatto e Nucleolo valgono fino a 18 membri; i blocchi da 20 e 25
   membri non sono ancora stati fatti.
 
+#### 7.11.2 Blocco 20-25 membri con le imprese: run interrotto (27 ottobre 2026)
+
+Il run `MAIN2_IND=1 MAIN2_MAX_UTENTI=25` sulle 127 schede da 20 e 25 membri (livelli PA0-PA3, ND1-ND3
+e ND{k}_PA{p}) **si è fermato alla 46ª comunità**, `ND1_PA1/CER_18_7_0` (25 membri), alle 20:13:
+
+```
+Error using variance_least_core_cer (line 183)
+Row-generation (fase theta_LC) non convergente in 500 iterazioni.
+Error in MAIN2 (line 834)
+```
+
+Il Variance Least Core a 25 membri converge su alcune comunità e su altre no: `ND1/CER_18_7_0`
+(stessa composizione, senza PA) ha chiuso dopo 37 minuti, `ND1_PA1/CER_18_7_0` no. È il limite
+già noto (README §14.1), che per questo blocco volevamo riprovare.
+
+- **Fatte prima dell'errore: 45 comunità su 127**, 8 per livello (PA0, PA1, PA2, PA3, ND1) più 5 di
+  ND1_PA1. Tempo medio 13 min 39 s per comunità, circa 10 h di calcolo. I risultati sono nel
+  checkpoint `outputs/workspace/run_2026-10-27_solo2025_IND_interrotto45.mat` (solo `RESULTS`, non
+  versionato) e nel log `outputs/run_logs/main2_run_2026-10-27_solo2025_IND_interrotto.log`.
+- **Non sono state scritte tabelle** per questo blocco: MAIN2 le produce solo a fine run.
+- **Prossimi passi, in attesa dell'ok:** (1) fare in modo che un VLC non convergente segni il VLC come
+  non disponibile per quella comunità, come già per Shapley e Nucleolo oltre i 18 membri, invece di
+  fermare il run (modifica a `MAIN2.m` riga 834, da concordare); (2) riprendere dal checkpoint con
+  `MAIN2_RIPRENDI=1`; (3) valutare più processi MATLAB in parallelo, perché il run usa circa un
+  core su 14. Le comunità senza VLC andranno elencate e trattate a parte nell'analisi.
+
 [K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
 communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
 115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).

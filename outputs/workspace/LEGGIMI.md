@@ -46,6 +46,21 @@ venv/Scripts/python.exe -I outputs/workspace/strumenti/analizza.py \
     outputs/workspace/export_fino18 outputs/tables_main2 > outputs/workspace/analisi_fino18.txt
 ```
 
+Figure per la tesi e numeri che le accompagnano (tabelle del 20 ottobre per tutti i livelli PA,
+export per i valori grezzi del livello 0):
+
+```bash
+python -I outputs/workspace/strumenti/grafici_metodi.py --apri  # -> outputs/figures_tesi/, outputs/tables_tesi/
+```
+
+Alla fine scrive `outputs/figures_tesi/index.html`: tutte le figure con spiegazione e risultato, in un file
+unico da aprire con un doppio clic o da inviare (`--apri` lo apre nel browser). Si rigenera da solo con
+`pagina_risultati.py`, anche senza rifare le figure.
+
+Analisi e scelte statistiche in `outputs/report/ANALISI_risultati_e_figure_2026-10-27.md`.
+`esporta_run.m` scrive dal 27 ottobre la colonna `Composizione` e legge i punteggi da `LIV`:
+gli export dei workspace con PA fatti prima di quella data mescolerebbero i livelli.
+
 **Attenzione:** `run('script.m')` cambia cartella corrente, e i percorsi relativi finiscono
 altrove. Usare `addpath` e chiamare le funzioni, come sopra.
 

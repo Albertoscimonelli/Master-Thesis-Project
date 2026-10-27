@@ -97,7 +97,7 @@ L'ordine mette prima i dati reali. Con al massimo 3 imprese entrano solo le prim
    l'avvertenza del palazzetto (README §7.10).
 7. **Tariffe** assunte (non note per le imprese reali).
 8. **Dati reali.** I consumi di antigelo, zummo e plastica sono di aziende reali: i file sono fuori da
-   git (`Valencia/` non tracciata; schede e profili ignorati da `.gitignore`).
+   git (`Valencia/` non tracciata; i profili sono ignorati da `.gitignore`, le schede (solo testo) sono versionate).
 9. **Prosumer rimossi:** l'ultimo per id; se pesa sui risultati va cambiato nello script.
 10. **Profili non versionati:** ~770 MB in `profili/`, si rigenerano con
     `python -I CER_configuration_IND/genera_varianti_IND.py` dalla radice (~1 minuto).

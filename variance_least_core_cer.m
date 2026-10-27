@@ -13,8 +13,9 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 %   P_CER puo' essere uno scalare o un vettore [H x 1] (incentivo orario), cosi'
 %   i quattro metodi sono direttamente confrontabili. A differenza
 %   degli altri tre NON chiama cer_coalition_values: quella enumera tutte le
-%   2^n coalizioni ed e' impraticabile oltre ~20 giocatori. Qui v(K) e'
-%   valutata SU RICHIESTA solo per le poche coalizioni generate.
+%   2^n coalizioni con un ciclo ed e' impraticabile oltre ~20 giocatori. Per
+%   il master v(K) e' valutata SU RICHIESTA solo per le poche coalizioni
+%   generate; per la separazione vedi "SEPARAZIONE PER ENUMERAZIONE" sotto.
 %
 %   IDEA
 %     Surplus di una coalizione K data l'allocazione x (eq. 11):
@@ -69,6 +70,24 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 %                 .verbose       stampa avanzamento             (def. false)
 %                 .validateDense verifica contro l'enumerazione (def. false,
 %                                ammessa solo per n <= 12)
+%                 .v             [2^n x 1] v(S) gia' enumerata da
+%                                cer_coalition_values (facoltativo): se c'e'
+%                                la separazione la usa invece di ricalcolarla
+%                 .denseMaxPlayers fino a quanti giocatori la separazione
+%                                enumera tutte le coalizioni invece di
+%                                risolvere il MILP (def. 25, vedi sotto)
+%
+%   SEPARAZIONE PER ENUMERAZIONE FINO A 25 GIOCATORI
+%     Il MILP della separazione si risolve a ogni iterazione, e le iterazioni
+%     sono centinaia: a 25 membri la row-generation costava fino a 37 minuti
+%     per comunita', e su ND1_PA1/CER_18_7_0 non convergeva in 500 iterazioni
+%     (README 7.11.2). Fino a opts.denseMaxPlayers giocatori si calcola invece
+%     v(S) per TUTTE le coalizioni una volta sola (enumerate_values, a blocchi
+%     vettorizzati, qualche minuto a n = 25), e ogni separazione diventa un
+%     argmin su 2^n surplus: O(2^n) per iterazione, meno di un secondo a
+%     n = 25. La separazione e' esatta, non soggetta alla tolleranza di gap
+%     del MILP. Memoria: tre vettori di 2^n double, circa 800 MB a n = 25.
+%     Oltre la soglia resta il MILP di sempre.
 %
 %   OUTPUT (struct S)
 %     .players     [1 x n]  nomi dei giocatori (= userNames)
@@ -100,6 +119,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     if ~isfield(opts, 'validateDense'), opts.validateDense = false; end
     if ~isfield(opts, 'esente'),        opts.esente        = [];    end
     if ~isfield(opts, 'F'),             opts.F             = 0;     end
+    if ~isfield(opts, 'v'),             opts.v             = [];    end
+    if ~isfield(opts, 'denseMaxPlayers'), opts.denseMaxPlayers = 25; end
 
     n = size(loadUsers, 2);              % un giocatore per utente
 
@@ -133,10 +154,11 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     tolAbs = opts.tolRel * max(1, abs(vGrand));
 
     % --- Pre-calcoli per il Separation Problem ------------------------------
-    % Le ore senza generazione hanno s_t = 0 per costruzione: si escludono
-    % dal MILP, dimezzando circa il numero di variabili e vincoli.
-    sep = build_separation(genUsers, loadUsers, P_CER, n, ...
-                           userNames, opts.esente, opts.F);
+    % Fino a opts.denseMaxPlayers giocatori: v(S) enumerata (o presa da
+    % opts.v). Oltre: MILP, da cui si escludono le ore senza generazione, che
+    % hanno s_t = 0 per costruzione.
+    sep = build_separation(genUsers, loadUsers, P_CER, n, opts.esente, opts.F, ...
+                           opts.v, opts.denseMaxPlayers);
 
     % --- Gamma iniziale: le coalizioni singoletto ---------------------------
     % Punto di partenza economico e sufficiente: garantisce che il master sia
@@ -342,18 +364,24 @@ function val = coalition_value(sel, genUsers, loadUsers, P_CER, esente, F)
 end
 
 
-function sep = build_separation(genUsers, loadUsers, P_CER, n, userNames, esente, F)
+function sep = build_separation(genUsers, loadUsers, P_CER, n, esente, F, vCache, denseMax)
 %BUILD_SEPARATION  Prepara le matrici FISSE del Separation Problem (eq. 17),
 %   che non dipendono dall'allocazione x e vanno costruite una sola volta.
 %
-%   Variabili del MILP: [z(1..n) binarie ; s(1..Hs) continue >= 0], dove Hs
-%   sono le sole ore in cui la comunita' produce qualcosa (nelle altre
-%   s_t = 0 per costruzione, qualunque sia la coalizione).
+%   RAMO DENSO (v(S) passata dal chiamante, oppure n <= denseMax)
+%     Si tiene v(S) per tutte le 2^n coalizioni, indicizzata dalla bitmask
+%     come in cer_coalition_values (v(m+1) = valore della coalizione di
+%     bitmask m): la separazione diventa un argmin (solve_separation).
 %
-%   Con un giocatore per utente entrambi i lati del min() sono somme sulle
-%   binarie: nessun giocatore "PV" privilegiato che abiliti la condivisione.
+%   RAMO MILP (n > denseMax)
+%     Variabili del MILP: [z(1..n) binarie ; s(1..Hs) continue >= 0], dove Hs
+%     sono le sole ore in cui la comunita' produce qualcosa (nelle altre
+%     s_t = 0 per costruzione, qualunque sia la coalizione).
 %
-%   CON F > 0 IL MILP NON VALE PIU', E SI RIPIEGA SULL'ENUMERAZIONE
+%     Con un giocatore per utente entrambi i lati del min() sono somme sulle
+%     binarie: nessun giocatore "PV" privilegiato che abiliti la condivisione.
+%
+%   CON F > 0 IL MILP NON VALE PIU'
 %     Il fattore di riduzione non si applica all'energia dei punti di prelievo
 %     esenti, quindi il valore della coalizione contiene il termine
 %
@@ -362,31 +390,32 @@ function sep = build_separation(genUsers, loadUsers, P_CER, n, userNames, esente
 %     che e' un RAPPORTO fra due combinazioni lineari delle binarie z: non e'
 %     lineare, e il Separation Problem smette di essere un MILP. Linearizzarlo
 %     e' un lavoro di modellazione a se' (variabili ausiliarie per il
-%     rapporto), non un dettaglio implementativo.
-%
-%     Finche' quel lavoro non e' fatto, con F > 0 si enumerano tutte le 2^n
-%     coalizioni una volta sola e la separazione diventa un argmin su una
-%     matrice gia' pronta. Il risultato e' ESATTO - anzi, e' la separazione
-%     esatta per definizione - ma il metodo perde la scalabilita' che e' il
-%     suo tratto distintivo, e ricade nello stesso limite di Shapley,
-%     Nucleolo ed eccesso di coalizione (README par. 14.1). Senza contributo
-%     in conto capitale (F = 0, il caso di oggi) non cambia nulla.
+%     rapporto), non un dettaglio implementativo. Con F > 0 resta quindi solo
+%     il ramo denso, e oltre denseMax giocatori il metodo non si applica
+%     (README par. 14.1).
 
-    if nargin >= 7 && ~isempty(F) && F ~= 0
-        if n > 20
-            error('variance_least_core_cer:denseTooBig', ...
-                  ['Con F > 0 la separazione ricade sull''enumerazione di 2^%d ' ...
-                   'coalizioni. Serve la linearizzazione del Separation Problem ' ...
-                   'prima di usare il metodo a questa scala.'], n);
+    if ~isempty(vCache)
+        if numel(vCache) ~= 2^n
+            error('variance_least_core_cer:cacheSizeMismatch', ...
+                  'opts.v ha %d elementi, con %d giocatori ne servono 2^%d.', ...
+                  numel(vCache), n, n);
         end
-        [vAll, ~, A_all] = cer_coalition_values(genUsers, loadUsers, userNames, ...
-                                                P_CER, esente, F);
-        isProper      = true(numel(vAll), 1);
-        isProper(1)   = false;      % coalizione vuota
-        isProper(end) = false;      % grande coalizione
-        sep = struct('dense', true, 'n', n, ...
-                     'v', vAll(isProper), 'A', A_all(isProper, :));
+        sep = struct('dense', true, 'n', n, 'v', vCache(:));
         return
+    end
+
+    if n <= denseMax
+        sep = struct('dense', true, 'n', n, ...
+                     'v', enumerate_values(genUsers, loadUsers, P_CER, esente, F));
+        return
+    end
+
+    if ~isempty(F) && F ~= 0
+        error('variance_least_core_cer:denseTooBig', ...
+              ['Con F > 0 la separazione ricade sull''enumerazione di 2^%d ' ...
+               'coalizioni, oltre opts.denseMaxPlayers = %d. Serve la ' ...
+               'linearizzazione del Separation Problem prima di usare il ' ...
+               'metodo a questa scala.'], n, denseMax);
     end
 
     sep.dense = false;
@@ -448,13 +477,16 @@ function [sigmaMin, sel, vK] = solve_separation(sep, x, tolAbs)
 
     n = sep.n;
 
-    % Ramo esatto per enumerazione: con F > 0 il MILP non e' piu' valido (vedi
-    % build_separation). Le coalizioni proprie sono gia' tutte in sep.A con i
-    % rispettivi v: la separazione e' un argmin, non un problema da risolvere.
+    % Ramo esatto per enumerazione (vedi build_separation): v(S) e' gia' pronta
+    % per tutte le coalizioni, la separazione e' un argmin. La coalizione vuota
+    % (indice 1) e la grande coalizione (indice end) non sono proprie e restano
+    % fuori, come nel vincolo di cardinalita' del MILP.
     if sep.dense
-        sigmaAll        = sep.A * x(:) - sep.v;
+        sigmaAll        = subset_sums(x) - sep.v;
+        sigmaAll(1)     = Inf;
+        sigmaAll(end)   = Inf;
         [sigmaMin, idx] = min(sigmaAll);
-        sel             = sep.A(idx, :) == 1;
+        sel             = bitget(idx - 1, 1:n) == 1;
         vK              = sep.v(idx);
         return
     end
@@ -479,6 +511,91 @@ function [sigmaMin, sel, vK] = solve_separation(sep, x, tolAbs)
         error('variance_least_core_cer:separationInconsistent', ...
               'Surplus del MILP (%.6g) diverso da quello ricalcolato (%.6g).', ...
               sigmaMin, sum(x(sel)) - vK);
+    end
+end
+
+
+function s = subset_sums(x)
+%SUBSET_SUMS  sum_{i in S} x_i per ogni bitmask S, nello stesso ordine di v
+%   (s(m+1) = somma sulla coalizione di bitmask m). Si aggiunge un giocatore
+%   alla volta: le coalizioni col bit i acceso sono quelle senza, piu' x_i.
+%   Costo O(2^n), senza la matrice di incidenza [2^n x n].
+
+    n   = numel(x);
+    s   = zeros(2^n, 1);
+    len = 1;
+    for i = 1:n
+        s(len+1:2*len) = s(1:len) + x(i);
+        len = 2 * len;
+    end
+end
+
+
+function v = enumerate_values(genUsers, loadUsers, P_CER, esente, F)
+%ENUMERATE_VALUES  v(S) per tutte le 2^n coalizioni, stessa formula e stesso
+%   ordine di cer_coalition_values, ma a blocchi vettorizzati invece di un
+%   ciclo sulle 2^n bitmask.
+%
+%   I primi k giocatori formano il blocco "basso": i loro 2^k profili
+%   aggregati si costruiscono una volta sola ([Hs x 2^k], come in
+%   subset_sums). Per ognuna delle 2^(n-k) combinazioni dei giocatori
+%   rimanenti si somma il loro profilo a tutte le colonne del blocco e si
+%   valutano 2^k coalizioni con una sola operazione matriciale.
+%
+%   Si tengono solo le ore con generazione E carico nella comunita': nelle
+%   altre min(gen, load) = 0 per ogni coalizione, e il fattore F moltiplica
+%   comunque zero. I valori coincidono con cer_coalition_values a meno
+%   dell'ordine delle somme (scarti relativi dell'ordine di 1e-12).
+
+    n    = size(loadUsers, 2);
+    keep = sum(genUsers, 2) > 0 & sum(loadUsers, 2) > 0;
+    g    = genUsers(keep, :);
+    l    = loadUsers(keep, :);
+    p    = P_CER(keep).';                          % [1 x Hs]
+
+    conF = ~isempty(F) && F ~= 0;
+    if conF
+        if isempty(esente), esente = false(n, 1); end
+        e = l .* double(logical(esente(:)).');     % carico dei soli esenti
+    end
+
+    k    = min(n, 8);                              % blocco [Hs x 256]
+    nLow = 2^k;
+    GL   = block_sums(g(:, 1:k));
+    LL   = block_sums(l(:, 1:k));
+    gH   = g(:, k+1:end);
+    lH   = l(:, k+1:end);
+    if conF
+        EL = block_sums(e(:, 1:k));
+        eH = e(:, k+1:end);
+    end
+
+    v = zeros(2^n, 1);
+    for h = 0:(2^(n-k) - 1)
+        b  = bitget(h, 1:(n-k)).';                 % giocatori "alti" presenti
+        lS = LL + lH * b;
+        sh = min(GL + gH * b, lS);
+        if conF
+            eS      = EL + eH * b;
+            wEs     = zeros(size(lS));
+            ok      = lS > 0;
+            wEs(ok) = min(eS(ok) ./ lS(ok), 1);
+            sh      = sh .* (1 - F * (1 - wEs));
+        end
+        v(h*nLow + (1:nLow)) = p * sh;
+    end
+end
+
+
+function M = block_sums(A)
+%BLOCK_SUMS  M(:, m+1) = somma delle colonne di A selezionate dalla bitmask m.
+
+    k   = size(A, 2);
+    M   = zeros(size(A, 1), 2^k);
+    len = 1;
+    for i = 1:k
+        M(:, len+1:2*len) = M(:, 1:len) + A(:, i);
+        len = 2 * len;
     end
 end
 

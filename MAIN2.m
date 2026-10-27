@@ -827,12 +827,19 @@ for iCER = PRIMO:N_CER
     %  ROW-GENERATION (Master + Separation MILP, eq. 15-17 del paper), che genera
     %  solo le poche coalizioni realmente vincolanti. E' questa la scelta che
     %  rende il metodo applicabile a comunita' con decine o centinaia di membri.
-    %  Vedi variance_least_core_cer.m per i dettagli.
+    %  Fino a 25 membri, pero', la separazione e' un argmin sull'enumerazione
+    %  di v(S), molto piu' veloce del MILP ripetuto a ogni iterazione: fino a 18
+    %  si passa la v(S) gia' calcolata per Shapley e Nucleolo, da 19 a 25 la
+    %  enumera variance_least_core_cer stessa. Vedi variance_least_core_cer.m.
     %  ========================================================================
 
     T_metodo = tic;
+    optVLC = optF;
+    if ~skipGameTheory
+        optVLC.v = vCache;
+    end
     VLC = variance_least_core_cer(genForShare, loadForShare, userNames, ...
-                                  P_CER_lordo, optF);
+                                  P_CER_lordo, optVLC);
     fprintf('  [cronometro] Variance Least Core: %s\n', format_duration(toc(T_metodo)));
 
     coreMsgVLC = "fuori dal Core";

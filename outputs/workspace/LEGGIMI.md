@@ -57,3 +57,15 @@ altrove. Usare `addpath` e chiamare le funzioni, come sopra.
    `python -I strumenti/confronta_csv.py <baseline> outputs/tables_main2 <token autorizzati>`;
 4. confronto delle strutture in MATLAB, sul modello di `strumenti/confronta_F*.m`
    (cambiare i percorsi dei `.mat`).
+
+## Run del 26-27 ottobre 2026: blocco 15-18 membri con le imprese
+
+| File | Contenuto |
+|---|---|
+| `run_2026-10-27_fino18_IND.mat` | `RESULTS` delle 168 comunità (76 senza imprese, 92 con imprese), copia del checkpoint `outputs/checkpoint_main2_fino18_IND.mat`. Tabelle in `outputs/tables_main2_fino18_IND/` (versionate), log in `outputs/run_logs/main2_run_2026-10-27_fino18_IND.log` |
+
+Questo `.mat` contiene **solo `RESULTS`**: le strutture di analisi fra comunità (`AGR`, `GRID`, `REV`,
+`SINT`, `PERD`, `CLUS`, `LIV`) vivevano nella sessione MATLAB batch e non sono state salvate. I loro
+risultati sono comunque nelle tabelle CSV. Per i blocchi successivi conviene lanciare
+`MAIN2_IND=1 ... matlab -batch "MAIN2; save('outputs/workspace/<nome>.mat','RESULTS','LIV')"`.
+Codice al commit di fase B (`a770725`) più le modifiche al README.

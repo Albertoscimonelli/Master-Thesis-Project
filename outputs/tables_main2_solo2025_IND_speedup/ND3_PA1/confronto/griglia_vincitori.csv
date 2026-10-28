@@ -1,0 +1,89 @@
+Indicatore,Membri,Fascia,Penetrazione_pct,Scheda,Vincitore,PrimiAPari,Distacco
+EI_orig,20,1,25,CER_15_5_0,Equal Split,Equal Split,0.230004
+EI_orig,20,2,50,CER_10_10_0,Equal Split,Equal Split,0.254473
+EI_orig,20,3,75,CER_5_15_0,Equal Split,Equal Split,0.277498
+EI_orig,20,4,100,CER_0_20_0,Equal Split,Equal Split,0.38863
+EI_orig,25,1,28,CER_18_7_0,Equal Split,Equal Split,0.236228
+EI_orig,25,2,52,CER_12_13_0,Equal Split,Equal Split,0.245264
+EI_orig,25,3,76,CER_6_19_0,Equal Split,Equal Split,0.337631
+EI_orig,25,4,100,CER_0_25_0,Equal Split,Equal Split,0.376115
+Gini,20,1,25,CER_15_5_0,Equal Split,Equal Split,0.230004
+Gini,20,2,50,CER_10_10_0,Equal Split,Equal Split,0.254473
+Gini,20,3,75,CER_5_15_0,Equal Split,Equal Split,0.277498
+Gini,20,4,100,CER_0_20_0,Equal Split,Equal Split,0.38863
+Gini,25,1,28,CER_18_7_0,Equal Split,Equal Split,0.236228
+Gini,25,2,52,CER_12_13_0,Equal Split,Equal Split,0.245264
+Gini,25,3,76,CER_6_19_0,Equal Split,Equal Split,0.337631
+Gini,25,4,100,CER_0_25_0,Equal Split,Equal Split,0.376115
+FairnessIndex,20,1,25,CER_15_5_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0267935
+FairnessIndex,20,2,50,CER_10_10_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00454922
+FairnessIndex,20,3,75,CER_5_15_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0074171
+FairnessIndex,20,4,100,CER_0_20_0,(pari),Variance Least Core = Adaptive Sampling Shapley = Proportional to Consumption,0.0120364
+FairnessIndex,25,1,28,CER_18_7_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0263176
+FairnessIndex,25,2,52,CER_12_13_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00996482
+FairnessIndex,25,3,76,CER_6_19_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0152896
+FairnessIndex,25,4,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley = Proportional to Consumption,0.016909
+Sigma,20,1,25,CER_15_5_0,(pari),Variance Least Core = Adaptive Sampling Shapley,9.21813e-05
+Sigma,20,2,50,CER_10_10_0,(pari),Variance Least Core = Adaptive Sampling Shapley,5.95656e-05
+Sigma,20,3,75,CER_5_15_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00107072
+Sigma,20,4,100,CER_0_20_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00389956
+Sigma,25,1,28,CER_18_7_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00043049
+Sigma,25,2,52,CER_12_13_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.000370719
+Sigma,25,3,76,CER_6_19_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00137543
+Sigma,25,4,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00414697
+InclusioneLIHC,20,1,25,CER_15_5_0,,,NaN
+InclusioneLIHC,20,2,50,CER_10_10_0,,,NaN
+InclusioneLIHC,20,3,75,CER_5_15_0,,,NaN
+InclusioneLIHC,20,4,100,CER_0_20_0,,,NaN
+InclusioneLIHC,25,1,28,CER_18_7_0,,,NaN
+InclusioneLIHC,25,2,52,CER_12_13_0,,,NaN
+InclusioneLIHC,25,3,76,CER_6_19_0,,,NaN
+InclusioneLIHC,25,4,100,CER_0_25_0,,,NaN
+EccessoMax_EUR,20,1,25,CER_15_5_0,,,NaN
+EccessoMax_EUR,20,2,50,CER_10_10_0,,,NaN
+EccessoMax_EUR,20,3,75,CER_5_15_0,,,NaN
+EccessoMax_EUR,20,4,100,CER_0_20_0,,,NaN
+EccessoMax_EUR,25,1,28,CER_18_7_0,,,NaN
+EccessoMax_EUR,25,2,52,CER_12_13_0,,,NaN
+EccessoMax_EUR,25,3,76,CER_6_19_0,,,NaN
+EccessoMax_EUR,25,4,100,CER_0_25_0,,,NaN
+CoalizioniInstabili,20,1,25,CER_15_5_0,,,NaN
+CoalizioniInstabili,20,2,50,CER_10_10_0,,,NaN
+CoalizioniInstabili,20,3,75,CER_5_15_0,,,NaN
+CoalizioniInstabili,20,4,100,CER_0_20_0,,,NaN
+CoalizioniInstabili,25,1,28,CER_18_7_0,,,NaN
+CoalizioniInstabili,25,2,52,CER_12_13_0,,,NaN
+CoalizioniInstabili,25,3,76,CER_6_19_0,,,NaN
+CoalizioniInstabili,25,4,100,CER_0_25_0,,,NaN
+ForzaIncentivante,20,1,25,CER_15_5_0,Similarity-Utilization,Similarity-Utilization,1
+ForzaIncentivante,20,2,50,CER_10_10_0,Similarity-Utilization,Similarity-Utilization,0.715171
+ForzaIncentivante,20,3,75,CER_5_15_0,Similarity-Utilization,Similarity-Utilization,0.617392
+ForzaIncentivante,20,4,100,CER_0_20_0,(pari),Tri-level EP = Pearson Key,0.184197
+ForzaIncentivante,25,1,28,CER_18_7_0,Similarity-Utilization,Similarity-Utilization,0.889435
+ForzaIncentivante,25,2,52,CER_12_13_0,Similarity-Utilization,Similarity-Utilization,0.624173
+ForzaIncentivante,25,3,76,CER_6_19_0,Similarity-Utilization,Similarity-Utilization,0.596202
+ForzaIncentivante,25,4,100,CER_0_25_0,(pari),Tri-level EP = Pearson Key,0.21839
+AllineamentoVirtu,20,1,25,CER_15_5_0,Similarity-Utilization,Similarity-Utilization,0.999157
+AllineamentoVirtu,20,2,50,CER_10_10_0,Similarity-Utilization,Similarity-Utilization,0.800849
+AllineamentoVirtu,20,3,75,CER_5_15_0,Similarity-Utilization,Similarity-Utilization,0.70166
+AllineamentoVirtu,20,4,100,CER_0_20_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP,0.0886029
+AllineamentoVirtu,25,1,28,CER_18_7_0,Similarity-Utilization,Similarity-Utilization,0.929999
+AllineamentoVirtu,25,2,52,CER_12_13_0,Similarity-Utilization,Similarity-Utilization,0.731072
+AllineamentoVirtu,25,3,76,CER_6_19_0,Similarity-Utilization,Similarity-Utilization,0.70453
+AllineamentoVirtu,25,4,100,CER_0_25_0,Similarity-Utilization,Similarity-Utilization,0.100302
+AllineamentoVirtu_lordo,20,1,25,CER_15_5_0,(pari),Adaptive Sampling Shapley = Remuneration Model 1 = Cascading Tree = Variance Least Core,0.0936235
+AllineamentoVirtu_lordo,20,2,50,CER_10_10_0,(pari),Remuneration Model 1 = Adaptive Sampling Shapley = Cascading Tree = Variance Least Core,0.00340747
+AllineamentoVirtu_lordo,20,3,75,CER_5_15_0,(pari),Remuneration Model 1 = Cascading Tree = Adaptive Sampling Shapley = Variance Least Core,0.0241274
+AllineamentoVirtu_lordo,20,4,100,CER_0_20_0,(pari),Remuneration Model 1 = Adaptive Sampling Shapley = Variance Least Core = Cascading Tree,0.0326496
+AllineamentoVirtu_lordo,25,1,28,CER_18_7_0,(pari),Adaptive Sampling Shapley = Remuneration Model 1 = Cascading Tree = Variance Least Core,0.0828716
+AllineamentoVirtu_lordo,25,2,52,CER_12_13_0,(pari),Remuneration Model 1 = Cascading Tree = Adaptive Sampling Shapley = Variance Least Core,0.00969852
+AllineamentoVirtu_lordo,25,3,76,CER_6_19_0,(pari),Remuneration Model 1 = Cascading Tree = Adaptive Sampling Shapley,0.0165843
+AllineamentoVirtu_lordo,25,4,100,CER_0_25_0,(pari),Remuneration Model 1 = Adaptive Sampling Shapley = Variance Least Core = Cascading Tree,0.0394488
+VAN_min_EUR,20,1,25,CER_15_5_0,Equal Split,Equal Split,729.336
+VAN_min_EUR,20,2,50,CER_10_10_0,Equal Split,Equal Split,733.563
+VAN_min_EUR,20,3,75,CER_5_15_0,Equal Split,Equal Split,587.475
+VAN_min_EUR,20,4,100,CER_0_20_0,Equal Split,Equal Split,419.01
+VAN_min_EUR,25,1,28,CER_18_7_0,Equal Split,Equal Split,686.366
+VAN_min_EUR,25,2,52,CER_12_13_0,Equal Split,Equal Split,626.979
+VAN_min_EUR,25,3,76,CER_6_19_0,Equal Split,Equal Split,472.505
+VAN_min_EUR,25,4,100,CER_0_25_0,Equal Split,Equal Split,342.075

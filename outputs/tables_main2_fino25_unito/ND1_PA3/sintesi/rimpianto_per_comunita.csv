@@ -1,0 +1,1441 @@
+Scheda,Membri,Fascia,Penetrazione_pct,Metodo,Indicatore,Rimpianto,Rimpianto_EUR,Rimpianto_pct_vN
+CER_0_15_0,15,4,100,Variance Least Core,EI_orig,0.895882,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,EI_orig,0,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,EI_orig,0.975814,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,EI_orig,0.847768,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,EI_orig,0.638839,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,EI_orig,0.668074,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,EI_orig,0.990878,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,EI_orig,0.690952,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,EI_orig,0.846022,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,EI_orig,1,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,Gini,0.895882,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,Gini,0,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,Gini,0.975814,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,Gini,0.847768,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,Gini,0.638839,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,Gini,0.668074,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,Gini,0.990878,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,Gini,0.690952,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,Gini,0.846022,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,Gini,1,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,FairnessIndex,0.0523944,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,FairnessIndex,1,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,FairnessIndex,0.0888927,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,FairnessIndex,0.0229829,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,FairnessIndex,0.471139,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,FairnessIndex,0.274205,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,FairnessIndex,0.233727,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,FairnessIndex,0.331163,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,FairnessIndex,0.219652,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,Sigma,0.125209,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,Sigma,1,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,Sigma,0.129404,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,Sigma,0.0746355,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,Sigma,0.696609,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,Sigma,0.253844,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,Sigma,0.407571,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,Sigma,0.392598,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,Sigma,0.377237,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_0_15_0,15,4,100,Equal Split,EccessoMax_EUR,1,3216.04,63.9424
+CER_0_15_0,15,4,100,Proportional to Consumption,EccessoMax_EUR,0.00320179,10.3,0.20473
+CER_0_15_0,15,4,100,Remuneration Model 1,EccessoMax_EUR,0.0077226,24.84,0.493802
+CER_0_15_0,15,4,100,Cascading Tree,EccessoMax_EUR,0.306429,985.49,19.5938
+CER_0_15_0,15,4,100,Weighted Solidarity,EccessoMax_EUR,0.323139,1039.23,20.6623
+CER_0_15_0,15,4,100,Pearson Key,EccessoMax_EUR,0.062085,199.67,3.96986
+CER_0_15_0,15,4,100,Similarity-Utilization,EccessoMax_EUR,0.307081,987.59,19.6355
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,EccessoMax_EUR,0.0114537,36.84,0.732376
+CER_0_15_0,15,4,100,Tri-level EP,EccessoMax_EUR,0.0502335,161.55,3.21205
+CER_0_15_0,15,4,100,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,CoalizioniInstabili,0.785433,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,CoalizioniInstabili,0,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,CoalizioniInstabili,0.0368787,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,CoalizioniInstabili,1,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,CoalizioniInstabili,0.453273,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,CoalizioniInstabili,0.179197,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,CoalizioniInstabili,0.452016,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,CoalizioniInstabili,0.198558,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,CoalizioniInstabili,0.132847,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,ForzaIncentivante,0.500106,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,ForzaIncentivante,1,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,ForzaIncentivante,0.271605,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,ForzaIncentivante,0.487022,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,ForzaIncentivante,0.923481,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,ForzaIncentivante,0.44594,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,ForzaIncentivante,0,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,ForzaIncentivante,0.280615,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,ForzaIncentivante,0.407214,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,ForzaIncentivante,0.0145666,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,AllineamentoVirtu,0.347585,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,AllineamentoVirtu,1,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,AllineamentoVirtu,0.227416,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,AllineamentoVirtu,0.295556,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,AllineamentoVirtu,0.883221,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,AllineamentoVirtu,0.0876667,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,AllineamentoVirtu,0.0476447,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,AllineamentoVirtu,0.190338,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,AllineamentoVirtu,0.0613238,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,AllineamentoVirtu_lordo,0.182596,NaN,NaN
+CER_0_15_0,15,4,100,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,AllineamentoVirtu_lordo,0.341309,NaN,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,AllineamentoVirtu_lordo,0.134437,NaN,NaN
+CER_0_15_0,15,4,100,Cascading Tree,AllineamentoVirtu_lordo,0.9059,NaN,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,AllineamentoVirtu_lordo,0.0657659,NaN,NaN
+CER_0_15_0,15,4,100,Pearson Key,AllineamentoVirtu_lordo,0.094622,NaN,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,AllineamentoVirtu_lordo,0.0344941,NaN,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_0_15_0,15,4,100,Tri-level EP,AllineamentoVirtu_lordo,0.120921,NaN,NaN
+CER_0_15_0,15,4,100,Variance Least Core,VAN_min_EUR,0.967406,4332.41,NaN
+CER_0_15_0,15,4,100,Equal Split,VAN_min_EUR,0,0,NaN
+CER_0_15_0,15,4,100,Proportional to Consumption,VAN_min_EUR,0.999281,4475.16,NaN
+CER_0_15_0,15,4,100,Remuneration Model 1,VAN_min_EUR,0.906637,4060.26,NaN
+CER_0_15_0,15,4,100,Cascading Tree,VAN_min_EUR,0.651384,2917.14,NaN
+CER_0_15_0,15,4,100,Weighted Solidarity,VAN_min_EUR,0.879398,3938.28,NaN
+CER_0_15_0,15,4,100,Pearson Key,VAN_min_EUR,0.992821,4446.23,NaN
+CER_0_15_0,15,4,100,Similarity-Utilization,VAN_min_EUR,0.784258,3512.2,NaN
+CER_0_15_0,15,4,100,Adaptive Sampling Shapley,VAN_min_EUR,0.902961,4043.8,NaN
+CER_0_15_0,15,4,100,Tri-level EP,VAN_min_EUR,1,4478.38,NaN
+CER_0_18_0,18,4,100,Variance Least Core,EI_orig,0.911709,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,EI_orig,0,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,EI_orig,0.98031,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,EI_orig,0.848832,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,EI_orig,0.634502,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,EI_orig,0.668216,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,EI_orig,0.989128,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,EI_orig,0.673702,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,EI_orig,0.849712,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,EI_orig,1,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,Gini,0.911709,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,Gini,0,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,Gini,0.98031,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,Gini,0.848832,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,Gini,0.634502,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,Gini,0.668216,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,Gini,0.989128,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,Gini,0.673702,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,Gini,0.849712,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,Gini,1,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,FairnessIndex,0.033414,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,FairnessIndex,1,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,FairnessIndex,0.0602505,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,FairnessIndex,0.0209903,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,FairnessIndex,0.44708,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,FairnessIndex,0.281608,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,FairnessIndex,0.195391,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,FairnessIndex,0.303566,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,FairnessIndex,0.183027,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,Sigma,0.106865,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,Sigma,1,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,Sigma,0.0945384,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,Sigma,0.0756189,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,Sigma,0.678157,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,Sigma,0.256009,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,Sigma,0.361967,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,Sigma,0.373349,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,Sigma,0.332813,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_0_18_0,18,4,100,Equal Split,EccessoMax_EUR,1,3411.83,66.2979
+CER_0_18_0,18,4,100,Proportional to Consumption,EccessoMax_EUR,0.00270831,9.24,0.179555
+CER_0_18_0,18,4,100,Remuneration Model 1,EccessoMax_EUR,0.00970519,33.11,0.643433
+CER_0_18_0,18,4,100,Cascading Tree,EccessoMax_EUR,0.299897,1023.19,19.8825
+CER_0_18_0,18,4,100,Weighted Solidarity,EccessoMax_EUR,0.333262,1137.03,22.0946
+CER_0_18_0,18,4,100,Pearson Key,EccessoMax_EUR,0.0584588,199.45,3.87569
+CER_0_18_0,18,4,100,Similarity-Utilization,EccessoMax_EUR,0.323985,1105.38,21.4795
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,EccessoMax_EUR,0.0129477,44.18,0.858407
+CER_0_18_0,18,4,100,Tri-level EP,EccessoMax_EUR,0.0486629,166.03,3.22624
+CER_0_18_0,18,4,100,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,CoalizioniInstabili,0.753709,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,CoalizioniInstabili,0,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,CoalizioniInstabili,0.102046,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,CoalizioniInstabili,1,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,CoalizioniInstabili,0.468371,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,CoalizioniInstabili,0.166573,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,CoalizioniInstabili,0.46633,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,CoalizioniInstabili,0.260453,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,CoalizioniInstabili,0.107101,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,ForzaIncentivante,0.475391,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,ForzaIncentivante,1,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,ForzaIncentivante,0.25841,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,ForzaIncentivante,0.480142,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,ForzaIncentivante,0.909203,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,ForzaIncentivante,0.453802,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,ForzaIncentivante,0,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,ForzaIncentivante,0.309462,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,ForzaIncentivante,0.396802,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,ForzaIncentivante,0.0126097,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,AllineamentoVirtu,0.335996,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,AllineamentoVirtu,1,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,AllineamentoVirtu,0.220487,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,AllineamentoVirtu,0.290365,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,AllineamentoVirtu,0.860967,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,AllineamentoVirtu,0.0887192,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,AllineamentoVirtu,0.0478922,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,AllineamentoVirtu,0.184457,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,AllineamentoVirtu,0.0617321,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,AllineamentoVirtu_lordo,0.188816,NaN,NaN
+CER_0_18_0,18,4,100,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,AllineamentoVirtu_lordo,0.311685,NaN,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,AllineamentoVirtu_lordo,0.124105,NaN,NaN
+CER_0_18_0,18,4,100,Cascading Tree,AllineamentoVirtu_lordo,0.832074,NaN,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,AllineamentoVirtu_lordo,0.077085,NaN,NaN
+CER_0_18_0,18,4,100,Pearson Key,AllineamentoVirtu_lordo,0.0968794,NaN,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,AllineamentoVirtu_lordo,0.0484345,NaN,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_0_18_0,18,4,100,Tri-level EP,AllineamentoVirtu_lordo,0.12101,NaN,NaN
+CER_0_18_0,18,4,100,Variance Least Core,VAN_min_EUR,0.968232,3685.93,NaN
+CER_0_18_0,18,4,100,Equal Split,VAN_min_EUR,0,0,NaN
+CER_0_18_0,18,4,100,Proportional to Consumption,VAN_min_EUR,0.998693,3801.9,NaN
+CER_0_18_0,18,4,100,Remuneration Model 1,VAN_min_EUR,0.894542,3405.41,NaN
+CER_0_18_0,18,4,100,Cascading Tree,VAN_min_EUR,0.643044,2447.98,NaN
+CER_0_18_0,18,4,100,Weighted Solidarity,VAN_min_EUR,0.873359,3324.77,NaN
+CER_0_18_0,18,4,100,Pearson Key,VAN_min_EUR,0.991792,3775.62,NaN
+CER_0_18_0,18,4,100,Similarity-Utilization,VAN_min_EUR,0.783865,2984.07,NaN
+CER_0_18_0,18,4,100,Adaptive Sampling Shapley,VAN_min_EUR,0.892733,3398.52,NaN
+CER_0_18_0,18,4,100,Tri-level EP,VAN_min_EUR,1,3806.87,NaN
+CER_0_20_0,20,4,100,Variance Least Core,EI_orig,0.91783,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,EI_orig,0,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,EI_orig,0.982718,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,EI_orig,0.848324,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,EI_orig,0.63155,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,EI_orig,0.665843,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,EI_orig,0.98817,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,EI_orig,0.657288,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,EI_orig,0.851559,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,EI_orig,1,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,Gini,0.91783,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,Gini,0,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,Gini,0.982718,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,Gini,0.848324,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,Gini,0.63155,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,Gini,0.665843,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,Gini,0.98817,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,Gini,0.657288,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,Gini,0.851559,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,Gini,1,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,FairnessIndex,0.0380812,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,FairnessIndex,1,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,FairnessIndex,0.0621371,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,FairnessIndex,0.0324895,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,FairnessIndex,0.442536,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,FairnessIndex,0.301759,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,FairnessIndex,0.189339,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,FairnessIndex,0.325073,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,FairnessIndex,0.178433,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,Sigma,0.113122,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,Sigma,1,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,Sigma,0.0950836,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,Sigma,0.0916211,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,Sigma,0.674763,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,Sigma,0.277631,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,Sigma,0.351867,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,Sigma,0.377429,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,Sigma,0.324419,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,ForzaIncentivante,0.463987,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,ForzaIncentivante,1,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,ForzaIncentivante,0.251314,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,ForzaIncentivante,0.477818,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,ForzaIncentivante,0.903867,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,ForzaIncentivante,0.464501,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,ForzaIncentivante,0,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,ForzaIncentivante,0.330057,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,ForzaIncentivante,0.384278,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,ForzaIncentivante,0.0113046,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,AllineamentoVirtu,0.331572,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,AllineamentoVirtu,1,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,AllineamentoVirtu,0.217021,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,AllineamentoVirtu,0.289204,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,AllineamentoVirtu,0.852438,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,AllineamentoVirtu,0.0897927,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,AllineamentoVirtu,0.0477101,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,AllineamentoVirtu,0.180117,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,AllineamentoVirtu,0.0616158,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,AllineamentoVirtu_lordo,0.179705,NaN,NaN
+CER_0_20_0,20,4,100,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,AllineamentoVirtu_lordo,0.286768,NaN,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,AllineamentoVirtu_lordo,0.104446,NaN,NaN
+CER_0_20_0,20,4,100,Cascading Tree,AllineamentoVirtu_lordo,0.804998,NaN,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,AllineamentoVirtu_lordo,0.0585987,NaN,NaN
+CER_0_20_0,20,4,100,Pearson Key,AllineamentoVirtu_lordo,0.077409,NaN,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,AllineamentoVirtu_lordo,0.0338738,NaN,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_0_20_0,20,4,100,Tri-level EP,AllineamentoVirtu_lordo,0.101587,NaN,NaN
+CER_0_20_0,20,4,100,Variance Least Core,VAN_min_EUR,0.966607,3351.31,NaN
+CER_0_20_0,20,4,100,Equal Split,VAN_min_EUR,0,0,NaN
+CER_0_20_0,20,4,100,Proportional to Consumption,VAN_min_EUR,0.99837,3461.44,NaN
+CER_0_20_0,20,4,100,Remuneration Model 1,VAN_min_EUR,0.886983,3075.25,NaN
+CER_0_20_0,20,4,100,Cascading Tree,VAN_min_EUR,0.63762,2210.69,NaN
+CER_0_20_0,20,4,100,Weighted Solidarity,VAN_min_EUR,0.868462,3011.03,NaN
+CER_0_20_0,20,4,100,Pearson Key,VAN_min_EUR,0.99111,3436.26,NaN
+CER_0_20_0,20,4,100,Similarity-Utilization,VAN_min_EUR,0.781394,2709.16,NaN
+CER_0_20_0,20,4,100,Adaptive Sampling Shapley,VAN_min_EUR,0.886999,3075.31,NaN
+CER_0_20_0,20,4,100,Tri-level EP,VAN_min_EUR,1,3467.09,NaN
+CER_0_25_0,25,4,100,Variance Least Core,EI_orig,0.930154,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,EI_orig,0,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,EI_orig,0.984195,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,EI_orig,0.83999,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,EI_orig,0.619458,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,EI_orig,0.656004,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,EI_orig,0.986096,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,EI_orig,0.664825,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,EI_orig,0.849966,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,EI_orig,1,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,Gini,0.930154,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,Gini,0,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,Gini,0.984195,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,Gini,0.83999,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,Gini,0.619458,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,Gini,0.656004,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,Gini,0.986096,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,Gini,0.664825,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,Gini,0.849966,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,Gini,1,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,FairnessIndex,0.0253468,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,FairnessIndex,1,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,FairnessIndex,0.0323783,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,FairnessIndex,0.0395323,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,FairnessIndex,0.425661,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,FairnessIndex,0.315343,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,FairnessIndex,0.15044,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,FairnessIndex,0.338509,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,FairnessIndex,0.142055,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,Sigma,0.103165,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,Sigma,1,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,Sigma,0.059318,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,Sigma,0.105327,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,Sigma,0.661448,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,Sigma,0.287852,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,Sigma,0.300621,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,Sigma,0.368882,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,Sigma,0.275568,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,ForzaIncentivante,0.425806,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,ForzaIncentivante,1,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,ForzaIncentivante,0.231058,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,ForzaIncentivante,0.466432,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,ForzaIncentivante,0.880963,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,ForzaIncentivante,0.471722,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,ForzaIncentivante,0,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,ForzaIncentivante,0.348843,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,ForzaIncentivante,0.364714,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,ForzaIncentivante,0.00787878,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,AllineamentoVirtu,0.312804,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,AllineamentoVirtu,1,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,AllineamentoVirtu,0.206012,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,AllineamentoVirtu,0.276993,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,AllineamentoVirtu,0.815407,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,AllineamentoVirtu,0.0921722,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,AllineamentoVirtu,0.0516038,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,AllineamentoVirtu,0.170452,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,AllineamentoVirtu,0.0650018,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,AllineamentoVirtu_lordo,0.161987,NaN,NaN
+CER_0_25_0,25,4,100,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,AllineamentoVirtu_lordo,0.230754,NaN,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,AllineamentoVirtu_lordo,0.0732969,NaN,NaN
+CER_0_25_0,25,4,100,Cascading Tree,AllineamentoVirtu_lordo,0.688542,NaN,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,AllineamentoVirtu_lordo,0.0740763,NaN,NaN
+CER_0_25_0,25,4,100,Pearson Key,AllineamentoVirtu_lordo,0.0682847,NaN,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,AllineamentoVirtu_lordo,0.00322505,NaN,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_0_25_0,25,4,100,Tri-level EP,AllineamentoVirtu_lordo,0.0886374,NaN,NaN
+CER_0_25_0,25,4,100,Variance Least Core,VAN_min_EUR,0.968772,2753.65,NaN
+CER_0_25_0,25,4,100,Equal Split,VAN_min_EUR,0,0,NaN
+CER_0_25_0,25,4,100,Proportional to Consumption,VAN_min_EUR,0.997493,2835.28,NaN
+CER_0_25_0,25,4,100,Remuneration Model 1,VAN_min_EUR,0.871154,2476.18,NaN
+CER_0_25_0,25,4,100,Cascading Tree,VAN_min_EUR,0.625233,1777.17,NaN
+CER_0_25_0,25,4,100,Weighted Solidarity,VAN_min_EUR,0.869951,2472.76,NaN
+CER_0_25_0,25,4,100,Pearson Key,VAN_min_EUR,0.989839,2813.53,NaN
+CER_0_25_0,25,4,100,Similarity-Utilization,VAN_min_EUR,0.764419,2172.79,NaN
+CER_0_25_0,25,4,100,Adaptive Sampling Shapley,VAN_min_EUR,0.881804,2506.45,NaN
+CER_0_25_0,25,4,100,Tri-level EP,VAN_min_EUR,1,2842.41,NaN
+CER_10_10_0,20,2,50,Variance Least Core,EI_orig,0.885694,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,EI_orig,0,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,EI_orig,0.907196,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,EI_orig,0.738201,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,EI_orig,0.653227,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,EI_orig,0.948686,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,EI_orig,0.496575,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,EI_orig,0.849188,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,EI_orig,0.973768,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,Gini,0.885694,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,Gini,0,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,Gini,1,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,Gini,0.907196,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,Gini,0.738201,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,Gini,0.653227,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,Gini,0.948686,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,Gini,0.496575,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,Gini,0.849188,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,Gini,0.973768,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,FairnessIndex,0.0208468,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,FairnessIndex,0.86912,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,FairnessIndex,0.0725839,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,FairnessIndex,0.354704,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,FairnessIndex,0.284402,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,FairnessIndex,0.260057,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,FairnessIndex,0.00415543,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,FairnessIndex,0.232063,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,Sigma,0.083628,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,Sigma,0.911775,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,Sigma,0.13548,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,Sigma,0.0245795,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,Sigma,0.620517,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,Sigma,0.277708,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,Sigma,0.387661,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,Sigma,0.360209,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,ForzaIncentivante,0.74979,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,ForzaIncentivante,0.558513,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,ForzaIncentivante,0.571279,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,ForzaIncentivante,0.772458,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,ForzaIncentivante,0.523526,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,ForzaIncentivante,0.285831,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,ForzaIncentivante,0.684184,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,ForzaIncentivante,0.317081,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,AllineamentoVirtu,0.876015,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,AllineamentoVirtu,0.771035,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,AllineamentoVirtu,0.776287,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,AllineamentoVirtu,0.879974,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,AllineamentoVirtu,0.747223,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,AllineamentoVirtu,0.662394,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,AllineamentoVirtu,0.840637,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,AllineamentoVirtu,0.676286,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,AllineamentoVirtu_lordo,0.0897557,NaN,NaN
+CER_10_10_0,20,2,50,Equal Split,AllineamentoVirtu_lordo,0.807148,NaN,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,AllineamentoVirtu_lordo,0.288304,NaN,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,AllineamentoVirtu_lordo,0.126306,NaN,NaN
+CER_10_10_0,20,2,50,Cascading Tree,AllineamentoVirtu_lordo,0.639895,NaN,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,AllineamentoVirtu_lordo,0.105519,NaN,NaN
+CER_10_10_0,20,2,50,Pearson Key,AllineamentoVirtu_lordo,0.13408,NaN,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_10_10_0,20,2,50,Tri-level EP,AllineamentoVirtu_lordo,0.149317,NaN,NaN
+CER_10_10_0,20,2,50,Variance Least Core,VAN_min_EUR,0.917429,3518.62,NaN
+CER_10_10_0,20,2,50,Equal Split,VAN_min_EUR,0,0,NaN
+CER_10_10_0,20,2,50,Proportional to Consumption,VAN_min_EUR,1,3835.31,NaN
+CER_10_10_0,20,2,50,Remuneration Model 1,VAN_min_EUR,0.869576,3335.09,NaN
+CER_10_10_0,20,2,50,Cascading Tree,VAN_min_EUR,0.641686,2461.06,NaN
+CER_10_10_0,20,2,50,Weighted Solidarity,VAN_min_EUR,0.848852,3255.61,NaN
+CER_10_10_0,20,2,50,Pearson Key,VAN_min_EUR,0.993866,3811.78,NaN
+CER_10_10_0,20,2,50,Similarity-Utilization,VAN_min_EUR,0.879623,3373.62,NaN
+CER_10_10_0,20,2,50,Adaptive Sampling Shapley,VAN_min_EUR,0.82795,3175.44,NaN
+CER_10_10_0,20,2,50,Tri-level EP,VAN_min_EUR,0.999864,3834.78,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,EI_orig,0.930387,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,EI_orig,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,EI_orig,0.957904,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,EI_orig,0.800752,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,EI_orig,0.647129,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,EI_orig,0.912009,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,EI_orig,0.264666,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,EI_orig,0.913693,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,EI_orig,0.946473,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,Gini,0.930387,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,Gini,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,Gini,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,Gini,0.957904,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,Gini,0.800752,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,Gini,0.647129,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,Gini,0.912009,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,Gini,0.264666,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,Gini,0.913693,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,Gini,0.946473,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,FairnessIndex,0.0341107,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,FairnessIndex,0.788126,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,FairnessIndex,0.112657,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,FairnessIndex,0.350396,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,FairnessIndex,0.288879,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,FairnessIndex,0.321801,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,FairnessIndex,0.0127468,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,FairnessIndex,0.291371,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,Sigma,0.0641572,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,Sigma,0.857992,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,Sigma,0.186413,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,Sigma,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,Sigma,0.605389,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,Sigma,0.301081,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,Sigma,0.457478,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,Sigma,0.00153535,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,Sigma,0.430118,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_11_4_0,15,1,26.67,Equal Split,EccessoMax_EUR,0.767534,3070.05,54.1522
+CER_11_4_0,15,1,26.67,Proportional to Consumption,EccessoMax_EUR,0.0971836,388.72,6.85664
+CER_11_4_0,15,1,26.67,Remuneration Model 1,EccessoMax_EUR,0.0239269,95.71,1.68813
+CER_11_4_0,15,1,26.67,Cascading Tree,EccessoMax_EUR,0.198468,793.85,14.0026
+CER_11_4_0,15,1,26.67,Weighted Solidarity,EccessoMax_EUR,0.309538,1238.12,21.839
+CER_11_4_0,15,1,26.67,Pearson Key,EccessoMax_EUR,0.0749593,299.83,5.28864
+CER_11_4_0,15,1,26.67,Similarity-Utilization,EccessoMax_EUR,1,3999.89,70.5535
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,EccessoMax_EUR,0.0183628,73.45,1.29556
+CER_11_4_0,15,1,26.67,Tri-level EP,EccessoMax_EUR,0.0448223,179.28,3.16237
+CER_11_4_0,15,1,26.67,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,CoalizioniInstabili,0.97598,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,CoalizioniInstabili,0.665512,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,CoalizioniInstabili,0.00502737,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,CoalizioniInstabili,0.903921,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,CoalizioniInstabili,0.568316,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,CoalizioniInstabili,0.483298,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,CoalizioniInstabili,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,CoalizioniInstabili,0.00391018,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,CoalizioniInstabili,0.457491,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,ForzaIncentivante,0.881442,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,ForzaIncentivante,0.265668,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,ForzaIncentivante,0.667968,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,ForzaIncentivante,0.862886,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,ForzaIncentivante,0.415043,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,ForzaIncentivante,0.354875,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,ForzaIncentivante,0.808892,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,ForzaIncentivante,0.39222,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,AllineamentoVirtu,0.968541,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,AllineamentoVirtu,0.596086,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,AllineamentoVirtu,0.782578,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,AllineamentoVirtu,0.931378,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,AllineamentoVirtu,0.712056,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,AllineamentoVirtu,0.636175,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,AllineamentoVirtu,0.929706,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,AllineamentoVirtu,0.652097,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,AllineamentoVirtu_lordo,0.0588189,NaN,NaN
+CER_11_4_0,15,1,26.67,Equal Split,AllineamentoVirtu_lordo,0.498917,NaN,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,AllineamentoVirtu_lordo,0.232896,NaN,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,AllineamentoVirtu_lordo,0.114948,NaN,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,AllineamentoVirtu_lordo,0.467106,NaN,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,AllineamentoVirtu_lordo,0.0715891,NaN,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,AllineamentoVirtu_lordo,0.108015,NaN,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,AllineamentoVirtu_lordo,0.11887,NaN,NaN
+CER_11_4_0,15,1,26.67,Variance Least Core,VAN_min_EUR,1,5422.2,NaN
+CER_11_4_0,15,1,26.67,Equal Split,VAN_min_EUR,0.140818,763.54,NaN
+CER_11_4_0,15,1,26.67,Proportional to Consumption,VAN_min_EUR,0.960697,5209.09,NaN
+CER_11_4_0,15,1,26.67,Remuneration Model 1,VAN_min_EUR,0.983909,5334.95,NaN
+CER_11_4_0,15,1,26.67,Cascading Tree,VAN_min_EUR,0.784998,4256.42,NaN
+CER_11_4_0,15,1,26.67,Weighted Solidarity,VAN_min_EUR,0.862618,4677.29,NaN
+CER_11_4_0,15,1,26.67,Pearson Key,VAN_min_EUR,0.883638,4791.26,NaN
+CER_11_4_0,15,1,26.67,Similarity-Utilization,VAN_min_EUR,0,0,NaN
+CER_11_4_0,15,1,26.67,Adaptive Sampling Shapley,VAN_min_EUR,0.963324,5223.33,NaN
+CER_11_4_0,15,1,26.67,Tri-level EP,VAN_min_EUR,0.908874,4928.09,NaN
+CER_12_13_0,25,2,52,Variance Least Core,EI_orig,0.887411,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,EI_orig,0,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,EI_orig,0.898043,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,EI_orig,0.730578,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,EI_orig,0.631923,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,EI_orig,0.946307,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,EI_orig,0.52689,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,EI_orig,0.83738,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,EI_orig,0.972095,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,Gini,0.887411,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,Gini,0,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,Gini,1,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,Gini,0.898043,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,Gini,0.730578,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,Gini,0.631923,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,Gini,0.946307,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,Gini,0.52689,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,Gini,0.83738,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,Gini,0.972095,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,FairnessIndex,0.0018512,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,FairnessIndex,0.894185,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,FairnessIndex,0.0549511,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,FairnessIndex,0.000816299,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,FairnessIndex,0.341475,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,FairnessIndex,0.307438,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,FairnessIndex,0.241695,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,FairnessIndex,0.212879,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,Sigma,0.0675707,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,Sigma,0.934831,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,Sigma,0.11218,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,Sigma,0.0288387,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,Sigma,0.621809,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,Sigma,0.28535,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,Sigma,0.356468,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,Sigma,0.3285,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,ForzaIncentivante,0.709082,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,ForzaIncentivante,0.598378,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,ForzaIncentivante,0.534224,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,ForzaIncentivante,0.751948,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,ForzaIncentivante,0.536873,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,ForzaIncentivante,0.253635,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,ForzaIncentivante,0.650767,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,ForzaIncentivante,0.28465,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,AllineamentoVirtu,0.861546,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,AllineamentoVirtu,0.805371,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,AllineamentoVirtu,0.780705,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,AllineamentoVirtu,0.878482,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,AllineamentoVirtu,0.765309,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,AllineamentoVirtu,0.674818,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,AllineamentoVirtu,0.832681,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,AllineamentoVirtu,0.688757,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,AllineamentoVirtu_lordo,0.08815,NaN,NaN
+CER_12_13_0,25,2,52,Equal Split,AllineamentoVirtu_lordo,0.80273,NaN,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,AllineamentoVirtu_lordo,0.255735,NaN,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,AllineamentoVirtu_lordo,0.104673,NaN,NaN
+CER_12_13_0,25,2,52,Cascading Tree,AllineamentoVirtu_lordo,0.558259,NaN,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,AllineamentoVirtu_lordo,0.125514,NaN,NaN
+CER_12_13_0,25,2,52,Pearson Key,AllineamentoVirtu_lordo,0.138138,NaN,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_12_13_0,25,2,52,Tri-level EP,AllineamentoVirtu_lordo,0.149782,NaN,NaN
+CER_12_13_0,25,2,52,Variance Least Core,VAN_min_EUR,0.906597,2915.35,NaN
+CER_12_13_0,25,2,52,Equal Split,VAN_min_EUR,0,0,NaN
+CER_12_13_0,25,2,52,Proportional to Consumption,VAN_min_EUR,0.999528,3214.19,NaN
+CER_12_13_0,25,2,52,Remuneration Model 1,VAN_min_EUR,0.848181,2727.5,NaN
+CER_12_13_0,25,2,52,Cascading Tree,VAN_min_EUR,0.632369,2033.51,NaN
+CER_12_13_0,25,2,52,Weighted Solidarity,VAN_min_EUR,0.853351,2744.12,NaN
+CER_12_13_0,25,2,52,Pearson Key,VAN_min_EUR,0.993328,3194.25,NaN
+CER_12_13_0,25,2,52,Similarity-Utilization,VAN_min_EUR,0.877669,2822.32,NaN
+CER_12_13_0,25,2,52,Adaptive Sampling Shapley,VAN_min_EUR,0.805935,2591.65,NaN
+CER_12_13_0,25,2,52,Tri-level EP,VAN_min_EUR,1,3215.7,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,EI_orig,0.914889,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,EI_orig,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,EI_orig,0.96404,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,EI_orig,0.808222,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,EI_orig,0.638748,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,EI_orig,0.898342,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,EI_orig,0.293709,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,EI_orig,0.907231,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,EI_orig,0.936493,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,Gini,0.914889,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,Gini,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,Gini,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,Gini,0.96404,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,Gini,0.808222,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,Gini,0.638748,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,Gini,0.898342,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,Gini,0.293709,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,Gini,0.907231,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,Gini,0.936493,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,FairnessIndex,0.0289135,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,FairnessIndex,0.813404,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,FairnessIndex,0.101417,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,FairnessIndex,0.340607,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,FairnessIndex,0.317106,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,FairnessIndex,0.314322,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,FairnessIndex,0.00921899,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,FairnessIndex,0.282876,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,Sigma,0.0724686,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,Sigma,0.879087,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,Sigma,0.179622,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,Sigma,0.00557092,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,Sigma,0.608099,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,Sigma,0.325462,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,Sigma,0.446533,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,Sigma,0.418917,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_13_5_0,18,1,27.78,Equal Split,EccessoMax_EUR,0.801068,3251.55,55.1395
+CER_13_5_0,18,1,27.78,Proportional to Consumption,EccessoMax_EUR,0.104953,426.01,7.22417
+CER_13_5_0,18,1,27.78,Remuneration Model 1,EccessoMax_EUR,0.0316729,128.56,2.18013
+CER_13_5_0,18,1,27.78,Cascading Tree,EccessoMax_EUR,0.197732,802.6,13.6104
+CER_13_5_0,18,1,27.78,Weighted Solidarity,EccessoMax_EUR,0.345973,1404.31,23.8141
+CER_13_5_0,18,1,27.78,Pearson Key,EccessoMax_EUR,0.0758388,307.83,5.22017
+CER_13_5_0,18,1,27.78,Similarity-Utilization,EccessoMax_EUR,1,4059.02,68.8325
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,EccessoMax_EUR,0.0196624,79.81,1.35341
+CER_13_5_0,18,1,27.78,Tri-level EP,EccessoMax_EUR,0.0445031,180.64,3.06326
+CER_13_5_0,18,1,27.78,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,CoalizioniInstabili,0.98132,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,CoalizioniInstabili,0.680053,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,CoalizioniInstabili,0.0113842,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,CoalizioniInstabili,0.89379,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,CoalizioniInstabili,0.601162,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,CoalizioniInstabili,0.49491,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,CoalizioniInstabili,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,CoalizioniInstabili,0.00450886,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,CoalizioniInstabili,0.44352,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,ForzaIncentivante,0.844876,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,ForzaIncentivante,0.291286,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,ForzaIncentivante,0.655055,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,ForzaIncentivante,0.853942,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,ForzaIncentivante,0.436929,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,ForzaIncentivante,0.345726,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,ForzaIncentivante,0.794712,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,ForzaIncentivante,0.383973,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,AllineamentoVirtu,0.95836,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,AllineamentoVirtu,0.633736,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,AllineamentoVirtu,0.793659,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,AllineamentoVirtu,0.931158,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,AllineamentoVirtu,0.74564,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,AllineamentoVirtu,0.657377,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,AllineamentoVirtu,0.928048,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,AllineamentoVirtu,0.673191,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,AllineamentoVirtu_lordo,0.0405022,NaN,NaN
+CER_13_5_0,18,1,27.78,Equal Split,AllineamentoVirtu_lordo,0.622031,NaN,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,AllineamentoVirtu_lordo,0.250262,NaN,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,AllineamentoVirtu_lordo,0.114958,NaN,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,AllineamentoVirtu_lordo,0.517741,NaN,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,AllineamentoVirtu_lordo,0.0865447,NaN,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,AllineamentoVirtu_lordo,0.120801,NaN,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,AllineamentoVirtu_lordo,0.132351,NaN,NaN
+CER_13_5_0,18,1,27.78,Variance Least Core,VAN_min_EUR,0.954596,3817.95,NaN
+CER_13_5_0,18,1,27.78,Equal Split,VAN_min_EUR,0,0,NaN
+CER_13_5_0,18,1,27.78,Proportional to Consumption,VAN_min_EUR,1,3999.55,NaN
+CER_13_5_0,18,1,27.78,Remuneration Model 1,VAN_min_EUR,0.938489,3753.53,NaN
+CER_13_5_0,18,1,27.78,Cascading Tree,VAN_min_EUR,0.716063,2863.93,NaN
+CER_13_5_0,18,1,27.78,Weighted Solidarity,VAN_min_EUR,0.804751,3218.64,NaN
+CER_13_5_0,18,1,27.78,Pearson Key,VAN_min_EUR,0.97236,3889,NaN
+CER_13_5_0,18,1,27.78,Similarity-Utilization,VAN_min_EUR,0.898033,3591.73,NaN
+CER_13_5_0,18,1,27.78,Adaptive Sampling Shapley,VAN_min_EUR,0.904631,3618.11,NaN
+CER_13_5_0,18,1,27.78,Tri-level EP,VAN_min_EUR,0.99459,3977.91,NaN
+CER_15_5_0,20,1,25,Variance Least Core,EI_orig,0.925259,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,EI_orig,0,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,EI_orig,0.974869,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,EI_orig,0.819282,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,EI_orig,0.63313,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,EI_orig,0.888496,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,EI_orig,0.273565,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,EI_orig,0.914982,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,EI_orig,0.929071,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,Gini,0.925259,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,Gini,0,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,Gini,1,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,Gini,0.974869,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,Gini,0.819282,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,Gini,0.63313,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,Gini,0.888496,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,Gini,0.273565,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,Gini,0.914982,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,Gini,0.929071,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,FairnessIndex,0.0251375,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,FairnessIndex,0.821682,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,FairnessIndex,0.100782,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,FairnessIndex,0.332713,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,FairnessIndex,0.338923,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,FairnessIndex,0.319902,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,FairnessIndex,0.0124909,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,FairnessIndex,0.287122,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,Sigma,0.0650069,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,Sigma,0.887548,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,Sigma,0.179165,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,Sigma,0.00287219,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,Sigma,0.607508,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,Sigma,0.345717,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,Sigma,0.446683,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,Sigma,0.418702,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,ForzaIncentivante,0.839526,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,ForzaIncentivante,0.26637,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,ForzaIncentivante,0.652517,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,ForzaIncentivante,0.856548,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,ForzaIncentivante,0.424027,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,ForzaIncentivante,0.340595,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,ForzaIncentivante,0.79149,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,ForzaIncentivante,0.380553,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,AllineamentoVirtu,0.962546,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,AllineamentoVirtu,0.631583,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,AllineamentoVirtu,0.799401,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,AllineamentoVirtu,0.937502,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,AllineamentoVirtu,0.754526,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,AllineamentoVirtu,0.663896,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,AllineamentoVirtu,0.93448,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,AllineamentoVirtu,0.680153,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,AllineamentoVirtu_lordo,0.03941,NaN,NaN
+CER_15_5_0,20,1,25,Equal Split,AllineamentoVirtu_lordo,0.619385,NaN,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,AllineamentoVirtu_lordo,0.245097,NaN,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,AllineamentoVirtu_lordo,0.115791,NaN,NaN
+CER_15_5_0,20,1,25,Cascading Tree,AllineamentoVirtu_lordo,0.493958,NaN,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,AllineamentoVirtu_lordo,0.105749,NaN,NaN
+CER_15_5_0,20,1,25,Pearson Key,AllineamentoVirtu_lordo,0.127812,NaN,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_15_5_0,20,1,25,Tri-level EP,AllineamentoVirtu_lordo,0.138222,NaN,NaN
+CER_15_5_0,20,1,25,Variance Least Core,VAN_min_EUR,0.948159,3481.31,NaN
+CER_15_5_0,20,1,25,Equal Split,VAN_min_EUR,0,0,NaN
+CER_15_5_0,20,1,25,Proportional to Consumption,VAN_min_EUR,1,3671.65,NaN
+CER_15_5_0,20,1,25,Remuneration Model 1,VAN_min_EUR,0.937053,3440.53,NaN
+CER_15_5_0,20,1,25,Cascading Tree,VAN_min_EUR,0.725628,2664.25,NaN
+CER_15_5_0,20,1,25,Weighted Solidarity,VAN_min_EUR,0.793439,2913.23,NaN
+CER_15_5_0,20,1,25,Pearson Key,VAN_min_EUR,0.973284,3573.56,NaN
+CER_15_5_0,20,1,25,Similarity-Utilization,VAN_min_EUR,0.908573,3335.96,NaN
+CER_15_5_0,20,1,25,Adaptive Sampling Shapley,VAN_min_EUR,0.901864,3311.33,NaN
+CER_15_5_0,20,1,25,Tri-level EP,VAN_min_EUR,0.995427,3654.86,NaN
+CER_18_7_0,25,1,28,Variance Least Core,EI_orig,0.908634,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,EI_orig,0,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,EI_orig,0.965219,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,EI_orig,0.807421,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,EI_orig,0.624756,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,EI_orig,0.891428,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,EI_orig,0.339065,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,EI_orig,0.89249,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,EI_orig,0.931182,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,Gini,0.908634,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,Gini,0,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,Gini,1,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,Gini,0.965219,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,Gini,0.807421,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,Gini,0.624756,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,Gini,0.891428,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,Gini,0.339065,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,Gini,0.89249,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,Gini,0.931182,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,FairnessIndex,0.0215542,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,FairnessIndex,0.857755,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,FairnessIndex,0.0876921,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,FairnessIndex,0.326556,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,FairnessIndex,0.357194,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,FairnessIndex,0.307115,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,FairnessIndex,0.0156901,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,FairnessIndex,0.272702,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,Sigma,0.0636439,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,Sigma,0.913075,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,Sigma,0.156874,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,Sigma,0,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,Sigma,0.609814,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,Sigma,0.341863,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,Sigma,0.419941,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,Sigma,0.00239158,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,Sigma,0.391077,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,ForzaIncentivante,0.788875,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,ForzaIncentivante,0.328834,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,ForzaIncentivante,0.613552,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,ForzaIncentivante,0.826638,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,ForzaIncentivante,0.432891,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,ForzaIncentivante,0.303396,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,ForzaIncentivante,0.758743,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,ForzaIncentivante,0.343529,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,AllineamentoVirtu,0.936728,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,AllineamentoVirtu,0.692204,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,AllineamentoVirtu,0.804551,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,AllineamentoVirtu,0.926446,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,AllineamentoVirtu,0.765364,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,AllineamentoVirtu,0.682011,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,AllineamentoVirtu,0.920184,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,AllineamentoVirtu,0.697936,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,AllineamentoVirtu_lordo,0.0389801,NaN,NaN
+CER_18_7_0,25,1,28,Equal Split,AllineamentoVirtu_lordo,0.733644,NaN,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,AllineamentoVirtu_lordo,0.255801,NaN,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,AllineamentoVirtu_lordo,0.112905,NaN,NaN
+CER_18_7_0,25,1,28,Cascading Tree,AllineamentoVirtu_lordo,0.504643,NaN,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,AllineamentoVirtu_lordo,0.14358,NaN,NaN
+CER_18_7_0,25,1,28,Pearson Key,AllineamentoVirtu_lordo,0.156599,NaN,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_18_7_0,25,1,28,Tri-level EP,AllineamentoVirtu_lordo,0.165194,NaN,NaN
+CER_18_7_0,25,1,28,Variance Least Core,VAN_min_EUR,0.889317,2913.51,NaN
+CER_18_7_0,25,1,28,Equal Split,VAN_min_EUR,0,0,NaN
+CER_18_7_0,25,1,28,Proportional to Consumption,VAN_min_EUR,0.996431,3264.43,NaN
+CER_18_7_0,25,1,28,Remuneration Model 1,VAN_min_EUR,0.86246,2825.53,NaN
+CER_18_7_0,25,1,28,Cascading Tree,VAN_min_EUR,0.653031,2139.41,NaN
+CER_18_7_0,25,1,28,Weighted Solidarity,VAN_min_EUR,0.719662,2357.7,NaN
+CER_18_7_0,25,1,28,Pearson Key,VAN_min_EUR,0.992001,3249.92,NaN
+CER_18_7_0,25,1,28,Similarity-Utilization,VAN_min_EUR,0.898568,2943.82,NaN
+CER_18_7_0,25,1,28,Adaptive Sampling Shapley,VAN_min_EUR,0.826126,2706.49,NaN
+CER_18_7_0,25,1,28,Tri-level EP,VAN_min_EUR,1,3276.12,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,EI_orig,0.877069,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,EI_orig,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,EI_orig,0.991987,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,EI_orig,0.874294,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,EI_orig,0.68917,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,EI_orig,0.658854,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,EI_orig,0.985433,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,EI_orig,0.659128,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,EI_orig,0.845509,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,EI_orig,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,Gini,0.877069,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,Gini,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,Gini,0.991987,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,Gini,0.874294,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,Gini,0.68917,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,Gini,0.658854,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,Gini,0.985433,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,Gini,0.659128,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,Gini,0.845509,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,Gini,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,FairnessIndex,0.0396359,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,FairnessIndex,0.950222,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,FairnessIndex,0.0924974,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,FairnessIndex,0.00788442,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,FairnessIndex,0.431617,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,FairnessIndex,0.264247,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,FairnessIndex,0.270111,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,FairnessIndex,0.247251,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,Sigma,0.108291,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,Sigma,0.920351,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,Sigma,0.141368,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,Sigma,0.0436992,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,Sigma,0.645448,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,Sigma,0.241435,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,Sigma,0.402794,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,Sigma,0.374179,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_4_11_0,15,3,73.33,Equal Split,EccessoMax_EUR,0.916193,3140.98,59.302
+CER_4_11_0,15,3,73.33,Proportional to Consumption,EccessoMax_EUR,0.0484614,166.14,3.13674
+CER_4_11_0,15,3,73.33,Remuneration Model 1,EccessoMax_EUR,0.0191967,65.81,1.24254
+CER_4_11_0,15,3,73.33,Cascading Tree,EccessoMax_EUR,0.262575,900.18,16.9956
+CER_4_11_0,15,3,73.33,Weighted Solidarity,EccessoMax_EUR,0.320043,1097.2,20.7153
+CER_4_11_0,15,3,73.33,Pearson Key,EccessoMax_EUR,0.0692304,237.34,4.48105
+CER_4_11_0,15,3,73.33,Similarity-Utilization,EccessoMax_EUR,1,3428.3,64.7266
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,EccessoMax_EUR,0.013177,45.17,0.8529
+CER_4_11_0,15,3,73.33,Tri-level EP,EccessoMax_EUR,0.0482587,165.44,3.12362
+CER_4_11_0,15,3,73.33,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,CoalizioniInstabili,0.972823,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,CoalizioniInstabili,0.690603,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,CoalizioniInstabili,0.020278,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,CoalizioniInstabili,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,CoalizioniInstabili,0.518762,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,CoalizioniInstabili,0.253057,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,CoalizioniInstabili,0.993206,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,CoalizioniInstabili,0.0939689,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,CoalizioniInstabili,0.212919,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,ForzaIncentivante,0.690369,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,ForzaIncentivante,0.786271,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,ForzaIncentivante,0.486964,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,ForzaIncentivante,0.685,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,ForzaIncentivante,0.598555,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,ForzaIncentivante,0.206841,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,ForzaIncentivante,0.608587,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,ForzaIncentivante,0.23008,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,AllineamentoVirtu,0.785209,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,AllineamentoVirtu,0.850825,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,AllineamentoVirtu,0.694832,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,AllineamentoVirtu,0.783805,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,AllineamentoVirtu,0.699066,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,AllineamentoVirtu,0.571333,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,AllineamentoVirtu,0.727613,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,AllineamentoVirtu,0.583794,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,AllineamentoVirtu_lordo,0.13984,NaN,NaN
+CER_4_11_0,15,3,73.33,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,AllineamentoVirtu_lordo,0.37018,NaN,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,AllineamentoVirtu_lordo,0.149326,NaN,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,AllineamentoVirtu_lordo,0.898917,NaN,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,AllineamentoVirtu_lordo,0.0935146,NaN,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,AllineamentoVirtu_lordo,0.125807,NaN,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,AllineamentoVirtu_lordo,0.990617,NaN,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,AllineamentoVirtu_lordo,0.150124,NaN,NaN
+CER_4_11_0,15,3,73.33,Variance Least Core,VAN_min_EUR,0.943049,4452.04,NaN
+CER_4_11_0,15,3,73.33,Equal Split,VAN_min_EUR,0,0,NaN
+CER_4_11_0,15,3,73.33,Proportional to Consumption,VAN_min_EUR,0.998545,4714.03,NaN
+CER_4_11_0,15,3,73.33,Remuneration Model 1,VAN_min_EUR,0.899718,4247.48,NaN
+CER_4_11_0,15,3,73.33,Cascading Tree,VAN_min_EUR,0.653161,3083.5,NaN
+CER_4_11_0,15,3,73.33,Weighted Solidarity,VAN_min_EUR,0.776765,3667.03,NaN
+CER_4_11_0,15,3,73.33,Pearson Key,VAN_min_EUR,0.994055,4692.83,NaN
+CER_4_11_0,15,3,73.33,Similarity-Utilization,VAN_min_EUR,0.876736,4138.98,NaN
+CER_4_11_0,15,3,73.33,Adaptive Sampling Shapley,VAN_min_EUR,0.877284,4141.57,NaN
+CER_4_11_0,15,3,73.33,Tri-level EP,VAN_min_EUR,1,4720.9,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,EI_orig,0.895462,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,EI_orig,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,EI_orig,0.993673,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,EI_orig,0.868667,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,EI_orig,0.676423,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,EI_orig,0.656073,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,EI_orig,0.985808,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,EI_orig,0.684229,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,EI_orig,0.84398,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,EI_orig,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,Gini,0.895462,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,Gini,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,Gini,0.993673,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,Gini,0.868667,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,Gini,0.676423,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,Gini,0.656073,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,Gini,0.985808,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,Gini,0.684229,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,Gini,0.84398,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,Gini,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,FairnessIndex,0.0283879,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,FairnessIndex,0.997676,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,FairnessIndex,0.0781715,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,FairnessIndex,0.0131413,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,FairnessIndex,0.431074,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,FairnessIndex,0.28732,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,FairnessIndex,0.247504,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,FairnessIndex,0.225872,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,Sigma,0.0953739,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,Sigma,0.949768,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,Sigma,0.119052,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,Sigma,0.0516056,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,Sigma,0.649608,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,Sigma,0.246911,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,Sigma,0.373203,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,Sigma,0.345049,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_4_14_0,18,3,77.78,Equal Split,EccessoMax_EUR,0.973749,3348.62,61.7171
+CER_4_14_0,18,3,77.78,Proportional to Consumption,EccessoMax_EUR,0.0495673,170.46,3.14162
+CER_4_14_0,18,3,77.78,Remuneration Model 1,EccessoMax_EUR,0.0197246,67.83,1.25016
+CER_4_14_0,18,3,77.78,Cascading Tree,EccessoMax_EUR,0.278613,958.12,17.6588
+CER_4_14_0,18,3,77.78,Weighted Solidarity,EccessoMax_EUR,0.347286,1194.28,22.0113
+CER_4_14_0,18,3,77.78,Pearson Key,EccessoMax_EUR,0.0694021,238.67,4.39877
+CER_4_14_0,18,3,77.78,Similarity-Utilization,EccessoMax_EUR,1,3438.89,63.3809
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,EccessoMax_EUR,0.0146883,50.51,0.930956
+CER_4_14_0,18,3,77.78,Tri-level EP,EccessoMax_EUR,0.049824,171.34,3.15789
+CER_4_14_0,18,3,77.78,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,CoalizioniInstabili,0.816531,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,CoalizioniInstabili,0.595568,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,CoalizioniInstabili,0.0116725,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,CoalizioniInstabili,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,CoalizioniInstabili,0.471533,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,CoalizioniInstabili,0.202685,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,CoalizioniInstabili,0.849473,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,CoalizioniInstabili,0.127237,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,CoalizioniInstabili,0.167031,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,ForzaIncentivante,0.653104,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,ForzaIncentivante,0.847442,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,ForzaIncentivante,0.456526,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,ForzaIncentivante,0.665835,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,ForzaIncentivante,0.603526,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,ForzaIncentivante,0.18724,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,ForzaIncentivante,0.580534,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,ForzaIncentivante,0.208766,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,AllineamentoVirtu,0.766032,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,AllineamentoVirtu,0.893453,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,AllineamentoVirtu,0.692623,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,AllineamentoVirtu,0.774498,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,AllineamentoVirtu,0.695287,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,AllineamentoVirtu,0.576841,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,AllineamentoVirtu,0.711308,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,AllineamentoVirtu,0.589054,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,AllineamentoVirtu_lordo,0.152007,NaN,NaN
+CER_4_14_0,18,3,77.78,Equal Split,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,AllineamentoVirtu_lordo,0.335312,NaN,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,AllineamentoVirtu_lordo,0.133853,NaN,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,AllineamentoVirtu_lordo,0.843284,NaN,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,AllineamentoVirtu_lordo,0.0861947,NaN,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,AllineamentoVirtu_lordo,0.113801,NaN,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,AllineamentoVirtu_lordo,0.931286,NaN,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,AllineamentoVirtu_lordo,0.13718,NaN,NaN
+CER_4_14_0,18,3,77.78,Variance Least Core,VAN_min_EUR,0.946329,3802.9,NaN
+CER_4_14_0,18,3,77.78,Equal Split,VAN_min_EUR,0,0,NaN
+CER_4_14_0,18,3,77.78,Proportional to Consumption,VAN_min_EUR,0.998628,4013.07,NaN
+CER_4_14_0,18,3,77.78,Remuneration Model 1,VAN_min_EUR,0.888388,3570.06,NaN
+CER_4_14_0,18,3,77.78,Cascading Tree,VAN_min_EUR,0.642599,2582.34,NaN
+CER_4_14_0,18,3,77.78,Weighted Solidarity,VAN_min_EUR,0.860877,3459.51,NaN
+CER_4_14_0,18,3,77.78,Pearson Key,VAN_min_EUR,0.993244,3991.43,NaN
+CER_4_14_0,18,3,77.78,Similarity-Utilization,VAN_min_EUR,0.871773,3503.29,NaN
+CER_4_14_0,18,3,77.78,Adaptive Sampling Shapley,VAN_min_EUR,0.871843,3503.57,NaN
+CER_4_14_0,18,3,77.78,Tri-level EP,VAN_min_EUR,1,4018.58,NaN
+CER_5_15_0,20,3,75,Variance Least Core,EI_orig,0.897584,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,EI_orig,0,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,EI_orig,0.997915,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,EI_orig,0.872648,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,EI_orig,0.682109,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,EI_orig,0.661989,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,EI_orig,0.98413,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,EI_orig,0.665569,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,EI_orig,0.849627,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,EI_orig,1,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,Gini,0.897584,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,Gini,0,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,Gini,0.997915,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,Gini,0.872648,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,Gini,0.682109,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,Gini,0.661989,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,Gini,0.98413,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,Gini,0.665569,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,Gini,0.849627,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,Gini,1,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,FairnessIndex,0.0220539,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,FairnessIndex,0.979218,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,FairnessIndex,0.0695977,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,FairnessIndex,0.0148358,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,FairnessIndex,0.41244,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,FairnessIndex,0.285122,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,FairnessIndex,0.235742,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,FairnessIndex,0.214229,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,Sigma,0.0927405,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,Sigma,0.955088,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,Sigma,0.111995,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,Sigma,0.0532745,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,Sigma,0.645487,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,Sigma,0.251946,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,Sigma,0.36276,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,Sigma,0.335536,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,ForzaIncentivante,0.650956,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,ForzaIncentivante,0.824226,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,ForzaIncentivante,0.448895,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,ForzaIncentivante,0.667558,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,ForzaIncentivante,0.602941,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,ForzaIncentivante,0.177105,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,ForzaIncentivante,0.574551,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,ForzaIncentivante,0.199413,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,AllineamentoVirtu,0.782057,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,AllineamentoVirtu,0.887026,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,AllineamentoVirtu,0.709007,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,AllineamentoVirtu,0.792537,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,AllineamentoVirtu,0.7205,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,AllineamentoVirtu,0.598185,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,AllineamentoVirtu,0.730347,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,AllineamentoVirtu,0.610576,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,AllineamentoVirtu_lordo,0.138519,NaN,NaN
+CER_5_15_0,20,3,75,Equal Split,AllineamentoVirtu_lordo,0.959402,NaN,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,AllineamentoVirtu_lordo,0.304319,NaN,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,AllineamentoVirtu_lordo,0.117114,NaN,NaN
+CER_5_15_0,20,3,75,Cascading Tree,AllineamentoVirtu_lordo,0.754683,NaN,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,AllineamentoVirtu_lordo,0.0762028,NaN,NaN
+CER_5_15_0,20,3,75,Pearson Key,AllineamentoVirtu_lordo,0.117829,NaN,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_5_15_0,20,3,75,Tri-level EP,AllineamentoVirtu_lordo,0.137539,NaN,NaN
+CER_5_15_0,20,3,75,Variance Least Core,VAN_min_EUR,0.937043,3447.98,NaN
+CER_5_15_0,20,3,75,Equal Split,VAN_min_EUR,0,0,NaN
+CER_5_15_0,20,3,75,Proportional to Consumption,VAN_min_EUR,0.998161,3672.87,NaN
+CER_5_15_0,20,3,75,Remuneration Model 1,VAN_min_EUR,0.876864,3226.55,NaN
+CER_5_15_0,20,3,75,Cascading Tree,VAN_min_EUR,0.638983,2351.23,NaN
+CER_5_15_0,20,3,75,Weighted Solidarity,VAN_min_EUR,0.856241,3150.66,NaN
+CER_5_15_0,20,3,75,Pearson Key,VAN_min_EUR,0.992987,3653.84,NaN
+CER_5_15_0,20,3,75,Similarity-Utilization,VAN_min_EUR,0.876757,3226.15,NaN
+CER_5_15_0,20,3,75,Adaptive Sampling Shapley,VAN_min_EUR,0.864169,3179.83,NaN
+CER_5_15_0,20,3,75,Tri-level EP,VAN_min_EUR,1,3679.64,NaN
+CER_6_19_0,25,3,76,Variance Least Core,EI_orig,0.907998,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,EI_orig,0,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,EI_orig,0.998761,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,EI_orig,0.865915,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,EI_orig,0.671064,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,EI_orig,0.653891,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,EI_orig,0.983032,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,EI_orig,0.666041,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,EI_orig,0.844362,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,EI_orig,1,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,Gini,0.907998,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,Gini,0,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,Gini,0.998761,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,Gini,0.865915,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,Gini,0.671064,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,Gini,0.653891,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,Gini,0.983032,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,Gini,0.666041,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,Gini,0.844362,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,Gini,1,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,FairnessIndex,0.0030087,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,FairnessIndex,1,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,FairnessIndex,0.0417637,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,FairnessIndex,0.0157336,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,FairnessIndex,0.399881,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,FairnessIndex,0.308692,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,FairnessIndex,0.201649,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,FairnessIndex,0.98583,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,FairnessIndex,0,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,FairnessIndex,0.180488,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,Sigma,0.0797351,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,Sigma,0.997394,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,Sigma,0.079982,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,Sigma,0.0583399,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,Sigma,0.655365,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,Sigma,0.271696,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,Sigma,0.330964,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,Sigma,0.303224,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,ForzaIncentivante,0.577947,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,ForzaIncentivante,0.864135,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,ForzaIncentivante,0.351433,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,ForzaIncentivante,0.610579,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,ForzaIncentivante,0.508719,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,ForzaIncentivante,0.0615023,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,ForzaIncentivante,0.497914,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,ForzaIncentivante,0.0834743,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,AllineamentoVirtu,0.765511,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,AllineamentoVirtu,0.919343,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,AllineamentoVirtu,0.698502,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,AllineamentoVirtu,0.780049,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,AllineamentoVirtu,0.668401,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,AllineamentoVirtu,0.591617,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,AllineamentoVirtu,0.711313,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,AllineamentoVirtu,0.604207,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,AllineamentoVirtu_lordo,0.106419,NaN,NaN
+CER_6_19_0,25,3,76,Equal Split,AllineamentoVirtu_lordo,0.741176,NaN,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,AllineamentoVirtu_lordo,0.206862,NaN,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,AllineamentoVirtu_lordo,0.066322,NaN,NaN
+CER_6_19_0,25,3,76,Cascading Tree,AllineamentoVirtu_lordo,0.497744,NaN,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,AllineamentoVirtu_lordo,0.0715295,NaN,NaN
+CER_6_19_0,25,3,76,Pearson Key,AllineamentoVirtu_lordo,0.101523,NaN,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_6_19_0,25,3,76,Tri-level EP,AllineamentoVirtu_lordo,0.112319,NaN,NaN
+CER_6_19_0,25,3,76,Variance Least Core,VAN_min_EUR,0.934049,2815.58,NaN
+CER_6_19_0,25,3,76,Equal Split,VAN_min_EUR,0,0,NaN
+CER_6_19_0,25,3,76,Proportional to Consumption,VAN_min_EUR,0.997326,3006.32,NaN
+CER_6_19_0,25,3,76,Remuneration Model 1,VAN_min_EUR,0.859321,2590.32,NaN
+CER_6_19_0,25,3,76,Cascading Tree,VAN_min_EUR,0.628284,1893.89,NaN
+CER_6_19_0,25,3,76,Weighted Solidarity,VAN_min_EUR,0.858904,2589.07,NaN
+CER_6_19_0,25,3,76,Pearson Key,VAN_min_EUR,0.991957,2990.14,NaN
+CER_6_19_0,25,3,76,Similarity-Utilization,VAN_min_EUR,0.870645,2624.46,NaN
+CER_6_19_0,25,3,76,Adaptive Sampling Shapley,VAN_min_EUR,0.849638,2561.13,NaN
+CER_6_19_0,25,3,76,Tri-level EP,VAN_min_EUR,1,3014.38,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,EI_orig,0.872738,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,EI_orig,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,EI_orig,0.905066,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,EI_orig,0.734061,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,EI_orig,0.66433,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,EI_orig,0.964292,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,EI_orig,0.512248,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,EI_orig,0.85346,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,EI_orig,0.986497,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,Gini,0.872738,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,Gini,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,Gini,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,Gini,0.905066,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,Gini,0.734061,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,Gini,0.66433,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,Gini,0.964292,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,Gini,0.512248,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,Gini,0.85346,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,Gini,0.986497,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,FairnessIndex,0.0405879,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,FairnessIndex,0.84467,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,FairnessIndex,0.0905924,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,FairnessIndex,0.377173,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,FairnessIndex,0.247783,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,FairnessIndex,0.276569,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,FairnessIndex,0.00621384,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,FairnessIndex,0.250976,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,Sigma,0.0987907,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,Sigma,0.88238,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,Sigma,0.151468,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,Sigma,0.0191582,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,Sigma,0.61902,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,Sigma,0.248623,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,Sigma,0.413373,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,Sigma,0.385768,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_7_8_0,15,2,53.33,Equal Split,EccessoMax_EUR,0.81973,3097.81,56.7886
+CER_7_8_0,15,2,53.33,Proportional to Consumption,EccessoMax_EUR,0.0675057,255.11,4.67661
+CER_7_8_0,15,2,53.33,Remuneration Model 1,EccessoMax_EUR,0.0143738,54.32,0.995778
+CER_7_8_0,15,2,53.33,Cascading Tree,EccessoMax_EUR,0.224261,847.49,15.5362
+CER_7_8_0,15,2,53.33,Weighted Solidarity,EccessoMax_EUR,0.292541,1105.53,20.2665
+CER_7_8_0,15,2,53.33,Pearson Key,EccessoMax_EUR,0.0682709,258,4.72962
+CER_7_8_0,15,2,53.33,Similarity-Utilization,EccessoMax_EUR,1,3779.06,69.2773
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,EccessoMax_EUR,0.0140607,53.14,0.974086
+CER_7_8_0,15,2,53.33,Tri-level EP,EccessoMax_EUR,0.0437135,165.2,3.02835
+CER_7_8_0,15,2,53.33,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,CoalizioniInstabili,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,CoalizioniInstabili,0.7873,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,CoalizioniInstabili,0.0669405,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,CoalizioniInstabili,0.924845,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,CoalizioniInstabili,0.53841,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,CoalizioniInstabili,0.389876,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,CoalizioniInstabili,0.998446,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,CoalizioniInstabili,0.0344139,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,CoalizioniInstabili,0.251665,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,ForzaIncentivante,0.771811,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,ForzaIncentivante,0.569126,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,ForzaIncentivante,0.587944,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,ForzaIncentivante,0.774079,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,ForzaIncentivante,0.53328,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,ForzaIncentivante,0.300003,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,ForzaIncentivante,0.709575,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,ForzaIncentivante,0.328741,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,AllineamentoVirtu,0.8745,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,AllineamentoVirtu,0.748295,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,AllineamentoVirtu,0.756922,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,AllineamentoVirtu,0.865453,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,AllineamentoVirtu,0.722558,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,AllineamentoVirtu,0.631783,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,AllineamentoVirtu,0.835297,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,AllineamentoVirtu,0.645194,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,AllineamentoVirtu_lordo,0.0826496,NaN,NaN
+CER_7_8_0,15,2,53.33,Equal Split,AllineamentoVirtu_lordo,0.849526,NaN,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,AllineamentoVirtu_lordo,0.332853,NaN,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,AllineamentoVirtu_lordo,0.141241,NaN,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,AllineamentoVirtu_lordo,0.766684,NaN,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,AllineamentoVirtu_lordo,0.0954808,NaN,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,AllineamentoVirtu_lordo,0.122848,NaN,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,AllineamentoVirtu_lordo,0.142977,NaN,NaN
+CER_7_8_0,15,2,53.33,Variance Least Core,VAN_min_EUR,0.927778,4507.49,NaN
+CER_7_8_0,15,2,53.33,Equal Split,VAN_min_EUR,0,0,NaN
+CER_7_8_0,15,2,53.33,Proportional to Consumption,VAN_min_EUR,0.997757,4847.47,NaN
+CER_7_8_0,15,2,53.33,Remuneration Model 1,VAN_min_EUR,0.892126,4334.28,NaN
+CER_7_8_0,15,2,53.33,Cascading Tree,VAN_min_EUR,0.654951,3181.99,NaN
+CER_7_8_0,15,2,53.33,Weighted Solidarity,VAN_min_EUR,0.762066,3702.4,NaN
+CER_7_8_0,15,2,53.33,Pearson Key,VAN_min_EUR,0.992888,4823.81,NaN
+CER_7_8_0,15,2,53.33,Similarity-Utilization,VAN_min_EUR,0.865798,4206.37,NaN
+CER_7_8_0,15,2,53.33,Adaptive Sampling Shapley,VAN_min_EUR,0.853815,4148.15,NaN
+CER_7_8_0,15,2,53.33,Tri-level EP,VAN_min_EUR,1,4858.37,NaN
+CER_9_9_0,18,2,50,Variance Least Core,EI_orig,0.880785,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,EI_orig,0,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,EI_orig,1,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,EI_orig,0.908394,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,EI_orig,0.739129,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,EI_orig,0.642344,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,EI_orig,0.951503,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,EI_orig,0.496858,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,EI_orig,0.84785,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,EI_orig,0.975839,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,Gini,0.880785,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,Gini,0,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,Gini,1,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,Gini,0.908394,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,Gini,0.739129,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,Gini,0.642344,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,Gini,0.951503,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,Gini,0.496858,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,Gini,0.84785,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,Gini,0.975839,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,FairnessIndex,0.0273671,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,FairnessIndex,0.85785,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,FairnessIndex,0.0786633,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,FairnessIndex,0,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,FairnessIndex,0.35982,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,FairnessIndex,0.281305,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,FairnessIndex,0.267052,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,FairnessIndex,1,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,FairnessIndex,0.0114682,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,FairnessIndex,0.239913,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,Sigma,0.0800534,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,Sigma,0.899073,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,Sigma,0.134716,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,Sigma,0.0133237,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,Sigma,0.615772,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,Sigma,0.269039,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,Sigma,0.392154,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,Sigma,1,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,Sigma,0,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,Sigma,0.364558,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,EccessoMax_EUR,0,0,0
+CER_9_9_0,18,2,50,Equal Split,EccessoMax_EUR,0.844067,3290.97,57.9686
+CER_9_9_0,18,2,50,Proportional to Consumption,EccessoMax_EUR,0.0785393,306.22,5.3939
+CER_9_9_0,18,2,50,Remuneration Model 1,EccessoMax_EUR,0.0210356,82.02,1.44468
+CER_9_9_0,18,2,50,Cascading Tree,EccessoMax_EUR,0.222597,867.89,15.2875
+CER_9_9_0,18,2,50,Weighted Solidarity,EccessoMax_EUR,0.331618,1292.96,22.7748
+CER_9_9_0,18,2,50,Pearson Key,EccessoMax_EUR,0.0708037,276.06,4.86264
+CER_9_9_0,18,2,50,Similarity-Utilization,EccessoMax_EUR,1,3898.94,68.6777
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,EccessoMax_EUR,0.0169302,66.01,1.16272
+CER_9_9_0,18,2,50,Tri-level EP,EccessoMax_EUR,0.0446839,174.22,3.06879
+CER_9_9_0,18,2,50,Variance Least Core,CoalizioniInstabili,0,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,CoalizioniInstabili,0.978318,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,CoalizioniInstabili,0.815355,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,CoalizioniInstabili,0.0975769,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,CoalizioniInstabili,0.917719,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,CoalizioniInstabili,0.570111,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,CoalizioniInstabili,0.381466,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,CoalizioniInstabili,1,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,CoalizioniInstabili,0.0442865,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,CoalizioniInstabili,0.242776,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,ForzaIncentivante,0.758777,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,ForzaIncentivante,0.554552,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,ForzaIncentivante,0.583677,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,ForzaIncentivante,0.777668,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,ForzaIncentivante,1,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,ForzaIncentivante,0.557629,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,ForzaIncentivante,0.29731,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,ForzaIncentivante,0,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,ForzaIncentivante,0.70205,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,ForzaIncentivante,0.327505,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,AllineamentoVirtu,0.877375,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,AllineamentoVirtu,0.759496,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,AllineamentoVirtu,0.771985,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,AllineamentoVirtu,0.877985,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,AllineamentoVirtu,1,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,AllineamentoVirtu,0.761682,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,AllineamentoVirtu,0.653381,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,AllineamentoVirtu,0,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,AllineamentoVirtu,0.845578,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,AllineamentoVirtu,0.667064,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,AllineamentoVirtu_lordo,0.0871224,NaN,NaN
+CER_9_9_0,18,2,50,Equal Split,AllineamentoVirtu_lordo,0.791906,NaN,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,AllineamentoVirtu_lordo,0.29838,NaN,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,AllineamentoVirtu_lordo,0.131623,NaN,NaN
+CER_9_9_0,18,2,50,Cascading Tree,AllineamentoVirtu_lordo,0.659971,NaN,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,AllineamentoVirtu_lordo,0.102535,NaN,NaN
+CER_9_9_0,18,2,50,Pearson Key,AllineamentoVirtu_lordo,0.130961,NaN,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,AllineamentoVirtu_lordo,1,NaN,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,AllineamentoVirtu_lordo,0,NaN,NaN
+CER_9_9_0,18,2,50,Tri-level EP,AllineamentoVirtu_lordo,0.147024,NaN,NaN
+CER_9_9_0,18,2,50,Variance Least Core,VAN_min_EUR,0.926871,3900.49,NaN
+CER_9_9_0,18,2,50,Equal Split,VAN_min_EUR,0,0,NaN
+CER_9_9_0,18,2,50,Proportional to Consumption,VAN_min_EUR,0.998401,4201.51,NaN
+CER_9_9_0,18,2,50,Remuneration Model 1,VAN_min_EUR,0.880959,3707.28,NaN
+CER_9_9_0,18,2,50,Cascading Tree,VAN_min_EUR,0.646289,2719.74,NaN
+CER_9_9_0,18,2,50,Weighted Solidarity,VAN_min_EUR,0.740333,3115.5,NaN
+CER_9_9_0,18,2,50,Pearson Key,VAN_min_EUR,0.99221,4175.45,NaN
+CER_9_9_0,18,2,50,Similarity-Utilization,VAN_min_EUR,0.888939,3740.86,NaN
+CER_9_9_0,18,2,50,Adaptive Sampling Shapley,VAN_min_EUR,0.838283,3527.69,NaN
+CER_9_9_0,18,2,50,Tri-level EP,VAN_min_EUR,1,4208.24,NaN

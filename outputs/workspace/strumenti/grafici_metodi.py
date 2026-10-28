@@ -34,6 +34,7 @@ UNITA' STATISTICA
 Figure e tabelle prodotte: elencate in main() e nel README della cartella di uscita.
 """
 import argparse
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -142,6 +143,15 @@ def ordina_metodi(presenti):
 
 def etichetta_livello(liv):
     return ETICHETTE_LIVELLO.get(liv, liv)
+
+
+def livello_da_codice(c):
+    """Codice numerico di pa_effetti.csv (10*imprese + PA) -> nome del livello come nelle cartelle:
+    0..3 -> PA0..PA3, 10 -> ND1, 11 -> ND1_PA1, 23 -> ND2_PA3."""
+    c = int(c)
+    if c < 10:
+        return f"PA{c}"
+    return f"ND{c // 10}" + (f"_PA{c % 10}" if c % 10 else "")
 
 
 def salva(fig, out, nome_file):
@@ -380,7 +390,8 @@ def f03_sintesi(P, lab_fascia, out, tab):
                    yt=(f == fasce[0]), fmt="{:.1f}")
         righe.append(M.assign(Fascia=f))
     fig.colorbar(im, ax=axs, fraction=0.02, pad=0.01, label="median score over sizes (1 = best)")
-    fig.suptitle("Normalised scores by penetration band (each cell: median over the 5 sizes)", y=1.03)
+    fig.suptitle("Normalised scores by penetration band (each cell: median over "
+                 f"{'the ' + str(p0.Membri.nunique()) + ' sizes' if 'Membri' in p0 else 'all sizes'})", y=1.03)
     salva(fig, out, "F03b_sintesi_per_fascia")
     pd.concat(righe).to_csv(tab / "F03b_sintesi_per_fascia.csv")
 
@@ -614,9 +625,12 @@ def f10_composizione(P, livelli, out, tab):
     D.to_csv(tab / "F10_delta_composizione_dettaglio.csv", index=False)
     liv = [k for k in livelli if k != BASE]
     metodi = ordina_metodi(D.Metodo.unique())
-    nc = min(len(liv), 3)
+    nc = min(len(liv), 4) if len(liv) > 3 else min(len(liv), 3)
     nr = int(np.ceil(len(liv) / nc))
-    fig, axs = plt.subplots(nr, nc, figsize=(7.2, 3.9 * nr), squeeze=False)
+    # un pannello abbastanza largo da leggere le celle; con molti livelli (asse imprese: 15)
+    # la figura e' ampia e va vista a schermo intero o in PDF
+    fig, axs = plt.subplots(nr, nc, figsize=(3.3 * nc + 1.6, 3.2 * nr + 1.4), squeeze=False,
+                            layout="constrained")
     for ax in axs.ravel()[len(liv):]:
         ax.axis("off")
     righe = []
@@ -630,55 +644,77 @@ def f10_composizione(P, livelli, out, tab):
         ann = [["" if not np.isfinite(med.iat[i, j]) else "0" if abs(med.iat[i, j]) < 0.05 else
                 (f"{med.iat[i, j]:+.1f}" + ("" if coer.iat[i, j] >= 0.8 else "°"))
                 for j in range(med.shape[1])] for i in range(med.shape[0])]
+        ultimo_della_colonna = i_ax + nc >= len(liv)
         im = mappa(ax, med.values, ann, CMAP_DELTA, -1, 1, metodi,
-                   f"{k}: {etichetta_livello(k)}\n({s.Scheda.nunique()} paired communities)",
-                   yt=(i_ax % nc == 0))
+                   (k if etichetta_livello(k) == k else f"{k}: {etichetta_livello(k)}")
+                   + f"\n({s.Scheda.nunique()} paired communities)",
+                   xt=ultimo_della_colonna, yt=(i_ax % nc == 0))
         righe.append(pd.DataFrame({"Mediana": med.stack(), "CoerenzaSegno": coer.stack()})
                      .reset_index().assign(Livello=k, Comunita=s.Scheda.nunique()))
     fig.colorbar(im, ax=axs, fraction=0.02, pad=0.01, label="median Δ score vs households only")
-    fig.suptitle("Effect of adding public buildings at fixed n and penetration (paired by community)\n"
-                 "° = fewer than 80% of communities agree with the sign of the median; 0 = |median| < 0.05",
-                 y=1.06)
+    fig.suptitle("Effect of adding public buildings or firms at fixed n and penetration (paired by community)\n"
+                 "° = fewer than 80% of communities agree with the sign of the median; 0 = |median| < 0.05")
     salva(fig, out, "F10_effetto_composizione")
     pd.concat(righe).to_csv(tab / "F10_delta_composizione.csv", index=False)
     return D
 
 
 def f11_scala(D, effetti, out, tab):
-    """La PA cambia composizione e scala insieme: |Delta| contro il rapporto v(N)/v(N)_PA0."""
+    """La PA cambia composizione e scala insieme: |Delta| contro il rapporto v(N)/v(N)_PA0.
+    Colore = numero di PA, forma = numero di imprese (asse imprese: livelli ND<k>_PA<p>)."""
     if D is None or effetti is None:
         return None
     e = effetti.drop_duplicates(["Scheda", "Livello"])[["Scheda", "Livello", "vN_rapportoPA0"]]
-    e = e.assign(Livello="PA" + e.Livello.astype(str))
+    e = e.assign(Livello=e.Livello.map(livello_da_codice))
     A = (D.assign(absD=D.Delta.abs()).groupby(["Scheda", "Livello"]).absD.mean()
           .rename("DeltaMedioAssoluto").reset_index().merge(e, on=["Scheda", "Livello"]))
     A.to_csv(tab / "F11_scala_vs_composizione.csv", index=False)
-    liv = sorted(A.Livello.unique())
-    col = dict(zip(liv, ["#fdae6b", "#e6550d", "#7f2704"]))
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.2, 2.8))
+
+    def pa_nd(k):                                   # "ND2_PA1" -> (1, 2); "PA3" -> (3, 0)
+        m = re.fullmatch(r"(?:ND(\d))?_?(?:PA(\d))?", k)
+        return int(m.group(2) or 0), int(m.group(1) or 0)
+
+    def ordine(k):
+        return (pa_nd(k)[1], pa_nd(k)[0])
+
+    col_pa = {0: "#4575b4", 1: "#fdae6b", 2: "#e6550d", 3: "#7f2704"}
+    forma = {0: "o", 1: "s", 2: "^", 3: "D"}
+    liv = sorted(A.Livello.unique(), key=ordine)
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(10.5, 4.4), layout="constrained",
+                                 gridspec_kw={"width_ratios": [1, 1.25]})
     for k in liv:
-        s = A[A.Livello == k]
-        a1.scatter(s.vN_rapportoPA0, s.DeltaMedioAssoluto, s=14, color=col.get(k, "k"),
-                   label=f"{k} ({etichetta_livello(k)})")
+        p_, n_ = pa_nd(k)
+        s_ = A[A.Livello == k]
+        a1.scatter(s_.vN_rapportoPA0, s_.DeltaMedioAssoluto, s=22, color=col_pa[p_], marker=forma[n_],
+                   lw=0.3, ec="white")
     a1.set_xscale("log")
-    a1.set_xlabel("v(N) with public buildings / v(N) households only")
+    a1.set_xlabel("v(N) with the added members / v(N) households only")
     a1.set_ylabel("mean |Δ score| over methods × indicators")
-    a1.legend(frameon=False, fontsize=6)
     a1.set_title("Is the ranking shift a scale effect?\n(one point = one community)")
-    if effetti is not None and "RapportoQuotaPA" in effetti:
+    h = [Line2D([], [], marker="o", ls="", color=col_pa[p_], ms=5,
+                label=f"{p_} public building" + ("s" if p_ != 1 else ""))
+         for p_ in sorted({pa_nd(k)[0] for k in liv})]
+    h += [Line2D([], [], marker=forma[n_], ls="", color="#555", ms=5,
+                 label=f"{n_} firm" + ("s" if n_ != 1 else ""))
+          for n_ in sorted({pa_nd(k)[1] for k in liv})]
+    a1.legend(handles=h, frameon=False, fontsize=7, loc="best")
+    if "RapportoQuotaPA" in effetti:
         q = effetti[effetti.Livello > 0].dropna(subset=["RapportoQuotaPA"])
+        q = q.assign(Liv=q.Livello.map(livello_da_codice))
+        q = q[q.Liv.map(lambda k: pa_nd(k)[0] > 0)]            # solo i livelli con PA
         metodi = ordina_metodi(q.Metodo.unique())
-        for j, k in enumerate(sorted(q.Livello.unique())):
-            s = q[q.Livello == k].groupby("Metodo").RapportoQuotaPA.median().reindex(metodi)
-            a2.barh(np.arange(len(metodi)) + (j - 1) * 0.27, s.values, height=0.27,
-                    color=col.get(f"PA{k}", "k"), label=f"PA{k}")
+        livq = sorted(q.Liv.unique(), key=ordine)
+        M = q.groupby(["Metodo", "Liv"]).RapportoQuotaPA.median().unstack().reindex(index=metodi, columns=livq)
+        im = a2.imshow(M.values, cmap="YlOrBr", vmin=0, aspect="auto")
+        for (i, j), v in np.ndenumerate(M.values):
+            if np.isfinite(v):
+                a2.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=6.5,
+                        color="white" if v > 0.6 * np.nanmax(M.values) else "black")
+        a2.set_xticks(range(len(livq)), livq, rotation=60, ha="right")
         a2.set_yticks(range(len(metodi)), [nome(m) for m in metodi])
-        a2.invert_yaxis()
-        a2.axvline(1, color="k", lw=0.8, ls=":")
-        a2.set_xlabel("PA share of v(N) / PA share of members (median)")
-        a2.set_title("How much the public buildings take", pad=16)
-        a2.legend(frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, 0.99), fontsize=6)
-    fig.tight_layout()
+        a2.grid(False)
+        fig.colorbar(im, ax=a2, fraction=0.04, pad=0.02, label="PA share of v(N) / PA share of members")
+        a2.set_title("How much the public buildings take\n(median over communities; 1 = proportional to headcount)")
     salva(fig, out, "F11_scala_e_quote_PA")
     return A
 
@@ -744,7 +780,8 @@ def f12_accordo(tau, lab_fascia, out, tab):
         ax.set_title(f"penetration {lab_fascia[f]}")
         righe.append(M.stack().rename("TauMedio").reset_index().assign(Fascia=f))
     fig.colorbar(im, ax=axs, fraction=0.02, pad=0.01, label="mean Kendall τ-b (oriented)")
-    fig.suptitle("Do the indicators rank the methods the same way? (mean τ-b over the 5 sizes)", y=1.04)
+    n_taglie = f"the {t.Membri.nunique()} sizes" if "Membri" in t else "all sizes"
+    fig.suptitle(f"Do the indicators rank the methods the same way? (mean τ-b over {n_taglie})", y=1.04)
     salva(fig, out, "F12_accordo_indicatori")
     pd.concat(righe).to_csv(tab / "F12_accordo_indicatori.csv", index=False)
 
@@ -770,6 +807,13 @@ def main():
     copertura = P.groupby(["Livello", "Indicatore"]).Scheda.nunique().unstack(0)
     controlli.append("comunita' in cui ciascun indicatore discrimina (soglia di rilevanza):\n"
                      + copertura.to_string())
+    # Gli indicatori senza dati (eccesso e coalizioni instabili: Shapley e Nucleolo non si
+    # calcolano oltre 18 membri) non occupano colonne vuote nelle figure.
+    presenti = set(P.Indicatore)
+    METRICHE[:] = [m for m in METRICHE if m.chiave in presenti]
+    MET.clear()
+    MET.update({m.chiave: m for m in METRICHE})
+    GRUPPI[:] = [g for g in GRUPPI if any(m.gruppo == g for m in METRICHE)]
     lab_fascia = etichette_fascia(P[P.Livello == BASE])
 
     tf, com, qm, superati = carica_export(Path(a.export), T["quote"], controlli)
@@ -782,22 +826,38 @@ def main():
     # le figure F01-F09 descrivono la griglia del livello base; i livelli dell'export vanno in F13
     tf_tutti = tf
     tf, com, qm = (d[d.Livello == BASE] for d in (tf, com, qm))
-    f01_grezzi(tf, lab_fascia, out, tab)
+    # I valori grezzi vengono dall'export, che e' di un altro run: si usano solo se contiene
+    # tutte le comunita' delle tabelle. Altrimenti F01, F04/F05, F07 e F08 descriverebbero
+    # comunita' diverse da quelle di tutte le altre figure.
+    export_ok = set(P[P.Livello == BASE].Scheda) <= set(tf.Scheda)
+    if not export_ok:
+        controlli.append(
+            "F01, F04/F05, F07, F08 e F13 NON prodotte: l'export (" + str(a.export) + ") non contiene "
+            f"{len(set(P[P.Livello == BASE].Scheda) - set(tf.Scheda))} delle "
+            f"{P[P.Livello == BASE].Scheda.nunique()} comunita' delle tabelle. Servono i valori grezzi "
+            "di questo run: esporta_run.m vuole il workspace con AGR e LIV, che MAIN2 non salva "
+            "(salva solo il checkpoint RESULTS).")
+    if export_ok:
+        f01_grezzi(tf, lab_fascia, out, tab)
     f02_profili(P, lab_fascia, out, tab)
     f03_sintesi(P, lab_fascia, out, tab)
-    for m in METRICHE:
-        griglia_per_metodo(tf, m, "pen", out, lab_fascia)
-        griglia_per_metodo(tf, m, "n", out, lab_fascia)
+    if export_ok:
+        for m in METRICHE:
+            griglia_per_metodo(tf, m, "pen", out, lab_fascia)
+            griglia_per_metodo(tf, m, "n", out, lab_fascia)
     pes = f06_varianza(P, out, tab)
-    f07_posta(qm, com, out, tab)
-    f08_compromessi(tf, lab_fascia, out, tab)
+    if export_ok:
+        f07_posta(qm, com, out, tab)
+        f08_compromessi(tf, lab_fascia, out, tab)
     if T["quote"] is not None:
         f09_prosumer(T["quote"], lab_fascia, out, tab)
     D = f10_composizione(P, T["livelli"], out, tab)
     f11_scala(D, T["effetti"], out, tab)
     if T["tau"] is not None:
         f12_accordo(T["tau"], lab_fascia, out, tab)
-    if tf_tutti.Livello.nunique() > 1:
+    if not export_ok:
+        pass
+    elif tf_tutti.Livello.nunique() > 1:
         f13_grezzi_composizione(tf_tutti, out, tab)
     else:
         controlli.append("F13 (valori grezzi per livello) non prodotta: l'export ha solo il livello "
@@ -808,7 +868,10 @@ def main():
     print("\n\n".join(controlli))
     print(f"\nfigure in {out}, numeri in {tab}")
 
-    if not a.senza_pagina:
+    if not a.senza_pagina and not export_ok:
+        print("pagina_risultati.py non eseguita: pretende F01, F07 e F08. Pagina senza commenti: "
+              f"python -I {Path(__file__).with_name('pagina_figure.py')} --figure {out} --numeri {tab}")
+    elif not a.senza_pagina:
         # la pagina sta in un file a parte; con python -I la cartella dello script non e' in
         # sys.path, quindi si carica per percorso invece che con import
         import runpy

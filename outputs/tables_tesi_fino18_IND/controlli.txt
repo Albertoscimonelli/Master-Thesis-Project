@@ -1,0 +1,35 @@
+livelli trovati in outputs/tables_main2_fino18_IND: PA0 (20 comunita'), ND1 (8 comunita'), ND1_PA1 (8 comunita'), ND1_PA2 (8 comunita'), ND1_PA3 (8 comunita'), ND2 (8 comunita'), ND2_PA1 (8 comunita'), ND2_PA2 (8 comunita'), ND2_PA3 (7 comunita'), ND3 (8 comunita'), ND3_PA1 (8 comunita'), ND3_PA2 (7 comunita'), ND3_PA3 (6 comunita'), PA1 (20 comunita'), PA2 (19 comunita'), PA3 (17 comunita')
+
+comunita' in cui ciascun indicatore discrimina (soglia di rilevanza):
+Livello                  ND1  ND1_PA1  ND1_PA2  ND1_PA3  ND2  ND2_PA1  ND2_PA2  ND2_PA3  ND3  ND3_PA1  ND3_PA2  ND3_PA3  PA0  PA1  PA2  PA3
+Indicatore                                                                                                                                 
+AllineamentoVirtu          8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+AllineamentoVirtu_lordo    8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+CoalizioniInstabili        8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+EccessoMax_EUR             8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+FairnessIndex              8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+ForzaIncentivante          8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+Gini                       8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+Sigma                      8        8        8        8    8        8        8        7    8        8        7        6   20   20   19   17
+
+livelli nell'export: PA0 (20 comunita')
+
+export vs tabelle, quota ai prosumer: 220 terne (livello, scheda, metodo); scarto massimo per metodo = {'Cascading Tree': 0.0, 'Equal Split': 0.0, 'Nucleolo': 0.0, 'Pearson Key': 0.0, 'Proportional to Consumption': 0.0, 'Remuneration Model 1': 0.0, 'Shapley': 0.0, 'Similarity-Utilization': 0.0, 'Tri-level EP': 0.01298, 'Variance Least Core': 0.0, 'Weighted Solidarity': 0.0}
+
+metodi esclusi dai grafici grezzi perche' l'export e' superato: ['Tri-level EP']
+
+per ogni (comunita', indicatore) il migliore vale 1 e il peggiore 0: min max = 0.00e+00, min min = 1.000000
+
+F13 (valori grezzi per livello) non prodotta: l'export ha solo il livello PA0. Serve un export del run con PA fatto con esporta_run.m aggiornato.
+
+scomposizione della varianza (pesata), per indicatore:
+                         eta2_penetrazione  eta2_taglia  residuo_interazione
+Indicatore                                                                  
+Gini                                 0.646        0.048                0.306
+FairnessIndex                        0.775        0.083                0.142
+Sigma                                0.764        0.101                0.134
+EccessoMax_EUR                       0.775        0.076                0.148
+CoalizioniInstabili                  0.799        0.094                0.106
+ForzaIncentivante                    0.811        0.104                0.084
+AllineamentoVirtu                    0.809        0.041                0.150
+AllineamentoVirtu_lordo              0.808        0.050                0.142

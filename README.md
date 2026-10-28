@@ -36,6 +36,10 @@ varia taglia e penetrazione dei prosumer.
 > separazione per enumerazione fino a 25 membri, risultati uguali entro 3,5e-11, circa 11 volte più
 > veloce), e **l'analisi è stata rifatta su tutte le 295 comunità da 5 a 25 membri insieme** (§7.11.4,
 > `outputs/tables_main2_fino25_unito/`). Restano fuori le schede da 50-100 membri (§14.1).
+>
+> **Chiusura del 28 ottobre 2026:** le figure e le conclusioni rispetto alla domanda di ricerca sono nel
+> rapporto [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
+> (§7.11.5). L'unica parte della domanda di ricerca senza risposta è l'inclusione LIHC, che va tolta dalla tesi.
 
 ---
 
@@ -1696,6 +1700,56 @@ comunità: si rifà l'analisi tra comunità, con i punteggi normalizzati sull'in
 - Le 168 comunità fino a 18 membri vengono dal run di mattina del 27 ottobre, col codice precedente allo
   speedup; il confronto di §7.11.3 vale per le sole 20-25 membri.
 
+#### 7.11.5 Chiusura: valori grezzi del run unito e rapporto finale (28 ottobre 2026)
+
+**Rapporto finale:** [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html).
+È un file unico, con 44 figure incorporate: per ogni figura dice cosa mostra e cosa se ne ricava, poi dà le
+conclusioni clausola per clausola rispetto alla domanda di ricerca, le note su cosa correggere nel gap e i
+limiti. Lo genera `outputs/workspace/strumenti/rapporto_conclusioni.py`. Ogni numero del testo viene dai CSV,
+e 61 controlli fermano lo script se un'affermazione del testo non è più sostenuta dai dati. Produce anche
+F14, la soglia regolatoria comunità per comunità.
+
+**Il limite della §7.11.4 è superato.** F01, F04/F05, F07, F08 e F13 ora si producono anche per il run unito:
+
+1. Il checkpoint è stato riletto con le stesse variabili della §7.11.4, salvando tutto il workspace
+   (`RESULTS`, `AGR`, `LIV`, `GRID`, `REV`, `SINT`, `F1`, `PERD`, `CLUS`, `SENS`) in
+   `outputs/workspace/run_2026-10-28_fino25_unito_completo.mat`, non versionato. Si rifà solo l'analisi
+   fra comunità (30 s). **Regressione:** le tabelle di `tables_main2_fino25_unito/` escono identiche al byte.
+2. Export con `esporta_run_livelli.m` (nuovo) in `outputs/workspace/export_fino25_unito/` (versionato).
+   Chiama `esporta_run.m` e corregge la sola colonna `Composizione` di `punteggi_orientati.csv`: per i
+   livelli con imprese `esporta_run.m` scriveva `PA10`, `PA21` invece di `ND1`, `ND2_PA1`. Le quote ai
+   prosumer dell'export coincidono con le tabelle per tutti i 12 metodi (scarto 0).
+3. Figure con `grafici_metodi.py`. Due titoli ora derivano dai dati: F01 diceva "n = 5–18" e F06 "5 × 4
+   grid". La vista fino a 18 membri, con Nucleolo e Shapley esatto, sta in `outputs/figures_tesi_fino18_IND/`
+   e `outputs/tables_tesi_fino18_IND/`. Nei CSV già versionati di `tables_tesi_fino25_unito/`, F10 cambia
+   solo l'ordine delle righe e F06 al più di 8e-16 (altro interprete Python).
+
+```bash
+MAIN2_RIPRENDI=1 MAIN2_MAX_UTENTI=25 MAIN2_IND=1 MAIN2_CARTELLA=fino25_unito matlab -batch "MAIN2; v = intersect({'RESULTS','LIV','AGR','GRID','REV','SINT','F1','PERD','CLUS','SENS'}, who); save('outputs/workspace/run_2026-10-28_fino25_unito_completo.mat', v{:});"
+matlab -batch "addpath(pwd); addpath('outputs/workspace/strumenti'); esporta_run_livelli('outputs/workspace/run_2026-10-28_fino25_unito_completo.mat', 'outputs/workspace/export_fino25_unito')"
+venv/Scripts/python.exe -I outputs/workspace/strumenti/grafici_metodi.py --tabelle outputs/tables_main2_fino25_unito --export outputs/workspace/export_fino25_unito --out outputs/figures_tesi_fino25_unito --numeri outputs/tables_tesi_fino25_unito --senza-pagina
+venv/Scripts/python.exe -I outputs/workspace/strumenti/grafici_metodi.py --tabelle outputs/tables_main2_fino18_IND --export outputs/workspace/export_fino18 --out outputs/figures_tesi_fino18_IND --numeri outputs/tables_tesi_fino18_IND --senza-pagina
+venv/Scripts/python.exe -I outputs/workspace/strumenti/rapporto_conclusioni.py
+```
+
+**Cosa dicono i risultati** (dettagli e figure nel rapporto):
+- **Nessun metodo domina.** Ci sono tre poli: uguaglianza (Equal Split), merito e stabilità (Nucleolo, VLC,
+  Shapley) e sincronismo (Similarity-Utilization, Pearson Key, Tri-level EP).
+- **La struttura del conflitto dipende dalla penetrazione.** Sotto il 30% di prosumer il merito si oppone
+  all'incentivo. Dal 40% in su è l'uguaglianza a opporsi a tutto il resto: τ(Gini, forza incentivante) va
+  da −0,24 a −0,91.
+- **Quanto pesano i fattori.** La penetrazione spiega il 53-82% della varianza dei punteggi e inverte il
+  16-29% delle coppie; la taglia spiega al più il 10%. PA e imprese invertono il 10-11% delle coppie e
+  cambiano il vincitore quasi solo sull'allineamento lordo.
+- **Il trade-off più caro è uguaglianza contro incentivo** (perdite 0,94 e 0,80 dell'escursione).
+  Scegliere l'uguaglianza costa un eccesso di coalizione del 20% di v(N). Merito e stabilità non si fanno
+  concorrenza.
+- **Tre indicatori bastano per ordinare i metodi, non per scegliere.** Conservano almeno il 96% degli
+  ordinamenti a coppie, ma i fronti di Pareto coincidono solo in 3 comunità su 28.
+- **La soglia del 55% non è mai vincolante:** il massimo è il 50,1%, in una comunità di sole famiglie;
+  con PA o imprese si resta sotto il 29%.
+- **L'inclusione LIHC non è valutabile** (§7.7): va tolta dalla domanda di ricerca della tesi.
+
 [K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
 communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
 115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).
@@ -2209,6 +2263,7 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) | Serve il dettaglio di un file o di una funzione, la mappa di cartelle e tabelle, le schede della griglia, o `MAIN2.m` sezione per sezione |
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Mappa storica, con `MAIN.m` e i sedici metodi: serve per i file fuori dal perimetro di `MAIN2.m` |
 | [outputs/workspace/LEGGIMI.md](outputs/workspace/LEGGIMI.md) | Serve ripartire dai run finali senza rilanciarli, o confrontare due run (test di regressione) |
+| [outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html) | Servono le figure commentate e le conclusioni rispetto alla domanda di ricerca: 295 comunità da 5 a 25 membri, con PA e imprese (§7.11.5) |
 | [outputs/report/regole_ripartizione_cer.html](outputs/report/regole_ripartizione_cer.html) | Serve la pagina dei risultati finali (13 ottobre 2026) |
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
 | [data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md) | Serve il metodo completo con cui sono state costruite le curve di consumo e di produzione FV del palazzetto di Lucca, con affidabilità e limiti |

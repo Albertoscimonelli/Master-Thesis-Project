@@ -1197,6 +1197,12 @@ riepilogo di fine batch.
   outputs/workspace/analisi_<run>.txt  l'analisi in 13 blocchi (analizza.py)
   outputs/workspace/strumenti/
     esporta_run.m        dal .mat ai CSV lunghi
+    esporta_run_livelli.m  esporta_run piu' le etichette giuste dei livelli con
+                         imprese (ND1, ND2_PA1, ...) in punteggi_orientati.csv
+    rapporto_conclusioni.py  il rapporto finale (outputs/report/RISULTATI_e_
+                         conclusioni_RQ_2026-10-28.html): figure commentate e
+                         conclusioni rispetto alla domanda di ricerca, numeri dai
+                         CSV, controlli sulle affermazioni del testo
     analizza.py          l'analisi testuale dei CSV
     dati_interfaccia.py  i numeri della pagina dei risultati
     confronta_csv.py     confronto per chiave di due cartelle di tabelle
@@ -1206,6 +1212,10 @@ riepilogo di fine batch.
                        finali, con l'elenco delle schede in testa
   outputs/report/regole_ripartizione_cer.html
                        pagina dei risultati finali (13 ottobre)
+  outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html
+                       rapporto finale sulle 295 comunita' da 5 a 25 membri:
+                       44 figure commentate, conclusioni rispetto alla domanda
+                       di ricerca, note sul gap della tesi (README 7.11.5)
 
 
 ================================================================================

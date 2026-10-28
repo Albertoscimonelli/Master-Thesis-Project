@@ -295,7 +295,7 @@ def f01_grezzi(tf, lab_fascia, out, tab):
     axs[0, 0].set_yticks(range(len(metodi)), [nome(k) for k in metodi])
     axs[1, 0].set_yticks(range(len(metodi)), [nome(k) for k in metodi])
     legenda_fasce(fig, lab_fascia, loc="lower center", ncol=5, bbox_to_anchor=(0.5, -0.04), frameon=False)
-    fig.suptitle("Raw indicator values per community (households only, n = 5–18)", y=1.0)
+    fig.suptitle(f"Raw indicator values per community (households only, n = {tf.Membri.min()}–{tf.Membri.max()})", y=1.0)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     salva(fig, out, "F01_valori_grezzi")
     pd.DataFrame(righe, columns=["Indicatore", "Metodo", "Mediana", "Q1", "Q3", "Min", "Max", "Comunita"]) \
@@ -497,7 +497,7 @@ def f06_varianza(P, out, tab):
     for (i, j), v in np.ndenumerate(M.values):
         if not np.isfinite(v):
             a2.text(j, i, "const.", ha="center", va="center", fontsize=5, color="#888")
-    fig.suptitle("What drives the normalised scores across the 5 × 4 grid (households only)\n"
+    fig.suptitle(f"What drives the normalised scores across the {p0.Membri.nunique()} × {p0.Fascia.nunique()} grid (households only)\n"
                  "two-way decomposition, one community per cell: residual = interaction, not noise")
     fig.tight_layout()
     salva(fig, out, "F06_scomposizione_varianza")

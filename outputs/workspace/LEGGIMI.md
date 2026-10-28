@@ -115,5 +115,17 @@ python -I outputs/workspace/strumenti/pagina_figure.py --figure outputs/figures_
 ```
 
 `pagina_figure.py` fa una pagina senza testo interpretativo (`pagina_risultati.py` ha frasi scritte per
-i dati del 20 ottobre e pretende tutte le figure). I log dei run sono in `outputs/run_logs/`
+i dati del 20 ottobre e pretende tutte le figure).
+
+## Workspace completo del run unito e rapporto finale (28 ottobre 2026, sera)
+
+| File | Contenuto |
+|---|---|
+| `run_2026-10-28_fino25_unito_completo.mat` | lo stesso `RESULTS` di `run_2026-10-28_fino25_unito.mat` più `AGR`, `LIV`, `GRID`, `REV`, `SINT`, `F1`, `PERD`, `CLUS`, `SENS`. Ottenuto rileggendo il checkpoint con `MAIN2_RIPRENDI=1`: si rifà solo l'analisi fra comunità (30 s), e le tabelle di `tables_main2_fino25_unito/` escono identiche al byte |
+| `export_fino25_unito/` | i CSV lunghi delle 295 comunità, con la colonna `Composizione` (16 livelli). Versionato |
+| `strumenti/esporta_run_livelli.m` | chiama `esporta_run.m` e corregge le etichette dei livelli con imprese in `punteggi_orientati.csv` (`esporta_run.m` scrive `"PA" + codice`, cioè `PA10` invece di `ND1`) |
+| `strumenti/rapporto_conclusioni.py` | scrive `outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`: le figure commentate e le conclusioni rispetto alla domanda di ricerca. I numeri vengono dai CSV, e lo script si ferma se un'affermazione del testo non è più sostenuta dai dati. Produce anche F14 (soglia regolatoria) |
+
+Per i workspace dei run futuri con le imprese conviene usare `esporta_run_livelli.m` al posto di
+`esporta_run.m`. I comandi completi, nell'ordine, sono nella §15 del rapporto e nella §7.11.5 del README. I log dei run sono in `outputs/run_logs/`
 (`main2_run_2026-10-28_*`, `main2_run_2026-10-27_confronto_speedup_*`, `test_speedup_vlc_shapley_*`).

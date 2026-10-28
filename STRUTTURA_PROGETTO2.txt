@@ -532,7 +532,9 @@ riepilogo di fine batch.
       le due strade del fattore F; v(N) uguale al ricavo da condivisa.
   3c) Nu = nucleolus_cer_cached (sequenza di programmi lineari).
   3e) VLC = variance_least_core_cer (row-generation, a ogni taglia). Fino a
-      18 membri assert: theta_LC = theta_min del Nucleolo.
+      25 membri la separazione e' un argmin sulla v(S) enumerata (fino a 18
+      membri si passa la v(S) in cache di 3b, da 19 a 25 la enumera lei);
+      oltre, MILP. Fino a 18 membri assert: theta_LC = theta_min del Nucleolo.
   3f) ES  = equal_split_cer
   3g) PC  = proportional_consumption_cer
   3h) RM1 = remuneration_model1_cer(..., P_prel_kW, kWp degli impianti)
@@ -751,18 +753,23 @@ riepilogo di fine batch.
                             dall'enumerazione e dalla valutazione su
                             richiesta.
   shapley_cer_cached.m      Shapley esatto (Moncecchi et al. 2020, eq. 39)
-                            sulla v(S) passata in opts.v. Copia riga per riga
-                            di shapley_cer.m con la sola cache in piu'.
+                            sulla v(S) passata in opts.v. Stessa formula di
+                            shapley_cer.m con la cache; dal 27 ottobre le
+                            somme sono vettorizzate (scarti ~1e-16 per
+                            l'ordine di somma).
   nucleolus_cer_cached.m    Nucleolo per LP sequenziali (Fioriti et al. 2021),
                             sulla v(S) in cache; tolleranza relativa a v(N);
                             avviso se il rango non arriva a n.
   variance_least_core_cer.m Variance Least Core (Ferrucci, Fioriti, Poli,
                             ISGT Europe 2025) per row-generation: master LP
                             per theta_LC, poi master QP a varianza minima;
-                            separazione con un MILP (intlinprog) sulle sole
-                            ore con generazione. Con F > 0 ricade
-                            sull'enumerazione. Espone tolConv, la tolleranza
-                            di convergenza con cui va verificato.
+                            separazione per ENUMERAZIONE della v(S) fino a
+                            opts.denseMaxPlayers = 25 giocatori (argmin su
+                            2^n surplus, esatta), oltre con un MILP
+                            (intlinprog) sulle sole ore con generazione.
+                            Con F > 0 solo l'enumerazione. maxIter default
+                            1000. Espone tolConv, la tolleranza di
+                            convergenza con cui va verificato.
   marginal_contribution_cer.m  MC_i = v(N) - v(N\{i}) (mcRaw), normalizzati a
                             v(N). In MAIN2 serve solo come BC_i del Fairness
                             Index.
@@ -1281,6 +1288,11 @@ CALENDARIO
     test_shapley_permutations.m  la formula dello Shapley contro la media sui
                                  720 ordini di un gioco a 6 giocatori
                                  (efficienza, null player, simmetria)
+    test_speedup_vlc_shapley.m   Shapley vettorizzato e VLC per enumerazione
+                                 contro le versioni precedenti, giochi
+                                 sintetici da 5 a 14 giocatori; cronometro a 25
+    confronto_speedup_vlc.m      due checkpoint di MAIN2, comunita' per
+                                 comunita': scarto relativo massimo e tempi
 
 
 ================================================================================

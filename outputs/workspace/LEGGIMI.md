@@ -85,10 +85,35 @@ risultati sono comunque nelle tabelle CSV. Per i blocchi successivi conviene lan
 `MAIN2_IND=1 ... matlab -batch "MAIN2; save('outputs/workspace/<nome>.mat','RESULTS','LIV')"`.
 Codice al commit di fase B (`a770725`) più le modifiche al README.
 
-## Run del 27 ottobre 2026: blocco 20-25 membri con le imprese (interrotto)
+## Run del 27 ottobre 2026: blocco 20-25 membri con le imprese (interrotto, completato il 28 ottobre)
 
 | File | Contenuto |
 |---|---|
 | `run_2026-10-27_solo2025_IND_interrotto45.mat` | `RESULTS` delle prime 45 comunità su 127 (copia del checkpoint `outputs/checkpoint_main2_solo2025_IND.mat`). Run fermato dal Variance Least Core a 25 membri su `ND1_PA1/CER_18_7_0`. Log in `outputs/run_logs/main2_run_2026-10-27_solo2025_IND_interrotto.log` |
 
 Solo `RESULTS`, nessuna tabella. Dettagli e prossimi passi in README §7.11.2.
+
+## Run del 28 ottobre 2026: blocco 20-25 membri completato e analisi unita fino a 25 membri
+
+Codice del branch `speedup-vlc-shapley` (PR #69): separazione del VLC per enumerazione fino a 25
+membri, Shapley vettorizzato, `maxIter` 1000 (README §7.11.3).
+
+| File | Contenuto |
+|---|---|
+| `run_2026-10-28_solo2025_IND_speedup.mat` | `RESULTS` delle 127 comunità da 20 e 25 membri (livelli PA0-PA3, ND1-ND3, ND{k}_PA{p}). Le prime 45 sono il rifacimento del run interrotto del 27 ottobre, uguali entro 3,5e-11. Tabelle in `outputs/tables_main2_solo2025_IND_speedup/` |
+| `run_2026-10-28_fino25_unito.mat` | `RESULTS` delle 295 comunità da 5 a 25 membri: le 168 di `run_2026-10-27_fino18_IND.mat` più le 127 sopra, nell'ordine di `elenco_schede_cer.m`. Riletto da `MAIN2.m` con `MAIN2_RIPRENDI=1` per l'analisi tra comunità: `outputs/tables_main2_fino25_unito/` |
+
+Solo `RESULTS` (niente `AGR` né `LIV`, quindi `esporta_run.m` non si può usare): i valori grezzi
+(F01, F04/F05, F07, F08, F13 di `grafici_metodi.py`) per queste comunità non sono disponibili. Le figure
+si rigenerano con:
+
+```
+python -I outputs/workspace/strumenti/grafici_metodi.py --tabelle outputs/tables_main2_fino25_unito \
+    --out outputs/figures_tesi_fino25_unito --numeri outputs/tables_tesi_fino25_unito --senza-pagina
+python -I outputs/workspace/strumenti/pagina_figure.py --figure outputs/figures_tesi_fino25_unito \
+    --numeri outputs/tables_tesi_fino25_unito
+```
+
+`pagina_figure.py` fa una pagina senza testo interpretativo (`pagina_risultati.py` ha frasi scritte per
+i dati del 20 ottobre e pretende tutte le figure). I log dei run sono in `outputs/run_logs/`
+(`main2_run_2026-10-28_*`, `main2_run_2026-10-27_confronto_speedup_*`, `test_speedup_vlc_shapley_*`).

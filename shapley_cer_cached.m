@@ -5,9 +5,10 @@ function S = shapley_cer_cached(genUsers, loadUsers, userNames, P_CER, opts)
 %   coalizione. Opzioni in piu':
 %     opts.v        [2^n x 1]  v(S) da cer_coalition_values, stessi argomenti
 %     opts.players  [1 x n]    secondo output di cer_coalition_values
-%   Senza opts.v il comportamento e' quello di shapley_cer.m. Il resto del
-%   codice e' identico all'originale, riga per riga: la non-regressione si
-%   verifica con test_regressione_cache_v.m.
+%   Senza opts.v il comportamento e' quello di shapley_cer.m. La somma sulle
+%   coalizioni e' vettorizzata (vedi sotto), quindi rispetto a shapley_cer.m
+%   phi coincide a meno dell'arrotondamento, non bit per bit: il confronto
+%   con l'originale e' in test_speedup_vlc_shapley.m.
 %
 %SHAPLEY_CER  Ripartizione dell'incentivo CER sull'energia condivisa tramite
 %   Shapley value (gioco cooperativo, Moncecchi et al., Appl. Sci. 2020).
@@ -87,15 +88,28 @@ function S = shapley_cer_cached(genUsers, loadUsers, userNames, P_CER, opts)
     end
 
     % --- Calcolo dello Shapley value di ogni giocatore ----------------------
+    % Vettorizzato sulle coalizioni (il doppio ciclo su n * 2^n bitmask costava
+    % minuti a n = 18). Cardinalita' |C| di ogni bitmask, per raddoppio:
+    % le bitmask col bit i acceso hanno un giocatore in piu' di quelle senza.
+    card = zeros(nSub, 1);
+    len  = 1;
+    for i = 1:n
+        card(len+1:2*len) = card(1:len) + 1;
+        len = 2 * len;
+    end
+    wC = w(min(card, n-1) + 1);          % la grande coalizione non e' mai una C
+
+    % Con v rimodellato in [bit_i x 2 x resto] la seconda dimensione e' il bit
+    % i: (:,1,:) sono le C senza i, (:,2,:) le stesse C piu' i, nello stesso
+    % ordine. Stessa somma del ciclo originale, in un ordine diverso: gli
+    % scarti sono di arrotondamento (~1e-12 relativi), non di formula.
+    v   = v(:);
     phi = zeros(n, 1);
     for i = 1:n
-        bit_i = 2^(i-1);
-        for mask = 0:(nSub - 1)
-            if bitget(mask, i) == 1, continue; end   % C non deve contenere i
-            s      = sum(bitget(mask, 1:n));         % cardinalita' |C|
-            marg   = v(mask + bit_i + 1) - v(mask + 1);
-            phi(i) = phi(i) + w(s+1) * marg;
-        end
+        bit_i  = 2^(i-1);
+        V      = reshape(v,  bit_i, 2, []);
+        W      = reshape(wC, bit_i, 2, []);
+        phi(i) = sum(W(:, 1, :) .* (V(:, 2, :) - V(:, 1, :)), 'all');
     end
 
     % --- Output -------------------------------------------------------------

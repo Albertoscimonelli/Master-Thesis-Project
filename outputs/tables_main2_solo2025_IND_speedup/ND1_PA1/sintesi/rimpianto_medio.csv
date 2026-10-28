@@ -1,0 +1,81 @@
+Metodo,Indicatore,Comunita,Rimpianto_medio,Rimpianto_min,Rimpianto_max,Rimpianto_EUR_medio,Rimpianto_pct_vN_medio
+Adaptive Sampling Shapley,AllineamentoVirtu,8,0.45061,0.161501,0.898481,NaN,NaN
+Adaptive Sampling Shapley,AllineamentoVirtu_lordo,8,0.289973,0.0168227,0.575643,NaN,NaN
+Adaptive Sampling Shapley,EI_orig,8,0.711357,0.479934,0.87503,NaN,NaN
+Adaptive Sampling Shapley,FairnessIndex,8,0.104985,0,0.312154,NaN,NaN
+Adaptive Sampling Shapley,ForzaIncentivante,8,0.458473,0.389651,0.590359,NaN,NaN
+Adaptive Sampling Shapley,Gini,8,0.711357,0.479934,0.87503,NaN,NaN
+Adaptive Sampling Shapley,Sigma,8,0.0744203,0,0.186116,NaN,NaN
+Adaptive Sampling Shapley,VAN_min_EUR,8,0.728857,0.418929,0.880857,398.06,NaN
+Cascading Tree,AllineamentoVirtu,8,0.918565,0.703259,1,NaN,NaN
+Cascading Tree,AllineamentoVirtu_lordo,8,0.00377703,0,0.0082814,NaN,NaN
+Cascading Tree,EI_orig,8,0.626434,0.453715,0.828332,NaN,NaN
+Cascading Tree,FairnessIndex,8,0.804053,0.383608,1,NaN,NaN
+Cascading Tree,ForzaIncentivante,8,0.954539,0.823927,1,NaN,NaN
+Cascading Tree,Gini,8,0.626434,0.453715,0.828332,NaN,NaN
+Cascading Tree,Sigma,8,0.788019,0.494911,0.962352,NaN,NaN
+Cascading Tree,VAN_min_EUR,8,0.438115,0.373048,0.537759,249.83,NaN
+Equal Split,AllineamentoVirtu,8,0.696087,0.587409,0.811798,NaN,NaN
+Equal Split,AllineamentoVirtu_lordo,8,0.819414,0.661192,1,NaN,NaN
+Equal Split,EI_orig,8,0,0,0,NaN,NaN
+Equal Split,FairnessIndex,8,0.76714,0.412128,0.984656,NaN,NaN
+Equal Split,ForzaIncentivante,8,0.674955,0.411543,0.884716,NaN,NaN
+Equal Split,Gini,8,0,0,0,NaN,NaN
+Equal Split,Sigma,8,0.722638,0.324285,1,NaN,NaN
+Equal Split,VAN_min_EUR,8,0,0,0,0,NaN
+Pearson Key,AllineamentoVirtu,8,0.14323,0.0585364,0.39304,NaN,NaN
+Pearson Key,AllineamentoVirtu_lordo,8,0.747308,0.290447,0.919437,NaN,NaN
+Pearson Key,EI_orig,8,0.801686,0.571778,0.92758,NaN,NaN
+Pearson Key,FairnessIndex,8,0.237845,0.175175,0.367264,NaN,NaN
+Pearson Key,ForzaIncentivante,8,0.158396,0.0861906,0.251605,NaN,NaN
+Pearson Key,Gini,8,0.801686,0.571778,0.92758,NaN,NaN
+Pearson Key,Sigma,8,0.303615,0.204667,0.430812,NaN,NaN
+Pearson Key,VAN_min_EUR,8,0.953905,0.84195,1,596.63,NaN
+Proportional to Consumption,AllineamentoVirtu,8,0.320216,0.232424,0.498434,NaN,NaN
+Proportional to Consumption,AllineamentoVirtu_lordo,8,0.493186,0.220371,0.615852,NaN,NaN
+Proportional to Consumption,EI_orig,8,0.75287,0.491525,0.87166,NaN,NaN
+Proportional to Consumption,FairnessIndex,8,0.119941,0.0622753,0.166337,NaN,NaN
+Proportional to Consumption,ForzaIncentivante,8,0.352218,0.235166,0.483981,NaN,NaN
+Proportional to Consumption,Gini,8,0.75287,0.491525,0.87166,NaN,NaN
+Proportional to Consumption,Sigma,8,0.168649,0.0444681,0.272937,NaN,NaN
+Proportional to Consumption,VAN_min_EUR,8,0.929418,0.874914,0.969465,568.55,NaN
+Remuneration Model 1,AllineamentoVirtu,8,0.827418,0.661747,0.958913,NaN,NaN
+Remuneration Model 1,AllineamentoVirtu_lordo,8,0.00913913,0,0.0468646,NaN,NaN
+Remuneration Model 1,EI_orig,8,0.897523,0.747672,1,NaN,NaN
+Remuneration Model 1,FairnessIndex,8,0.70563,0.222938,1,NaN,NaN
+Remuneration Model 1,ForzaIncentivante,8,0.908703,0.819616,1,NaN,NaN
+Remuneration Model 1,Gini,8,0.897523,0.747672,1,NaN,NaN
+Remuneration Model 1,Sigma,8,0.82159,0.339192,1,NaN,NaN
+Remuneration Model 1,VAN_min_EUR,8,0.681117,0.594905,0.795551,394.64,NaN
+Similarity-Utilization,AllineamentoVirtu,8,0,0,0,NaN,NaN
+Similarity-Utilization,AllineamentoVirtu_lordo,8,0.882345,0.422675,1,NaN,NaN
+Similarity-Utilization,EI_orig,8,0.789526,0.529486,1,NaN,NaN
+Similarity-Utilization,FairnessIndex,8,0.497798,0.437718,0.553158,NaN,NaN
+Similarity-Utilization,ForzaIncentivante,8,0,0,0,NaN,NaN
+Similarity-Utilization,Gini,8,0.789526,0.529486,1,NaN,NaN
+Similarity-Utilization,Sigma,8,0.627644,0.507277,0.76908,NaN,NaN
+Similarity-Utilization,VAN_min_EUR,8,0.925056,0.723424,0.997289,592.83,NaN
+Tri-level EP,AllineamentoVirtu,8,0.16719,0.0780415,0.42611,NaN,NaN
+Tri-level EP,AllineamentoVirtu_lordo,8,0.710504,0.27578,0.882047,NaN,NaN
+Tri-level EP,EI_orig,8,0.806383,0.553117,0.909573,NaN,NaN
+Tri-level EP,FairnessIndex,8,0.195034,0.121509,0.332294,NaN,NaN
+Tri-level EP,ForzaIncentivante,8,0.182248,0.107076,0.277603,NaN,NaN
+Tri-level EP,Gini,8,0.806383,0.553117,0.909573,NaN,NaN
+Tri-level EP,Sigma,8,0.25586,0.13945,0.40343,NaN,NaN
+Tri-level EP,VAN_min_EUR,8,0.971554,0.89409,1,600.07,NaN
+Variance Least Core,AllineamentoVirtu,8,0.326165,0.171597,0.528407,NaN,NaN
+Variance Least Core,AllineamentoVirtu_lordo,8,0.392885,0.147116,0.574393,NaN,NaN
+Variance Least Core,EI_orig,8,0.835104,0.501513,1,NaN,NaN
+Variance Least Core,FairnessIndex,8,0.00546535,0,0.0368426,NaN,NaN
+Variance Least Core,ForzaIncentivante,8,0.326967,0.281862,0.392883,NaN,NaN
+Variance Least Core,Gini,8,0.835104,0.501513,1,NaN,NaN
+Variance Least Core,Sigma,8,0.00220679,0,0.0176543,NaN,NaN
+Variance Least Core,VAN_min_EUR,8,0.992468,0.970219,1,601.57,NaN
+Weighted Solidarity,AllineamentoVirtu,8,0.87416,0.552221,1,NaN,NaN
+Weighted Solidarity,AllineamentoVirtu_lordo,8,0.551729,0.449038,0.676113,NaN,NaN
+Weighted Solidarity,EI_orig,8,0.377545,0.231383,0.478599,NaN,NaN
+Weighted Solidarity,FairnessIndex,8,0.862581,0.586143,1,NaN,NaN
+Weighted Solidarity,ForzaIncentivante,8,0.78646,0.437902,1,NaN,NaN
+Weighted Solidarity,Gini,8,0.377545,0.231383,0.478599,NaN,NaN
+Weighted Solidarity,Sigma,8,0.775073,0.398341,1,NaN,NaN
+Weighted Solidarity,VAN_min_EUR,8,0.757976,0.221475,1,405.82,NaN

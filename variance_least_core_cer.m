@@ -66,7 +66,8 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 %     P_CER     scalare o [H x 1]  incentivo CER su energia condivisa [EUR/kWh]
 %     opts      struct    opzionale, campi tutti facoltativi:
 %                 .tolRel        tolleranza RELATIVA a v(N)     (def. 1e-6)
-%                 .maxIter       iterazioni max per fase        (def. 500)
+%                 .maxIter       iterazioni max per fase        (def. 1000:
+%                                PA1/CER_12_13_0, 25 membri, converge in 519)
 %                 .verbose       stampa avanzamento             (def. false)
 %                 .validateDense verifica contro l'enumerazione (def. false,
 %                                ammessa solo per n <= 12)
@@ -114,7 +115,7 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
     % --- Opzioni e valori di default ----------------------------------------
     if nargin < 5 || isempty(opts), opts = struct(); end
     if ~isfield(opts, 'tolRel'),        opts.tolRel        = 1e-6;  end
-    if ~isfield(opts, 'maxIter'),       opts.maxIter       = 500;   end
+    if ~isfield(opts, 'maxIter'),       opts.maxIter       = 1000;  end
     if ~isfield(opts, 'verbose'),       opts.verbose       = false; end
     if ~isfield(opts, 'validateDense'), opts.validateDense = false; end
     if ~isfield(opts, 'esente'),        opts.esente        = [];    end

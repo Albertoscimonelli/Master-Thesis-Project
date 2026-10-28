@@ -30,6 +30,12 @@ varia taglia e penetrazione dei prosumer.
 > segnaposto e senza PA: sono **superate** da quelle del 21 ottobre. Sintesi dei risultati e del
 > lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md` (precedente al
 > run a 25 membri con PA).
+>
+> **Aggiornamento del 28 ottobre 2026:** il blocco **20-25 membri con le imprese è completo** (127
+> comunità, §7.11.2) grazie allo speedup del Variance Least Core e dello Shapley (§7.11.3, PR #69:
+> separazione per enumerazione fino a 25 membri, risultati uguali entro 3,5e-11, circa 11 volte più
+> veloce), e **l'analisi è stata rifatta su tutte le 295 comunità da 5 a 25 membri insieme** (§7.11.4,
+> `outputs/tables_main2_fino25_unito/`). Restano fuori le schede da 50-100 membri (§14.1).
 
 ---
 
@@ -243,6 +249,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `apply_relevance_threshold.m`, `ricalcola_inversioni_soglia.m` | Soglia di **rilevanza pratica** su tutti gli indicatori e ricalcolo di inversioni, vincitori e interazione dai soli `RESULTS`, senza rilanciare i metodi (§7.6) |
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
 | `confronto_pa.m` | **Presenza di PA**: PA0 contro PA1-3 a N, C, P invariati — inversioni, vincitori, quote ai membri PA, trade-off e sottoinsieme minimo per livello; auto-test su dati a penna (§7.10) |
+| `test_speedup_vlc_shapley.m`, `confronto_speedup_vlc.m` | Verifica dello speedup di §7.11.3: Shapley vettorizzato e VLC per enumerazione contro le versioni precedenti su giochi sintetici (soglie 1e-9 e 1e-5), e confronto comunità per comunità fra due checkpoint di `MAIN2.m` (tolleranza relativa 1e-6; 45 comunità, scarto massimo 3,5e-11) |
 | `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
 | `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
 | `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
@@ -257,6 +264,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `plot_financial_metrics.m` | VAN, tempo di ritorno, composizione del flusso di cassa (§11.1) |
 | `optimizer_PV.m`, `pv_*.m` | Pre-dimensionamento di un impianto PV su copertura (standalone, §8) |
 | `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run finali, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre), e quelle del 13 ottobre a 25 membri, superate |
+| `outputs/tables_main2_fino18_IND/`, `outputs/tables_main2_solo2025_IND_speedup/`, `outputs/tables_main2_fino25_unito/` | Asse imprese, versionate: 168 comunità fino a 18 membri (27 ottobre, §7.11.1), 127 da 20-25 membri (28 ottobre, §7.11.2) e l'analisi unita delle 295 (§7.11.4). Numeri per la tesi in `outputs/tables_tesi_fino25_unito/` |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
 | `outputs/report/` | Pagina dei risultati finali (`regole_ripartizione_cer.html`), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
@@ -395,7 +403,7 @@ Derivazione matematica completa, assiomi ed esempi numerici in
 | 1 | **Shapley value** | `shapley_cer.m` (`MAIN2.m`: `shapley_cer_cached.m`) | Media dei contributi marginali di ciascun utente su tutti gli ordini possibili di formazione della coalizione (Moncecchi et al. 2020) | No (in generale) | fino a 18 membri |
 | 2 | **Nucleolo** | `nucleolus_cer.m` (`MAIN2.m`: `nucleolus_cer_cached.m`) | Massimizza lessicograficamente il surplus della coalizione più scontenta, via LP sequenziali (Fioriti et al. 2021) | Sì, se il Core è non vuoto | fino a 18 membri |
 | 3 | **Nash Bargaining** | `nash_bargaining_cer.m` | Quota proporzionale al contributo marginale alla grande coalizione, forma chiusa (Yan et al. 2023) | No (in generale) | — |
-| 4 | **Variance Least Core** | `variance_least_core_cer.m` | L'allocazione del Least Core più vicina alla ripartizione uniforme, via row-generation — pensata per comunità grandi, sui nostri dati arriva a 25 membri (§14.1) (Ferrucci, Fioriti, Poli 2025) | Sì | sì |
+| 4 | **Variance Least Core** | `variance_least_core_cer.m` | L'allocazione del Least Core più vicina alla ripartizione uniforme, via row-generation — pensata per comunità grandi; la separazione si fa per enumerazione fino a 25 membri (§7.11.3), oltre resta il MILP e non arriva in fondo (§14.1) (Ferrucci, Fioriti, Poli 2025) | Sì | sì |
 | 5 | **Equal Split** | `equal_split_cer.m` | Benchmark ingenuo: `v(N)` diviso in **parti uguali** tra tutti gli utenti — `φ_i = v(N)/n` | N/A (non è un gioco) | sì |
 | 6 | **Proportional to Consumption** | `proportional_consumption_cer.m` | Benchmark ingenuo: quota proporzionale al **consumo** di ciascun utente nelle sole ore "utili" (energia condivisa di comunità > 0) — `φ_i = v(N) · cons_i / Σ_j cons_j` | N/A (non è un gioco) | sì |
 | 7 | **Remuneration Model 1** | `remuneration_model1_cer.m` | Split α/β tra classe consumatori e classe produttori/prosumer, pesato sulla **potenza contrattuale/nominale** [kW] di ciascuna classe (dato manuale, vedi §9); dentro ogni classe, proporzionale all'energia oraria (Candela et al. 2022) | N/A (non è un gioco) | sì |
@@ -1599,13 +1607,14 @@ anche le imprese.
 - **Scaglione unico.** A PA3 e ND{k}_PA3 (38 comunità) l'errore dello scaglione vale in media il 7,9% di v(N),
   sopra la soglia di rilevanza del 5%: quei livelli non vanno presentati come robusti (§7.10).
 - **Nessun filtro sulla penetrazione:** le schede al 75% e al 100% di prosumer sono dentro (§12).
-- **Solo N = 15 e 18.** Shapley esatto e Nucleolo valgono fino a 18 membri; i blocchi da 20 e 25
-  membri non sono ancora stati fatti.
+- **Solo N = 15 e 18 in questo blocco.** Shapley esatto e Nucleolo valgono fino a 18 membri; i
+  blocchi da 20 e 25 membri sono stati fatti dopo (§7.11.2) e uniti a questo in §7.11.4.
 
-#### 7.11.2 Blocco 20-25 membri con le imprese: run interrotto (27 ottobre 2026)
+#### 7.11.2 Blocco 20-25 membri con le imprese (27-28 ottobre 2026)
 
 Il run `MAIN2_IND=1 MAIN2_MAX_UTENTI=25` sulle 127 schede da 20 e 25 membri (livelli PA0-PA3, ND1-ND3
-e ND{k}_PA{p}) **si è fermato alla 46ª comunità**, `ND1_PA1/CER_18_7_0` (25 membri), alle 20:13:
+e ND{k}_PA{p}) si era **fermato alla 46ª comunità** il 27 ottobre alle 20:13, su `ND1_PA1/CER_18_7_0`
+(25 membri):
 
 ```
 Error using variance_least_core_cer (line 183)
@@ -1613,20 +1622,79 @@ Row-generation (fase theta_LC) non convergente in 500 iterazioni.
 Error in MAIN2 (line 834)
 ```
 
-Il Variance Least Core a 25 membri converge su alcune comunità e su altre no: `ND1/CER_18_7_0`
-(stessa composizione, senza PA) ha chiuso dopo 37 minuti, `ND1_PA1/CER_18_7_0` no. È il limite
-già noto (README §14.1), che per questo blocco volevamo riprovare.
+Era il limite già noto del Variance Least Core a 25 membri (§14.1): `ND1/CER_18_7_0` (stessa composizione,
+senza PA) aveva chiuso dopo 37 minuti, `ND1_PA1/CER_18_7_0` no. In 10 ore erano state fatte 45 comunità
+su 127 (13 min 39 s di media). Il checkpoint di quel run, copia in
+`outputs/workspace/run_2026-10-27_solo2025_IND_interrotto45.mat`, resta per il confronto.
 
-- **Fatte prima dell'errore: 45 comunità su 127**, 8 per livello (PA0, PA1, PA2, PA3, ND1) più 5 di
-  ND1_PA1. Tempo medio 13 min 39 s per comunità, circa 10 h di calcolo. I risultati sono nel
-  checkpoint `outputs/workspace/run_2026-10-27_solo2025_IND_interrotto45.mat` (solo `RESULTS`, non
-  versionato) e nel log `outputs/run_logs/main2_run_2026-10-27_solo2025_IND_interrotto.log`.
-- **Non sono state scritte tabelle** per questo blocco: MAIN2 le produce solo a fine run.
-- **Prossimi passi, in attesa dell'ok:** (1) fare in modo che un VLC non convergente segni il VLC come
-  non disponibile per quella comunità, come già per Shapley e Nucleolo oltre i 18 membri, invece di
-  fermare il run (modifica a `MAIN2.m` riga 834, da concordare); (2) riprendere dal checkpoint con
-  `MAIN2_RIPRENDI=1`; (3) valutare più processi MATLAB in parallelo, perché il run usa circa un
-  core su 14. Le comunità senza VLC andranno elencate e trattate a parte nell'analisi.
+**Il blocco è stato completato il 28 ottobre** con il codice di §7.11.3: tutte le 127 comunità sono
+analizzate, `ND1_PA1/CER_18_7_0` converge (218 s). MAIN2 dichiara 2 h 36 min per le 127 (45 rifatte per il
+confronto: 54 min; 82 nuove: 1 h 40 min). Le tabelle sono in `outputs/tables_main2_solo2025_IND_speedup/`,
+i `RESULTS` in `outputs/workspace/run_2026-10-28_solo2025_IND_speedup.mat` (non versionato).
+
+#### 7.11.3 Speedup del Variance Least Core e dello Shapley (PR #69, 27-28 ottobre 2026)
+
+Il costo del Variance Least Core stava nella separazione: a ogni iterazione un MILP (`intlinprog`) su
+tutte le ore con generazione, e le iterazioni sono centinaia. Due modifiche, entrambe nel branch
+`speedup-vlc-shapley`:
+
+- **`variance_least_core_cer.m`: separazione per enumerazione fino a 25 giocatori**
+  (`opts.denseMaxPlayers`, default 25). Si calcola `v(S)` per tutte le 2^n coalizioni una sola volta (a
+  blocchi vettorizzati, circa 800 MB a n = 25) e ogni separazione diventa un argmin su 2^n surplus,
+  esatto e senza la tolleranza di gap del MILP. In `MAIN2.m` la `v(S)` già calcolata per Shapley e
+  Nucleolo (comunità fino a 18 membri) viene passata al VLC, da 19 a 25 la enumera lei. **Oltre 25 membri
+  il MILP è invariato**, perché 2^50 coalizioni (~10^15 valori) non entrano in nessuna macchina:
+  non esiste una via di enumerazione per le schede da 50-100 membri.
+- **`shapley_cer_cached.m`**: il doppio ciclo `n·2^n` è sostituito da somme vettorizzate. Stessa formula
+  (Moncecchi et al. 2020, eq. 39), diverso ordine di somma: differenze dell'ordine di 1e-16.
+- **Limite di iterazioni 500 → 1000** (`opts.maxIter`). `PA1/CER_12_13_0` (25 membri) converge in 519
+  iterazioni con l'enumerazione (473 col MILP, stesso `theta_LC` = 2,562395 EUR): la separazione
+  esatta sceglie, a parità di surplus, coalizioni diverse da quelle del MILP e il percorso si allunga un
+  po'. Con 500 il run si fermava a due decine di iterazioni dalla fine.
+
+**Verifica.** `test_speedup_vlc_shapley.m` (giochi sintetici da 5, 8, 11, 14 giocatori, con e senza F):
+scarto massimo sullo Shapley 5,9e-16 (soglia 1e-9), sul VLC 6,2e-14 (soglia 1e-5), sia contro il MILP sia
+contro la `v(S)` in cache. Tempi del VLC a n = 14: 728 s col MILP, 0,2 s per enumerazione; a n = 25, 125 s
+(174 + 1 iterazioni).
+
+**Confronto sulle prime 45 comunità del blocco 20-25** (`confronto_speedup_vlc.m`, stesse schede, stesso
+ordine, codice nuovo contro checkpoint del 27 ottobre): scarto relativo massimo **3,5e-11**
+(`ND1/CER_6_19_0`, forza incentivante lorda), tolleranza fissata a 1e-6; tutte e 45 entro soglia. Tempo di
+analisi 10,24 h → 0,90 h (×11,4): 20 membri 9-16 s per comunità (prima 1,5-21 min), 25 membri 1-3,5 min
+(prima 2,6-37 min).
+
+**Schede da 50 membri: provate e interrotte.** Un tentativo su `CER_0_50_0` col MILP è stato fermato dopo
+30 minuti senza che la prima comunità finisse (limite fissato: una scheda oltre un'ora ferma tutto). Il
+metodo nuovo non si applica a 50 membri; le tre strade aperte sono: segnare il VLC come non disponibile
+sopra i 25 membri, una separazione approssimata (euristica, VLC non più esatto), un MILP accelerato (già
+provato a 25 membri senza guadagno, §14.1). Non ancora decisa.
+
+#### 7.11.4 Analisi unita fino a 25 membri (28 ottobre 2026)
+
+Le 168 comunità fino a 18 membri con le imprese (`tables_main2_fino18_IND/`, 27 ottobre) e le 127 del
+blocco 20-25 (§7.11.2) sono state **analizzate insieme**: stessi livelli, un solo `RESULTS` da 295
+comunità (5-25 membri, 16 livelli di composizione, 28 schede nel livello base), riletto da `MAIN2.m` con
+`MAIN2_RIPRENDI=1 MAIN2_MAX_UTENTI=25 MAIN2_IND=1 MAIN2_CARTELLA=fino25_unito` su un checkpoint costruito
+unendo i due (stesso ordine di `elenco_schede_cer.m`, nessun duplicato). Non si calcola nulla per
+comunità: si rifà l'analisi tra comunità, con i punteggi normalizzati sull'insieme completo.
+
+- **Metodi: 10, quelli comuni a tutte le comunità.** Shapley e Nucleolo esatti non ci sono (oltre 18
+  membri si saltano, §14.1); c'è l'Adaptive Sampling Shapley. Stesso criterio della griglia del 13 ottobre.
+- **Eccesso massimo di coalizione e coalizioni instabili** valgono solo per le 20 comunità del livello
+  base fino a 18 membri: nelle 8 da 20-25 non esistono. Le altre metriche usano tutte le 28.
+- Tabelle in `outputs/tables_main2_fino25_unito/`, numeri della tesi in `outputs/tables_tesi_fino25_unito/`.
+  Le figure (`outputs/figures_tesi_fino25_unito/`, non versionate) si rigenerano con
+  `python -I outputs/workspace/strumenti/grafici_metodi.py --tabelle outputs/tables_main2_fino25_unito
+  --out outputs/figures_tesi_fino25_unito --numeri outputs/tables_tesi_fino25_unito --senza-pagina`
+  e poi `pagina_figure.py` (pagina senza commenti interpretativi).
+- **`grafici_metodi.py` cambiato il 28 ottobre:** F10 (15 pannelli in 4 colonne), F11 (tutti i 16 livelli,
+  colore per numero di PA e forma per numero di imprese, a destra una mappa metodo × livello), niente
+  colonne vuote per gli indicatori senza dati, titoli con il numero di taglie vero. **F01, F04/F05, F07,
+  F08 e F13 non si producono** se l'export dei valori grezzi non contiene tutte le comunità delle tabelle:
+  oggi è così, perché `MAIN2.m` salva solo `RESULTS` e `esporta_run.m` vuole `AGR` e `LIV`. Con i dati
+  del 20 ottobre l'output è identico a prima, al byte, per tutti i 15 CSV.
+- Le 168 comunità fino a 18 membri vengono dal run di mattina del 27 ottobre, col codice precedente allo
+  speedup; il confronto di §7.11.3 vale per le sole 20-25 membri.
 
 [K26] Koltunov, M., Beltrami, F., Grossi, L., Blasuttigh, N. (2026). *Impact of renewable energy
 communities on the Italian day-ahead electricity market: A scenario analysis*. Energy Policy, 218,
@@ -1974,7 +2042,9 @@ membri 1-6 min; 18 membri 2,7-10 min; 20 membri 2,5-14 min; 25 membri 7,5-31 min
 di taglia costano di più le comunità a bassa penetrazione (dagli 8 membri in su), e dai 15
 membri in su il tempo è dominato dal Variance Least Core (§14.1). La griglia fino a 25
 membri dura 2 h 28 min; il run del 21 ottobre, con le PA e 108 comunità, 9 h 9 min (il solo
-Variance Least Core di `CER_12_13_0`, 25 membri, ha richiesto 21 min 45 s).
+Variance Least Core di `CER_12_13_0`, 25 membri, ha richiesto 21 min 45 s). Con la separazione per
+enumerazione (§7.11.3) una comunità da 20 membri costa 9-16 s e una da 25 1-3,5 min: le 45 comunità del
+blocco 20-25 passano da 10,2 h a 0,9 h, le 127 si chiudono in 2 h 36 min.
 
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
@@ -2242,6 +2312,13 @@ ferma con un errore invece di usare la migliore soluzione trovata — è success
 ottobre su `CER_18_7_0` (log in `outputs/run_logs/`) e il 21 ottobre su `PA3/CER_0_20_0`, dove
 la causa più probabile è la sospensione del PC (il limite è a tempo reale, §7.10.1). Per questo le schede da 50-100 membri
 non sono nell'analisi: è il primo punto da sistemare per andare oltre i 25 membri.
+
+**Aggiornamento del 28 ottobre (§7.11.3).** Fino a 25 membri il limite è superato: la separazione
+diventa un argmin sulla `v(S)` enumerata, esatta, e a 25 membri una comunità costa 1-3,5 min invece di
+fino a 37 (`PA1/CER_12_13_0`, che col MILP chiudeva in 23 min, ora in 3; `ND1_PA1/CER_18_7_0`, che si
+fermava a 500 iterazioni, converge). Oltre i 25 membri il problema è invariato: l'enumerazione richiede
+`2^n` valori (a 50 membri circa 10^15, impossibile) e il MILP non arriva in fondo; un tentativo su
+`CER_0_50_0` è stato fermato dopo 30 minuti. Le tre strade aperte per 50-100 membri sono in §7.11.3.
 
 Gli otto metodi non cooperativi (Equal Split, Proportional to Consumption,
 Remuneration Model 1, Cascading Tree, Weighted Solidarity, Pearson Key,

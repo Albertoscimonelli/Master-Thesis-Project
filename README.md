@@ -40,6 +40,16 @@ varia taglia e penetrazione dei prosumer.
 > **Chiusura del 28 ottobre 2026:** le figure e le conclusioni rispetto alla domanda di ricerca sono nel
 > rapporto [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
 > (§7.11.5). L'unica parte della domanda di ricerca senza risposta è l'inclusione LIHC, che va tolta dalla tesi.
+>
+> **Aggiornamento del 29 ottobre 2026:** fino a 25 membri le famiglie simulate erano tutte persone
+> sole, qualunque composizione dichiarasse la scheda. Per questo ci sono ora **20 repliche dei
+> partecipanti** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)): famiglie estratte dentro la
+> cella ISTAT dichiarata.
+> - **Blocco 5-15 membri fatto.** Poli, capovolgimento con la penetrazione e trade-off principale
+>   reggono in 20 repliche su 20.
+> - **Due risultati cambiano:** l'allineamento lordo dipendeva dalle persone sole, e al 100% di
+>   prosumer il legame merito-incentivo si scioglie.
+> - **Blocco 18-25 da lanciare** (circa 40 h).
 
 ---
 
@@ -166,7 +176,7 @@ quella cartella, senza toccare il codice. Richiede **Optimization Toolbox** (`li
 18 membri**: il livello 0 di `CER_configuration/` (solo domestici) e le varianti con PA di
 `CER_configuration_PA/PA1..PA3` (asse composizione, §7.10). L'elenco lo costruisce
 `elenco_schede_cer.m`, che legge N = C+P+E dal nome della scheda e salta `PA0/` (copia
-identica del livello 0). Cinque variabili d'ambiente, tutte facoltative:
+identica del livello 0). Sei variabili d'ambiente, tutte facoltative:
 
 | Variabile | Cosa fa |
 |---|---|
@@ -175,6 +185,7 @@ identica del livello 0). Cinque variabili d'ambiente, tutte facoltative:
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
 | `MAIN2_IND` | `1` = aggiunge l'asse imprese (§7.11): le schede di `CER_configuration_IND/` con 1-3 imprese (`ND1`-`ND3`) e con imprese e PA (`ND2_PA1`, …), fino al tetto di membri (92 a 18 membri). In `MAIN2_SCHEDE` si scrivono come `ND2_PA1/CER_9_9_0`. Ogni livello ha le sue tabelle (`<tabelle>/ND1/`, …) e il confronto con il livello 0 sta in `confronto_PA/` (§7.11). Senza, il run è identico a prima |
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
+| `MAIN2_RADICE` | cartella che contiene `CER_configuration/`, `CER_configuration_PA/` e `CER_configuration_IND/` al posto di quelle di sempre, per esempio `CER_repliche/r01` (repliche dei partecipanti, §7.11.6). Senza, il run è identico a prima, al byte |
 
 I run di riferimento — fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e
 la griglia a 25 membri del 13 ottobre, superata — sono descritti nelle §7.9 e §7.10.1;
@@ -1755,6 +1766,70 @@ communities on the Italian day-ahead electricity market: A scenario analysis*. E
 115518. doi:10.1016/j.enpol.2026.115518 (preprint arXiv:2510.13517v3).
 [DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
 dati a gennaio 2025, commit `7560715`.
+
+#### 7.11.6 Repliche dei partecipanti (29 ottobre 2026)
+
+**Il problema.**
+- Le schede da 5 a 25 membri dichiarano una composizione ISTAT per celle: componenti × condizione
+  occupazionale, da AVQ 2024 e Censimento 2021 (§7.11).
+- Il profilo di `household_k`, però, è la k-esima colonna di `100_utenti.csv`, e le prime 38 colonne
+  sono famiglie di una persona. **Fino a 25 membri le famiglie simulate sono tutte persone sole**: 0
+  su 5 con la cella dichiarata, 3 su 25.
+- Vale per tutte le 295 comunità dei run del 27-28 ottobre. La CER da 25 membri consuma il 28% meno
+  del previsto, e gli impianti sono dimensionati sulle famiglie dichiarate.
+
+**Le repliche** (`CER_repliche/genera_repliche.py`, dettagli in
+[`CER_repliche/README.md`](CER_repliche/README.md)):
+- **Estrazione.** In ogni replica, ogni posto prende una famiglia del pool da cento della cella
+  dichiarata, con seed `(20261029, replica, cella)`.
+- **Vincoli.** Le stesse famiglie stanno in tutte le fasce e in tutti i livelli PA/ND di una taglia,
+  e le taglie sono annidate.
+- **Attributi.** Archetipo, componenti, reddito e gas seguono la famiglia estratta; l'impianto FV
+  segue il numero di componenti.
+- **Varianti PA e ND.** Vengono dalle funzioni di sempre, importate senza modifiche.
+- **r00.** È l'identità: rigenera le 295 schede di prima, cella per cella.
+
+`MAIN2.m` legge una replica con `MAIN2_RADICE=CER_repliche/rNN`. È l'unica modifica a MAIN2:
+- senza la variabile le tabelle escono identiche al byte;
+- con r00 sono identiche al byte e `RESULTS` coincide.
+
+**Un solo Shapley quando si uniscono le taglie.** Fino a 18 membri si usa lo Shapley esatto, da 20 in
+su l'Adaptive Sampling (Cremers et al. 2023), che non compare dove c'è l'esatto
+(`outputs/workspace/strumenti/unisci_shapley_as.m`, `CER_repliche/unisci_blocchi.m`). Nel run unito
+del 28 ottobre (§7.11.4) l'analisi teneva i soli metodi comuni, cioè l'AS anche fino a 18 membri.
+
+Rifatta con la regola, cambia l'insieme dei primi in 20 celle su 3245 (0,6%), nessuna nel livello
+base; τ cambia al più di 0,014. Le conclusioni del §7.11.5 non cambiano.
+
+**Blocco 5-15 membri, 20 repliche più r00** (105 comunità a replica, 15-18 min a replica, nessun
+errore). Numeri in [`outputs/repliche/fino15/aggregato/sintesi.md`](outputs/repliche/fino15/aggregato/sintesi.md).
+
+Reggono:
+- **i tre poli:** Gini → Equal Split 100%; merito e stabilità → Variance Least Core e Nucleolo
+  92-100%; forza incentivante → Pearson Key e Tri-level EP 94-96%;
+- **il capovolgimento con la penetrazione, in 20 repliche su 20:**
+  - τ(Gini, forza incentivante) scende da −0,19 a −0,86 (mediane, fascia 1 → 4);
+  - τ(Fairness Index, forza incentivante) va da −0,59 a +0,42 (fascia 1 → 3);
+- **il trade-off più caro, uguaglianza contro incentivo:** perdite 0,80 e 0,86 (r00 0,79 e 0,92);
+- **l'effetto piccolo di PA e imprese:** 5-13% di coppie invertite.
+
+Cambiano:
+- **I partecipanti spiegano il 15-30% della varianza dei punteggi.** La penetrazione resta il primo
+  fattore (46-70%, prima 61-85%).
+- **L'allineamento lordo dipendeva dalle persone sole.**
+  - La penetrazione ne spiega il 5% della varianza, non più l'85%: contano taglia, interazione e
+    famiglie.
+  - Il vincitore coincide con quello di prima nel 37% delle celle.
+- **Al 100% di prosumer il legame merito-incentivo si scioglie.** τ(Fairness Index, forza
+  incentivante) vale 0,06 di mediana (da −0,12 a 0,34), contro 0,35 prima.
+
+**Blocco 18-25:** 190 comunità a replica, circa 4 h l'una (80 s a 18 membri, 134 s a 25). 20
+repliche con due MATLAB in parallelo fanno circa 40 h. Comandi e lettura unita in
+[`CER_repliche/README.md`](CER_repliche/README.md).
+
+[C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
+for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,
+120328.
 
 ## 8. Dimensionamento impianto PV (standalone)
 

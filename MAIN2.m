@@ -101,14 +101,30 @@ end
 % (ND{k}_PA{p}). Senza, l'elenco e quindi il run sono quelli di prima.
 CON_IND = strtrim(string(getenv("MAIN2_IND"))) == "1";
 
+% Radice facoltativa delle schede (repliche dei partecipanti, CER_repliche/):
+% MAIN2_RADICE=CER_repliche/r01 legge CER_configuration, CER_configuration_PA e
+% CER_configuration_IND da quella cartella invece che dalla root del progetto.
+% Vuota = le cartelle di sempre, e la chiamata a elenco_schede_cer e' quella di prima.
+RADICE = strtrim(string(getenv("MAIN2_RADICE")));
+OPT_ELENCO = struct('cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
+                    'selezione', nomiVoluti, 'conIND', CON_IND);
+if strlength(RADICE) > 0
+    RADICE = strip(replace(RADICE, "\", "/"), "right", "/");
+    assert(isfolder(RADICE + "/" + CARTELLA_CER), ...
+           'MAIN2_RADICE: manca %s/%s', RADICE, CARTELLA_CER);
+    CARTELLA_CER = RADICE + "/" + CARTELLA_CER;
+    OPT_ELENCO.cartellaBase = CARTELLA_CER;
+    OPT_ELENCO.cartellaPA   = RADICE + "/CER_configuration_PA";
+    OPT_ELENCO.cartellaIND  = RADICE + "/CER_configuration_IND";
+    fprintf('  Schede da %s (MAIN2_RADICE)\n', RADICE);
+end
+
 % Percorsi con '/' e non fullfile: MATLAB lo accetta su ogni sistema, ed e' la
 % stessa barra dei percorsi [FILE] dentro le schede. Livello 0 per primo, poi
 % PA1, PA2, PA3 (e con MAIN2_IND ND1, ND1_PA1, ..., ND3_PA3); dentro ogni
 % cartella in ordine alfabetico (l'ordine di dir dipende dal filesystem, quello
 % dei risultati no).
-[SCHEDE, INFO_SCHEDE] = elenco_schede_cer(struct( ...
-        'cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
-        'selezione', nomiVoluti, 'conIND', CON_IND));
+[SCHEDE, INFO_SCHEDE] = elenco_schede_cer(OPT_ELENCO);
 N_CER  = numel(SCHEDE);
 
 fprintf('\n=== CER da analizzare: %d ===\n', N_CER);

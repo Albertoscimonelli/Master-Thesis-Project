@@ -129,3 +129,17 @@ i dati del 20 ottobre e pretende tutte le figure).
 Per i workspace dei run futuri con le imprese conviene usare `esporta_run_livelli.m` al posto di
 `esporta_run.m`. I comandi completi, nell'ordine, sono nella §15 del rapporto e nella §7.11.5 del README. I log dei run sono in `outputs/run_logs/`
 (`main2_run_2026-10-28_*`, `main2_run_2026-10-27_confronto_speedup_*`, `test_speedup_vlc_shapley_*`).
+
+## Repliche dei partecipanti (29 ottobre 2026)
+
+I workspace delle repliche non stanno qui ma in `outputs/repliche/<blocco>/rNN/` (non versionati),
+uno per replica, con le stesse variabili di `run_2026-10-28_fino25_unito_completo.mat`. Come si
+fanno e come si leggono: [`CER_repliche/README.md`](../../CER_repliche/README.md), README §7.11.6.
+
+| File | Contenuto |
+|---|---|
+| `../repliche/fino15/rNN/workspace.mat` | `RESULTS`, `AGR`, `LIV`, `GRID`, `REV`, `SINT`, `F1`, `PERD`, `CLUS`, `SENS` delle 105 comunità fino a 15 membri della replica NN (r00 = schede di prima) |
+| `../repliche/fino15/rNN/checkpoint.mat` | il solo `RESULTS`, da dare a `unisci_blocchi.m` per la lettura unita con il blocco 18-25 |
+| `../repliche/fino15/aggregato/` | il confronto fra le 21 repliche (versionato) |
+| `../repliche/prova_regola_shapley/workspace.mat` | il run unito del 28 ottobre riletto con un solo Shapley (esatto fino a 18 membri, AS oltre) |
+| `strumenti/unisci_shapley_as.m` | nelle comunità senza Shapley esatto rinomina l'Adaptive Sampling in "Shapley", così l'analisi fra comunità di un run che mescola le taglie usa l'esatto dove c'è |

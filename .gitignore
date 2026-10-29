@@ -343,3 +343,11 @@ test_regressione/
 # Varianti PA delle schede (asse composizione): per ora non versionate, si rigenerano con
 # CER_configuration_PA/genera_varianti_PA.py (vedi CER_configuration_PA/README.md)
 CER_configuration_PA/PA*/
+
+# Repliche dei partecipanti (CER_repliche/README.md): schede e profili si rigenerano dal
+# seed con genera_repliche.py; i risultati per replica (tabelle, checkpoint, workspace,
+# export, ~25 MB l'una) restano locali. Si versionano gli aggregati.
+CER_repliche/r[0-9]*/
+outputs/repliche/*/r[0-9]*/
+outputs/repliche/**/*.mat
+outputs/repliche/prova_regola_shapley/tables/

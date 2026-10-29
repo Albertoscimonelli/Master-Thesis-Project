@@ -95,6 +95,16 @@ Project/
 |   +-- Provvsiorio/            [l]     Schede miste dei primi studi: il glob di
 |                                       MAIN2 non entra nelle sottocartelle
 |
++-- CER_repliche/                       REPLICHE DEI PARTECIPANTI (README 7.11.6)
+|   |-- README.md               [v]     Perche', come si fanno, risultati, piano
+|   |-- genera_repliche.py      [v]     Schede delle repliche: famiglie estratte
+|   |                                   dentro la cella ISTAT dichiarata
+|   |-- lancia_repliche.sh      [v]     MAIN2 con MAIN2_RADICE, replica per replica
+|   |-- aggrega_repliche.py     [v]     Confronto fra le repliche
+|   |-- unisci_blocchi.m        [v]     Lettura unita di piu' blocchi di taglia
+|   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
+|   +-- r00 ... r20/            [l]     Schede e profili, si rigenerano dal seed
+|
 +-- PV_Generation/                      EXPORT ORARI PVSYST (kWh/h)
 |   |-- PROVA_CER_1_Project_1_2_componenti.CSV  [l]  impianto da 3,4 kWp
 |   |-- PROVA_CER_1_Project_3_4_componenti.CSV  [l]  impianto da 4,2 kWp
@@ -139,6 +149,8 @@ Project/
     |                                   e analisi [v], workspace .mat [l],
     |                                   strumenti/ [v], LEGGIMI.md [v]
     |-- run_logs/                [l]    Log completi dei run, elenco schede in testa
+    |-- repliche/                       Uscite delle repliche: <blocco>/rNN/ [l],
+    |                                   <blocco>/aggregato/ [v], controlli [v]
     +-- report/                         regole_ripartizione_cer.html (pagina dei
                                         risultati finali), scaling_metodi_ripartizione.md,
                                         validazione_lombardia100.md
@@ -259,7 +271,7 @@ Da Git Bash, nella root del progetto. Su questa macchina l'eseguibile e'
     MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="$GRIGLIA25" matlab -batch "MAIN2"
         -> outputs/tables_main2_griglia25/       circa 2 h 30
 
-LE QUATTRO VARIABILI D'AMBIENTE (dal 18 ottobre)
+LE VARIABILI D'AMBIENTE (dal 18 ottobre; MAIN2_IND dal 26, MAIN2_RADICE dal 29)
   Senza variabili MAIN2 prende TUTTE le schede fino a 18 membri: il livello 0
   di CER_configuration/ piu' le varianti con PA di CER_configuration_PA/PA1..3
   (elenco_schede_cer.m; PA0/ e' una copia del livello 0 e si salta).
@@ -274,12 +286,21 @@ LE QUATTRO VARIABILI D'AMBIENTE (dal 18 ottobre)
   MAIN2_RIPRENDI  1 = riparte dal checkpoint outputs/checkpoint_main2
                   [_<suffisso>].mat, scritto dopo ogni comunita' (non
                   versionato). Vuole lo stesso elenco di schede.
+  MAIN2_IND       1 = aggiunge le schede con imprese di CER_configuration_IND/
+                  (ND1-ND3, ND{k}_PA{p}), fino al tetto.
+  MAIN2_RADICE    cartella con CER_configuration/, CER_configuration_PA/ e
+                  CER_configuration_IND/ al posto di quelle di sempre, per
+                  esempio CER_repliche/r01 (repliche dei partecipanti).
+                  Senza, il run e' identico al byte.
 
 PERCHE' DUE RUN E NON UNO
   compute_indicator_agreement tiene solo i metodi presenti in TUTTE le
   comunita'. Sopra i 18 membri Shapley e Nucleolo non si calcolano, quindi un
   run unico fino a 25 membri li toglierebbe anche dalle comunita' piccole, e
-  con loro la lettura di stabilita'.
+  con loro la lettura di stabilita'. Per lo Shapley c'e' rimedio dal 29
+  ottobre: outputs/workspace/strumenti/unisci_shapley_as.m rinomina l'Adaptive
+  Sampling in "Shapley" sopra i 18 membri, cosi' l'analisi unita usa l'esatto
+  dove c'e' (CER_repliche/unisci_blocchi.m). Il Nucleolo resta solo fino a 18.
 
 UNA SCHEDA SOLA, PER PROVA
     MAIN2_CARTELLA=prova MAIN2_SCHEDE="CER_2_3_0" matlab -batch "MAIN2"
@@ -1199,6 +1220,8 @@ riepilogo di fine batch.
     esporta_run.m        dal .mat ai CSV lunghi
     esporta_run_livelli.m  esporta_run piu' le etichette giuste dei livelli con
                          imprese (ND1, ND2_PA1, ...) in punteggi_orientati.csv
+    unisci_shapley_as.m  un solo "Shapley" in un run che mescola le taglie:
+                         esatto fino a 18 membri, Adaptive Sampling oltre
     rapporto_conclusioni.py  il rapporto finale (outputs/report/RISULTATI_e_
                          conclusioni_RQ_2026-10-28.html): figure commentate e
                          conclusioni rispetto alla domanda di ricerca, numeri dai

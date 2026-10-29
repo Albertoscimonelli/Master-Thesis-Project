@@ -4,9 +4,10 @@ Servono a capire se i risultati dipendono da **quali famiglie** stanno nelle com
 composizione dichiarata. Ogni replica è la griglia di schede di sempre (solo domestici, PA, imprese)
 con famiglie diverse.
 
-**Stato al 29 ottobre 2026:**
+**Stato al 30 ottobre 2026:**
 - blocco **5-15 membri** fatto: 20 repliche più l'identità, tutti i livelli, risultati sotto;
-- blocco **18-25** da lanciare nel weekend (piano in fondo).
+- comunità **da 18 membri** in corso, con v(S) a blocchi (fase 1, in fondo);
+- blocco **20-25** con la stabilità estesa: da scrivere (fase 2).
 
 ## Perché servono
 
@@ -204,45 +205,51 @@ nei CSV accanto.
   l'indicatore. Coincide con quello di r00 nel 37-100% delle celle. Almeno un primo in comune con
   r00 c'è nel 91-100% dei casi.
 
-## Blocco 18-25 membri (da lanciare nel weekend)
+## Blocco 18-25 membri, in due fasi (dal 30 ottobre 2026)
 
-Tempi misurati la notte del 29 ottobre, con un secondo MATLAB acceso:
-- r01, CER_4_14_0 (18 membri): 1 min 23 s;
-- ND3_PA3/CER_4_14_0: 1 min 15 s.
+**Fase 1: le comunità da 18 membri** (63 a replica, r00 compresa), con v(S) a blocchi.
+- **La modifica.** `MAIN2.m` calcola v(S) con `cer_coalition_values_blocchi.m`, l'algoritmo che il
+  VLC usava già da 19 a 25 membri, invece del ciclo di `cer_coalition_values.m`. A 18 membri v(S)
+  passa da 50-56 s a 0,4-1,1 s.
+- **Test di unità** (`test_cer_coalition_values_blocchi.m`): sui giochi sintetici da 1 a 16
+  giocatori, con e senza F e nei casi limite, v(S) coincide con il ciclo entro 2e-15. Con la v(S)
+  nuova il VLC dà la stessa allocazione bit per bit.
+- **Regressione** (`outputs/repliche/controlli_fase1/`): 12 schede di r00 (le 6 di sempre più 6 da
+  18 membri, con PA e imprese), prima e dopo.
+  - Le 44 tabelle sono identiche al byte.
+  - `RESULTS` resta entro 8e-14 relativo, con v(N) identico.
+  - Il tempo totale scende da 7 min 07 s a 1 min 29 s.
+- Comando: `bash CER_repliche/lancia_repliche.sh da18 18 18 <repliche...>`, due liste in parallelo.
 
-Il 27 ottobre, col codice di prima dello speedup, erano 4 min 22 s e 9 min 13 s. A 20 e 25 membri
-il 28 ottobre si è misurato 11 s e 134 s in media.
+**Fase 2: 20-25 membri, con l'AS al posto dello Shapley e la stabilità (eccesso di coalizione)
+estesa fin lì.** Va ancora scritta: serve una versione dell'eccesso di coalizione senza matrice di
+incidenza, che a 25 membri peserebbe 6,7 GB.
 
-Per replica sono 190 comunità:
+**Prova di scalabilità a 25 membri** (29 ottobre, `outputs/repliche/prova_scalabilita/`, stessa
+scheda r01/CER_6_19_0 in ogni istanza):
 
-| Taglia | Comunità | Tempo per comunità | Tempo |
-|---|---|---|---|
-| 18 | 63 | circa 80 s | 1,4 h |
-| 20 | 63 | 11 s | 0,2 h |
-| 25 | 64 | 134 s | 2,4 h |
-| **Totale** | **190** | | **circa 4 h** |
+| Configurazione | 25 membri | 18 membri (CER_4_14_0, ciclo vecchio) |
+|---|---|---|
+| Da sola | 2 min 31 s | 1 min 23 s |
+| Due istanze da 25 insieme | 4 min 48 s ciascuna | — |
+| Una da 25 e una da 18 insieme | 2 min 39 s | 2 min 07 s |
 
-20 repliche fanno circa 80 h di calcolo, **circa 40 h con due MATLAB in parallelo**: conviene partire
-venerdì sera. A 25 membri il VLC tiene in memoria circa 800 MB per istanza, oltre agli 1,7 GB di
-MATLAB. Con due istanze la RAM libera resta sotto i 2 GB: meglio chiudere browser e altri programmi
-pesanti.
+- **Il parallelo non aiuta a 25 membri.** Il VLC è limitato dalla banda verso la RAM, non dai core:
+  ogni passo dell'enumerazione scorre matrici 4.400 ore × 256 coalizioni, troppo grandi per la
+  cache. Con due istanze la CPU sale dal 36% al 79%, ma il lavoro fatto è lo stesso.
+- **Ogni istanza occupa 2,1-2,2 GB.**
+- **Tempo della fase 2:** la parte a 25 membri va di fatto in serie. 21 repliche × 64 comunità ×
+  circa 150 s fanno circa 56 h; la seconda istanza può fare intanto le comunità da 20.
+
+**Lettura unita**, per ogni replica NN, dopo le due fasi:
 
 ```bash
-# 1. schede 18-25 delle repliche 1-20 (la r01 c'e' gia'; il generatore non sovrascrive e
-#    verifica che i file gia' scritti restino uguali)
-venv/Scripts/python.exe -I CER_repliche/genera_repliche.py --repliche 0-20 --min-membri 18 --max-membri 25
-# 2. due liste in parallelo (circa 40 h)
-bash CER_repliche/lancia_repliche.sh da18a25 18 25 1 3 5 7 9 11 13 15 17 19
-bash CER_repliche/lancia_repliche.sh da18a25 18 25 2 4 6 8 10 12 14 16 18 20
-# 3. lettura unita di ogni replica: fino15 + da18a25, un solo Shapley, analisi rifatta
-#    (per ogni NN; poi si spostano tabelle e checkpoint come fa lancia_repliche.sh)
-matlab -batch "addpath('CER_repliche'); addpath('outputs/workspace/strumenti'); unisci_blocchi('CER_repliche/rNN', {'outputs/repliche/fino15/rNN/checkpoint.mat', 'outputs/repliche/da18a25/rNN/checkpoint.mat'}, 'repNN_unito', 25)"
+matlab -batch "addpath('CER_repliche'); addpath('outputs/workspace/strumenti'); unisci_blocchi('CER_repliche/rNN', {'outputs/repliche/fino15/rNN/checkpoint.mat', 'outputs/repliche/da18/rNN/checkpoint.mat', 'outputs/repliche/da20a25/rNN/checkpoint.mat'}, 'repNN_unito', 25)"
 MAIN2_RIPRENDI=1 MAIN2_RADICE=CER_repliche/rNN MAIN2_MAX_UTENTI=25 MAIN2_IND=1 MAIN2_CARTELLA=repNN_unito matlab -batch "MAIN2"
 ```
 
 Note:
-- Lo stesso con `maxUtenti` 18 dà la vista fino a 18 membri, con il Nucleolo.
-- r00 per il blocco 18-25 non serve rifarla: il run del 28 ottobre è già l'identità. Per la lettura
-  unita di r00 basta `unisci_blocchi` sui run del 27-28 ottobre, come nella prova sopra.
-- Per aggregare la lettura unita, `aggrega_repliche.py` va esteso a leggere le cartelle
-  `repNN_unito`. Oggi legge `outputs/repliche/<blocco>/rNN/tables`.
+- Con `maxUtenti` 18 si ottiene la vista fino a 18 membri, con il Nucleolo.
+- **r00 va rifatta anche a 20-25:** nel run del 28 ottobre la stabilità a quelle taglie non c'è.
+- `aggrega_repliche.py` va esteso a leggere le cartelle `repNN_unito`. Oggi legge
+  `outputs/repliche/<blocco>/rNN/tables`.

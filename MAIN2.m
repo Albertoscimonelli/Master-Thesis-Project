@@ -729,9 +729,14 @@ for iCER = PRIMO:N_CER
     % ai tre: shapley_cer_cached e nucleolus_cer_cached sono copie identiche
     % degli originali che accettano opts.v, coalition_excess lo accetta gia'.
     % Risultati identici bit per bit: test_regressione_cache_v.m.
+    % Dal 30/10/2026 v(S) si enumera a blocchi vettorizzati, con l'algoritmo che il
+    % VLC usa da 19 a 25 membri (cer_coalition_values_blocchi.m): a 18 membri da
+    % 50-70 s a circa 1 s. Cambia solo l'ordine delle somme: risultati entro 1e-13,
+    % tabelle identiche al byte (test_cer_coalition_values_blocchi.m,
+    % outputs/repliche/controlli_fase1/).
     if ~skipGameTheory
         T_metodo = tic;
-        [vCache, playersCache, AincCache] = cer_coalition_values( ...
+        [vCache, playersCache, AincCache] = cer_coalition_values_blocchi( ...
             genForShare, loadForShare, userNames, P_CER_lordo, optF.esente, optF.F);
         fprintf('  [cronometro] v(S) per 2^%d coalizioni (una volta sola): %s\n', ...
                 nUsers, format_duration(toc(T_metodo)));

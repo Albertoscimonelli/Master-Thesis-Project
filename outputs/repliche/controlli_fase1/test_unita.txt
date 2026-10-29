@@ -1,0 +1,20 @@
+  n=1 F=0.0              scarto 0.00e+00   ciclo    0.59 s   blocchi  0.010 s
+  n=1 F=0.3              scarto 0.00e+00   ciclo    0.00 s   blocchi  0.009 s
+  n=5 F=0.0              scarto 5.89e-16   ciclo    0.01 s   blocchi  0.385 s
+  n=5 F=0.3              scarto 7.47e-16   ciclo    0.01 s   blocchi  0.009 s
+  n=8 F=0.0              scarto 1.06e-15   ciclo    0.02 s   blocchi  0.027 s
+  n=8 F=0.3              scarto 9.09e-16   ciclo    0.04 s   blocchi  0.052 s
+  n=9 F=0.0              scarto 1.01e-15   ciclo    0.06 s   blocchi  0.027 s
+  n=9 F=0.3              scarto 9.71e-16   ciclo    0.08 s   blocchi  0.079 s
+  n=12 F=0.0             scarto 1.12e-15   ciclo    0.42 s   blocchi  0.068 s
+  n=12 F=0.3             scarto 1.08e-15   ciclo    0.68 s   blocchi  0.369 s
+  n=14 F=0.0             scarto 1.55e-15   ciclo    2.00 s   blocchi  0.225 s
+  n=14 F=0.3             scarto 1.96e-15   ciclo    2.89 s   blocchi  1.379 s
+  n=16 F=0.0             scarto 1.31e-15   ciclo   11.84 s   blocchi  0.263 s
+  n=16 F=0.3             scarto 1.54e-15   ciclo   15.86 s   blocchi  3.631 s
+  n=10 P costante        scarto 9.02e-16   ciclo    0.13 s   blocchi  0.015 s
+  n=10 senza impianti    scarto 0.00e+00   ciclo    0.18 s   blocchi  0.010 s
+  n=6 nessuna ora utile  scarto 0.00e+00   ciclo    0.01 s   blocchi  0.001 s
+  VLC n=14 F=0.0: allocazione identica bit per bit
+  VLC n=14 F=0.3: allocazione identica bit per bit
+OK: 17 casi entro 1e-11, VLC identico.

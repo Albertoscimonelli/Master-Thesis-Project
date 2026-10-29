@@ -547,7 +547,8 @@ riepilogo di fine batch.
       modalita'. costMat [nUsers x 3] e costUser con la tariffa di ciascun
       membro: e' la baseline y_noLEM degli indicatori.
 
-  3b) Fino a 18 membri: [vCache, players, A_inc] = cer_coalition_values(...)
+  3b) Fino a 18 membri: [vCache, players, A_inc] = cer_coalition_values_blocchi(...)
+      (dal 30/10/2026; prima cer_coalition_values, stesso risultato entro 1e-13)
       UNA volta sola (2^n coalizioni), passata a Shapley, Nucleolo ed
       eccesso di coalizione. Sh = shapley_cer_cached. assert: v(N) uguale per
       le due strade del fattore F; v(N) uguale al ricavo da condivisa.
@@ -769,6 +770,9 @@ riepilogo di fine batch.
   cer_coalition_values.m    v(S) per tutte le 2^n coalizioni (bitmask) e la
                             matrice di incidenza. Con F > 0 la quota esente e'
                             quella della coalizione.
+  cer_coalition_values_blocchi.m  lo stesso, a blocchi vettorizzati (l'algoritmo
+                            di enumerate_values del VLC): a 18 membri circa
+                            1 s invece di 50-70 s. E' quella che usa MAIN2
   cer_shared_value.m        v di UNA coalizione dai suoi profili aggregati:
                             la formula sta in un posto solo, usata
                             dall'enumerazione e dalla valutazione su
@@ -1326,6 +1330,9 @@ CALENDARIO
                                  sintetici da 5 a 14 giocatori; cronometro a 25
     confronto_speedup_vlc.m      due checkpoint di MAIN2, comunita' per
                                  comunita': scarto relativo massimo e tempi
+    test_cer_coalition_values_blocchi.m  v(S) a blocchi contro il ciclo di
+                                 cer_coalition_values (1-16 giocatori, con e
+                                 senza F, casi limite) e VLC identico bit per bit
 
 
 ================================================================================

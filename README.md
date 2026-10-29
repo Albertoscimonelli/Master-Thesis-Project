@@ -49,7 +49,8 @@ varia taglia e penetrazione dei prosumer.
 >   reggono in 20 repliche su 20.
 > - **Due risultati cambiano:** l'allineamento lordo dipendeva dalle persone sole, e al 100% di
 >   prosumer il legame merito-incentivo si scioglie.
-> - **Blocco 18-25 da lanciare** (circa 40 h).
+> - **Blocco 18-25:** le comunità da 18 membri girano dal 30 ottobre, con v(S) a blocchi. Il
+>   blocco 20-25, con la stabilità estesa fin lì, è da scrivere e richiede circa 56 h.
 
 ---
 
@@ -265,6 +266,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
 | `confronto_pa.m` | **Presenza di PA**: PA0 contro PA1-3 a N, C, P invariati — inversioni, vincitori, quote ai membri PA, trade-off e sottoinsieme minimo per livello; auto-test su dati a penna (§7.10) |
 | `test_speedup_vlc_shapley.m`, `confronto_speedup_vlc.m` | Verifica dello speedup di §7.11.3: Shapley vettorizzato e VLC per enumerazione contro le versioni precedenti su giochi sintetici (soglie 1e-9 e 1e-5), e confronto comunità per comunità fra due checkpoint di `MAIN2.m` (tolleranza relativa 1e-6; 45 comunità, scarto massimo 3,5e-11) |
+| `cer_coalition_values_blocchi.m`, `test_cer_coalition_values_blocchi.m` | v(S) per tutte le coalizioni a blocchi vettorizzati, con l'algoritmo del VLC: è quella che `MAIN2.m` usa dal 30 ottobre per Shapley, Nucleolo, eccesso e VLC fino a 18 membri (circa 1 s invece di 50-70 s a 18 membri). Il test la confronta con `cer_coalition_values.m` (scarto al più 2e-15) e verifica che il VLC resti identico bit per bit (§7.11.6) |
 | `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
 | `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
 | `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
@@ -1823,9 +1825,16 @@ Cambiano:
 - **Al 100% di prosumer il legame merito-incentivo si scioglie.** τ(Fairness Index, forza
   incentivante) vale 0,06 di mediana (da −0,12 a 0,34), contro 0,35 prima.
 
-**Blocco 18-25:** 190 comunità a replica, circa 4 h l'una (80 s a 18 membri, 134 s a 25). 20
-repliche con due MATLAB in parallelo fanno circa 40 h. Comandi e lettura unita in
-[`CER_repliche/README.md`](CER_repliche/README.md).
+**Blocco 18-25, in due fasi** (dettagli e comandi in [`CER_repliche/README.md`](CER_repliche/README.md)):
+- **Fase 1, le comunità da 18 membri (30 ottobre).** `MAIN2.m` calcola v(S) a blocchi
+  (`cer_coalition_values_blocchi.m`), con l'algoritmo che il VLC usava già da 19 a 25 membri.
+  - A 18 membri v(S) passa da 50-56 s a circa 1 s.
+  - Sulle 12 schede di controllo le tabelle sono identiche al byte e `RESULTS` resta entro 8e-14.
+- **Fase 2, 20-25 membri.** L'AS prende il posto dello Shapley, e la stabilità (eccesso di
+  coalizione) si estende fin lì: va ancora scritta.
+- **A 25 membri il parallelo non aiuta.** Il VLC è limitato dalla banda verso la RAM: due istanze
+  insieme impiegano 4 min 48 s a comunità contro 2 min 31 s da sola. La fase 2 dura quindi circa
+  56 h. La stima di 40 h scritta il 29 ottobre era sbagliata.
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,

@@ -1,0 +1,1211 @@
+Sweep,Fisso,FissoValore,Indicatore,MetodoA,MetodoB,nInversioni,SegnoIniziale,SegnoFinale,InvertitoAgliEstremi,AsseSegnoIniziale,AsseSegnoFinale,DivarioMax,ConfigurazioniValide
+penetrazione,n = 18,18,EI_orig,Shapley,Nucleolo,0,1,1,0,50,100,0.105382,4
+penetrazione,n = 18,18,EI_orig,Shapley,Variance Least Core,0,1,1,0,50,100,0.103562,4
+penetrazione,n = 18,18,EI_orig,Shapley,Equal Split,0,-1,-1,0,27.78,100,0.554601,4
+penetrazione,n = 18,18,EI_orig,Shapley,Proportional to Consumption,0,1,1,0,27.78,50,0.149852,4
+penetrazione,n = 18,18,EI_orig,Shapley,Remuneration Model 1,0,-1,-1,0,27.78,100,0.29181,4
+penetrazione,n = 18,18,EI_orig,Shapley,Cascading Tree,1,1,-1,1,27.78,100,0.482507,4
+penetrazione,n = 18,18,EI_orig,Shapley,Weighted Solidarity,0,-1,-1,0,50,100,0.383775,4
+penetrazione,n = 18,18,EI_orig,Shapley,Pearson Key,0,1,1,0,27.78,100,0.219484,4
+penetrazione,n = 18,18,EI_orig,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,0.201084,4
+penetrazione,n = 18,18,EI_orig,Shapley,Tri-level EP,0,1,1,0,27.78,100,0.214362,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00182049,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Equal Split,0,-1,-1,0,27.78,100,0.63073,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Proportional to Consumption,1,1,-1,1,27.78,77.78,0.174232,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Remuneration Model 1,0,-1,-1,0,50,100,0.367938,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Cascading Tree,1,1,-1,1,27.78,100,0.558635,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Weighted Solidarity,1,1,-1,1,27.78,100,0.459903,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Pearson Key,0,1,1,0,27.78,100,0.205585,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,50,0.184868,4
+penetrazione,n = 18,18,EI_orig,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,0.207501,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Equal Split,0,-1,-1,0,27.78,100,0.630494,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Proportional to Consumption,1,1,-1,1,27.78,77.78,0.17515,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Remuneration Model 1,0,-1,-1,0,50,100,0.367702,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Cascading Tree,1,1,-1,1,27.78,100,0.558399,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Weighted Solidarity,1,1,-1,1,27.78,100,0.459668,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,0.206502,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,50,0.185785,4
+penetrazione,n = 18,18,EI_orig,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,0.208419,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Proportional to Consumption,0,1,1,0,27.78,100,0.555328,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Remuneration Model 1,0,1,1,0,27.78,100,0.262792,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Cascading Tree,0,1,1,0,27.78,100,0.240642,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Weighted Solidarity,0,1,1,0,27.78,100,0.21062,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Pearson Key,0,1,1,0,27.78,100,0.686454,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Similarity-Utilization,0,1,1,0,27.78,100,0.698784,4
+penetrazione,n = 18,18,EI_orig,Equal Split,Tri-level EP,0,1,1,0,27.78,100,0.682315,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,27.78,100,0.292536,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Cascading Tree,0,-1,-1,0,27.78,100,0.483234,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,27.78,100,0.384502,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Pearson Key,0,1,1,0,50,100,0.131126,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Similarity-Utilization,0,1,1,0,50,77.78,0.143456,4
+penetrazione,n = 18,18,EI_orig,Proportional to Consumption,Tri-level EP,0,1,1,0,27.78,100,0.126987,4
+penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Cascading Tree,1,1,-1,1,27.78,100,0.190697,4
+penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Weighted Solidarity,2,1,1,0,27.78,100,0.0919657,4
+penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Pearson Key,0,1,1,0,27.78,100,0.423663,4
+penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Similarity-Utilization,0,1,1,0,27.78,100,0.435993,4
+penetrazione,n = 18,18,EI_orig,Remuneration Model 1,Tri-level EP,0,1,1,0,27.78,100,0.419524,4
+penetrazione,n = 18,18,EI_orig,Cascading Tree,Weighted Solidarity,1,-1,1,1,27.78,100,0.151528,4
+penetrazione,n = 18,18,EI_orig,Cascading Tree,Pearson Key,0,1,1,0,27.78,100,0.61436,4
+penetrazione,n = 18,18,EI_orig,Cascading Tree,Similarity-Utilization,0,1,1,0,27.78,100,0.62669,4
+penetrazione,n = 18,18,EI_orig,Cascading Tree,Tri-level EP,0,1,1,0,27.78,100,0.610221,4
+penetrazione,n = 18,18,EI_orig,Weighted Solidarity,Pearson Key,0,1,1,0,27.78,100,0.515628,4
+penetrazione,n = 18,18,EI_orig,Weighted Solidarity,Similarity-Utilization,0,1,1,0,27.78,100,0.527958,4
+penetrazione,n = 18,18,EI_orig,Weighted Solidarity,Tri-level EP,0,1,1,0,27.78,100,0.511489,4
+penetrazione,n = 18,18,EI_orig,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0248918,4
+penetrazione,n = 18,18,EI_orig,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00946683,4
+penetrazione,n = 18,18,EI_orig,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0.0343587,4
+penetrazione,n = 18,18,Gini,Shapley,Nucleolo,0,1,1,0,50,100,0.105382,4
+penetrazione,n = 18,18,Gini,Shapley,Variance Least Core,0,1,1,0,50,100,0.103562,4
+penetrazione,n = 18,18,Gini,Shapley,Equal Split,0,-1,-1,0,27.78,100,0.554601,4
+penetrazione,n = 18,18,Gini,Shapley,Proportional to Consumption,0,1,1,0,27.78,50,0.149852,4
+penetrazione,n = 18,18,Gini,Shapley,Remuneration Model 1,0,-1,-1,0,27.78,100,0.29181,4
+penetrazione,n = 18,18,Gini,Shapley,Cascading Tree,1,1,-1,1,27.78,100,0.482507,4
+penetrazione,n = 18,18,Gini,Shapley,Weighted Solidarity,0,-1,-1,0,50,100,0.383775,4
+penetrazione,n = 18,18,Gini,Shapley,Pearson Key,0,1,1,0,27.78,100,0.219484,4
+penetrazione,n = 18,18,Gini,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,0.201084,4
+penetrazione,n = 18,18,Gini,Shapley,Tri-level EP,0,1,1,0,27.78,100,0.214362,4
+penetrazione,n = 18,18,Gini,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00182049,4
+penetrazione,n = 18,18,Gini,Nucleolo,Equal Split,0,-1,-1,0,27.78,100,0.63073,4
+penetrazione,n = 18,18,Gini,Nucleolo,Proportional to Consumption,1,1,-1,1,27.78,77.78,0.174232,4
+penetrazione,n = 18,18,Gini,Nucleolo,Remuneration Model 1,0,-1,-1,0,50,100,0.367938,4
+penetrazione,n = 18,18,Gini,Nucleolo,Cascading Tree,1,1,-1,1,27.78,100,0.558635,4
+penetrazione,n = 18,18,Gini,Nucleolo,Weighted Solidarity,1,1,-1,1,27.78,100,0.459903,4
+penetrazione,n = 18,18,Gini,Nucleolo,Pearson Key,0,1,1,0,27.78,100,0.205585,4
+penetrazione,n = 18,18,Gini,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,50,0.184868,4
+penetrazione,n = 18,18,Gini,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,0.207501,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Equal Split,0,-1,-1,0,27.78,100,0.630494,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Proportional to Consumption,1,1,-1,1,27.78,77.78,0.17515,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Remuneration Model 1,0,-1,-1,0,50,100,0.367702,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Cascading Tree,1,1,-1,1,27.78,100,0.558399,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Weighted Solidarity,1,1,-1,1,27.78,100,0.459668,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,0.206502,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,50,0.185785,4
+penetrazione,n = 18,18,Gini,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,0.208419,4
+penetrazione,n = 18,18,Gini,Equal Split,Proportional to Consumption,0,1,1,0,27.78,100,0.555328,4
+penetrazione,n = 18,18,Gini,Equal Split,Remuneration Model 1,0,1,1,0,27.78,100,0.262792,4
+penetrazione,n = 18,18,Gini,Equal Split,Cascading Tree,0,1,1,0,27.78,100,0.240642,4
+penetrazione,n = 18,18,Gini,Equal Split,Weighted Solidarity,0,1,1,0,27.78,100,0.21062,4
+penetrazione,n = 18,18,Gini,Equal Split,Pearson Key,0,1,1,0,27.78,100,0.686454,4
+penetrazione,n = 18,18,Gini,Equal Split,Similarity-Utilization,0,1,1,0,27.78,100,0.698784,4
+penetrazione,n = 18,18,Gini,Equal Split,Tri-level EP,0,1,1,0,27.78,100,0.682315,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,27.78,100,0.292536,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Cascading Tree,0,-1,-1,0,27.78,100,0.483234,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,27.78,100,0.384502,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Pearson Key,0,1,1,0,50,100,0.131126,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Similarity-Utilization,0,1,1,0,50,77.78,0.143456,4
+penetrazione,n = 18,18,Gini,Proportional to Consumption,Tri-level EP,0,1,1,0,27.78,100,0.126987,4
+penetrazione,n = 18,18,Gini,Remuneration Model 1,Cascading Tree,1,1,-1,1,27.78,100,0.190697,4
+penetrazione,n = 18,18,Gini,Remuneration Model 1,Weighted Solidarity,2,1,1,0,27.78,100,0.0919657,4
+penetrazione,n = 18,18,Gini,Remuneration Model 1,Pearson Key,0,1,1,0,27.78,100,0.423663,4
+penetrazione,n = 18,18,Gini,Remuneration Model 1,Similarity-Utilization,0,1,1,0,27.78,100,0.435993,4
+penetrazione,n = 18,18,Gini,Remuneration Model 1,Tri-level EP,0,1,1,0,27.78,100,0.419524,4
+penetrazione,n = 18,18,Gini,Cascading Tree,Weighted Solidarity,1,-1,1,1,27.78,100,0.151528,4
+penetrazione,n = 18,18,Gini,Cascading Tree,Pearson Key,0,1,1,0,27.78,100,0.61436,4
+penetrazione,n = 18,18,Gini,Cascading Tree,Similarity-Utilization,0,1,1,0,27.78,100,0.62669,4
+penetrazione,n = 18,18,Gini,Cascading Tree,Tri-level EP,0,1,1,0,27.78,100,0.610221,4
+penetrazione,n = 18,18,Gini,Weighted Solidarity,Pearson Key,0,1,1,0,27.78,100,0.515628,4
+penetrazione,n = 18,18,Gini,Weighted Solidarity,Similarity-Utilization,0,1,1,0,27.78,100,0.527958,4
+penetrazione,n = 18,18,Gini,Weighted Solidarity,Tri-level EP,0,1,1,0,27.78,100,0.511489,4
+penetrazione,n = 18,18,Gini,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0248918,4
+penetrazione,n = 18,18,Gini,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00946683,4
+penetrazione,n = 18,18,Gini,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0.0343587,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Nucleolo,0,-1,-1,0,27.78,50,0.0714401,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Variance Least Core,0,-1,-1,0,27.78,50,0.0731105,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Equal Split,0,1,1,0,50,100,0.506052,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Proportional to Consumption,0,1,1,0,27.78,100,0.152078,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Remuneration Model 1,1,-1,1,1,27.78,100,0.297445,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Cascading Tree,0,1,1,0,27.78,100,0.536189,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Weighted Solidarity,0,1,1,0,27.78,100,0.561678,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Pearson Key,0,1,1,0,27.78,100,0.20492,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,0.203684,4
+penetrazione,n = 18,18,FairnessIndex,Shapley,Tri-level EP,0,1,1,0,27.78,100,0.198617,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00167035,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Equal Split,0,1,1,0,27.78,100,0.54425,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,100,0.219139,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Remuneration Model 1,0,1,1,0,27.78,100,0.335642,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,0.574387,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Weighted Solidarity,0,1,1,0,27.78,100,0.599876,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Pearson Key,0,1,1,0,27.78,100,0.271981,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,100,0.270745,4
+penetrazione,n = 18,18,FairnessIndex,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,0.265678,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Equal Split,0,1,1,0,27.78,100,0.544656,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,100,0.219817,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Remuneration Model 1,0,1,1,0,27.78,100,0.336048,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,0.574793,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Weighted Solidarity,0,1,1,0,27.78,100,0.600282,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,0.272659,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,100,0.271423,4
+penetrazione,n = 18,18,FairnessIndex,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,0.266356,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Proportional to Consumption,1,1,-1,1,27.78,100,0.4525,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Remuneration Model 1,0,-1,-1,0,27.78,100,0.208608,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Cascading Tree,0,1,1,0,27.78,50,0.130829,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Weighted Solidarity,0,1,1,0,27.78,100,0.0772265,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Pearson Key,1,1,-1,1,27.78,100,0.485986,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Similarity-Utilization,1,1,-1,1,27.78,100,0.437,4
+penetrazione,n = 18,18,FairnessIndex,Equal Split,Tri-level EP,1,1,-1,1,27.78,100,0.489381,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Remuneration Model 1,2,-1,-1,0,27.78,100,0.243892,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Cascading Tree,0,1,1,0,50,100,0.482637,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Weighted Solidarity,1,-1,1,1,27.78,100,0.508126,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Pearson Key,1,1,-1,1,27.78,100,0.0643908,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,27.78,100,0.0886118,4
+penetrazione,n = 18,18,FairnessIndex,Proportional to Consumption,Tri-level EP,1,1,-1,1,27.78,100,0.0559846,4
+penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,0.238744,4
+penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Weighted Solidarity,0,1,1,0,27.78,100,0.264233,4
+penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Pearson Key,1,1,-1,1,27.78,77.78,0.277378,4
+penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Similarity-Utilization,1,1,-1,1,27.78,77.78,0.233664,4
+penetrazione,n = 18,18,FairnessIndex,Remuneration Model 1,Tri-level EP,1,1,-1,1,27.78,77.78,0.280773,4
+penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Weighted Solidarity,1,-1,1,1,27.78,100,0.0655633,4
+penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Pearson Key,1,1,-1,1,27.78,100,0.516123,4
+penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Similarity-Utilization,1,1,-1,1,27.78,100,0.467137,4
+penetrazione,n = 18,18,FairnessIndex,Cascading Tree,Tri-level EP,1,1,-1,1,27.78,100,0.519518,4
+penetrazione,n = 18,18,FairnessIndex,Weighted Solidarity,Pearson Key,1,1,-1,1,27.78,100,0.541612,4
+penetrazione,n = 18,18,FairnessIndex,Weighted Solidarity,Similarity-Utilization,1,1,-1,1,27.78,100,0.492626,4
+penetrazione,n = 18,18,FairnessIndex,Weighted Solidarity,Tri-level EP,1,1,-1,1,27.78,100,0.545007,4
+penetrazione,n = 18,18,FairnessIndex,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.048986,4
+penetrazione,n = 18,18,FairnessIndex,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00840617,4
+penetrazione,n = 18,18,FairnessIndex,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0.0523812,4
+penetrazione,n = 18,18,Sigma,Shapley,Nucleolo,0,-1,-1,0,27.78,50,0.00827114,4
+penetrazione,n = 18,18,Sigma,Shapley,Variance Least Core,0,-1,-1,0,27.78,50,0.00837671,4
+penetrazione,n = 18,18,Sigma,Shapley,Equal Split,0,1,1,0,50,100,0.0705557,4
+penetrazione,n = 18,18,Sigma,Shapley,Proportional to Consumption,0,1,1,0,27.78,100,0.0224048,4
+penetrazione,n = 18,18,Sigma,Shapley,Remuneration Model 1,0,1,1,0,50,100,0.0414987,4
+penetrazione,n = 18,18,Sigma,Shapley,Cascading Tree,0,1,1,0,27.78,100,0.0742278,4
+penetrazione,n = 18,18,Sigma,Shapley,Weighted Solidarity,0,1,1,0,27.78,100,0.079372,4
+penetrazione,n = 18,18,Sigma,Shapley,Pearson Key,0,1,1,0,27.78,100,0.0266571,4
+penetrazione,n = 18,18,Sigma,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,0.0270516,4
+penetrazione,n = 18,18,Sigma,Shapley,Tri-level EP,0,1,1,0,27.78,100,0.0261995,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.000196919,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Equal Split,0,1,1,0,27.78,100,0.0756594,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,100,0.0306759,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Remuneration Model 1,0,1,1,0,27.78,100,0.0466023,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,0.0793314,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Weighted Solidarity,0,1,1,0,27.78,100,0.0844757,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Pearson Key,0,1,1,0,27.78,100,0.0349283,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,100,0.0353228,4
+penetrazione,n = 18,18,Sigma,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,0.0344706,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Equal Split,0,1,1,0,27.78,100,0.0757193,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,100,0.0307815,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Remuneration Model 1,0,1,1,0,27.78,100,0.0466622,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,0.0793913,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Weighted Solidarity,0,1,1,0,27.78,100,0.0845356,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,0.0350338,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,100,0.0354283,4
+penetrazione,n = 18,18,Sigma,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,0.0345762,4
+penetrazione,n = 18,18,Sigma,Equal Split,Proportional to Consumption,1,1,-1,1,27.78,100,0.063567,4
+penetrazione,n = 18,18,Sigma,Equal Split,Remuneration Model 1,0,-1,-1,0,27.78,100,0.029057,4
+penetrazione,n = 18,18,Sigma,Equal Split,Cascading Tree,0,1,1,0,27.78,50,0.016381,4
+penetrazione,n = 18,18,Sigma,Equal Split,Weighted Solidarity,0,1,1,0,27.78,77.78,0.00960669,4
+penetrazione,n = 18,18,Sigma,Equal Split,Pearson Key,1,1,-1,1,27.78,100,0.0671673,4
+penetrazione,n = 18,18,Sigma,Equal Split,Similarity-Utilization,1,1,-1,1,27.78,100,0.0558386,4
+penetrazione,n = 18,18,Sigma,Equal Split,Tri-level EP,1,1,-1,1,27.78,100,0.0678666,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Remuneration Model 1,1,-1,1,1,27.78,77.78,0.0345099,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Cascading Tree,1,-1,1,1,27.78,100,0.0672391,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Weighted Solidarity,1,-1,1,1,27.78,100,0.0723833,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Pearson Key,1,1,-1,1,27.78,100,0.00577595,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,27.78,100,0.0116475,4
+penetrazione,n = 18,18,Sigma,Proportional to Consumption,Tri-level EP,0,1,1,0,27.78,27.78,0.00504816,4
+penetrazione,n = 18,18,Sigma,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,0.0327291,4
+penetrazione,n = 18,18,Sigma,Remuneration Model 1,Weighted Solidarity,0,1,1,0,27.78,100,0.0378734,4
+penetrazione,n = 18,18,Sigma,Remuneration Model 1,Pearson Key,1,1,-1,1,27.78,100,0.0381102,4
+penetrazione,n = 18,18,Sigma,Remuneration Model 1,Similarity-Utilization,1,1,-1,1,27.78,100,0.0294106,4
+penetrazione,n = 18,18,Sigma,Remuneration Model 1,Tri-level EP,1,1,-1,1,27.78,100,0.0388096,4
+penetrazione,n = 18,18,Sigma,Cascading Tree,Weighted Solidarity,0,-1,-1,0,27.78,27.78,0.00836211,4
+penetrazione,n = 18,18,Sigma,Cascading Tree,Pearson Key,1,1,-1,1,27.78,100,0.0708394,4
+penetrazione,n = 18,18,Sigma,Cascading Tree,Similarity-Utilization,1,1,-1,1,27.78,100,0.0595107,4
+penetrazione,n = 18,18,Sigma,Cascading Tree,Tri-level EP,1,1,-1,1,27.78,100,0.0715387,4
+penetrazione,n = 18,18,Sigma,Weighted Solidarity,Pearson Key,1,1,-1,1,27.78,100,0.0759836,4
+penetrazione,n = 18,18,Sigma,Weighted Solidarity,Similarity-Utilization,1,1,-1,1,27.78,100,0.064655,4
+penetrazione,n = 18,18,Sigma,Weighted Solidarity,Tri-level EP,1,1,-1,1,27.78,100,0.076683,4
+penetrazione,n = 18,18,Sigma,Pearson Key,Similarity-Utilization,0,1,1,0,50,77.78,0.0113286,4
+penetrazione,n = 18,18,Sigma,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.000986678,4
+penetrazione,n = 18,18,Sigma,Similarity-Utilization,Tri-level EP,0,-1,-1,0,50,77.78,0.012028,4
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Nucleolo,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Variance Least Core,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Equal Split,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Shapley,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Equal Split,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Nucleolo,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Equal Split,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Variance Least Core,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Equal Split,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Remuneration Model 1,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Remuneration Model 1,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Remuneration Model 1,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Remuneration Model 1,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Remuneration Model 1,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Cascading Tree,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Cascading Tree,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Cascading Tree,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Cascading Tree,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Weighted Solidarity,Pearson Key,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Weighted Solidarity,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Weighted Solidarity,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,InclusioneLIHC,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Nucleolo,0,0,0,0,NaN,NaN,27.0746,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Variance Least Core,0,0,0,0,NaN,NaN,27.0737,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Equal Split,0,1,1,0,50,100,231.287,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Proportional to Consumption,0,1,1,0,27.78,100,56.2917,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Remuneration Model 1,0,1,1,0,50,100,116.656,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Cascading Tree,0,1,1,0,27.78,100,236.385,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Weighted Solidarity,0,1,1,0,27.78,100,255.601,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Pearson Key,0,1,1,0,27.78,27.78,65.0187,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,122.561,4
+penetrazione,n = 18,18,EccessoMax_EUR,Shapley,Tri-level EP,0,1,1,0,100,100,54.1041,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00112102,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Equal Split,0,1,1,0,27.78,100,245.583,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,100,83.2278,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Remuneration Model 1,0,1,1,0,50,100,130.951,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,250.68,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Weighted Solidarity,0,1,1,0,27.78,100,269.897,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Pearson Key,0,1,1,0,27.78,100,91.9549,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,100,149.497,4
+penetrazione,n = 18,18,EccessoMax_EUR,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,81.0402,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Equal Split,0,1,1,0,27.78,100,245.582,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,100,83.2267,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Remuneration Model 1,0,1,1,0,50,100,130.951,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,250.68,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Weighted Solidarity,0,1,1,0,27.78,100,269.896,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,91.9537,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,100,149.496,4
+penetrazione,n = 18,18,EccessoMax_EUR,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,81.0391,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Proportional to Consumption,0,-1,-1,0,50,100,188.465,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Remuneration Model 1,0,-1,-1,0,50,100,114.631,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Cascading Tree,0,1,1,0,50,50,80.1924,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Weighted Solidarity,0,1,1,0,27.78,50,79.6732,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Pearson Key,0,-1,-1,0,50,100,224.506,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Similarity-Utilization,1,1,-1,1,27.78,100,187.411,4
+penetrazione,n = 18,18,EccessoMax_EUR,Equal Split,Tri-level EP,0,-1,-1,0,50,100,228.984,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Remuneration Model 1,0,1,1,0,50,77.78,73.8341,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Cascading Tree,0,1,1,0,50,100,210.776,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Weighted Solidarity,0,1,1,0,27.78,100,212.779,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Pearson Key,0,-1,-1,0,77.78,77.78,36.0409,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Similarity-Utilization,0,1,1,0,27.78,50,72.4472,4
+penetrazione,n = 18,18,EccessoMax_EUR,Proportional to Consumption,Tri-level EP,0,-1,-1,0,77.78,77.78,40.5182,4
+penetrazione,n = 18,18,EccessoMax_EUR,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,146.187,4
+penetrazione,n = 18,18,EccessoMax_EUR,Remuneration Model 1,Weighted Solidarity,0,1,1,0,27.78,100,138.945,4
+penetrazione,n = 18,18,EccessoMax_EUR,Remuneration Model 1,Pearson Key,1,1,-1,1,27.78,77.78,109.875,4
+penetrazione,n = 18,18,EccessoMax_EUR,Remuneration Model 1,Similarity-Utilization,1,1,-1,1,27.78,77.78,119.906,4
+penetrazione,n = 18,18,EccessoMax_EUR,Remuneration Model 1,Tri-level EP,0,-1,-1,0,50,77.78,114.352,4
+penetrazione,n = 18,18,EccessoMax_EUR,Cascading Tree,Weighted Solidarity,0,0,0,0,NaN,NaN,37.8978,4
+penetrazione,n = 18,18,EccessoMax_EUR,Cascading Tree,Pearson Key,0,-1,-1,0,50,100,229.604,4
+penetrazione,n = 18,18,EccessoMax_EUR,Cascading Tree,Similarity-Utilization,0,-1,-1,0,50,100,192.509,4
+penetrazione,n = 18,18,EccessoMax_EUR,Cascading Tree,Tri-level EP,0,-1,-1,0,50,100,234.081,4
+penetrazione,n = 18,18,EccessoMax_EUR,Weighted Solidarity,Pearson Key,0,-1,-1,0,27.78,100,248.82,4
+penetrazione,n = 18,18,EccessoMax_EUR,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,50,100,211.725,4
+penetrazione,n = 18,18,EccessoMax_EUR,Weighted Solidarity,Tri-level EP,0,-1,-1,0,27.78,100,253.297,4
+penetrazione,n = 18,18,EccessoMax_EUR,Pearson Key,Similarity-Utilization,0,1,1,0,27.78,77.78,67.227,4
+penetrazione,n = 18,18,EccessoMax_EUR,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,10.9146,4
+penetrazione,n = 18,18,EccessoMax_EUR,Similarity-Utilization,Tri-level EP,0,-1,-1,0,27.78,77.78,75.6626,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Nucleolo,0,-1,-1,0,27.78,77.78,57058,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Variance Least Core,0,-1,-1,0,27.78,77.78,57058,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Equal Split,0,1,1,0,27.78,100,112279,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Proportional to Consumption,0,1,1,0,27.78,100,88482,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Remuneration Model 1,0,1,1,0,50,100,82686,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Cascading Tree,0,1,1,0,27.78,100,102731,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Weighted Solidarity,0,1,1,0,27.78,100,86784,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Pearson Key,0,1,1,0,27.78,100,93806,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,87401,4
+penetrazione,n = 18,18,CoalizioniInstabili,Shapley,Tri-level EP,0,1,1,0,27.78,100,93820,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Equal Split,0,1,1,0,27.78,100,124814,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,100,112124,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Remuneration Model 1,0,1,1,0,27.78,100,120408,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,124611,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Weighted Solidarity,0,1,1,0,27.78,100,125371,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Pearson Key,0,1,1,0,27.78,100,117448,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,100,111043,4
+penetrazione,n = 18,18,CoalizioniInstabili,Nucleolo,Tri-level EP,0,1,1,0,27.78,100,117462,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Equal Split,0,1,1,0,27.78,100,124814,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,100,112124,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Remuneration Model 1,0,1,1,0,27.78,100,120408,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,124611,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Weighted Solidarity,0,1,1,0,27.78,100,125371,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Pearson Key,0,1,1,0,27.78,100,117448,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,100,111043,4
+penetrazione,n = 18,18,CoalizioniInstabili,Variance Least Core,Tri-level EP,0,1,1,0,27.78,100,117462,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Proportional to Consumption,1,1,-1,1,27.78,100,66212,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Remuneration Model 1,0,-1,-1,0,27.78,100,29593,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Cascading Tree,0,1,1,0,27.78,27.78,28509,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Weighted Solidarity,1,1,-1,1,27.78,100,25495,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Pearson Key,1,1,-1,1,27.78,100,73897,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Similarity-Utilization,1,1,-1,1,27.78,100,75557,4
+penetrazione,n = 18,18,CoalizioniInstabili,Equal Split,Tri-level EP,1,1,-1,1,27.78,100,71550,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Remuneration Model 1,1,-1,1,1,27.78,100,88153,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Cascading Tree,1,-1,1,1,27.78,100,56369,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Weighted Solidarity,1,-1,1,1,27.78,100,54459,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Pearson Key,1,1,-1,1,50,100,36702,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,50,100,33885,4
+penetrazione,n = 18,18,CoalizioniInstabili,Proportional to Consumption,Tri-level EP,0,1,1,0,50,50,35230,4
+penetrazione,n = 18,18,CoalizioniInstabili,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,50450,4
+penetrazione,n = 18,18,CoalizioniInstabili,Remuneration Model 1,Weighted Solidarity,0,1,1,0,27.78,27.78,44277,4
+penetrazione,n = 18,18,CoalizioniInstabili,Remuneration Model 1,Pearson Key,1,1,-1,1,27.78,100,93477,4
+penetrazione,n = 18,18,CoalizioniInstabili,Remuneration Model 1,Similarity-Utilization,1,1,-1,1,27.78,100,87072,4
+penetrazione,n = 18,18,CoalizioniInstabili,Remuneration Model 1,Tri-level EP,1,1,-1,1,27.78,100,93491,4
+penetrazione,n = 18,18,CoalizioniInstabili,Cascading Tree,Weighted Solidarity,0,-1,-1,0,100,100,15947,4
+penetrazione,n = 18,18,CoalizioniInstabili,Cascading Tree,Pearson Key,1,1,-1,1,27.78,100,64349,4
+penetrazione,n = 18,18,CoalizioniInstabili,Cascading Tree,Similarity-Utilization,1,1,-1,1,27.78,100,66009,4
+penetrazione,n = 18,18,CoalizioniInstabili,Cascading Tree,Tri-level EP,1,1,-1,1,27.78,100,59460,4
+penetrazione,n = 18,18,CoalizioniInstabili,Weighted Solidarity,Pearson Key,1,1,-1,1,27.78,100,49200,4
+penetrazione,n = 18,18,CoalizioniInstabili,Weighted Solidarity,Similarity-Utilization,1,1,-1,1,27.78,100,50062,4
+penetrazione,n = 18,18,CoalizioniInstabili,Weighted Solidarity,Tri-level EP,1,1,-1,1,27.78,100,49783,4
+penetrazione,n = 18,18,CoalizioniInstabili,Pearson Key,Similarity-Utilization,0,1,1,0,77.78,77.78,22636,4
+penetrazione,n = 18,18,CoalizioniInstabili,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,4889,4
+penetrazione,n = 18,18,CoalizioniInstabili,Similarity-Utilization,Tri-level EP,0,-1,-1,0,77.78,77.78,26142,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Nucleolo,0,-1,-1,0,27.78,100,0.363061,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Variance Least Core,0,-1,-1,0,27.78,100,0.360522,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Equal Split,1,-1,1,1,27.78,100,0.756184,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Proportional to Consumption,0,-1,-1,0,27.78,50,1.13471,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Remuneration Model 1,1,-1,1,1,27.78,100,0.447506,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Cascading Tree,0,1,1,0,27.78,100,0.800663,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Weighted Solidarity,1,-1,1,1,27.78,100,0.839619,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Pearson Key,0,-1,-1,0,27.78,100,1.33163,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Similarity-Utilization,0,-1,-1,0,27.78,100,1.34967,4
+penetrazione,n = 18,18,ForzaIncentivante,Shapley,Tri-level EP,0,-1,-1,0,27.78,100,1.30687,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00350144,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Equal Split,0,1,1,0,50,100,0.874503,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Proportional to Consumption,1,-1,1,1,27.78,77.78,0.771647,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Remuneration Model 1,0,1,1,0,50,100,0.568656,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,0.989338,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Weighted Solidarity,0,1,1,0,50,100,0.941062,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Pearson Key,0,-1,-1,0,27.78,100,0.968572,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Similarity-Utilization,0,-1,-1,0,27.78,100,0.986605,4
+penetrazione,n = 18,18,ForzaIncentivante,Nucleolo,Tri-level EP,0,-1,-1,0,27.78,100,0.943808,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Equal Split,0,1,1,0,50,100,0.874439,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Proportional to Consumption,1,-1,1,1,27.78,77.78,0.774185,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Remuneration Model 1,0,1,1,0,50,100,0.568592,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,0.985836,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Weighted Solidarity,0,1,1,0,50,100,0.940447,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Pearson Key,0,-1,-1,0,27.78,100,0.971111,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Similarity-Utilization,0,-1,-1,0,27.78,100,0.989144,4
+penetrazione,n = 18,18,ForzaIncentivante,Variance Least Core,Tri-level EP,0,-1,-1,0,27.78,100,0.946347,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Proportional to Consumption,0,-1,-1,0,27.78,100,0.785042,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Remuneration Model 1,0,-1,-1,0,50,100,0.308678,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Cascading Tree,0,1,1,0,27.78,50,0.823022,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Weighted Solidarity,0,0,0,0,NaN,NaN,0.0958799,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Pearson Key,0,-1,-1,0,27.78,100,1.09786,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Similarity-Utilization,0,-1,-1,0,27.78,100,1,4
+penetrazione,n = 18,18,ForzaIncentivante,Equal Split,Tri-level EP,0,-1,-1,0,27.78,100,1.13197,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Remuneration Model 1,0,1,1,0,27.78,100,0.734156,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Cascading Tree,0,1,1,0,27.78,100,1.60806,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Weighted Solidarity,0,1,1,0,27.78,100,0.871135,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Pearson Key,0,-1,-1,0,27.78,100,0.326824,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,27.78,100,0.288832,4
+penetrazione,n = 18,18,ForzaIncentivante,Proportional to Consumption,Tri-level EP,0,-1,-1,0,50,100,0.360933,4
+penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,0.873908,4
+penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Weighted Solidarity,0,1,1,0,50,100,0.392112,4
+penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Pearson Key,0,-1,-1,0,27.78,100,0.931081,4
+penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,27.78,100,0.949114,4
+penetrazione,n = 18,18,ForzaIncentivante,Remuneration Model 1,Tri-level EP,0,-1,-1,0,27.78,100,0.906317,4
+penetrazione,n = 18,18,ForzaIncentivante,Cascading Tree,Weighted Solidarity,0,-1,-1,0,27.78,50,0.850122,4
+penetrazione,n = 18,18,ForzaIncentivante,Cascading Tree,Pearson Key,0,-1,-1,0,27.78,100,1.80499,4
+penetrazione,n = 18,18,ForzaIncentivante,Cascading Tree,Similarity-Utilization,0,-1,-1,0,27.78,100,1.82302,4
+penetrazione,n = 18,18,ForzaIncentivante,Cascading Tree,Tri-level EP,0,-1,-1,0,27.78,100,1.78022,4
+penetrazione,n = 18,18,ForzaIncentivante,Weighted Solidarity,Pearson Key,0,-1,-1,0,27.78,100,1.07632,4
+penetrazione,n = 18,18,ForzaIncentivante,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,27.78,100,1.09588,4
+penetrazione,n = 18,18,ForzaIncentivante,Weighted Solidarity,Tri-level EP,0,-1,-1,0,27.78,100,1.11043,4
+penetrazione,n = 18,18,ForzaIncentivante,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0978594,4
+penetrazione,n = 18,18,ForzaIncentivante,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.0341095,4
+penetrazione,n = 18,18,ForzaIncentivante,Similarity-Utilization,Tri-level EP,0,-1,-1,0,100,100,0.131969,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Nucleolo,0,-1,-1,0,27.78,27.78,0.822693,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Variance Least Core,0,-1,-1,0,27.78,27.78,0.815158,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Equal Split,1,-1,1,1,27.78,100,0.983237,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Proportional to Consumption,0,-1,-1,0,27.78,27.78,1.68302,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Remuneration Model 1,1,-1,1,1,27.78,100,0.996892,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Cascading Tree,0,1,1,0,27.78,100,1.88459,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Weighted Solidarity,1,-1,1,1,27.78,100,1.40431,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Pearson Key,0,-1,-1,0,27.78,27.78,1.74382,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Similarity-Utilization,0,-1,-1,0,27.78,100,1.78119,4
+penetrazione,n = 18,18,AllineamentoVirtu,Shapley,Tri-level EP,0,-1,-1,0,27.78,27.78,1.73102,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00753504,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Equal Split,0,1,1,0,50,100,0.982943,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Proportional to Consumption,0,-1,-1,0,27.78,27.78,0.86033,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Remuneration Model 1,0,1,1,0,50,100,0.202101,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,1.90179,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Weighted Solidarity,0,1,1,0,50,100,1.40402,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Pearson Key,0,-1,-1,0,27.78,27.78,0.921123,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Similarity-Utilization,0,-1,-1,0,27.78,100,0.958498,4
+penetrazione,n = 18,18,AllineamentoVirtu,Nucleolo,Tri-level EP,0,-1,-1,0,27.78,27.78,0.908332,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Equal Split,0,1,1,0,50,100,0.98292,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Proportional to Consumption,0,-1,-1,0,27.78,27.78,0.867865,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Remuneration Model 1,0,1,1,0,50,100,0.202062,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,1.90175,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,0,1,1,0,50,100,1.404,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Pearson Key,0,-1,-1,0,27.78,27.78,0.928658,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Similarity-Utilization,0,-1,-1,0,27.78,100,0.966033,4
+penetrazione,n = 18,18,AllineamentoVirtu,Variance Least Core,Tri-level EP,0,-1,-1,0,27.78,27.78,0.915867,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Proportional to Consumption,0,-1,-1,0,27.78,100,0.970212,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Remuneration Model 1,0,-1,-1,0,27.78,100,0.934213,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Cascading Tree,1,1,-1,1,27.78,100,0.987304,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Weighted Solidarity,0,1,1,0,50,77.78,0.421077,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Pearson Key,0,-1,-1,0,27.78,100,0.984877,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Similarity-Utilization,0,-1,-1,0,27.78,100,0.999799,4
+penetrazione,n = 18,18,AllineamentoVirtu,Equal Split,Tri-level EP,0,-1,-1,0,27.78,100,0.98321,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Remuneration Model 1,0,1,1,0,27.78,100,0.68613,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Cascading Tree,0,1,1,0,27.78,100,1.8903,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Weighted Solidarity,0,1,1,0,27.78,100,1.39129,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,0.0607931,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,100,100,0.115528,4
+penetrazione,n = 18,18,AllineamentoVirtu,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0.0480023,4
+penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,1.69969,4
+penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Weighted Solidarity,0,1,1,0,50,100,1.35529,4
+penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Pearson Key,0,-1,-1,0,27.78,100,0.746923,4
+penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,27.78,100,0.784299,4
+penetrazione,n = 18,18,AllineamentoVirtu,Remuneration Model 1,Tri-level EP,0,-1,-1,0,27.78,100,0.734133,4
+penetrazione,n = 18,18,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,1,-1,1,1,27.78,100,1.04783,4
+penetrazione,n = 18,18,AllineamentoVirtu,Cascading Tree,Pearson Key,0,-1,-1,0,27.78,100,1.94919,4
+penetrazione,n = 18,18,AllineamentoVirtu,Cascading Tree,Similarity-Utilization,0,-1,-1,0,27.78,100,1.98656,4
+penetrazione,n = 18,18,AllineamentoVirtu,Cascading Tree,Tri-level EP,0,-1,-1,0,27.78,100,1.9364,4
+penetrazione,n = 18,18,AllineamentoVirtu,Weighted Solidarity,Pearson Key,0,-1,-1,0,27.78,100,1.40595,4
+penetrazione,n = 18,18,AllineamentoVirtu,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,27.78,100,1.42088,4
+penetrazione,n = 18,18,AllineamentoVirtu,Weighted Solidarity,Tri-level EP,0,-1,-1,0,27.78,100,1.40429,4
+penetrazione,n = 18,18,AllineamentoVirtu,Pearson Key,Similarity-Utilization,0,-1,-1,0,100,100,0.093575,4
+penetrazione,n = 18,18,AllineamentoVirtu,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.0127908,4
+penetrazione,n = 18,18,AllineamentoVirtu,Similarity-Utilization,Tri-level EP,0,1,1,0,100,100,0.0905776,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Nucleolo,0,-1,-1,0,27.78,27.78,0.296967,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Variance Least Core,0,-1,-1,0,27.78,27.78,0.300878,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Equal Split,2,-1,-1,0,27.78,100,0.489145,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,1,-1,1,1,27.78,50,0.159839,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,1,-1,1,1,27.78,100,0.135371,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Cascading Tree,0,1,1,0,27.78,100,0.91472,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Weighted Solidarity,2,-1,-1,0,27.78,100,0.466236,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Pearson Key,0,-1,-1,0,27.78,27.78,0.288303,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Similarity-Utilization,0,-1,-1,0,27.78,100,0.422872,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Shapley,Tri-level EP,1,-1,1,1,27.78,50,0.260868,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00391051,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Equal Split,1,1,-1,1,27.78,100,0.482011,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,50,0.137129,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Remuneration Model 1,0,1,1,0,27.78,100,0.191555,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Cascading Tree,0,1,1,0,27.78,100,0.91076,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Weighted Solidarity,1,1,-1,1,27.78,100,0.462276,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Pearson Key,0,0,0,0,NaN,NaN,0.0293724,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Similarity-Utilization,0,-1,-1,0,27.78,100,0.125905,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Nucleolo,Tri-level EP,0,0,0,0,NaN,NaN,0.0360992,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Equal Split,1,1,-1,1,27.78,100,0.482,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,50,0.141039,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Remuneration Model 1,0,1,1,0,27.78,100,0.195466,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Cascading Tree,0,1,1,0,27.78,100,0.910312,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Weighted Solidarity,1,1,-1,1,27.78,100,0.461828,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Pearson Key,0,0,0,0,NaN,NaN,0.0293619,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,0,-1,-1,0,27.78,100,0.121995,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Variance Least Core,Tri-level EP,0,0,0,0,NaN,NaN,0.0400097,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Proportional to Consumption,1,-1,1,1,27.78,100,0.511512,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,1,-1,1,1,50,100,0.624516,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Cascading Tree,0,1,1,0,27.78,100,0.794636,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,1,-1,1,1,27.78,77.78,0.26604,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Pearson Key,1,-1,1,1,27.78,100,0.452639,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,1,-1,1,1,27.78,100,0.375077,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,1,-1,1,1,27.78,100,0.449494,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,1,-1,1,1,50,100,0.113004,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Cascading Tree,0,1,1,0,27.78,100,0.873704,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,1,1,-1,1,50,100,0.47675,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Pearson Key,0,-1,-1,0,27.78,50,0.128464,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,27.78,100,0.263034,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Proportional to Consumption,Tri-level EP,0,-1,-1,0,27.78,50,0.101029,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Cascading Tree,0,1,1,0,27.78,100,0.788242,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,2,-1,-1,0,27.78,100,0.589755,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Pearson Key,0,-1,-1,0,27.78,100,0.182891,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,27.78,100,0.317461,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,0,-1,-1,0,27.78,100,0.175022,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Cascading Tree,Weighted Solidarity,0,-1,-1,0,27.78,100,0.759874,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Cascading Tree,Pearson Key,0,-1,-1,0,27.78,100,0.919903,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,0,-1,-1,0,27.78,100,0.94003,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Cascading Tree,Tri-level EP,0,-1,-1,0,27.78,100,0.914511,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,1,-1,1,1,27.78,100,0.471419,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,1,-1,1,1,27.78,100,0.491546,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,1,-1,1,1,50,100,0.466027,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Pearson Key,Similarity-Utilization,0,-1,-1,0,27.78,50,0.13457,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.0274345,4
+penetrazione,n = 18,18,AllineamentoVirtu_lordo,Similarity-Utilization,Tri-level EP,0,1,1,0,27.78,50,0.162004,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Nucleolo,0,1,1,0,27.78,100,141.942,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Variance Least Core,0,1,1,0,27.78,100,139.179,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Equal Split,0,-1,-1,0,27.78,100,423.881,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Proportional to Consumption,0,1,1,0,27.78,100,654.592,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Remuneration Model 1,0,-1,-1,0,50,100,205.005,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Cascading Tree,0,-1,-1,0,50,100,337.649,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Weighted Solidarity,1,1,-1,1,27.78,50,248.582,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Pearson Key,0,1,1,0,27.78,100,717.679,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Similarity-Utilization,0,1,1,0,27.78,100,709.004,4
+penetrazione,n = 18,18,VAN_min_EUR,Shapley,Tri-level EP,0,1,1,0,27.78,100,714.201,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,5.05624,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Equal Split,0,-1,-1,0,27.78,100,565.823,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Proportional to Consumption,0,1,1,0,27.78,27.78,551.501,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Remuneration Model 1,0,-1,-1,0,50,100,346.947,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Cascading Tree,0,-1,-1,0,50,100,479.591,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Weighted Solidarity,0,-1,-1,0,50,100,390.523,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Pearson Key,0,1,1,0,27.78,50,614.588,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Similarity-Utilization,0,1,1,0,27.78,50,605.913,4
+penetrazione,n = 18,18,VAN_min_EUR,Nucleolo,Tri-level EP,0,1,1,0,27.78,50,611.11,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Equal Split,0,-1,-1,0,27.78,100,563.06,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Proportional to Consumption,0,1,1,0,27.78,27.78,556.557,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Remuneration Model 1,0,-1,-1,0,50,100,344.185,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Cascading Tree,0,-1,-1,0,50,100,476.828,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Weighted Solidarity,0,-1,-1,0,50,100,387.761,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Pearson Key,0,1,1,0,27.78,50,619.644,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Similarity-Utilization,0,1,1,0,27.78,50,610.969,4
+penetrazione,n = 18,18,VAN_min_EUR,Variance Least Core,Tri-level EP,0,1,1,0,27.78,50,616.167,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Proportional to Consumption,0,1,1,0,27.78,100,769.595,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Remuneration Model 1,0,1,1,0,27.78,100,218.875,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Cascading Tree,0,1,1,0,27.78,100,173.886,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Weighted Solidarity,0,1,1,0,27.78,100,283.373,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Pearson Key,0,1,1,0,27.78,100,832.681,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Similarity-Utilization,0,1,1,0,27.78,100,824.006,4
+penetrazione,n = 18,18,VAN_min_EUR,Equal Split,Tri-level EP,0,1,1,0,27.78,100,829.204,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,27.78,100,631.98,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Cascading Tree,0,-1,-1,0,27.78,100,595.709,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,27.78,100,487.549,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,63.0868,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Similarity-Utilization,0,1,1,0,77.78,77.78,54.4118,4
+penetrazione,n = 18,18,VAN_min_EUR,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,59.6091,4
+penetrazione,n = 18,18,VAN_min_EUR,Remuneration Model 1,Cascading Tree,0,-1,-1,0,50,100,132.644,4
+penetrazione,n = 18,18,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,0,1,1,0,27.78,100,144.43,4
+penetrazione,n = 18,18,VAN_min_EUR,Remuneration Model 1,Pearson Key,0,1,1,0,27.78,100,695.066,4
+penetrazione,n = 18,18,VAN_min_EUR,Remuneration Model 1,Similarity-Utilization,0,1,1,0,27.78,100,686.391,4
+penetrazione,n = 18,18,VAN_min_EUR,Remuneration Model 1,Tri-level EP,0,1,1,0,27.78,100,691.589,4
+penetrazione,n = 18,18,VAN_min_EUR,Cascading Tree,Weighted Solidarity,0,1,1,0,27.78,100,235.497,4
+penetrazione,n = 18,18,VAN_min_EUR,Cascading Tree,Pearson Key,0,1,1,0,27.78,100,658.795,4
+penetrazione,n = 18,18,VAN_min_EUR,Cascading Tree,Similarity-Utilization,0,1,1,0,27.78,100,650.12,4
+penetrazione,n = 18,18,VAN_min_EUR,Cascading Tree,Tri-level EP,0,1,1,0,27.78,100,655.318,4
+penetrazione,n = 18,18,VAN_min_EUR,Weighted Solidarity,Pearson Key,0,1,1,0,27.78,100,550.636,4
+penetrazione,n = 18,18,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,0,1,1,0,27.78,100,541.961,4
+penetrazione,n = 18,18,VAN_min_EUR,Weighted Solidarity,Tri-level EP,0,1,1,0,27.78,100,547.158,4
+penetrazione,n = 18,18,VAN_min_EUR,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,8.675,4
+penetrazione,n = 18,18,VAN_min_EUR,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,4.67899,4
+penetrazione,n = 18,18,VAN_min_EUR,Similarity-Utilization,Tri-level EP,0,1,1,0,100,100,6.03791,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Nucleolo,0,1,1,0,5,18,0.182748,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Variance Least Core,0,1,1,0,5,18,0.180032,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Equal Split,0,-1,-1,0,5,18,0.261898,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Proportional to Consumption,0,1,1,0,5,10,0.228041,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Remuneration Model 1,0,-1,-1,0,5,18,0.0968225,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Cascading Tree,0,-1,-1,0,5,18,0.186825,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Weighted Solidarity,0,-1,-1,0,5,18,0.0758524,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Pearson Key,0,1,1,0,5,18,0.303984,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Similarity-Utilization,0,1,1,0,5,18,0.305707,4
+taglia,fascia 4 (~55%),4,EI_orig,Shapley,Tri-level EP,0,1,1,0,5,18,0.29541,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.0114599,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Equal Split,0,-1,-1,0,5,18,0.444646,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Proportional to Consumption,0,1,1,0,8,10,0.0572624,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Remuneration Model 1,0,-1,-1,0,5,18,0.27957,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Cascading Tree,0,-1,-1,0,5,18,0.319012,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Weighted Solidarity,0,-1,-1,0,5,18,0.2586,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Pearson Key,0,1,1,0,5,18,0.124602,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Similarity-Utilization,0,1,1,0,5,10,0.122959,4
+taglia,fascia 4 (~55%),4,EI_orig,Nucleolo,Tri-level EP,0,1,1,0,5,18,0.119612,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Equal Split,0,-1,-1,0,5,18,0.44193,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Proportional to Consumption,0,1,1,0,8,10,0.0687223,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Remuneration Model 1,0,-1,-1,0,5,18,0.276855,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Cascading Tree,0,-1,-1,0,5,18,0.316297,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Weighted Solidarity,0,-1,-1,0,5,18,0.255884,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Pearson Key,0,1,1,0,5,18,0.136062,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Similarity-Utilization,0,1,1,0,5,10,0.128184,4
+taglia,fascia 4 (~55%),4,EI_orig,Variance Least Core,Tri-level EP,0,1,1,0,5,18,0.130343,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Proportional to Consumption,0,1,1,0,5,18,0.452025,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Remuneration Model 1,0,1,1,0,5,18,0.165076,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Cascading Tree,0,1,1,0,5,18,0.149001,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Weighted Solidarity,0,1,1,0,5,18,0.21062,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Pearson Key,0,1,1,0,5,18,0.565882,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Similarity-Utilization,0,1,1,0,5,18,0.567605,4
+taglia,fascia 4 (~55%),4,EI_orig,Equal Split,Tri-level EP,0,1,1,0,5,18,0.557308,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,5,18,0.317575,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Cascading Tree,0,-1,-1,0,5,18,0.326392,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,5,18,0.268503,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Pearson Key,0,1,1,0,5,18,0.113857,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Similarity-Utilization,0,1,1,0,5,8,0.11558,4
+taglia,fascia 4 (~55%),4,EI_orig,Proportional to Consumption,Tri-level EP,0,1,1,0,5,18,0.105283,4
+taglia,fascia 4 (~55%),4,EI_orig,Remuneration Model 1,Cascading Tree,0,-1,-1,0,18,18,0.0906057,4
+taglia,fascia 4 (~55%),4,EI_orig,Remuneration Model 1,Weighted Solidarity,0,1,1,0,18,18,0.060922,4
+taglia,fascia 4 (~55%),4,EI_orig,Remuneration Model 1,Pearson Key,0,1,1,0,5,18,0.400807,4
+taglia,fascia 4 (~55%),4,EI_orig,Remuneration Model 1,Similarity-Utilization,0,1,1,0,5,18,0.402529,4
+taglia,fascia 4 (~55%),4,EI_orig,Remuneration Model 1,Tri-level EP,0,1,1,0,5,18,0.392233,4
+taglia,fascia 4 (~55%),4,EI_orig,Cascading Tree,Weighted Solidarity,0,1,1,0,5,18,0.151528,4
+taglia,fascia 4 (~55%),4,EI_orig,Cascading Tree,Pearson Key,0,1,1,0,5,18,0.440249,4
+taglia,fascia 4 (~55%),4,EI_orig,Cascading Tree,Similarity-Utilization,0,1,1,0,5,18,0.441971,4
+taglia,fascia 4 (~55%),4,EI_orig,Cascading Tree,Tri-level EP,0,1,1,0,5,18,0.431675,4
+taglia,fascia 4 (~55%),4,EI_orig,Weighted Solidarity,Pearson Key,0,1,1,0,5,18,0.379837,4
+taglia,fascia 4 (~55%),4,EI_orig,Weighted Solidarity,Similarity-Utilization,0,1,1,0,5,18,0.381559,4
+taglia,fascia 4 (~55%),4,EI_orig,Weighted Solidarity,Tri-level EP,0,1,1,0,5,18,0.371262,4
+taglia,fascia 4 (~55%),4,EI_orig,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0299088,4
+taglia,fascia 4 (~55%),4,EI_orig,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00946683,4
+taglia,fascia 4 (~55%),4,EI_orig,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0.0343587,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Nucleolo,0,1,1,0,5,18,0.182748,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Variance Least Core,0,1,1,0,5,18,0.180032,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Equal Split,0,-1,-1,0,5,18,0.261898,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Proportional to Consumption,0,1,1,0,5,10,0.228041,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Remuneration Model 1,0,-1,-1,0,5,18,0.0968225,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Cascading Tree,0,-1,-1,0,5,18,0.186825,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Weighted Solidarity,0,-1,-1,0,5,18,0.0758524,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Pearson Key,0,1,1,0,5,18,0.303984,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Similarity-Utilization,0,1,1,0,5,18,0.305707,4
+taglia,fascia 4 (~55%),4,Gini,Shapley,Tri-level EP,0,1,1,0,5,18,0.29541,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.0114599,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Equal Split,0,-1,-1,0,5,18,0.444646,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Proportional to Consumption,0,1,1,0,8,10,0.0572624,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Remuneration Model 1,0,-1,-1,0,5,18,0.27957,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Cascading Tree,0,-1,-1,0,5,18,0.319012,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Weighted Solidarity,0,-1,-1,0,5,18,0.2586,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Pearson Key,0,1,1,0,5,18,0.124602,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Similarity-Utilization,0,1,1,0,5,10,0.122959,4
+taglia,fascia 4 (~55%),4,Gini,Nucleolo,Tri-level EP,0,1,1,0,5,18,0.119612,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Equal Split,0,-1,-1,0,5,18,0.44193,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Proportional to Consumption,0,1,1,0,8,10,0.0687223,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Remuneration Model 1,0,-1,-1,0,5,18,0.276855,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Cascading Tree,0,-1,-1,0,5,18,0.316297,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Weighted Solidarity,0,-1,-1,0,5,18,0.255884,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Pearson Key,0,1,1,0,5,18,0.136062,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Similarity-Utilization,0,1,1,0,5,10,0.128184,4
+taglia,fascia 4 (~55%),4,Gini,Variance Least Core,Tri-level EP,0,1,1,0,5,18,0.130343,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Proportional to Consumption,0,1,1,0,5,18,0.452025,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Remuneration Model 1,0,1,1,0,5,18,0.165076,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Cascading Tree,0,1,1,0,5,18,0.149001,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Weighted Solidarity,0,1,1,0,5,18,0.21062,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Pearson Key,0,1,1,0,5,18,0.565882,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Similarity-Utilization,0,1,1,0,5,18,0.567605,4
+taglia,fascia 4 (~55%),4,Gini,Equal Split,Tri-level EP,0,1,1,0,5,18,0.557308,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,5,18,0.317575,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Cascading Tree,0,-1,-1,0,5,18,0.326392,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,5,18,0.268503,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Pearson Key,0,1,1,0,5,18,0.113857,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Similarity-Utilization,0,1,1,0,5,8,0.11558,4
+taglia,fascia 4 (~55%),4,Gini,Proportional to Consumption,Tri-level EP,0,1,1,0,5,18,0.105283,4
+taglia,fascia 4 (~55%),4,Gini,Remuneration Model 1,Cascading Tree,0,-1,-1,0,18,18,0.0906057,4
+taglia,fascia 4 (~55%),4,Gini,Remuneration Model 1,Weighted Solidarity,0,1,1,0,18,18,0.060922,4
+taglia,fascia 4 (~55%),4,Gini,Remuneration Model 1,Pearson Key,0,1,1,0,5,18,0.400807,4
+taglia,fascia 4 (~55%),4,Gini,Remuneration Model 1,Similarity-Utilization,0,1,1,0,5,18,0.402529,4
+taglia,fascia 4 (~55%),4,Gini,Remuneration Model 1,Tri-level EP,0,1,1,0,5,18,0.392233,4
+taglia,fascia 4 (~55%),4,Gini,Cascading Tree,Weighted Solidarity,0,1,1,0,5,18,0.151528,4
+taglia,fascia 4 (~55%),4,Gini,Cascading Tree,Pearson Key,0,1,1,0,5,18,0.440249,4
+taglia,fascia 4 (~55%),4,Gini,Cascading Tree,Similarity-Utilization,0,1,1,0,5,18,0.441971,4
+taglia,fascia 4 (~55%),4,Gini,Cascading Tree,Tri-level EP,0,1,1,0,5,18,0.431675,4
+taglia,fascia 4 (~55%),4,Gini,Weighted Solidarity,Pearson Key,0,1,1,0,5,18,0.379837,4
+taglia,fascia 4 (~55%),4,Gini,Weighted Solidarity,Similarity-Utilization,0,1,1,0,5,18,0.381559,4
+taglia,fascia 4 (~55%),4,Gini,Weighted Solidarity,Tri-level EP,0,1,1,0,5,18,0.371262,4
+taglia,fascia 4 (~55%),4,Gini,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0299088,4
+taglia,fascia 4 (~55%),4,Gini,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00946683,4
+taglia,fascia 4 (~55%),4,Gini,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0.0343587,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Nucleolo,0,-1,-1,0,5,10,0.105226,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Variance Least Core,0,-1,-1,0,5,10,0.107597,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Equal Split,0,1,1,0,5,18,0.22653,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Proportional to Consumption,0,1,1,0,18,18,0.131484,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Remuneration Model 1,0,1,1,0,5,18,0.105959,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Cascading Tree,0,1,1,0,5,18,0.33809,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Weighted Solidarity,0,1,1,0,5,18,0.280197,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Pearson Key,0,1,1,0,18,18,0.0916152,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Similarity-Utilization,0,1,1,0,5,18,0.0877275,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Shapley,Tri-level EP,0,1,1,0,18,18,0.0969163,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.0111098,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Equal Split,0,1,1,0,5,18,0.331756,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Proportional to Consumption,0,1,1,0,5,18,0.140297,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,0.211186,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Cascading Tree,0,1,1,0,5,18,0.443316,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,0.385424,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Pearson Key,0,1,1,0,5,18,0.131535,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Similarity-Utilization,0,1,1,0,5,18,0.167865,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Nucleolo,Tri-level EP,0,1,1,0,5,18,0.128951,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Equal Split,0,1,1,0,5,18,0.334127,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Proportional to Consumption,0,1,1,0,5,18,0.140308,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,0.213556,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Cascading Tree,0,1,1,0,5,18,0.445687,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,0.387794,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Pearson Key,0,1,1,0,5,18,0.133905,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Similarity-Utilization,0,1,1,0,5,18,0.170236,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Variance Least Core,Tri-level EP,0,1,1,0,5,18,0.131322,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,0.25009,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Remuneration Model 1,0,-1,-1,0,5,18,0.12057,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Cascading Tree,0,1,1,0,5,10,0.130336,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Weighted Solidarity,0,1,1,0,5,18,0.0685863,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Pearson Key,0,-1,-1,0,5,18,0.200221,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Similarity-Utilization,0,-1,-1,0,5,18,0.163891,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Equal Split,Tri-level EP,0,-1,-1,0,5,18,0.202805,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Remuneration Model 1,1,1,-1,1,5,18,0.129519,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,0.36165,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,0.303757,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Pearson Key,1,1,-1,1,5,18,0.0560257,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,5,18,0.0929834,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Proportional to Consumption,Tri-level EP,1,1,-1,1,5,18,0.0472851,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,0.23213,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,18,0.174238,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,10,0.0796508,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,8,8,0.0534181,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,10,0.0822343,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Cascading Tree,Weighted Solidarity,1,-1,1,1,5,18,0.0838632,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,0.311781,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,0.275451,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,0.314365,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,0.253889,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,0.217559,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,0.256472,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0369577,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00890582,4
+taglia,fascia 4 (~55%),4,FairnessIndex,Similarity-Utilization,Tri-level EP,0,-1,-1,0,10,10,0.0458636,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Nucleolo,0,-1,-1,0,5,10,0.0472639,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Variance Least Core,0,-1,-1,0,5,10,0.0479973,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Equal Split,0,1,1,0,5,18,0.107395,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Proportional to Consumption,0,1,1,0,18,18,0.0143667,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Remuneration Model 1,0,1,1,0,5,18,0.0457237,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Cascading Tree,0,1,1,0,5,18,0.152167,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Weighted Solidarity,0,1,1,0,5,18,0.154428,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Pearson Key,0,1,1,0,5,18,0.022426,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Similarity-Utilization,0,1,1,0,5,18,0.0547056,4
+taglia,fascia 4 (~55%),4,Sigma,Shapley,Tri-level EP,0,1,1,0,10,18,0.0192373,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00310639,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Equal Split,0,1,1,0,5,18,0.154658,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Proportional to Consumption,0,1,1,0,5,18,0.0572843,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,0.0929876,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Cascading Tree,0,1,1,0,5,18,0.199431,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,0.201692,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Pearson Key,0,1,1,0,5,18,0.0696899,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Similarity-Utilization,0,1,1,0,5,18,0.10197,4
+taglia,fascia 4 (~55%),4,Sigma,Nucleolo,Tri-level EP,0,1,1,0,5,18,0.0665012,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Equal Split,0,1,1,0,5,18,0.155392,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Proportional to Consumption,0,1,1,0,5,18,0.0580178,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,0.0937211,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Cascading Tree,0,1,1,0,5,18,0.200165,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,0.202425,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Pearson Key,0,1,1,0,5,18,0.0704233,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Similarity-Utilization,0,1,1,0,5,18,0.102703,4
+taglia,fascia 4 (~55%),4,Sigma,Variance Least Core,Tri-level EP,0,1,1,0,5,18,0.0672347,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,0.0973741,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Remuneration Model 1,0,-1,-1,0,5,18,0.0616708,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Cascading Tree,0,1,1,0,5,10,0.0447728,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Weighted Solidarity,0,1,1,0,5,10,0.0470336,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Pearson Key,0,-1,-1,0,5,18,0.0849686,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Similarity-Utilization,0,-1,-1,0,5,18,0.0526889,4
+taglia,fascia 4 (~55%),4,Sigma,Equal Split,Tri-level EP,0,-1,-1,0,5,18,0.0881572,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Remuneration Model 1,0,1,1,0,5,10,0.0357033,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,0.142147,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,0.144408,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Pearson Key,0,-1,-1,0,18,18,0.0124056,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,5,18,0.0446852,4
+taglia,fascia 4 (~55%),4,Sigma,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0.0092169,4
+taglia,fascia 4 (~55%),4,Sigma,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,0.106444,4
+taglia,fascia 4 (~55%),4,Sigma,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,18,0.108704,4
+taglia,fascia 4 (~55%),4,Sigma,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,18,0.0232977,4
+taglia,fascia 4 (~55%),4,Sigma,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,18,18,0.00898192,4
+taglia,fascia 4 (~55%),4,Sigma,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,18,0.0264864,4
+taglia,fascia 4 (~55%),4,Sigma,Cascading Tree,Weighted Solidarity,0,0,0,0,NaN,NaN,0.00922581,4
+taglia,fascia 4 (~55%),4,Sigma,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,0.129741,4
+taglia,fascia 4 (~55%),4,Sigma,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,0.0974617,4
+taglia,fascia 4 (~55%),4,Sigma,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,0.13293,4
+taglia,fascia 4 (~55%),4,Sigma,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,0.132002,4
+taglia,fascia 4 (~55%),4,Sigma,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,0.0997225,4
+taglia,fascia 4 (~55%),4,Sigma,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,0.135191,4
+taglia,fascia 4 (~55%),4,Sigma,Pearson Key,Similarity-Utilization,0,1,1,0,5,10,0.0322796,4
+taglia,fascia 4 (~55%),4,Sigma,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00318866,4
+taglia,fascia 4 (~55%),4,Sigma,Similarity-Utilization,Tri-level EP,0,-1,-1,0,5,10,0.0354683,4
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Nucleolo,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Variance Least Core,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Equal Split,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Shapley,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Equal Split,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Nucleolo,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Equal Split,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Variance Least Core,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Proportional to Consumption,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Equal Split,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Remuneration Model 1,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Remuneration Model 1,Cascading Tree,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Remuneration Model 1,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Remuneration Model 1,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Remuneration Model 1,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Remuneration Model 1,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Cascading Tree,Weighted Solidarity,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Cascading Tree,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Cascading Tree,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Cascading Tree,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Weighted Solidarity,Pearson Key,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Weighted Solidarity,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Weighted Solidarity,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,InclusioneLIHC,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,0,0
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Nucleolo,0,-1,-1,0,5,10,28.4363,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Variance Least Core,0,-1,-1,0,5,10,28.4358,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Equal Split,0,1,1,0,5,18,73.0566,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Proportional to Consumption,0,1,1,0,18,18,12.8827,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Remuneration Model 1,0,1,1,0,5,18,30.6591,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Cascading Tree,0,1,1,0,5,18,112.752,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Weighted Solidarity,0,1,1,0,5,18,87.7035,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Pearson Key,0,-1,-1,0,5,5,10.0308,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Similarity-Utilization,0,1,1,0,5,18,43.0276,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Shapley,Tri-level EP,1,-1,1,1,5,18,12.7687,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.000504471,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Equal Split,0,1,1,0,5,18,101.493,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Proportional to Consumption,0,1,1,0,5,18,24.0662,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,59.0954,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Cascading Tree,0,1,1,0,5,18,141.188,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,116.14,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Pearson Key,0,1,1,0,5,18,24.9759,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Similarity-Utilization,0,1,1,0,5,18,71.4639,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Nucleolo,Tri-level EP,0,1,1,0,18,18,20.1268,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Equal Split,0,1,1,0,5,18,101.492,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Proportional to Consumption,0,1,1,0,5,18,24.0657,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,59.0948,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Cascading Tree,0,1,1,0,5,18,141.188,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,116.139,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Pearson Key,0,1,1,0,5,18,24.9754,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Similarity-Utilization,0,1,1,0,5,18,71.4634,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Variance Least Core,Tri-level EP,0,1,1,0,18,18,20.1263,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,77.4267,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Remuneration Model 1,0,-1,-1,0,5,18,42.3975,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Cascading Tree,0,1,1,0,5,10,39.6955,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Weighted Solidarity,0,1,1,0,8,8,23.0171,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Pearson Key,0,-1,-1,0,5,18,76.517,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Similarity-Utilization,0,-1,-1,0,5,18,30.029,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Equal Split,Tri-level EP,0,-1,-1,0,5,18,81.3661,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Remuneration Model 1,0,1,1,0,5,10,35.0291,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,117.122,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,92.0736,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,9.2056,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Similarity-Utilization,0,1,1,0,5,10,47.3977,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Proportional to Consumption,Tri-level EP,0,-1,-1,0,5,5,11.9435,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,82.0931,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,18,57.0445,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,10,34.1195,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Remuneration Model 1,Similarity-Utilization,0,0,0,0,NaN,NaN,12.3686,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,10,38.9685,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Cascading Tree,Weighted Solidarity,0,-1,-1,0,5,5,25.0486,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,116.213,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,69.7245,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,121.062,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,91.164,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,45.6391,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,96.013,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Pearson Key,Similarity-Utilization,0,1,1,0,5,10,46.4881,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,4.84905,4
+taglia,fascia 4 (~55%),4,EccessoMax_EUR,Similarity-Utilization,Tri-level EP,0,-1,-1,0,5,10,51.3371,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Nucleolo,0,-1,-1,0,5,10,211,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Variance Least Core,0,-1,-1,0,5,10,211,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Equal Split,0,1,1,0,5,18,112279,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Proportional to Consumption,0,1,1,0,8,18,52373,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Remuneration Model 1,0,1,1,0,5,18,82686,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Cascading Tree,0,1,1,0,5,18,102731,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Weighted Solidarity,0,1,1,0,5,18,86784,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Pearson Key,0,1,1,0,5,18,38382,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Similarity-Utilization,0,1,1,0,5,18,36722,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Shapley,Tri-level EP,0,1,1,0,5,18,43271,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Equal Split,0,1,1,0,5,18,112341,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Proportional to Consumption,0,1,1,0,5,18,52435,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,82748,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Cascading Tree,0,1,1,0,5,18,102793,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,86846,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Pearson Key,0,1,1,0,5,18,38444,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Similarity-Utilization,0,1,1,0,5,18,36784,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Nucleolo,Tri-level EP,0,1,1,0,5,18,43333,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Equal Split,0,1,1,0,5,18,112341,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Proportional to Consumption,0,1,1,0,5,18,52435,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,82748,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Cascading Tree,0,1,1,0,5,18,102793,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,86846,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Pearson Key,0,1,1,0,5,18,38444,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Similarity-Utilization,0,1,1,0,5,18,36784,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Variance Least Core,Tri-level EP,0,1,1,0,5,18,43333,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,59906,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Remuneration Model 1,0,-1,-1,0,8,18,29593,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Cascading Tree,0,0,0,0,NaN,NaN,9548,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Weighted Solidarity,1,1,-1,1,5,18,25495,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Pearson Key,0,-1,-1,0,18,18,73897,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Similarity-Utilization,0,-1,-1,0,18,18,75557,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Equal Split,Tri-level EP,0,-1,-1,0,18,18,69008,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Remuneration Model 1,0,1,1,0,5,18,30313,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,50358,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,34411,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Pearson Key,1,1,-1,1,5,18,13991,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Similarity-Utilization,1,1,-1,1,5,18,15651,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Proportional to Consumption,Tri-level EP,0,1,1,0,5,10,9102,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Remuneration Model 1,Cascading Tree,0,1,1,0,8,18,20045,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,10,4098,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Remuneration Model 1,Pearson Key,1,1,-1,1,8,18,44304,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Remuneration Model 1,Similarity-Utilization,1,1,-1,1,8,18,45964,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Remuneration Model 1,Tri-level EP,1,1,-1,1,8,18,39415,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Cascading Tree,Weighted Solidarity,1,1,-1,1,5,18,15947,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Cascading Tree,Pearson Key,0,-1,-1,0,18,18,64349,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Cascading Tree,Similarity-Utilization,0,-1,-1,0,10,18,66009,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Cascading Tree,Tri-level EP,0,-1,-1,0,10,18,59460,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,48402,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,50062,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,43513,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,1660,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,4889,4
+taglia,fascia 4 (~55%),4,CoalizioniInstabili,Similarity-Utilization,Tri-level EP,0,0,0,0,NaN,NaN,6549,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Nucleolo,0,-1,-1,0,5,18,0.355852,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Variance Least Core,0,-1,-1,0,5,18,0.332971,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Equal Split,0,1,1,0,5,18,0.712548,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Proportional to Consumption,0,-1,-1,0,5,10,0.434999,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Remuneration Model 1,0,1,1,0,5,18,0.406701,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Cascading Tree,0,1,1,0,5,18,0.686075,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Weighted Solidarity,0,1,1,0,5,18,0.691006,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Pearson Key,0,-1,-1,0,5,18,0.608251,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Similarity-Utilization,0,-1,-1,0,5,18,0.650337,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Shapley,Tri-level EP,0,-1,-1,0,5,18,0.588546,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.0228808,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Equal Split,0,1,1,0,5,18,0.874503,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Proportional to Consumption,0,0,0,0,NaN,NaN,0.103467,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,0.568656,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Cascading Tree,0,1,1,0,5,18,0.973467,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,0.852961,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Pearson Key,0,-1,-1,0,5,18,0.265873,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Similarity-Utilization,0,-1,-1,0,5,18,0.311384,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Nucleolo,Tri-level EP,0,-1,-1,0,5,18,0.257466,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Equal Split,0,1,1,0,5,18,0.874439,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Proportional to Consumption,0,0,0,0,NaN,NaN,0.103404,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,0.568592,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Cascading Tree,0,1,1,0,5,18,0.966898,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,0.852897,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Pearson Key,0,-1,-1,0,5,18,0.275279,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Similarity-Utilization,0,-1,-1,0,5,18,0.317365,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Variance Least Core,Tri-level EP,0,-1,-1,0,5,18,0.25753,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,0.784662,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Remuneration Model 1,0,-1,-1,0,5,18,0.305847,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Cascading Tree,0,1,1,0,5,10,0.270499,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Weighted Solidarity,0,0,0,0,NaN,NaN,0.0844896,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Pearson Key,0,-1,-1,0,5,18,1.09786,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Similarity-Utilization,0,-1,-1,0,5,18,1,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Equal Split,Tri-level EP,0,-1,-1,0,5,18,1.13197,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Remuneration Model 1,0,1,1,0,5,18,0.630138,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,1.05261,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,0.869152,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Pearson Key,0,-1,-1,0,5,18,0.326824,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,5,18,0.336111,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Proportional to Consumption,Tri-level EP,0,-1,-1,0,5,18,0.360933,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,0.46268,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,18,0.284305,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,18,0.80339,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,5,18,0.845476,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,18,0.826122,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Cascading Tree,Weighted Solidarity,0,-1,-1,0,5,10,0.230963,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,1.23281,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,1.2705,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,1.2138,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,1.07632,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,1.08449,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,1.11043,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,0.0978594,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.0341095,4
+taglia,fascia 4 (~55%),4,ForzaIncentivante,Similarity-Utilization,Tri-level EP,0,-1,-1,0,18,18,0.131969,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Nucleolo,0,0,0,0,NaN,NaN,0.0557982,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Variance Least Core,0,0,0,0,NaN,NaN,0.0557994,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Equal Split,0,1,1,0,5,18,0.903671,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Proportional to Consumption,0,0,0,0,NaN,NaN,0.0497879,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Remuneration Model 1,0,1,1,0,18,18,0.193152,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Cascading Tree,0,1,1,0,5,18,1.85403,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Weighted Solidarity,0,1,1,0,5,18,1.17747,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Pearson Key,0,0,0,0,NaN,NaN,0.0836798,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Similarity-Utilization,0,-1,-1,0,18,18,0.165316,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Shapley,Tri-level EP,0,0,0,0,NaN,NaN,0.0768853,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00111967,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Equal Split,0,1,1,0,5,18,0.954563,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Proportional to Consumption,0,0,0,0,NaN,NaN,0.0485153,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,0.24895,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Cascading Tree,0,1,1,0,5,18,1.90492,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Weighted Solidarity,0,1,1,0,5,18,1.22836,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Pearson Key,0,0,0,0,NaN,NaN,0.0704681,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Similarity-Utilization,0,-1,-1,0,18,18,0.164043,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Nucleolo,Tri-level EP,0,0,0,0,NaN,NaN,0.0734655,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Equal Split,0,1,1,0,5,18,0.954941,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Proportional to Consumption,0,0,0,0,NaN,NaN,0.0484989,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,0.248951,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Cascading Tree,0,1,1,0,5,18,1.9053,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Weighted Solidarity,0,1,1,0,5,18,1.22874,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Pearson Key,0,0,0,0,NaN,NaN,0.0704517,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Similarity-Utilization,0,-1,-1,0,18,18,0.164027,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Variance Least Core,Tri-level EP,0,0,0,0,NaN,NaN,0.073449,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Proportional to Consumption,0,-1,-1,0,5,18,0.942777,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Remuneration Model 1,0,-1,-1,0,5,18,0.72455,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Cascading Tree,1,1,-1,1,5,18,0.951123,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Weighted Solidarity,0,1,1,0,5,8,0.273795,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Pearson Key,0,-1,-1,0,5,18,0.969865,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Similarity-Utilization,0,-1,-1,0,5,18,0.999874,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Equal Split,Tri-level EP,0,-1,-1,0,5,18,0.966028,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Remuneration Model 1,0,1,1,0,8,18,0.240937,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,1.89313,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Weighted Solidarity,0,1,1,0,5,18,1.21657,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,0.0485193,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,18,18,0.115528,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0.042695,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,1.67288,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Remuneration Model 1,Weighted Solidarity,0,1,1,0,5,18,0.996324,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,18,0.276831,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,5,18,0.326215,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,18,0.270037,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Cascading Tree,Weighted Solidarity,1,-1,1,1,5,18,0.837835,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,1.92022,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,1.95067,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,1.91638,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Weighted Solidarity,Pearson Key,0,-1,-1,0,5,18,1.24366,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Weighted Solidarity,Similarity-Utilization,0,-1,-1,0,5,18,1.2729,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Weighted Solidarity,Tri-level EP,0,-1,-1,0,5,18,1.23982,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Pearson Key,Similarity-Utilization,0,-1,-1,0,18,18,0.093575,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.00679448,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu,Similarity-Utilization,Tri-level EP,0,1,1,0,18,18,0.0905776,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Nucleolo,0,0,0,0,NaN,NaN,0.0469938,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Variance Least Core,0,0,0,0,NaN,NaN,0.045112,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Equal Split,1,1,-1,1,5,18,0.626188,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Proportional to Consumption,0,1,1,0,8,8,0.169663,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Remuneration Model 1,0,1,1,0,5,18,0.174223,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Cascading Tree,0,1,1,0,5,18,1.35751,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Weighted Solidarity,1,1,-1,1,5,18,0.899176,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Pearson Key,0,0,0,0,NaN,NaN,0.0708514,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Similarity-Utilization,0,-1,-1,0,5,18,0.181916,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Shapley,Tri-level EP,0,0,0,0,NaN,NaN,0.0879024,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,0.00931789,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Equal Split,1,1,-1,1,5,18,0.605039,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Proportional to Consumption,0,1,1,0,8,8,0.148513,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Remuneration Model 1,0,1,1,0,5,18,0.221217,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Cascading Tree,0,1,1,0,5,18,1.4045,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Weighted Solidarity,1,1,-1,1,5,18,0.878026,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Pearson Key,0,0,0,0,NaN,NaN,0.049702,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Similarity-Utilization,0,-1,-1,0,18,18,0.134922,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Nucleolo,Tri-level EP,0,0,0,0,NaN,NaN,0.0667529,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Equal Split,1,1,-1,1,5,18,0.614357,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Proportional to Consumption,0,1,1,0,8,8,0.157831,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Remuneration Model 1,0,1,1,0,5,18,0.219335,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Cascading Tree,0,1,1,0,5,18,1.40262,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Weighted Solidarity,1,1,-1,1,5,18,0.887344,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Pearson Key,0,0,0,0,NaN,NaN,0.0590198,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,0,-1,-1,0,18,18,0.136804,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Variance Least Core,Tri-level EP,0,0,0,0,NaN,NaN,0.0760708,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Proportional to Consumption,1,-1,1,1,5,18,0.511512,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,1,-1,1,1,5,18,0.624516,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Cascading Tree,0,1,1,0,5,18,0.864101,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,0,1,1,0,5,8,0.282399,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Pearson Key,1,-1,1,1,5,18,0.555337,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,1,-1,1,1,5,18,0.67532,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Equal Split,Tri-level EP,1,-1,1,1,5,18,0.538286,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,1,-1,1,1,8,18,0.141247,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Cascading Tree,0,1,1,0,5,18,1.25692,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,1,1,-1,1,5,18,0.729513,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Pearson Key,0,0,0,0,NaN,NaN,0.138091,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Similarity-Utilization,0,-1,-1,0,5,18,0.282502,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Proportional to Consumption,Tri-level EP,0,0,0,0,NaN,NaN,0.118279,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Cascading Tree,0,1,1,0,5,18,1.21563,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Weighted Solidarity,1,1,-1,1,5,18,0.87076,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Pearson Key,0,-1,-1,0,5,18,0.211728,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Similarity-Utilization,0,-1,-1,0,5,18,0.356139,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Remuneration Model 1,Tri-level EP,0,-1,-1,0,5,18,0.191916,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Cascading Tree,Weighted Solidarity,0,-1,-1,0,5,18,0.759874,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Cascading Tree,Pearson Key,0,-1,-1,0,5,18,1.39501,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,0,-1,-1,0,5,18,1.53942,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Cascading Tree,Tri-level EP,0,-1,-1,0,5,18,1.3752,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Weighted Solidarity,Pearson Key,1,-1,1,1,5,18,0.828324,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,1,-1,1,1,5,18,0.957719,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Weighted Solidarity,Tri-level EP,1,-1,1,1,5,18,0.811273,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Pearson Key,Similarity-Utilization,0,-1,-1,0,10,10,0.144411,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,0.0211591,4
+taglia,fascia 4 (~55%),4,AllineamentoVirtu_lordo,Similarity-Utilization,Tri-level EP,0,1,1,0,5,10,0.164223,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Nucleolo,0,1,1,0,5,18,201.251,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Variance Least Core,0,1,1,0,5,18,201.244,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Equal Split,0,-1,-1,0,5,18,349.79,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Proportional to Consumption,0,1,1,0,5,18,344.628,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Remuneration Model 1,0,-1,-1,0,5,18,130.354,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Cascading Tree,0,-1,-1,0,5,18,264.816,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Weighted Solidarity,0,-1,-1,0,5,10,148.336,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Pearson Key,0,1,1,0,5,18,396.523,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Similarity-Utilization,0,1,1,0,5,18,393.995,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Shapley,Tri-level EP,0,1,1,0,5,18,390.726,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Variance Least Core,0,0,0,0,NaN,NaN,11.4159,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Equal Split,0,-1,-1,0,5,18,551.041,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Proportional to Consumption,0,1,1,0,8,8,161.683,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Remuneration Model 1,0,-1,-1,0,5,18,331.605,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Cascading Tree,0,-1,-1,0,5,18,466.067,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Weighted Solidarity,0,-1,-1,0,5,18,349.587,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Pearson Key,0,1,1,0,5,10,213.578,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Similarity-Utilization,0,1,1,0,5,10,211.051,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Nucleolo,Tri-level EP,0,1,1,0,5,10,207.782,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Equal Split,0,-1,-1,0,5,18,551.034,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Proportional to Consumption,0,1,1,0,8,8,173.099,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Remuneration Model 1,0,-1,-1,0,5,18,331.598,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Cascading Tree,0,-1,-1,0,5,18,466.06,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Weighted Solidarity,0,-1,-1,0,5,18,349.58,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Pearson Key,0,1,1,0,5,10,224.994,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Similarity-Utilization,0,1,1,0,5,10,222.467,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Variance Least Core,Tri-level EP,0,1,1,0,5,10,219.198,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Proportional to Consumption,0,1,1,0,5,18,606.795,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Remuneration Model 1,0,1,1,0,5,18,219.436,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Cascading Tree,0,1,1,0,8,18,88.4225,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Weighted Solidarity,0,1,1,0,5,18,201.454,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Pearson Key,0,1,1,0,5,18,661.749,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Similarity-Utilization,0,1,1,0,5,18,657.404,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Equal Split,Tri-level EP,0,1,1,0,5,18,659.472,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Remuneration Model 1,0,-1,-1,0,5,18,468.012,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Cascading Tree,0,-1,-1,0,5,18,519.613,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Weighted Solidarity,0,-1,-1,0,5,18,486.155,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Pearson Key,0,1,1,0,5,5,105.359,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Similarity-Utilization,0,1,1,0,5,5,112.057,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Proportional to Consumption,Tri-level EP,0,1,1,0,5,5,102.239,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Remuneration Model 1,Cascading Tree,0,-1,-1,0,5,18,145.028,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Remuneration Model 1,Weighted Solidarity,0,1,1,0,18,18,18.1434,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Remuneration Model 1,Pearson Key,0,1,1,0,5,18,519.907,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Remuneration Model 1,Similarity-Utilization,0,1,1,0,5,18,517.38,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Remuneration Model 1,Tri-level EP,0,1,1,0,5,18,514.11,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Cascading Tree,Weighted Solidarity,0,1,1,0,5,18,133.266,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Cascading Tree,Pearson Key,0,1,1,0,5,18,576.774,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Cascading Tree,Similarity-Utilization,0,1,1,0,5,18,572.429,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Cascading Tree,Tri-level EP,0,1,1,0,5,18,574.498,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Weighted Solidarity,Pearson Key,0,1,1,0,5,18,538.051,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Weighted Solidarity,Similarity-Utilization,0,1,1,0,5,18,535.523,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Weighted Solidarity,Tri-level EP,0,1,1,0,5,18,532.254,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Pearson Key,Similarity-Utilization,0,0,0,0,NaN,NaN,6.69714,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Pearson Key,Tri-level EP,0,0,0,0,NaN,NaN,5.79674,4
+taglia,fascia 4 (~55%),4,VAN_min_EUR,Similarity-Utilization,Tri-level EP,0,1,1,0,18,18,9.81722,4

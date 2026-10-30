@@ -8,8 +8,9 @@ con famiglie diverse.
 - blocco **5-15 membri** fatto: 20 repliche più l'identità, tutti i livelli, risultati sotto;
 - comunità **da 18 membri** fatte: 20 repliche più l'identità, tutti i livelli, con v(S) a blocchi
   (fase 1, in fondo);
-- blocco **20-25** con la stabilità estesa: codice e verifiche fatti il 30 ottobre, run da lanciare
-  (fase 2, in fondo).
+- blocco **20-25** con la stabilità estesa: codice e verifiche fatti il 30 ottobre, run in corso dal
+  30 ottobre alle 15:48, fine prevista lunedì 2 novembre (fase 2, in fondo);
+- poi la lettura unita 5-25 di ogni replica e l'aggregato.
 
 ## Perché servono
 
@@ -65,9 +66,11 @@ l'abbinamento posto → famiglia.
 ```bash
 # schede delle repliche (1-2 min per 20 repliche); --min-membri per aggiungere un blocco
 venv/Scripts/python.exe -I CER_repliche/genera_repliche.py --repliche 0-20 --max-membri 15
-# MAIN2 su una lista di repliche, una dopo l'altra (due liste in parallelo, non di piu')
+# MAIN2 su una lista di repliche, una dopo l'altra. Fino a 18 membri due liste in parallelo,
+# non di piu'; a 20-25 una lista sola, perche' a 25 membri il parallelo non aiuta (fase 2)
 bash CER_repliche/lancia_repliche.sh fino15 1 15 1 3 5 7 9 11 13 15 17 19
 bash CER_repliche/lancia_repliche.sh fino15 1 15 2 4 6 8 10 12 14 16 18 20
+bash CER_repliche/lancia_repliche.sh da20a25 20 25 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 # aggregazione: outputs/repliche/fino15/aggregato/
 venv/Scripts/python.exe -I CER_repliche/aggrega_repliche.py --blocco fino15
 ```
@@ -81,7 +84,10 @@ replica in quell'intervallo, in tutti i livelli. Per ogni replica salva in
 - export (`esporta_run_livelli.m`);
 - log.
 
-Se MAIN2 si ferma, riprova una volta dal checkpoint. Le repliche già fatte si saltano.
+Se MAIN2 si ferma, riprova una volta dal checkpoint. Le repliche già fatte si saltano. Dal 30
+ottobre, se si ferma lo script stesso (finestra chiusa, riavvio), rilanciato con gli stessi
+argomenti riprende dal checkpoint anche la replica interrotta. Per i run lunghi conviene una
+finestra Git Bash fuori da VS Code.
 `outputs/repliche/<blocco>/avanzamento.txt` ha una riga per replica. **Non modificare
 `lancia_repliche.sh` mentre gira:** bash rilegge il file a fine ciclo.
 
@@ -340,6 +346,14 @@ serie con un'istanza sola (scelta dell'utente); unione di tutti i blocchi.
    - i risultati coincidono con il blocco 5-15 del 29 ottobre entro 3e-13 sulle quote e 2e-12 su
      `Tfair`, il rumore del cambio d'ordine delle somme della fase 1.
 
+*Il run (passo 3):*
+- **Avvio:** 30 ottobre alle 15:48, blocco `da20a25`, repliche 0-20 con r00 per prima, in una
+  finestra Git Bash fuori da VS Code. Uno script a parte chiede a Windows di non andare in
+  sospensione finché la finestra è aperta; le impostazioni di alimentazione non sono state
+  toccate.
+- **Primo controllo:** dopo r00, il confronto con il run del 28 ottobre su tutte le 127 comunità.
+- **Fine prevista:** lunedì 2 novembre.
+
 **Prova di scalabilità a 25 membri** (29 ottobre, `outputs/repliche/prova_scalabilita/`, stessa
 scheda r01/CER_6_19_0 in ogni istanza):
 
@@ -353,11 +367,10 @@ scheda r01/CER_6_19_0 in ogni istanza):
   ogni passo dell'enumerazione scorre matrici 4.400 ore × 256 coalizioni, troppo grandi per la
   cache. Con due istanze la CPU sale dal 36% al 79%, ma il lavoro fatto è lo stesso.
 - **Ogni istanza occupa 2,1-2,2 GB.**
-- **Tempo della fase 2:** la parte a 25 membri va di fatto in serie. 21 repliche × 64 comunità ×
-  circa 150 s fanno circa 56 h; la seconda istanza può fare intanto le comunità da 20.
-- **Decisione del 30 ottobre: una sola istanza.** Per replica servono 63 comunità da 20 membri
-  (circa 15 s l'una) e 64 da 25 (circa 140 s), più 2-3 min di avvio, analisi ed export: circa
-  2 h 50 min. Le 21 repliche fanno circa 60 h (55-65).
+- **Tempo della fase 2, con una sola istanza** (decisione del 30 ottobre).
+  - Per replica: 63 comunità da 20 membri (circa 15 s l'una) e 64 da 25 (circa 140 s), più 2-3 min
+    di avvio, analisi ed export. Fanno circa 2 h 50 min.
+  - Le 21 repliche: circa 60 h (55-65).
 
 **Lettura unita**, per ogni replica NN, dopo le due fasi:
 
@@ -368,6 +381,9 @@ MAIN2_RIPRENDI=1 MAIN2_RADICE=CER_repliche/rNN MAIN2_MAX_UTENTI=25 MAIN2_IND=1 M
 
 Note:
 - Con `maxUtenti` 18 si ottiene la vista fino a 18 membri, con il Nucleolo.
-- **r00 va rifatta anche a 20-25:** nel run del 28 ottobre la stabilità a quelle taglie non c'è.
-- `aggrega_repliche.py` va esteso a leggere le cartelle `repNN_unito`. Oggi legge
-  `outputs/repliche/<blocco>/rNN/tables`.
+- **r00 si rifà anche a 20-25, nel run in corso:** nel run del 28 ottobre la stabilità a quelle
+  taglie non c'è.
+- **Passo 4 del piano:** uno script (`unisci_repliche.sh`, da scrivere) fa queste due chiamate per
+  ogni replica. Mette le uscite in `outputs/repliche/unito/rNN/` con la stessa struttura dei
+  blocchi, così `aggrega_repliche.py --blocco unito` le legge senza modifiche.
+- La vista fino a 18 membri con il Nucleolo è in sospeso.

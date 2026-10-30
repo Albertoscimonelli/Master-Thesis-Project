@@ -22,38 +22,28 @@ varia taglia e penetrazione dei prosumer.
 > leggere il codice sorgente per capire cosa fa il progetto e come è strutturato — solo per
 > modificarlo.
 >
-> **Stato al 23 ottobre 2026:** il run fino a 18 membri (76 comunità, livello 0 più PA1-3) è del
-> 20 ottobre; il run **fino a 25 membri con PA** (108 comunità, livello 0 più PA1-3) è del
-> 21 ottobre e sta in `outputs/tables_main2_griglia25_PA/` (§7.10.1). Entrambi usano i parametri
-> LIHC definitivi (§7.7) e il confronto con / senza PA (§7.10). L'inclusione LIHC non è valutabile
-> (nessuna famiglia vulnerabile). Le tabelle `tables_main2_griglia25/` sono del 13 ottobre, con i
-> segnaposto e senza PA: sono **superate** da quelle del 21 ottobre. Sintesi dei risultati e del
-> lavoro residuo: `outputs/report/REPORT_risultati_e_lavoro_residuo_2026-10-20.md` (precedente al
-> run a 25 membri con PA).
->
-> **Aggiornamento del 28 ottobre 2026:** il blocco **20-25 membri con le imprese è completo** (127
-> comunità, §7.11.2) grazie allo speedup del Variance Least Core e dello Shapley (§7.11.3, PR #69:
-> separazione per enumerazione fino a 25 membri, risultati uguali entro 3,5e-11, circa 11 volte più
-> veloce), e **l'analisi è stata rifatta su tutte le 295 comunità da 5 a 25 membri insieme** (§7.11.4,
-> `outputs/tables_main2_fino25_unito/`). Restano fuori le schede da 50-100 membri (§14.1).
->
-> **Chiusura del 28 ottobre 2026:** le figure e le conclusioni rispetto alla domanda di ricerca sono nel
-> rapporto [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
-> (§7.11.5). L'unica parte della domanda di ricerca senza risposta è l'inclusione LIHC, che va tolta dalla tesi.
->
-> **Aggiornamento del 29 ottobre 2026:** fino a 25 membri le famiglie simulate erano tutte persone
-> sole, qualunque composizione dichiarasse la scheda. Per questo ci sono ora **20 repliche dei
-> partecipanti** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)): famiglie estratte dentro la
-> cella ISTAT dichiarata.
-> - **Blocco 5-15 membri fatto.** Poli, capovolgimento con la penetrazione e trade-off principale
->   reggono in 20 repliche su 20.
-> - **Due risultati cambiano:** l'allineamento lordo dipendeva dalle persone sole, e al 100% di
->   prosumer il legame merito-incentivo si scioglie.
-> - **Comunità da 18 membri fatte il 30 ottobre**, con v(S) a blocchi. Reggono gli stessi risultati
->   e l'allineamento lordo cambia di nuovo; al 100% di prosumer il legame merito-incentivo invece
->   regge.
-> - **Blocco 20-25:** con la stabilità estesa fin lì. Codice e verifiche sono fatti il 30 ottobre;
->   il run richiede circa 60 h in serie.
+> **Stato al 30 ottobre 2026.**
+> - **Risultati di riferimento: il run unito del 28 ottobre.** 295 comunità da 5 a 25 membri, con
+>   PA e imprese (§7.11.4, `outputs/tables_main2_fino25_unito/`), commentate nel rapporto
+>   [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
+>   (§7.11.5).
+>   - I run del 13, 20 e 21 ottobre (§7.9, §7.10.1) sono superati.
+>   - L'inclusione LIHC non è valutabile: non c'è nessuna famiglia vulnerabile (§7.7), e va tolta
+>     dalla tesi.
+>   - Restano fuori le schede da 50-100 membri (§14.1).
+> - **Repliche dei partecipanti, in corso** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)).
+>   Fino a 25 membri le famiglie simulate erano tutte persone sole, qualunque composizione
+>   dichiarasse la scheda. 20 repliche estraggono le famiglie dentro la cella ISTAT dichiarata.
+>   - **Fatte 5-15 membri (29 ottobre) e 18 membri (30 ottobre).** Poli, capovolgimento con la
+>     penetrazione e trade-off principale reggono.
+>   - **Cambia l'allineamento lordo**, che dipendeva dalle persone sole.
+>   - **Al 100% di prosumer** il legame merito-incentivo si scioglie a 5-15 membri e regge a 18.
+>   - **20-25 membri in corso** dal 30 ottobre alle 15:48, con la stabilità estesa fin lì; fine
+>     prevista lunedì 2 novembre. Dopo vengono la lettura unita 5-25 di ogni replica e
+>     l'aggregato.
+> - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
+>   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
+>   (`coalition_excess_enum.m`, §14.1). Fino a 18 membri le tabelle restano identiche al byte.
 
 ---
 
@@ -133,7 +123,9 @@ arricchisci_schede.py (reddito, gas)        PV_Generation/*.CSV (export PVsyst)
   ARERA) e per utenze non domestiche (RAMP). Le schede attuali usano una società di cento
   famiglie lombarde; una comunità da N membri prende le prime N colonne, estratte negli
   `N_utenti.xlsx` fuori dal codice. `arricchisci_schede.py` compila poi reddito e spesa gas
-  dei membri domestici da Istat e ARERA.
+  dei membri domestici da Istat e ARERA. Fino a 25 membri le prime colonne sono tutte persone
+  sole: le **repliche dei partecipanti** (`CER_repliche/`, §7.11.6) prendono invece, posto per
+  posto, una famiglia della cella ISTAT dichiarata.
 - **Stadio 2 — MATLAB** (root): `MAIN2.m` legge le schede, e per ciascuna carica profili e
   produzione PV, calcola il bilancio energetico, ripartisce l'incentivo con le dodici
   regole, calcola indicatori, soglia regolatoria e VAN dei membri; dopo il ciclo confronta
@@ -191,21 +183,34 @@ identica del livello 0). Sei variabili d'ambiente, tutte facoltative:
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
 | `MAIN2_RADICE` | cartella che contiene `CER_configuration/`, `CER_configuration_PA/` e `CER_configuration_IND/` al posto di quelle di sempre, per esempio `CER_repliche/r01` (repliche dei partecipanti, §7.11.6). Senza, il run è identico a prima, al byte |
 
-I run di riferimento — fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e
-la griglia a 25 membri del 13 ottobre, superata — sono descritti nelle §7.9 e §7.10.1;
-l'elenco completo delle schede di ciascuno è in
-[STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) §2.3. Per una prova su poche schede
-conviene un suffisso (`MAIN2_CARTELLA=prova`): senza, le tabelle della prova
+Il run di riferimento è quello unito del 28 ottobre: 295 comunità da 5 a 25 membri, con PA e
+imprese (§7.11.4). I run precedenti, del 13, 20 e 21 ottobre, sono in §7.9 e §7.10.1, con
+l'elenco delle schede in [STRUTTURA_PROGETTO2.txt](STRUTTURA_PROGETTO2.txt) §2.3. Per una prova
+su poche schede conviene un suffisso (`MAIN2_CARTELLA=prova`): senza, le tabelle della prova
 sovrascriverebbero quelle versionate in `outputs/tables_main2/`.
+
+**Repliche dei partecipanti** (§7.11.6):
+```bash
+bash CER_repliche/lancia_repliche.sh <blocco> <min_membri> <max_membri> <repliche...>
+# per esempio il run in corso: bash CER_repliche/lancia_repliche.sh da20a25 20 25 0 1 2 ... 20
+```
+Lancia `MAIN2.m` una replica dopo l'altra, con `MAIN2_RADICE=CER_repliche/rNN`. Se viene
+interrotto, rilanciato con gli stessi argomenti salta le repliche finite e riprende dal checkpoint
+quella in corso. Per i run lunghi conviene una finestra Git Bash fuori da VS Code. Generazione,
+lettura unita dei blocchi e controlli sono in [CER_repliche/README.md](CER_repliche/README.md).
 
 [`CER_input.txt`](CER_input.txt) è la guida commentata alla compilazione: spiega sezione
 per sezione cosa scrivere nelle due schede, su una comunità mista di esempio, e non viene
 letta dal codice.
 
-**Tempi** (analisi senza figure, run del 13 ottobre): 42 min per le 20 comunità fino a 18
-membri, 2 h 28 min per le 28 fino a 25; una comunità da 5 membri costa pochi secondi, una
-da 25 fino a mezz'ora (§11.2). Il run del 21 ottobre, 108 comunità fino a 25 membri con PA,
-ha richiesto 9 h 9 min di analisi (due sessioni, §7.10.1). La pipeline è **deterministica** — l'unica sorgente casuale,
+**Tempi** (analisi senza figure, codice del 30 ottobre):
+- una comunità da 5 membri costa pochi secondi;
+- una da 18 circa 10 s, una da 20 11-16 s, una da 25 1,5-2,7 min (§11.2);
+- per una replica, le 105 comunità fino a 15 membri richiedono 15-18 min e le 63 da 18 membri
+  12 min, entrambe con due MATLAB in parallelo;
+- le 127 da 20-25 membri richiedono circa 2 h 50 min con un MATLAB solo.
+
+La pipeline è **deterministica** — l'unica sorgente casuale,
 l'Adaptive Sampling, ha un seed esplicito — e rilanciata senza modifiche riscrive le tabelle
 identiche al byte: il confronto prima/dopo una modifica è un test di regressione. Per
 ripartire dai run finali senza rilanciarli vedi
@@ -236,12 +241,13 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
+| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
 | `load_cer_data.m` | Caricamento profili + assegnazione impianti PV/autoconsumo (§5) |
 | `load_zonal_price.m`, `compute_cer_incentive.m`, `cer_tip_bracket_power.m` | Prezzo zonale → tariffa incentivante oraria TIP_h, con lo scaglione scelto sulla potenza del singolo impianto (§5, §14.4.1) |
-| `cer_coalition_values.m`, `cer_shared_value.m` | Funzione caratteristica `v(S)`: per tutte le `2ⁿ` coalizioni — calcolata una volta per comunità e condivisa da Shapley, Nucleolo ed eccesso di coalizione, fino a 18 membri — e per una coalizione sola, su richiesta (Variance Least Core, Adaptive Sampling) |
+| `cer_coalition_values.m`, `cer_shared_value.m` | Funzione caratteristica `v(S)`: per tutte le `2ⁿ` coalizioni, con un ciclo sulle bitmask, e per una coalizione sola, su richiesta (Variance Least Core, Adaptive Sampling). Dal 30 ottobre `MAIN2.m` enumera le `2ⁿ` coalizioni con la versione a blocchi (riga `cer_coalition_values_blocchi.m`); questa resta il riferimento dei test e la usa `MAIN.m` |
 | `shapley_cer_cached.m`, `nucleolus_cer_cached.m`, `variance_least_core_cer.m` | I tre modelli di teoria dei giochi di `MAIN2.m` (§6). Le versioni senza cache (`shapley_cer.m`, `nucleolus_cer.m`) e `nash_bargaining_cer.m` restano per `MAIN.m` |
 | `equal_split_cer.m`, `proportional_consumption_cer.m` | I due benchmark elementari (§6) |
 | `remuneration_model1_cer.m`, `cascading_tree_cer.m`, `weighted_solidarity_cer.m` | I tre modelli dalla letteratura sulle REC italiane (§6) |
@@ -270,7 +276,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `sintesi_risultati.m` | Le tre **sintesi** della domanda di ricerca: tau-b per fascia e per taglia, fronte di Pareto fra i criteri, quote ai prosumer per metodo. Scritte in `outputs/tables_main2/sintesi/` da `MAIN2.m` §7c (§7.6) |
 | `confronto_pa.m` | **Presenza di PA**: PA0 contro PA1-3 a N, C, P invariati — inversioni, vincitori, quote ai membri PA, trade-off e sottoinsieme minimo per livello; auto-test su dati a penna (§7.10) |
 | `test_speedup_vlc_shapley.m`, `confronto_speedup_vlc.m` | Verifica dello speedup di §7.11.3: Shapley vettorizzato e VLC per enumerazione contro le versioni precedenti su giochi sintetici (soglie 1e-9 e 1e-5), e confronto comunità per comunità fra due checkpoint di `MAIN2.m` (tolleranza relativa 1e-6; 45 comunità, scarto massimo 3,5e-11) |
-| `cer_coalition_values_blocchi.m`, `test_cer_coalition_values_blocchi.m` | v(S) per tutte le coalizioni a blocchi vettorizzati, con l'algoritmo del VLC: è quella che `MAIN2.m` usa dal 30 ottobre per Shapley, Nucleolo, eccesso e VLC fino a 18 membri (circa 1 s invece di 50-70 s a 18 membri). Il test la confronta con `cer_coalition_values.m` (scarto al più 2e-15) e verifica che il VLC resti identico bit per bit (§7.11.6) |
+| `cer_coalition_values_blocchi.m`, `test_cer_coalition_values_blocchi.m` | v(S) per tutte le coalizioni a blocchi vettorizzati, con l'algoritmo del VLC: è quella che `MAIN2.m` usa dal 30 ottobre, calcolata una volta per comunità. Fino a 18 membri va a Shapley, Nucleolo, eccesso e VLC (circa 1 s invece di 50-70 s a 18 membri); da 19 a 25, senza matrice di incidenza, a VLC ed eccesso (§14.1). Il test la confronta con `cer_coalition_values.m` (scarto al più 2e-15) e verifica che il VLC resti identico bit per bit (§7.11.6) |
 | `tradeoff_losses.m` | **Quanto costano i trade-off**: rimpianto di ogni metodo e perdita su B di chi vince su A (§7.8) |
 | `indicator_clusters.m` | **Sottoinsieme minimo** di indicatori: gruppi per τ medio, rappresentanti e prove di sufficienza (§7.8) |
 | `sensibilita_soglia.m` | Inversioni e vincitori a più **soglie di rilevanza**, dagli stessi `RESULTS` (§7.9) |
@@ -284,10 +290,11 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `plot_cer_energy.m`, `plot_pv_vs_demand.m`, `plot_hourly_map.m`, `plot_duration_curves.m`, `plot_incentive_price.m`, `plot_load_profiles.m` | Energia: mensili, PV contro domanda, mappa oraria con le ore sature, curve di durata, TIP_h contro prezzo zonale, profili tipo (§11.1) |
 | `plot_financial_metrics.m` | VAN, tempo di ritorno, composizione del flusso di cassa (§11.1) |
 | `optimizer_PV.m`, `pv_*.m` | Pre-dimensionamento di un impianto PV su copertura (standalone, §8) |
-| `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run finali, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre), e quelle del 13 ottobre a 25 membri, superate |
+| `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run precedenti, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e a 25 membri senza PA (13 ottobre). Tutte superate dal run unito del 28 ottobre (riga sotto) |
 | `outputs/tables_main2_fino18_IND/`, `outputs/tables_main2_solo2025_IND_speedup/`, `outputs/tables_main2_fino25_unito/` | Asse imprese, versionate: 168 comunità fino a 18 membri (27 ottobre, §7.11.1), 127 da 20-25 membri (28 ottobre, §7.11.2) e l'analisi unita delle 295 (§7.11.4). Numeri per la tesi in `outputs/tables_tesi_fino25_unito/` |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
-| `outputs/report/` | Pagina dei risultati finali (`regole_ripartizione_cer.html`), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
+| `outputs/repliche/` | Uscite delle repliche per blocco di taglia (`fino15/`, `da18/`, `da20a25/`): tabelle, workspace ed export di ogni replica (non versionati), l'aggregato fra le repliche e `avanzamento.txt` (versionati), più le cartelle dei controlli (`controlli_fase1/`, `controlli_fase2/`, `prova_scalabilita/`) |
+| `outputs/report/` | Rapporto finale con figure e conclusioni (`RISULTATI_e_conclusioni_RQ_2026-10-28.html`, §7.11.5), pagina dei risultati del 13 ottobre (`regole_ripartizione_cer.html`, superata), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
 | `GUIDA_modelli_distribuzione.md` | Derivazione matematica dei modelli di ripartizione e degli indicatori |
 | `STRUTTURA_PROGETTO2.txt`, `STRUTTURA_PROGETTO.txt` | Mappa dettagliata di ogni file, funzione e tabella dal punto di vista di `MAIN2.m`; mappa storica, con `MAIN.m` |
@@ -1110,9 +1117,11 @@ Le tabelle di §7b sono in formato lungo. `sintesi_risultati` ne ricava tre lett
 > 1. `compute_indicator_agreement` tiene solo i metodi presenti in **tutte** le comunità.
 >    Sopra i 18 membri Shapley e Nucleolo sono saltati (§14.1), quindi su una griglia che
 >    arriva a 25 spariscono **anche dalle celle a 5-18 membri**: per questo i run sono due
->    (§7.9).
-> 2. L'eccesso di coalizione (stabilità) non è calcolato sopra i 18 membri: le celle a 20 e
->    25 del pannello di stabilità sono "n.d.".
+>    (§7.9). Nella lettura unita delle repliche lo Shapley è uno solo (esatto fino a 18
+>    membri, Adaptive Sampling oltre, §7.11.6); il Nucleolo resta solo fino a 18.
+> 2. Nei run fino al 28 ottobre l'eccesso di coalizione (stabilità) non è calcolato sopra i
+>    18 membri: le celle a 20 e 25 del pannello di stabilità sono "n.d.". Dal 30 ottobre si
+>    calcola fino a 25 membri (§14.1).
 > 3. Il VAN esiste solo dove la scheda compila `quota_inv_EUR`: sulle 28 comunità della
 >    griglia c'è ovunque (verificato il 13 ottobre 2026).
 
@@ -1666,7 +1675,9 @@ tutte le ore con generazione, e le iterazioni sono centinaia. Due modifiche, ent
   (`opts.denseMaxPlayers`, default 25). Si calcola `v(S)` per tutte le 2^n coalizioni una sola volta (a
   blocchi vettorizzati, circa 800 MB a n = 25) e ogni separazione diventa un argmin su 2^n surplus,
   esatto e senza la tolleranza di gap del MILP. In `MAIN2.m` la `v(S)` già calcolata per Shapley e
-  Nucleolo (comunità fino a 18 membri) viene passata al VLC, da 19 a 25 la enumera lei. **Oltre 25 membri
+  Nucleolo (comunità fino a 18 membri) viene passata al VLC, da 19 a 25 la enumerava lei. Dal 30
+  ottobre la calcola `MAIN2.m` anche da 19 a 25 e la passa al VLC e all'eccesso di coalizione, con
+  allocazione identica bit per bit (§14.1). **Oltre 25 membri
   il MILP è invariato**, perché 2^50 coalizioni (~10^15 valori) non entrano in nessuna macchina:
   non esiste una via di enumerazione per le schede da 50-100 membri.
 - **`shapley_cer_cached.m`**: il doppio ciclo `n·2^n` è sostituito da somme vettorizzate. Stessa formula
@@ -1705,7 +1716,8 @@ comunità: si rifà l'analisi tra comunità, con i punteggi normalizzati sull'in
 - **Metodi: 10, quelli comuni a tutte le comunità.** Shapley e Nucleolo esatti non ci sono (oltre 18
   membri si saltano, §14.1); c'è l'Adaptive Sampling Shapley. Stesso criterio della griglia del 13 ottobre.
 - **Eccesso massimo di coalizione e coalizioni instabili** valgono solo per le 20 comunità del livello
-  base fino a 18 membri: nelle 8 da 20-25 non esistono. Le altre metriche usano tutte le 28.
+  base fino a 18 membri: nelle 8 da 20-25 non esistono. Le altre metriche usano tutte le 28. Nella
+  lettura unita delle repliche la stabilità ci sarà a ogni taglia (§7.11.6, §14.1).
 - Tabelle in `outputs/tables_main2_fino25_unito/`, numeri della tesi in `outputs/tables_tesi_fino25_unito/`.
   Le figure (`outputs/figures_tesi_fino25_unito/`, non versionate) si rigenerano con
   `python -I outputs/workspace/strumenti/grafici_metodi.py --tabelle outputs/tables_main2_fino25_unito
@@ -1776,7 +1788,7 @@ communities on the Italian day-ahead electricity market: A scenario analysis*. E
 [DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
 dati a gennaio 2025, commit `7560715`.
 
-#### 7.11.6 Repliche dei partecipanti (29 ottobre 2026)
+#### 7.11.6 Repliche dei partecipanti (dal 29 ottobre 2026, in corso)
 
 **Il problema.**
 - Le schede da 5 a 25 membri dichiarano una composizione ISTAT per celle: componenti × condizione
@@ -1798,9 +1810,12 @@ dati a gennaio 2025, commit `7560715`.
 - **Varianti PA e ND.** Vengono dalle funzioni di sempre, importate senza modifiche.
 - **r00.** È l'identità: rigenera le 295 schede di prima, cella per cella.
 
-`MAIN2.m` legge una replica con `MAIN2_RADICE=CER_repliche/rNN`. È l'unica modifica a MAIN2:
+`MAIN2.m` legge una replica con `MAIN2_RADICE=CER_repliche/rNN`:
 - senza la variabile le tabelle escono identiche al byte;
 - con r00 sono identiche al byte e `RESULTS` coincide.
+
+Per le repliche `MAIN2.m` è cambiato altre due volte, il 30 ottobre: v(S) a blocchi (fase 1) e
+stabilità da 19 a 25 membri (fase 2), sotto.
 
 **Un solo Shapley quando si uniscono le taglie.** Fino a 18 membri si usa lo Shapley esatto, da 20 in
 su l'Adaptive Sampling (Cremers et al. 2023), che non compare dove c'è l'esatto
@@ -1851,19 +1866,30 @@ Cambiano:
     Index, forza incentivante) vale 0,22 di mediana, è positivo in 20 repliche su 20 e r00 vale
     0,31.
 - **Fase 2, 20-25 membri.** L'AS prende il posto dello Shapley, e la stabilità (eccesso di
-  coalizione) si estende fin lì (§14.1). Codice e verifiche sono fatti il 30 ottobre; il run
-  durerà circa 60 h in serie.
+  coalizione) si estende fin lì (§14.1). Codice e verifiche sono fatti il 30 ottobre:
   - `coalition_excess_enum.m` coincide con `coalition_excess.m` con scarto 0, da 2 a 25
-    giocatori.
-  - Fino a 18 membri le tabelle restano identiche al byte.
-  - Su 7 schede da 20-25 membri `RESULTS` è identico al run del 28 ottobre, tranne le nuove
-    colonne di stabilità.
-  - A 25 membri l'eccesso costa 2 s a comunità.
-  - Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md) e
-    `outputs/repliche/controlli_fase2/`.
-- **A 25 membri il parallelo non aiuta.** Il VLC è limitato dalla banda verso la RAM: due istanze
-  insieme impiegano 4 min 48 s a comunità contro 2 min 31 s da sola. La fase 2 dura quindi circa
-  56 h. La stima di 40 h scritta il 29 ottobre era sbagliata.
+    giocatori;
+  - fino a 18 membri le tabelle restano identiche al byte;
+  - su 7 schede da 20-25 membri `RESULTS` è identico al run del 28 ottobre, tranne le nuove
+    colonne di stabilità;
+  - a 25 membri l'eccesso costa 2 s a comunità.
+
+  Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md) e
+  `outputs/repliche/controlli_fase2/`.
+  - **Il run** (`da20a25`, 21 repliche con r00, 127 comunità ciascuna) è partito il 30 ottobre alle
+    15:48, in una finestra Git Bash fuori da VS Code. Fine prevista lunedì 2 novembre, dopo circa
+    60 h.
+  - **Perché con un'istanza sola:** a 25 membri il VLC è limitato dalla banda verso la RAM. Due
+    istanze insieme impiegano 4 min 48 s a comunità, una da sola 2 min 31 s (prova del 29
+    ottobre).
+- **Dopo il run: la lettura unita.** Per ogni replica:
+  1. si uniscono i tre blocchi (`fino15`, `da18`, `da20a25`: 295 comunità) con `unisci_blocchi`;
+  2. si applica la regola del solo Shapley;
+  3. si rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
+
+  Poi `aggrega_repliche.py` confronta le repliche, con una sezione che separa 5-18 da 20-25
+  membri, e r00 unita si confronta con il run unito del 28 ottobre. La vista 5-18 membri con il
+  Nucleolo è in sospeso.
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,
@@ -2213,6 +2239,16 @@ Variance Least Core di `CER_12_13_0`, 25 membri, ha richiesto 21 min 45 s). Con 
 enumerazione (§7.11.3) una comunità da 20 membri costa 9-16 s e una da 25 1-3,5 min: le 45 comunità del
 blocco 20-25 passano da 10,2 h a 0,9 h, le 127 si chiudono in 2 h 36 min.
 
+**Con il codice del 30 ottobre** (v(S) a blocchi, eccesso di coalizione fino a 25 membri):
+- **18 membri:** circa 10 s a comunità; v(S) costa 0,4-1,1 s invece di 50-56 s.
+- **20 membri:** 11-16 s.
+- **25 membri:** 1,5-2,7 min, di cui v(S) 35-99 s, VLC 31-45 s ed eccesso 2 s.
+- **Le repliche:**
+  - 105 comunità fino a 15 membri in 15-18 min, 63 da 18 membri in 12 min, entrambe con due
+    MATLAB in parallelo;
+  - 127 da 20-25 membri in circa 2 h 50 min, con un MATLAB solo: a 25 membri il parallelo non
+    aiuta (§7.11.6).
+
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si
 alleggerisce con `FIG.dettaglio` (§11.1). Sapere quale delle due voci pesa è l'unico modo
@@ -2229,9 +2265,9 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 
 ## 12. Limitazioni note / TODO
 
-- **DA FARE (Alberto): compilare P50, y* e markup in `scenario_economico.txt`** prima del
-  run finale. Decidono chi è vulnerabile LIHC, quindi l'indicatore di inclusione e il
-  Tri-level EP. Chiavi, segnaposto attuali e fonti suggerite in §7.7.
+- **Parametri LIHC (P50, y*, markup) compilati per i run dal 20 ottobre** (§7.7). Con quei valori
+  nessuna famiglia delle schede è vulnerabile: l'indicatore di inclusione non è valutabile, e
+  questa parte della domanda di ricerca va tolta dalla tesi.
 - **I dati mancanti sono ora elencati dal codice, non da questa lista.** `load_cer_input`
   stampa a ogni esecuzione i campi della scheda ancora a `?`, e ciascun metodo stampa le
   proprie ipotesi attive. Le voci qui sotto restano perché spiegano *perché* un dato è
@@ -2239,30 +2275,32 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 - **Reddito e spesa gas sono stime statistiche, non dati dei membri.** Reddito medio
   Istat del Nord-ovest (non della sola Lombardia, e netto) e quote gas ARERA uguali per
   ogni tipologia, entrambi perturbati in modo sintetico. Sotto i 100 membri l'archetipo
-  dichiarato nelle schede non coincide con il profilo simulato. L'elenco completo è in
-  [DATA_SOURCES.md](DATA_SOURCES.md) §Limiti noti.
-- **La griglia di `CER_configuration/` varia due assi, ma non la composizione per categoria.**
-  Le 40 schede coprono taglie da 5 a 100 membri e quattro livelli di penetrazione;
-  l'analisi usa le 28 fino a 25 membri, un fattore alla volta più la vista congiunta
-  (§7.6, §7.9). Tutti i membri sono domestici: i risultati dei run del 13 ottobre non
-  separano l'effetto della taglia o della penetrazione da quello del mix di categorie, e
-  sulla griglia fattore F e soglia GSE non hanno effetto (§7.4, §7.5). **Il terzo asse
-  esiste dal 18 ottobre** (§7.10, `CER_configuration_PA/`): `MAIN2.m` lo legge e i risultati
-  con i dati LIHC definitivi sono quelli del 20 e del 21 ottobre (§7.10, §7.10.1). Copre solo
-  la presenza di 0-3 PA. **Le imprese** (1-3 per comunità, §7.11, `CER_configuration_IND/`) sono
-  generate e lette da `MAIN2.m` con `MAIN2_IND=1`, ma non ancora analizzate. Le schede da 50, 75 e 100 membri non sono
-  analizzate: il Variance Least Core non converge in tempi pratici oltre ~25 membri
-  (§14.1). Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
-  (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo
-  stadio Python.
-- **Filtro opzionale sulla penetrazione** (da decidere dopo il primo run con le imprese, §7.11):
-  l'83% delle CER reali del Nord ha prosumer ≤ 50% dei membri [K26]/[DB]. Se le schede al 75% e
-  al 100% non danno risultati degni di nota, l'analisi si può limitare a prosumer ≤ ~55%.
+  dichiarato nelle schede non coincide con il profilo simulato: fino a 25 membri sono tutte
+  persone sole. Le repliche dei partecipanti (§7.11.6) lo correggono e misurano quanto conta.
+  L'elenco completo è in [DATA_SOURCES.md](DATA_SOURCES.md) §Limiti noti.
+- **Gli assi della griglia: taglia, penetrazione, PA e imprese.** Le 40 schede di
+  `CER_configuration/` coprono taglie da 5 a 100 membri e quattro livelli di penetrazione, tutte
+  domestiche. A queste si aggiungono 0-3 PA (`CER_configuration_PA/`, §7.10) e 1-3 imprese
+  (`CER_configuration_IND/`, §7.11).
+  - Il run unito del 28 ottobre le analizza tutte fino a 25 membri: 295 comunità (§7.11.4).
+  - Sul solo livello domestico fattore F e soglia GSE non hanno effetto (§7.4, §7.5).
+  - Le schede da 50, 75 e 100 membri non sono analizzate: il Variance Least Core non converge in
+    tempi pratici oltre ~25 membri (§14.1).
+
+  Aggiungere una comunità significa aggiungere un file in `CER_configuration/`
+  (`cer_config_writer.py` ne redige la bozza) e il corrispondente set di profili dallo stadio
+  Python.
+- **Filtro sulla penetrazione: non applicato, scelta ancora aperta** (§7.11). L'83% delle CER reali
+  del Nord ha prosumer ≤ 50% dei membri [K26]/[DB]. Nel run unito e nelle repliche le schede al 75%
+  e al 100% restano dentro, ed è lì che la struttura del conflitto fra criteri si capovolge
+  (§7.11.5): un argomento per tenerle.
 - **Test finale con plastica** (§7.11): l'impresa da 2 GWh/anno non entra nei livelli ND1-ND3.
-- **Un clone pulito non riproduce la griglia.** Le 40 schede, lo scenario e tutti i
-  risultati (tabelle dei due run, CSV esportati dai workspace, pagina dei risultati) sono
+- **Un clone pulito non riproduce la griglia.** Le schede, lo scenario e tutti i risultati
+  (tabelle dei run, CSV esportati dai workspace, rapporti, aggregati delle repliche) sono
   versionati; non lo sono i profili di carico (`N_utenti.xlsx`, `100_utenti.csv`) e gli
-  export PVsyst della griglia (`PROVA_CER_*`), che le schede dichiarano.
+  export PVsyst della griglia (`PROVA_CER_*`), che le schede dichiarano. Le cartelle delle
+  repliche (`CER_repliche/rNN/`) non sono versionate ma si rigenerano dal seed, a partire da quei
+  profili.
 - **Il fattore F è implementato** (§7.5), ma resta *dormiente* finché
   `[INVESTIMENTO].contributo_conto_capitale_pct` è a `?`: senza contributo in conto
   capitale `F = 0` e non c'è nulla da decurtare. Il campo va compilato quando il piano
@@ -2377,7 +2415,8 @@ usi per conto proprio lo azzererebbe senza che nessuno se ne accorga.
 | [STRUTTURA_PROGETTO.txt](STRUTTURA_PROGETTO.txt) | Mappa storica, con `MAIN.m` e i sedici metodi: serve per i file fuori dal perimetro di `MAIN2.m` |
 | [outputs/workspace/LEGGIMI.md](outputs/workspace/LEGGIMI.md) | Serve ripartire dai run finali senza rilanciarli, o confrontare due run (test di regressione) |
 | [outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html) | Servono le figure commentate e le conclusioni rispetto alla domanda di ricerca: 295 comunità da 5 a 25 membri, con PA e imprese (§7.11.5) |
-| [outputs/report/regole_ripartizione_cer.html](outputs/report/regole_ripartizione_cer.html) | Serve la pagina dei risultati finali (13 ottobre 2026) |
+| [CER_repliche/README.md](CER_repliche/README.md) | Serve sapere perché ci sono le repliche dei partecipanti, come si generano e si lanciano, cosa reggono i risultati blocco per blocco e quali controlli sono stati fatti (§7.11.6). I numeri sono in `outputs/repliche/<blocco>/aggregato/sintesi.md` |
+| [outputs/report/regole_ripartizione_cer.html](outputs/report/regole_ripartizione_cer.html) | Serve la pagina dei risultati del 13 ottobre 2026 (superata dal rapporto del 28 ottobre, riga sopra) |
 | [DATA_SOURCES.md](DATA_SOURCES.md) | Serve la fonte di un reddito o di una spesa gas di una scheda, le assunzioni dell'arricchimento o i suoi limiti noti |
 | [data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md](data/external/palazzetto_lucca/GUIDA_dati_e_metodi.md) | Serve il metodo completo con cui sono state costruite le curve di consumo e di produzione FV del palazzetto di Lucca, con affidabilità e limiti |
 | [CER_configuration_PA/README.md](CER_configuration_PA/README.md) | Serve la regola con cui si inseriscono le PA nelle schede, le assunzioni sulle tre PA e i punti aperti dell'asse composizione |
@@ -2414,34 +2453,35 @@ sopra i 20 giocatori; oltre quella soglia la §3b fallirebbe in allocazione di m
 > e stampato in chiaro (`[BYPASS] ... 2^n ...`); `MAIN2.m` la eredita da `MAIN.m`. Non è
 > una stima prudenziale, è misurata: a `n = 21` lo Shapley costa 9 min 13 s, il Nucleolo
 > 18 min, il Nash Bargaining supera i 25 minuti senza finire
-> ([scaling_metodi_ripartizione.md](outputs/report/scaling_metodi_ripartizione.md)).
-> Insieme a loro viene saltato l'**eccesso di coalizione** (§7), che enumera per conto
-> suo — il suo costo sta nel numero di *utenti*, non di metodi, quindi non basta aver
-> saltato i primi. Tutto il resto della pipeline prosegue: in `MAIN2.m` girano gli altri
-> dieci metodi, con l'Adaptive Sampling al posto dello Shapley, e l'analisi fra comunità
-> tiene i soli metodi comuni a tutte (§7.6.5). Sotto soglia non cambia **nulla**.
+> ([scaling_metodi_ripartizione.md](outputs/report/scaling_metodi_ripartizione.md)). Tutto il
+> resto della pipeline prosegue: in `MAIN2.m` girano gli altri dieci metodi, con l'Adaptive
+> Sampling al posto dello Shapley, e l'analisi fra comunità tiene i soli metodi comuni a tutte
+> (§7.6.5). Nella lettura unita delle repliche lo Shapley è uno solo, esatto fino a 18 membri e
+> AS oltre (§7.11.6). Sotto soglia non cambia **nulla**.
 >
-> Cosa si perde sopra i 18 utenti, e non per una rinuncia implementativa: la domanda
-> *«questa ripartizione regge?»* non ha risposta, perché per definizione guarda **tutti**
-> i sottogruppi. Le colonne `EccessoMax_EUR` e `CoalizioniInstabili` restano a `NaN` —
-> deliberatamente, perché uno zero si leggerebbe come «nessuno vuole uscire».
+> **La stabilità invece arriva a 25 utenti, dal 30 ottobre 2026.** Fino ad allora l'**eccesso di
+> coalizione** (§7) si saltava insieme a Shapley e Nucleolo, perché enumera anche lui le 2^n
+> coalizioni. Sopra i 18 membri la domanda *«questa ripartizione regge?»* restava senza
+> risposta e le colonne `EccessoMax_EUR` e `CoalizioniInstabili` erano `NaN`: è il caso di tutti
+> i run fino al 28 ottobre. Ora, da 19 a 25 membri:
+> - `MAIN2.m` enumera v(S) una volta, senza matrice di incidenza
+>   (`cer_coalition_values_blocchi.m`);
+> - la passa al Variance Least Core, che prima la enumerava da sé con lo stesso algoritmo, e a
+>   `coalition_excess_enum.m`;
+> - `coalition_excess_enum.m` calcola l'eccesso senza la matrice di incidenza e senza tenere
+>   l'eccesso di ogni coalizione, che a 25 membri occuperebbero 6,7 + 3,2 GB.
 >
-> **Dal 30 ottobre 2026 la risposta c'è fino a 25 utenti.** Da 19 a 25 membri `MAIN2.m`
-> enumera v(S) una volta, senza matrice di incidenza (`cer_coalition_values_blocchi.m`).
-> La passa al Variance Least Core, che prima la enumerava da sé con lo stesso algoritmo, e a
-> `coalition_excess_enum.m`. Quest'ultima calcola l'eccesso di coalizione senza la matrice
-> di incidenza e senza tenere l'eccesso di ogni coalizione, che a 25 membri occuperebbero
-> 6,7 + 3,2 GB. Shapley e Nucleolo restano fuori:
+> Shapley e Nucleolo restano fuori:
 > - al posto dello Shapley c'è l'Adaptive Sampling, per scelta (§7.11.6);
 > - il Nucleolo partirebbe da un LP con 2^n vincoli.
 >
-> Oltre 25 le colonne restano `NaN`. Fino a 18 non cambia niente: tabelle identiche al
-> byte (§7.11.6).
+> Oltre 25 le colonne restano `NaN`, deliberatamente, perché uno zero si leggerebbe come
+> «nessuno vuole uscire». Fino a 18 non cambia niente: tabelle identiche al byte (§7.11.6).
 
 > **Con `F > 0` diventano quattro.** Il Variance Least Core sfugge a questo limite grazie
 > alla row-generation, ma solo finché il suo Separation Problem è un MILP — e con il
 > fattore di riduzione non lo è più (§7.5). In quel caso ripiega sull'enumerazione e
-> si aggiunge alla lista, con un errore esplicito sopra i 20 giocatori. È il primo punto
+> si aggiunge alla lista, con un errore esplicito sopra i 25 giocatori (`opts.denseMaxPlayers`). È il primo punto
 > da sistemare se si vorrà usare il conto capitale su comunità grandi.
 
 **Per lo Shapley la via d'uscita è già in repo (metodi 13-15, §6).** Le tre

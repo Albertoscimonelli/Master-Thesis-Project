@@ -24,7 +24,8 @@ function unisci_blocchi(radice, fileRisultati, suffisso, maxUtenti)
 %   Esempio (lettura unita della replica 1):
 %     addpath('CER_repliche'); addpath('outputs/workspace/strumenti');
 %     unisci_blocchi("CER_repliche/r01", ["outputs/repliche/fino15/r01/checkpoint.mat", ...
-%                    "outputs/repliche/da18a25/r01/checkpoint.mat"], "rep01_unito", 25)
+%                    "outputs/repliche/da18/r01/checkpoint.mat", ...
+%                    "outputs/repliche/da20a25/r01/checkpoint.mat"], "rep01_unito", 25)
 %
 %   Vedi anche: unisci_shapley_as, elenco_schede_cer, MAIN2 (checkpoint e ripresa)
 

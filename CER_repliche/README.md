@@ -8,7 +8,8 @@ con famiglie diverse.
 - blocco **5-15 membri** fatto: 20 repliche più l'identità, tutti i livelli, risultati sotto;
 - comunità **da 18 membri** fatte: 20 repliche più l'identità, tutti i livelli, con v(S) a blocchi
   (fase 1, in fondo);
-- blocco **20-25** con la stabilità estesa: da scrivere (fase 2).
+- blocco **20-25** con la stabilità estesa: codice e verifiche fatti il 30 ottobre, run da lanciare
+  (fase 2, in fondo).
 
 ## Perché servono
 
@@ -289,8 +290,55 @@ in 14 repliche su 20.
 - Comando: `bash CER_repliche/lancia_repliche.sh da18 18 18 <repliche...>`, due liste in parallelo.
 
 **Fase 2: 20-25 membri, con l'AS al posto dello Shapley e la stabilità (eccesso di coalizione)
-estesa fin lì.** Va ancora scritta: serve una versione dell'eccesso di coalizione senza matrice di
-incidenza, che a 25 membri peserebbe 6,7 GB.
+estesa fin lì.** Piano approvato il 30 ottobre in quattro passi: codice; verifiche e commit; run in
+serie con un'istanza sola (scelta dell'utente); unione di tutti i blocchi.
+
+*Il codice (passo 1):*
+- **`coalition_excess_enum.m`** calcola l'eccesso di coalizione da una v(S) già enumerata.
+  - Somma le quote sulle coalizioni un giocatore alla volta, come la separazione del VLC.
+  - Stesse uscite di riepilogo di `coalition_excess.m`. Non tiene la matrice di incidenza né
+    l'eccesso di ogni coalizione, che a 25 membri peserebbero 6,7 + 3,2 GB.
+- **`MAIN2.m`, solo da 19 a 25 membri** (`stabilitaEnum`):
+  - v(S) si enumera una volta con `cer_coalition_values_blocchi` e va al VLC e all'eccesso;
+  - stampa della stabilità e piano uniformità × stabilità;
+  - due controlli: l'eccesso massimo del VLC vale −θ_LC entro la sua tolleranza, e nessuna
+    ripartizione non negativa ha un eccesso massimo più basso. È il ruolo che fino a 18 membri ha
+    il Nucleolo.
+  - Shapley e Nucleolo restano fuori: a 20-25 membri lo Shapley è l'AS.
+- **`lancia_repliche.sh`:**
+  - la selezione delle schede non apre più processi per file;
+  - una replica interrotta riparte dal checkpoint (`MAIN2_RIPRENDI`), invece che da capo.
+
+*Le verifiche (passo 2, `outputs/repliche/controlli_fase2/`):*
+1. **Test di unità** (`test_coalition_excess_enum.m`, `test_unita.txt`):
+   - contro `coalition_excess` da 2 a 20 giocatori, con e senza F, su quattro ripartizioni;
+   - a 25 giocatori contro un riferimento a blocchi di 2^20 coalizioni;
+   - scarto 0 in tutti i 20 casi;
+   - i due controlli sul VLC tengono, e il VLC con v(S) passata è identico bit per bit.
+2. **Fino a 18 membri non cambia niente.** Le 12 schede di controllo della fase 1 danno 44 tabelle
+   identiche al byte a quelle della fase 1 (`confronto_tabelle_le18.txt`). `RESULTS` è identico
+   tranne i tempi.
+3. **Comunità vere contro `coalition_excess`:** ND3_PA3/CER_4_14_0 (18 membri, 12 metodi) e
+   ND3_PA3/CER_5_15_0 (20 membri, 10 metodi). Scarto 0 sull'eccesso massimo e coalizioni instabili
+   identiche.
+4. **7 schede di r00 da 20-25 membri contro il run del 28 ottobre** (`selezione_2025.txt`,
+   `confronto_risultati.txt`):
+   - tutti i campi di `RESULTS` sono identici (isequaln), tranne le nuove colonne di stabilità, i
+     tempi e i percorsi in `CFG`;
+   - il VLC con la v(S) di MAIN2 resta identico;
+   - i controlli dentro MAIN2 tengono.
+5. **Tempi e memoria.** A 25 membri:
+   - v(S) 35-99 s, VLC 31-45 s, eccesso 2 s;
+   - per comunità 94-161 s, contro 74-147 s il 28 ottobre (nei primi minuti girava insieme la prova
+     della selezione vecchia);
+   - MATLAB al più 2,4 GB, RAM libera almeno 1,7 GB (`campioni_2025.csv`).
+6. **Selezione:** la nuova dà gli stessi elenchi della vecchia (r00 a 20-25, r13 a 18, r07 a 5-15),
+   in 5-6 s invece di circa 60 (`selezione_vecchia_nuova.txt`).
+7. **Ripresa** (`ripresa.txt`):
+   - un blocco di prova (r01, 61 comunità da 15 membri) fermato a mano dopo 11 comunità e
+     rilanciato riparte dalla 12 e si chiude;
+   - i risultati coincidono con il blocco 5-15 del 29 ottobre entro 3e-13 sulle quote e 2e-12 su
+     `Tfair`, il rumore del cambio d'ordine delle somme della fase 1.
 
 **Prova di scalabilità a 25 membri** (29 ottobre, `outputs/repliche/prova_scalabilita/`, stessa
 scheda r01/CER_6_19_0 in ogni istanza):
@@ -307,6 +355,9 @@ scheda r01/CER_6_19_0 in ogni istanza):
 - **Ogni istanza occupa 2,1-2,2 GB.**
 - **Tempo della fase 2:** la parte a 25 membri va di fatto in serie. 21 repliche × 64 comunità ×
   circa 150 s fanno circa 56 h; la seconda istanza può fare intanto le comunità da 20.
+- **Decisione del 30 ottobre: una sola istanza.** Per replica servono 63 comunità da 20 membri
+  (circa 15 s l'una) e 64 da 25 (circa 140 s), più 2-3 min di avvio, analisi ed export: circa
+  2 h 50 min. Le 21 repliche fanno circa 60 h (55-65).
 
 **Lettura unita**, per ogni replica NN, dopo le due fasi:
 

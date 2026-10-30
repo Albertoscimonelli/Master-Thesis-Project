@@ -16,7 +16,9 @@
 #   outputs/repliche/<blocco>/rNN/workspace.mat  RESULTS, AGR, LIV, GRID, REV, SINT, ...
 #   outputs/repliche/<blocco>/rNN/export/        esporta_run_livelli
 #   outputs/repliche/<blocco>/rNN/main2.log
-# Se MAIN2 si ferma, si riprova una volta dal checkpoint (MAIN2_RIPRENDI=1).
+# Se MAIN2 si ferma, si riprova una volta dal checkpoint (MAIN2_RIPRENDI=1). Se lo
+# script stesso viene fermato a meta' di una replica, rilanciato con gli stessi
+# argomenti salta le repliche finite e riprende quella interrotta dal checkpoint.
 # Una riga per replica in outputs/repliche/<blocco>/avanzamento.txt.
 set -u
 cd "$(dirname "$0")/.." || exit 1
@@ -26,18 +28,28 @@ OUT="outputs/repliche/$BLOCCO"
 mkdir -p "$OUT"
 
 selezione() {   # nomi per MAIN2_SCHEDE: CER_x_y_z, PAk/CER_..., NDk[_PAp]/CER_...
-    local rad="$1" f n nome
+    # Solo espansioni di bash, nessun processo per file: in Git Bash basename, awk e
+    # dirname per ognuna delle ~300 schede costavano 4-5 min a replica. Stesso ordine
+    # e stesso risultato della versione di prima (30/10/2026).
+    local rad="$1" f n nome resto a b c cartella
+    local -a scelte=()
     for f in "$rad"/CER_configuration/CER_*.txt "$rad"/CER_configuration_PA/PA[1-9]*/CER_*.txt \
              "$rad"/CER_configuration_IND/ND[1-9]*/CER_*.txt; do
         [ -f "$f" ] || continue
-        nome=$(basename "$f" .txt)
-        n=$(echo "$nome" | awk -F_ '{print $2 + $3 + $4}')
+        nome=${f##*/}; nome=${nome%.txt}                       # CER_x_y_z
+        resto=${nome#CER_}
+        a=${resto%%_*}; resto=${resto#*_}
+        b=${resto%%_*}; resto=${resto#*_}
+        c=${resto%%_*}
+        n=$(( 10#$a + 10#$b + 10#$c ))
         [ "$n" -ge "$MINN" ] && [ "$n" -le "$MAXN" ] || continue
         case "$f" in
-            */CER_configuration/*) echo "$nome" ;;
-            *) echo "$(basename "$(dirname "$f")")/$nome" ;;
+            */CER_configuration/*) scelte+=("$nome") ;;
+            *) cartella=${f%/*}; scelte+=("${cartella##*/}/$nome") ;;
         esac
-    done | paste -sd ';'
+    done
+    local IFS=';'
+    echo "${scelte[*]}"
 }
 
 for R in "$@"; do
@@ -60,9 +72,20 @@ for R in "$@"; do
     mkdir -p "$DEST"
     CMD="MAIN2; vv = intersect({'RESULTS','AGR','LIV','GRID','REV','SINT','F1','PERD','CLUS','SENS'}, who); save('$DEST/workspace.mat', vv{:}); addpath('outputs/workspace/strumenti'); esporta_run_livelli('$DEST/workspace.mat', '$DEST/export')"
     INIZIO=$(date +%s)
-    echo "$(date '+%F %T') r$NN avvio" >> "$OUT/avanzamento.txt"
-    MAIN2_RADICE="$RAD" MAIN2_MAX_UTENTI="$MAXN" MAIN2_SCHEDE="$SEL" MAIN2_IND=1 MAIN2_CARTELLA="$SUF" \
-        matlab -batch "$CMD" > "$DEST/main2.log" 2>&1
+    # Replica interrotta a meta' (lo script o MATLAB fermati da fuori): il checkpoint
+    # di MAIN2 e' rimasto in outputs/, perche' lo si sposta solo a fine replica. Si
+    # riparte da li' invece che da capo: a 25 membri una replica dura circa 3 h.
+    RIPRESA=""
+    LOG="$DEST/main2.log"
+    if [ -f "outputs/checkpoint_main2_$SUF.mat" ]; then
+        RIPRESA=1
+        LOG="$DEST/main2_ripresa_avvio.log"
+        echo "$(date '+%F %T') r$NN avvio dal checkpoint di un run interrotto" >> "$OUT/avanzamento.txt"
+    else
+        echo "$(date '+%F %T') r$NN avvio" >> "$OUT/avanzamento.txt"
+    fi
+    MAIN2_RIPRENDI="$RIPRESA" MAIN2_RADICE="$RAD" MAIN2_MAX_UTENTI="$MAXN" MAIN2_SCHEDE="$SEL" \
+        MAIN2_IND=1 MAIN2_CARTELLA="$SUF" matlab -batch "$CMD" > "$LOG" 2>&1
     ESITO=$?
     if [ $ESITO -ne 0 ]; then
         echo "$(date '+%F %T') r$NN errore ($ESITO), riprovo dal checkpoint" >> "$OUT/avanzamento.txt"

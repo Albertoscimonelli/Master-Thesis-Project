@@ -1,0 +1,16 @@
+Prova della ripresa di lancia_repliche.sh (30/10/2026): blocco prova_ripresa, r01, 61 comunita' da 15 membri.
+Interrotti a mano script e MATLAB dopo 11 comunita' nel checkpoint, poi rilanciato con gli stessi argomenti.
+
+avanzamento.txt:
+2026-10-30 11:14:21 r01 avvio
+2026-10-30 11:16:34 r01 avvio dal checkpoint di un run interrotto
+2026-10-30 11:23:24 r01 fatta in 6 min
+
+log della ripresa:
+  RIPRESA: 11 comunita' gia' fatte, si riparte dalla 12.
+=== Analizzate 61 CER in 7 min 51 s. I risultati sono in RESULTS. ===
+
+Confronto con outputs/repliche/fino15/r01 (stesse 61 comunita', codice del 29/10, v(S) col ciclo):
+  nomi dei metodi uguali; quote (metodi.phi) entro 3,1e-13 di v(N); Tcmp 6,1e-12; Tfair 2,1e-12; NPV 1,5e-11 relativo.
+  Unico scarto grande: forzaLorda.rho del Nucleolo in PA3/CER_0_15_0 (0,382 contro 0,304), Spearman diagnostico
+  che non entra in nessuna tabella: due membri quasi a pari merito cambiano ordine con un rumore di 1e-13.

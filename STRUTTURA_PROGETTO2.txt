@@ -100,6 +100,7 @@ Project/
 |   |-- genera_repliche.py      [v]     Schede delle repliche: famiglie estratte
 |   |                                   dentro la cella ISTAT dichiarata
 |   |-- lancia_repliche.sh      [v]     MAIN2 con MAIN2_RADICE, replica per replica
+|   |                                   (riprende dal checkpoint una replica interrotta)
 |   |-- aggrega_repliche.py     [v]     Confronto fra le repliche
 |   |-- unisci_blocchi.m        [v]     Lettura unita di piu' blocchi di taglia
 |   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
@@ -516,7 +517,8 @@ riepilogo di fine batch.
       skipGameTheory = nUsers > 18. Sopra la soglia Shapley, Nucleolo ed
       eccesso di coalizione vengono SALTATI e il log stampa [BYPASS]: a 21
       membri lo Shapley costava 9 minuti e il Nucleolo 18, e la crescita e'
-      2^n.
+      2^n. Dal 30/10/2026 stabilitaEnum = skipGameTheory && nUsers <= 25: da
+      19 a 25 membri l'eccesso di coalizione si calcola lo stesso (3b, 3t).
       M = align_members_to_users(CFG, userNames): ogni campo [nUsers x 1]
       nell'ordine delle colonne del CSV.
 
@@ -552,10 +554,12 @@ riepilogo di fine batch.
       UNA volta sola (2^n coalizioni), passata a Shapley, Nucleolo ed
       eccesso di coalizione. Sh = shapley_cer_cached. assert: v(N) uguale per
       le due strade del fattore F; v(N) uguale al ricavo da condivisa.
+      Da 19 a 25 membri (dal 30/10/2026): vCache = cer_coalition_values_blocchi
+      senza A_inc, per VLC ed eccesso di coalizione; Shapley e Nucleolo no.
   3c) Nu = nucleolus_cer_cached (sequenza di programmi lineari).
   3e) VLC = variance_least_core_cer (row-generation, a ogni taglia). Fino a
-      25 membri la separazione e' un argmin sulla v(S) enumerata (fino a 18
-      membri si passa la v(S) in cache di 3b, da 19 a 25 la enumera lei);
+      25 membri la separazione e' un argmin sulla v(S) enumerata (si passa la
+      v(S) in cache di 3b; da 19 a 25 la enumerava lei fino al 30/10/2026);
       oltre, MILP. Fino a 18 membri assert: theta_LC = theta_min del Nucleolo.
   3f) ES  = equal_split_cer
   3g) PC  = proportional_consumption_cer
@@ -592,7 +596,8 @@ riepilogo di fine batch.
       gini_heterogeneity (per categoria) e shape_heterogeneity (forma dei
       profili lordi). Per ogni metodo fairness_indicators_lem con baseline
       costUser; poi fairness_index_bm (BC = MC.mcRaw), coalition_excess
-      (fino a 18 membri, sulla stessa vCache; sopra resta NaN), forza
+      (fino a 18 membri, sulla stessa vCache; da 19 a 25 coalition_excess_enum,
+      dal 30/10/2026; oltre resta NaN), forza
       incentivante su asse netto (SU) e lordo (SUl, profili lordi),
       inclusion_index (vulnerabili = TL.isVulnerable).
       Tfair, 13 colonne:
@@ -883,6 +888,11 @@ riepilogo di fine batch.
                             CoalizioniInstabili, coalizione peggiore. Segno
                             opposto al surplus di Nucleolo e VLC. Limite di
                             sicurezza a 20 giocatori.
+  coalition_excess_enum.m   lo stesso da una v(S) gia' enumerata, senza
+                            matrice di incidenza e senza l'eccesso di ogni
+                            coalizione (a 25 membri 6,7 + 3,2 GB): stesse
+                            uscite di riepilogo. MAIN2 la usa da 19 a 25
+                            membri (dal 30/10/2026).
   compute_incentive_strength.m  Forza incentivante: proiezione della
                             deviazione dall'uniforme delle quote sull'asse di
                             virtuosita' theta x eta (media pesata
@@ -1309,7 +1319,8 @@ CALENDARIO
                     diagonale 1; dettaglio e sommario delle inversioni
                     concordi; penetrazione dichiarata e contata entro 0,5 punti
   Le verifiche sull'eccesso di coalizione e sul Nucleolo non girano sopra i
-  18 membri.
+  18 membri. Da 19 a 25 (dal 30/10/2026) restano le due sul VLC: eccesso
+  massimo = -theta_LC, nessuna ripartizione non negativa piu' stabile.
 
   AUTO-TEST NEI MODULI (acceso di default, casi calcolati a penna)
     cer_reduction_factor, cer_tip_bracket_power, premium_excess_threshold,
@@ -1333,6 +1344,10 @@ CALENDARIO
     test_cer_coalition_values_blocchi.m  v(S) a blocchi contro il ciclo di
                                  cer_coalition_values (1-16 giocatori, con e
                                  senza F, casi limite) e VLC identico bit per bit
+    test_coalition_excess_enum.m coalition_excess_enum contro coalition_excess
+                                 (2-20 giocatori, con e senza F) e contro un
+                                 riferimento a blocchi a 25; controlli sul VLC;
+                                 con un argomento, una comunita' vera di MAIN2
 
 
 ================================================================================

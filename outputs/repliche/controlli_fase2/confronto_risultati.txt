@@ -1,0 +1,41 @@
+=== 20-25 contro il run del 28/10
+CER_0_25_0               n=25  eccesso max: VLC     -0.36  min     -0.36  max     31.89 EUR | instabili: [0 14412769 9559032 11669568 13436201 11970208 8554123 8523994 6338 8757005]
+CER_10_10_0              n=20  eccesso max: VLC     -1.15  min     -1.15  max    273.96 EUR | instabili: [0 478883 244596 452038 491786 481547 400838 402099 201642 393558]
+CER_5_15_0               n=20  eccesso max: VLC     -0.55  min     -0.55  max    304.36 EUR | instabili: [0 497777 364170 484748 499179 500346 348585 435419 187650 338725]
+CER_6_19_0               n=25  eccesso max: VLC     -0.46  min     -0.46  max    300.99 EUR | instabili: [0 15974453 12583847 15508580 16021491 16047878 10793298 14049195 5145950 10271412]
+PA2/CER_12_13_0          n=25  eccesso max: VLC     -6.65  min     -6.65  max   2183.29 EUR | instabili: [0 8390604 16721995 1448860 7852375 8312228 9011595 9125817 219111 11611365]
+ND2_PA1/CER_15_5_0       n=20  eccesso max: VLC     -6.02  min     -6.02  max    685.44 EUR | instabili: [0 206069 259289 450886 411528 239185 296823 350729 70293 316409]
+ND3_PA3/CER_5_15_0       n=20  eccesso max: VLC     -7.23  min     -7.23  max   4550.57 EUR | instabili: [0 317201 63037 118850 462273 203221 121558 345159 64014 83577]
+Comunita' confrontate: 7
+  campo diverso: CFG                          scarto relativo massimo Inf
+  campo diverso: scheda                       scarto relativo massimo Inf
+  campo diverso: tempo_analisi_s              scarto relativo massimo 4.06e-01
+  campo diverso: tempo_figure_s               scarto relativo massimo 1.62e-03
+=== fino a 18 contro la fase 1
+CER_0_18_0               n=18  eccesso max: VLC     -0.59  min     -0.59  max     24.05 EUR | instabili: [62 0 0 112341 52435 82748 102793 86846 38444 36784 59 43333]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_13_5_0               n=18  eccesso max: VLC     -2.36  min     -2.36  max    152.77 EUR | instabili: [23642 0 0 45912 112124 23971 74421 68248 117448 111043 21328 117462]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_2_3_0                n= 5  eccesso max: VLC     -3.32  min     -3.32  max     69.78 EUR | instabili: [6 0 0 10 6 9 10 12 10 9 6 10]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_4_14_0               n=18  eccesso max: VLC     -0.81  min     -0.81  max    269.08 EUR | instabili: [57058 0 0 124814 88125 120408 124611 125371 79094 101730 49830 75588]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_4_4_0                n= 8  eccesso max: VLC     -2.60  min     -2.60  max     97.53 EUR | instabili: [59 0 0 92 71 71 97 97 92 95 59 90]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_5_5_0                n=10  eccesso max: VLC     -2.12  min     -2.12  max    139.07 EUR | instabili: [211 0 0 406 285 324 431 416 392 367 208 383]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+CER_9_9_0                n=18  eccesso max: VLC     -1.30  min     -1.30  max    247.58 EUR | instabili: [52383 0 0 117694 65330 107647 121699 119789 102032 99215 46600 100560]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+PA2/CER_5_5_0            n=10  eccesso max: VLC    -10.11  min    -10.11  max   1724.72 EUR | instabili: [3 0 0 255 461 43 251 247 226 255 3 303]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+PA3/CER_9_9_0            n=18  eccesso max: VLC    -12.45  min    -12.46  max   3679.72 EUR | instabili: [1448 0 0 70085 60874 8777 65409 36538 41443 73095 820 30416]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+ND1/CER_11_4_0           n=15  eccesso max: VLC     -7.37  min     -7.37  max    254.14 EUR | instabili: [827 0 0 6412 7 5766 5748 6460 12591 10874 786 11401]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+ND2_PA1/CER_7_8_0        n=15  eccesso max: VLC     -4.61  min     -4.62  max    400.43 EUR | instabili: [1082 0 0 9484 11626 14062 14247 9954 8393 11389 1041 7129]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+ND3_PA3/CER_4_14_0       n=18  eccesso max: VLC     -9.05  min     -9.05  max   4349.77 EUR | instabili: [17685 0 0 78916 15226 30635 114448 50344 29950 87094 15891 20892]
+    (nel riferimento la stabilita' c'era: scarto 0.00e+00)
+Comunita' confrontate: 12
+  campo diverso: tempo_analisi_s              scarto relativo massimo 7.05e-01
+  campo diverso: tempo_figure_s               scarto relativo massimo 7.66e-04

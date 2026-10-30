@@ -52,7 +52,8 @@ varia taglia e penetrazione dei prosumer.
 > - **Comunità da 18 membri fatte il 30 ottobre**, con v(S) a blocchi. Reggono gli stessi risultati
 >   e l'allineamento lordo cambia di nuovo; al 100% di prosumer il legame merito-incentivo invece
 >   regge.
-> - **Blocco 20-25:** con la stabilità estesa fin lì, è da scrivere e richiede circa 56 h.
+> - **Blocco 20-25:** con la stabilità estesa fin lì. Codice e verifiche sono fatti il 30 ottobre;
+>   il run richiede circa 60 h in serie.
 
 ---
 
@@ -184,7 +185,7 @@ identica del livello 0). Sei variabili d'ambiente, tutte facoltative:
 | Variabile | Cosa fa |
 |---|---|
 | `MAIN2_SCHEDE` | nomi di scheda senza `.txt`, separati da `;`. Vince sul tetto di membri. Un nome senza cartella è una scheda di `CER_configuration/`; `PA2/CER_5_5_0` è la variante PA2 |
-| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley, Nucleolo e stabilità si calcolano fino a lì). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`, o `griglia25_PA` per il run con le PA del 21 ottobre, §7.10.1); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
+| `MAIN2_MAX_UTENTI` | tetto di membri, default **18** (Shapley e Nucleolo si calcolano fino a lì; la stabilità, dal 30 ottobre 2026, fino a 25, §14.1). `25` dà la griglia fino a 25 (con `MAIN2_CARTELLA=griglia25`, o `griglia25_PA` per il run con le PA del 21 ottobre, §7.10.1); le schede da 50-100 membri esistono ma il Variance Least Core non arriva in fondo (§14.1) |
 | `MAIN2_CARTELLA` | suffisso delle cartelle di uscita: `outputs/tables_main2_<suffisso>/` e `outputs/figures_main2_<suffisso>/` |
 | `MAIN2_IND` | `1` = aggiunge l'asse imprese (§7.11): le schede di `CER_configuration_IND/` con 1-3 imprese (`ND1`-`ND3`) e con imprese e PA (`ND2_PA1`, …), fino al tetto di membri (92 a 18 membri). In `MAIN2_SCHEDE` si scrivono come `ND2_PA1/CER_9_9_0`. Ogni livello ha le sue tabelle (`<tabelle>/ND1/`, …) e il confronto con il livello 0 sta in `confronto_PA/` (§7.11). Senza, il run è identico a prima |
 | `MAIN2_RIPRENDI` | `1` = riparte dal checkpoint di un run interrotto. Dopo ogni comunità `MAIN2.m` salva `RESULTS` in `outputs/checkpoint_main2[_<suffisso>].mat` (non versionato); la ripresa vuole lo stesso elenco di schede, e si ferma se non coincide |
@@ -253,6 +254,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `fairness_indicators_lem.m` | Indicatori di equità distributiva di Dynge & Cali 2025 — MinMax, QoS, EI (originali e riformulati) su **una** ripartizione; in `Tfair` di `MAIN2.m` entrano EI e Gini (§7) |
 | `fairness_index_bm.m` | **Fairness Index** di Casalicchio et al. 2022: distanza di ciascun metodo dalla distribuzione per contributo `v(N) − v(N∖{i})` (§7) |
 | `coalition_excess.m` | **Eccesso di coalizione** di Volpato et al. 2024 (eq. 23): quali sottogruppi guadagnerebbero di più uscendo dalla CER — l'unico indicatore di **stabilità** (§7) |
+| `coalition_excess_enum.m`, `test_coalition_excess_enum.m` | Lo stesso eccesso di coalizione da una v(S) già enumerata, senza matrice di incidenza: è quello che `MAIN2.m` usa da 19 a 25 membri (dal 30 ottobre 2026, §14.1). Il test lo confronta con `coalition_excess.m` da 2 a 20 giocatori e con un riferimento a blocchi a 25: scarto 0. Verifica anche i due controlli sul VLC e che il VLC con v(S) passata resti identico bit per bit (§7.11.6) |
 | `compute_incentive_strength.m` | **Forza incentivante** e allineamento alla virtuosità, sull'asse netto e su quello lordo (§7.0-bis) |
 | `inclusion_index.m` | Indicatore di **inclusione**: quota di v(N) ai vulnerabili LIHC rispetto al loro numero (§7.7) |
 | `premium_excess_threshold.m` | **Soglia di energia incentivabile** 55%/45% e destinazione della tariffa premio eccedentaria (DM MASE 414/2023, Regole Operative GSE): non misura l'equità, dice quali ripartizioni sono **ammissibili** (§7.4) |
@@ -568,7 +570,7 @@ nell'ultima colonna:
 | **EI nuovo** | 19 | " | `ρ·(1−Gini` risparmi *relativi*`) + μ·(1−Gini` risparmi`)` | 1 = equo | — |
 | **Gini di eterogeneità** | 10 | `gini_heterogeneity.m` | varietà delle tipologie di membro (**non** un Gini di reddito) | — | stampato (sulla griglia vale 0) |
 | **Fairness Index** + σ | 12-14 | `fairness_index_bm.m` | distanza dalla distribuzione per **contributo** `BCᵢ = v(N) − v(N∖{i})` | 0 = equo | `FairnessIndex`, `Sigma`, `QuoteNulle` |
-| **Eccesso di coalizione** | 23 | `coalition_excess.m` | se qualche sottogruppo guadagnerebbe di più **uscendo** dalla CER | ↓ = stabile | `EccessoMax_EUR`, `CoalizioniInstabili`, `EccessoMax_pct_vN` (fino a 18 membri) |
+| **Eccesso di coalizione** | 23 | `coalition_excess.m` | se qualche sottogruppo guadagnerebbe di più **uscendo** dalla CER | ↓ = stabile | `EccessoMax_EUR`, `CoalizioniInstabili`, `EccessoMax_pct_vN` (fino a 18 membri; fino a 25 dal 30 ottobre 2026, con `coalition_excess_enum.m`) |
 | **Forza incentivante** + coseno | 6-8 | `compute_incentive_strength.m` | quanto la regola **premia il sincronismo** fra prelievo e immissione | nessun verso | `ForzaIncentivante`, `AllineamentoVirtu` e le due colonne `_lordo` |
 | **Eterogeneità di forma** | — | `shape_heterogeneity.m` | quanto i membri consumano in momenti diversi (distanza L1 fra i profili normalizzati) | — | stampata |
 | **Inclusione** | — | `inclusion_index.m` | quota di `v(N)` ai vulnerabili LIHC rispetto al loro numero (§7.7) | ↑ = inclusivo | `InclusioneLIHC` |
@@ -749,7 +751,10 @@ a quello dello Shapley), il Tri-level EP e l'analisi dopo il ciclo; elenco compl
 
 Le verifiche che passano dall'eccesso di coalizione o dal Nucleolo **non girano sopra i
 18 utenti**, dove né il Nucleolo né l'eccesso vengono calcolati (§14.1). Le altre valgono a
-ogni taglia.
+ogni taglia. Dal 30 ottobre 2026, da 19 a 25 utenti l'eccesso c'è e restano due verifiche
+sul Variance Least Core:
+- il suo eccesso massimo vale −θ_LC;
+- nessuna ripartizione non negativa ha un eccesso massimo più basso.
 
 Inoltre `fairness_index_bm.m` ha un auto-test analitico (`opts.validateSelf`, attivo di
 default): la Tab. 7 del paper **non** è riproducibile — i `Dᵢ` per membro stanno solo in un
@@ -1846,7 +1851,16 @@ Cambiano:
     Index, forza incentivante) vale 0,22 di mediana, è positivo in 20 repliche su 20 e r00 vale
     0,31.
 - **Fase 2, 20-25 membri.** L'AS prende il posto dello Shapley, e la stabilità (eccesso di
-  coalizione) si estende fin lì: va ancora scritta.
+  coalizione) si estende fin lì (§14.1). Codice e verifiche sono fatti il 30 ottobre; il run
+  durerà circa 60 h in serie.
+  - `coalition_excess_enum.m` coincide con `coalition_excess.m` con scarto 0, da 2 a 25
+    giocatori.
+  - Fino a 18 membri le tabelle restano identiche al byte.
+  - Su 7 schede da 20-25 membri `RESULTS` è identico al run del 28 ottobre, tranne le nuove
+    colonne di stabilità.
+  - A 25 membri l'eccesso costa 2 s a comunità.
+  - Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md) e
+    `outputs/repliche/controlli_fase2/`.
 - **A 25 membri il parallelo non aiuta.** Il VLC è limitato dalla banda verso la RAM: due istanze
   insieme impiegano 4 min 48 s a comunità contro 2 min 31 s da sola. La fase 2 dura quindi circa
   56 h. La stima di 40 h scritta il 29 ottobre era sbagliata.
@@ -2411,6 +2425,18 @@ sopra i 20 giocatori; oltre quella soglia la §3b fallirebbe in allocazione di m
 > *«questa ripartizione regge?»* non ha risposta, perché per definizione guarda **tutti**
 > i sottogruppi. Le colonne `EccessoMax_EUR` e `CoalizioniInstabili` restano a `NaN` —
 > deliberatamente, perché uno zero si leggerebbe come «nessuno vuole uscire».
+>
+> **Dal 30 ottobre 2026 la risposta c'è fino a 25 utenti.** Da 19 a 25 membri `MAIN2.m`
+> enumera v(S) una volta, senza matrice di incidenza (`cer_coalition_values_blocchi.m`).
+> La passa al Variance Least Core, che prima la enumerava da sé con lo stesso algoritmo, e a
+> `coalition_excess_enum.m`. Quest'ultima calcola l'eccesso di coalizione senza la matrice
+> di incidenza e senza tenere l'eccesso di ogni coalizione, che a 25 membri occuperebbero
+> 6,7 + 3,2 GB. Shapley e Nucleolo restano fuori:
+> - al posto dello Shapley c'è l'Adaptive Sampling, per scelta (§7.11.6);
+> - il Nucleolo partirebbe da un LP con 2^n vincoli.
+>
+> Oltre 25 le colonne restano `NaN`. Fino a 18 non cambia niente: tabelle identiche al
+> byte (§7.11.6).
 
 > **Con `F > 0` diventano quattro.** Il Variance Least Core sfugge a questo limite grazie
 > alla row-generation, ma solo finché il suo Separation Problem è un MILP — e con il

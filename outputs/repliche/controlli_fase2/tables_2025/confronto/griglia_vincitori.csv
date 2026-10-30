@@ -1,0 +1,45 @@
+Indicatore,Membri,Fascia,Penetrazione_pct,Scheda,Vincitore,PrimiAPari,Distacco
+EI_orig,20,1,50,CER_10_10_0,Equal Split,Equal Split,0.132667
+EI_orig,20,2,75,CER_5_15_0,Equal Split,Equal Split,0.0796497
+EI_orig,25,1,76,CER_6_19_0,Equal Split,Equal Split,0.0752849
+EI_orig,25,2,100,CER_0_25_0,Equal Split,Equal Split,0.0617769
+Gini,20,1,50,CER_10_10_0,Equal Split,Equal Split,0.132667
+Gini,20,2,75,CER_5_15_0,Equal Split,Equal Split,0.0796497
+Gini,25,1,76,CER_6_19_0,Equal Split,Equal Split,0.0752849
+Gini,25,2,100,CER_0_25_0,Equal Split,Equal Split,0.0617769
+FairnessIndex,20,1,50,CER_10_10_0,(pari),Variance Least Core = Proportional to Consumption,0.0450533
+FairnessIndex,20,2,75,CER_5_15_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0382216
+FairnessIndex,25,1,76,CER_6_19_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0297966
+FairnessIndex,25,2,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.0109929
+Sigma,20,1,50,CER_10_10_0,Variance Least Core,Variance Least Core,0.00635857
+Sigma,20,2,75,CER_5_15_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00450321
+Sigma,25,1,76,CER_6_19_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00279887
+Sigma,25,2,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley,0.00149321
+InclusioneLIHC,20,1,50,CER_10_10_0,,,NaN
+InclusioneLIHC,20,2,75,CER_5_15_0,,,NaN
+InclusioneLIHC,25,1,76,CER_6_19_0,,,NaN
+InclusioneLIHC,25,2,100,CER_0_25_0,,,NaN
+EccessoMax_EUR,20,1,50,CER_10_10_0,(pari),Variance Least Core = Adaptive Sampling Shapley = Tri-level EP = Proportional to Consumption = Pearson Key,24.4963
+EccessoMax_EUR,20,2,75,CER_5_15_0,(pari),Variance Least Core = Adaptive Sampling Shapley = Tri-level EP = Pearson Key,14.1701
+EccessoMax_EUR,25,1,76,CER_6_19_0,(pari),Variance Least Core = Adaptive Sampling Shapley = Tri-level EP = Pearson Key,10.4466
+EccessoMax_EUR,25,2,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley,1.06048
+CoalizioniInstabili,20,1,50,CER_10_10_0,Variance Least Core,Variance Least Core,201642
+CoalizioniInstabili,20,2,75,CER_5_15_0,Variance Least Core,Variance Least Core,187650
+CoalizioniInstabili,25,1,76,CER_6_19_0,Variance Least Core,Variance Least Core,5145950
+CoalizioniInstabili,25,2,100,CER_0_25_0,(pari),Variance Least Core = Adaptive Sampling Shapley,6338
+ForzaIncentivante,20,1,50,CER_10_10_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP,0.0322803
+ForzaIncentivante,20,2,75,CER_5_15_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP,0.077943
+ForzaIncentivante,25,1,76,CER_6_19_0,(pari),Similarity-Utilization = Pearson Key,0.0925749
+ForzaIncentivante,25,2,100,CER_0_25_0,(pari),Tri-level EP = Pearson Key = Similarity-Utilization,0.0197997
+AllineamentoVirtu,20,1,50,CER_10_10_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP = Variance Least Core = Adaptive Sampling Shapley = Proportional to Consumption,0.0336239
+AllineamentoVirtu,20,2,75,CER_5_15_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP = Variance Least Core = Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,0.0257185
+AllineamentoVirtu,25,1,76,CER_6_19_0,(pari),Similarity-Utilization = Pearson Key = Tri-level EP = Variance Least Core = Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,0.0248641
+AllineamentoVirtu,25,2,100,CER_0_25_0,Similarity-Utilization,Similarity-Utilization,0.118465
+AllineamentoVirtu_lordo,20,1,50,CER_10_10_0,Similarity-Utilization,Similarity-Utilization,0.0606194
+AllineamentoVirtu_lordo,20,2,75,CER_5_15_0,Similarity-Utilization,Similarity-Utilization,0.0878032
+AllineamentoVirtu_lordo,25,1,76,CER_6_19_0,Equal Split,Equal Split,0.123521
+AllineamentoVirtu_lordo,25,2,100,CER_0_25_0,Similarity-Utilization,Similarity-Utilization,0.14886
+VAN_min_EUR,20,1,50,CER_10_10_0,Equal Split,Equal Split,70.9783
+VAN_min_EUR,20,2,75,CER_5_15_0,Equal Split,Equal Split,44.3739
+VAN_min_EUR,25,1,76,CER_6_19_0,(pari),Equal Split = Cascading Tree,31.8137
+VAN_min_EUR,25,2,100,CER_0_25_0,Equal Split,Equal Split,19.0241

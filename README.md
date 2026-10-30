@@ -49,8 +49,10 @@ varia taglia e penetrazione dei prosumer.
 >   reggono in 20 repliche su 20.
 > - **Due risultati cambiano:** l'allineamento lordo dipendeva dalle persone sole, e al 100% di
 >   prosumer il legame merito-incentivo si scioglie.
-> - **Blocco 18-25:** le comunità da 18 membri girano dal 30 ottobre, con v(S) a blocchi. Il
->   blocco 20-25, con la stabilità estesa fin lì, è da scrivere e richiede circa 56 h.
+> - **Comunità da 18 membri fatte il 30 ottobre**, con v(S) a blocchi. Reggono gli stessi risultati
+>   e l'allineamento lordo cambia di nuovo; al 100% di prosumer il legame merito-incentivo invece
+>   regge.
+> - **Blocco 20-25:** con la stabilità estesa fin lì, è da scrivere e richiede circa 56 h.
 
 ---
 
@@ -1830,6 +1832,19 @@ Cambiano:
   (`cer_coalition_values_blocchi.m`), con l'algoritmo che il VLC usava già da 19 a 25 membri.
   - A 18 membri v(S) passa da 50-56 s a circa 1 s.
   - Sulle 12 schede di controllo le tabelle sono identiche al byte e `RESULTS` resta entro 8e-14.
+  - **Fatta:** 20 repliche più r00, 63 comunità ciascuna, 12 min a replica, nessun errore. r00
+    riproduce il run del 27 ottobre con v(N) identico (scarto al più 1,4e-07, dal VLC). Numeri in
+    [`outputs/repliche/da18/aggregato/sintesi.md`](outputs/repliche/da18/aggregato/sintesi.md).
+  - **Reggono, come a 5-15 membri:**
+    - i tre poli;
+    - il capovolgimento con la penetrazione, in 19-20 repliche su 20;
+    - il trade-off uguaglianza-incentivo (0,84, r00 0,82);
+    - l'effetto piccolo della composizione (9%, r00 12%).
+  - **Cambia di nuovo l'allineamento lordo:** i partecipanti ne spiegano il 51% della varianza, e
+    il vincitore coincide con quello di prima nel 44% delle celle.
+  - **Diverso dal blocco 5-15:** al 100% di prosumer il legame merito-incentivo regge. τ(Fairness
+    Index, forza incentivante) vale 0,22 di mediana, è positivo in 20 repliche su 20 e r00 vale
+    0,31.
 - **Fase 2, 20-25 membri.** L'AS prende il posto dello Shapley, e la stabilità (eccesso di
   coalizione) si estende fin lì: va ancora scritta.
 - **A 25 membri il parallelo non aiuta.** Il VLC è limitato dalla banda verso la RAM: due istanze

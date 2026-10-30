@@ -6,7 +6,8 @@ con famiglie diverse.
 
 **Stato al 30 ottobre 2026:**
 - blocco **5-15 membri** fatto: 20 repliche più l'identità, tutti i livelli, risultati sotto;
-- comunità **da 18 membri** in corso, con v(S) a blocchi (fase 1, in fondo);
+- comunità **da 18 membri** fatte: 20 repliche più l'identità, tutti i livelli, con v(S) a blocchi
+  (fase 1, in fondo);
 - blocco **20-25** con la stabilità estesa: da scrivere (fase 2).
 
 ## Perché servono
@@ -149,6 +150,19 @@ Le conclusioni del rapporto del 28 ottobre non cambiano. Le tabelle ufficiali di
 5. **Le 21 repliche del blocco 5-15 sono complete:** 410 tabelle ciascuna, workspace ed export,
    nessun warning, nessuna ripresa dal checkpoint. 15-18 minuti per replica, con due in parallelo.
 6. **La regola dello Shapley regge sul run unito del 28 ottobre** (sezione sopra).
+7. **r00 a 18 membri, con v(S) a blocchi, riproduce il run del 27 ottobre**
+   (`checkpoint_main2_fino18_IND.mat`, codice di prima: v(S) col ciclo, VLC con MILP). Sono 63
+   comunità, con v(N) identico. Scarti relativi al più:
+   - 1,4e-07 su `Tcmp` (VLC);
+   - 1,6e-07 su `Tfair`;
+   - 3,4e-09 sul VAN.
+
+   È lo stesso ordine del punto 4: viene dal VLC, non da v(S).
+8. **Le 21 repliche da 18 membri sono complete** (30 ottobre, 00:20-02:49):
+   - 418 file ciascuna, nessun warning, nessuna ripresa;
+   - 12 minuti per replica con due in parallelo, 10 da sola;
+   - con due MATLAB la RAM libera ha mediana 2,0 GB e minimo 415 MB, a fine replica, quando le
+     due istanze arrivano insieme a 4,8-5,0 GB (`outputs/repliche/da18/campioni.csv`).
 
 ## Risultati del blocco 5-15 membri (29 ottobre 2026)
 
@@ -205,9 +219,62 @@ nei CSV accanto.
   l'indicatore. Coincide con quello di r00 nel 37-100% delle celle. Almeno un primo in comune con
   r00 c'è nel 91-100% dei casi.
 
+## Risultati delle comunità da 18 membri (30 ottobre 2026)
+
+63 comunità per replica, tutte da 18 membri:
+- 4 del livello base (una per fascia di penetrazione);
+- 12 con PA (PA1-PA3);
+- 47 con imprese (ND1-ND3 e ND{k}_PA{p}). A ND3_PA3 manca la scheda CER_13_5_0, come nei run di
+  prima (README §7.11.1).
+
+I numeri sono in
+[`outputs/repliche/da18/aggregato/sintesi.md`](../outputs/repliche/da18/aggregato/sintesi.md). Con
+una sola taglia:
+- non ci sono inversioni lungo la taglia;
+- la colonna "taglia" della varianza vale 0;
+- in r00 tutta la varianza va alla penetrazione, perché manca ogni altro asse.
+
+La lettura insieme al blocco 5-15 viene dopo la fase 2 (`unisci_blocchi`, sotto).
+
+**Tengono, come nel blocco 5-15:**
+- **I tre poli.** Quota delle celle del livello base in cui il metodo è fra i primi:
+  - su Gini, l'Equal Split (100%);
+  - su merito e stabilità, Nucleolo e Variance Least Core (100%);
+  - sulla forza incentivante, Pearson Key e Tri-level EP (94% e 92%).
+- **Il capovolgimento con la penetrazione:**
+  - τ(Gini, forza incentivante) scende di almeno 0,3 dalla fascia 1 alla 4 in 19 repliche su 20;
+  - τ(Fairness Index, forza incentivante) va da negativo a positivo in 20 su 20 (mediana −0,45 e
+    +0,49; r00 −0,49 e +0,49).
+- **Il trade-off uguaglianza-incentivo.** Scegliere Gini fa perdere 0,84 della forza incentivante
+  (0,81-0,86; r00 0,82). Merito e stabilità non si fanno concorrenza (0,00).
+- **La composizione pesa poco.** PA e imprese invertono il 9% delle coppie (mediana), contro il 12%
+  di r00.
+- **I vincitori.** Il vincitore della cella è lo stesso nell'85-100% delle repliche, secondo
+  l'indicatore (76% per l'allineamento lordo). Coincide con quello di r00 nel 70-100% delle celle
+  (44% per l'allineamento lordo). Almeno un primo in comune con r00 c'è nel 93-100% dei casi.
+
+**Cambia, come nel blocco 5-15:**
+- **L'allineamento lordo dipende dai partecipanti.**
+  - Le famiglie ne spiegano il 51% della varianza, contro l'8-19% degli altri indicatori.
+  - In r00 vince Similarity-Utilization (75% delle celle). Con famiglie vere vince più spesso
+    Remuneration Model 1 (49%).
+- **Lo Shapley è fra i primi sulle coalizioni instabili più spesso:** nel 45% delle celle, contro il
+  25% di r00.
+
+**r00 fuori dall'intervallo delle repliche:**
+- τ(Gini, Fairness Index) in fascia 1: 0,71, contro una mediana di 0,38 (0,24-0,56);
+- τ(Gini, forza incentivante) in fascia 2: −0,78, contro una mediana di −0,85 (−0,93/−0,82);
+- la perdita di Gini quando si sceglie l'incentivo: 0,96, contro una mediana di 0,89 (0,88-0,94).
+
+**Diverso dal blocco 5-15.** Al 100% di prosumer il legame merito-incentivo non si scioglie.
+τ(Fairness Index, forza incentivante) in fascia 4 ha mediana 0,22 (0,09-0,42; r00 0,31) ed è
+positivo in tutte e 20 le repliche. Nel blocco 5-15 la mediana era 0,06, con il segno della mediana
+in 14 repliche su 20.
+
 ## Blocco 18-25 membri, in due fasi (dal 30 ottobre 2026)
 
-**Fase 1: le comunità da 18 membri** (63 a replica, r00 compresa), con v(S) a blocchi.
+**Fase 1: le comunità da 18 membri** (63 a replica, r00 compresa), con v(S) a blocchi. **Fatta il
+30 ottobre:** controlli 7-8 e risultati nelle due sezioni sopra.
 - **La modifica.** `MAIN2.m` calcola v(S) con `cer_coalition_values_blocchi.m`, l'algoritmo che il
   VLC usava già da 19 a 25 membri, invece del ciclo di `cer_coalition_values.m`. A 18 membri v(S)
   passa da 50-56 s a 0,4-1,1 s.

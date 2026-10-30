@@ -1,0 +1,505 @@
+Livello,Indicatore,Membri,Fascia,Modale,repliche,QuotaModale,Primi_r00,QuotaUgualeR00,QuotaInComuneR00,ModaleUgualeR00
+ND1,AllineamentoVirtu,18,1,Similarity-Utilization,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+ND1,AllineamentoVirtu,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+ND1,AllineamentoVirtu,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP,0.65,1.0,True
+ND1,AllineamentoVirtu,18,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1,AllineamentoVirtu_lordo,18,1,Remuneration Model 1 = Shapley,20,0.6,Cascading Tree = Remuneration Model 1 = Shapley,0.0,1.0,False
+ND1,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,0.45,Cascading Tree = Remuneration Model 1,0.45,1.0,True
+ND1,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,0.8,Cascading Tree = Remuneration Model 1,0.8,1.0,True
+ND1,AllineamentoVirtu_lordo,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.3,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.05,0.8,False
+ND1,CoalizioniInstabili,18,1,Nucleolo = Shapley = Variance Least Core,20,0.55,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.2,1.0,False
+ND1,CoalizioniInstabili,18,2,Nucleolo = Proportional to Consumption = Variance Least Core,20,0.75,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.05,1.0,False
+ND1,CoalizioniInstabili,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1,CoalizioniInstabili,18,4,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,0.8,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,EccessoMax_EUR,18,1,Nucleolo = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.6,Nucleolo = Proportional to Consumption = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND1,EccessoMax_EUR,18,2,Nucleolo = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,20,0.85,Nucleolo = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,0.85,1.0,True
+ND1,EccessoMax_EUR,18,3,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.45,Nucleolo = Shapley = Tri-level EP = Variance Least Core,0.45,1.0,True
+ND1,EccessoMax_EUR,18,4,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,0.7,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,FairnessIndex,18,1,Nucleolo = Variance Least Core,20,0.65,Nucleolo = Variance Least Core,0.65,1.0,True
+ND1,FairnessIndex,18,2,Nucleolo = Variance Least Core,20,0.5,Nucleolo = Proportional to Consumption = Variance Least Core,0.45,1.0,False
+ND1,FairnessIndex,18,3,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,20,0.7,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.7,1.0,True
+ND1,FairnessIndex,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.5,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND1,ForzaIncentivante,18,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+ND1,ForzaIncentivante,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND1,ForzaIncentivante,18,3,Similarity-Utilization,20,0.75,Similarity-Utilization,0.75,1.0,True
+ND1,ForzaIncentivante,18,4,Similarity-Utilization,20,0.8,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Sigma,18,1,Remuneration Model 1 = Shapley,20,0.45,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.05,1.0,False
+ND1,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,0.8,Nucleolo = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,0.8,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.2,1.0,False
+ND1,Sigma,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.4,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND1_PA1,AllineamentoVirtu,18,1,Similarity-Utilization,20,0.7,Pearson Key = Similarity-Utilization = Tri-level EP,0.2,1.0,False
+ND1_PA1,AllineamentoVirtu,18,2,Similarity-Utilization,20,0.55,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,False
+ND1_PA1,AllineamentoVirtu,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP,0.5,1.0,True
+ND1_PA1,AllineamentoVirtu,18,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,18,1,Cascading Tree = Remuneration Model 1 = Shapley,20,0.75,Cascading Tree = Remuneration Model 1 = Shapley,0.75,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,18,4,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.5,Cascading Tree = Remuneration Model 1,0.15,1.0,False
+ND1_PA1,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND1_PA1,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND1_PA1,CoalizioniInstabili,18,3,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+ND1_PA1,CoalizioniInstabili,18,4,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,20,0.6,Nucleolo = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA1,EccessoMax_EUR,18,1,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA1,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA1,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,0.85,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.85,1.0,True
+ND1_PA1,EccessoMax_EUR,18,4,Nucleolo = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,20,0.45,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,0.25,1.0,False
+ND1_PA1,FairnessIndex,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND1_PA1,FairnessIndex,18,2,Nucleolo = Proportional to Consumption = Variance Least Core,20,0.65,Nucleolo = Variance Least Core,0.35,1.0,False
+ND1_PA1,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,0.85,Nucleolo = Shapley = Variance Least Core,0.85,1.0,True
+ND1_PA1,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.05,1.0,False
+ND1_PA1,ForzaIncentivante,18,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Similarity-Utilization,0.0,1.0,False
+ND1_PA1,ForzaIncentivante,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.05,1.0,False
+ND1_PA1,ForzaIncentivante,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA1,ForzaIncentivante,18,4,Similarity-Utilization,20,0.75,Pearson Key = Similarity-Utilization = Tri-level EP,0.2,1.0,False
+ND1_PA1,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Sigma,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.0,1.0,False
+ND1_PA2,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,18,1,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,18,2,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,0.95,Cascading Tree = Nucleolo = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND1_PA2,AllineamentoVirtu_lordo,18,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,0.7,Nucleolo = Variance Least Core,0.7,1.0,True
+ND1_PA2,CoalizioniInstabili,18,4,Nucleolo = Variance Least Core,20,0.9,Nucleolo = Proportional to Consumption = Variance Least Core,0.1,1.0,False
+ND1_PA2,EccessoMax_EUR,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.9,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.1,1.0,False
+ND1_PA2,EccessoMax_EUR,18,2,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,0.8,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.8,1.0,True
+ND1_PA2,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,0.95,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.95,1.0,True
+ND1_PA2,FairnessIndex,18,1,Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,18,2,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,18,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.7,Similarity-Utilization,0.0,0.9,False
+ND1_PA2,ForzaIncentivante,18,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND1_PA2,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Sigma,18,1,Remuneration Model 1 = Shapley,20,0.9,Remuneration Model 1 = Shapley,0.9,1.0,True
+ND1_PA2,Sigma,18,2,Remuneration Model 1 = Shapley,20,0.95,Remuneration Model 1 = Shapley,0.95,1.0,True
+ND1_PA2,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,Sigma,18,4,Nucleolo = Variance Least Core,20,0.6,Nucleolo = Shapley = Variance Least Core,0.4,1.0,False
+ND1_PA3,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,20,0.7,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.2,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,18,1,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo,0.0,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,18,2,Nucleolo = Shapley,20,0.9,Nucleolo,0.0,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,18,3,Nucleolo = Shapley,20,0.65,Nucleolo,0.0,0.9,False
+ND1_PA3,AllineamentoVirtu_lordo,18,4,Nucleolo = Shapley = Similarity-Utilization,20,0.75,Nucleolo,0.0,1.0,False
+ND1_PA3,CoalizioniInstabili,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.75,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.75,1.0,True
+ND1_PA3,CoalizioniInstabili,18,2,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.05,1.0,False
+ND1_PA3,CoalizioniInstabili,18,3,Nucleolo = Remuneration Model 1 = Variance Least Core,20,0.8,Nucleolo = Remuneration Model 1 = Variance Least Core,0.8,1.0,True
+ND1_PA3,CoalizioniInstabili,18,4,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.95,Nucleolo = Proportional to Consumption = Variance Least Core,0.05,1.0,False
+ND1_PA3,EccessoMax_EUR,18,1,Nucleolo = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,18,2,Nucleolo = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA3,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,18,1,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,0.65,Remuneration Model 1 = Shapley = Variance Least Core,0.35,1.0,False
+ND1_PA3,FairnessIndex,18,2,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,18,3,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,18,4,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.1,0.9,False
+ND1_PA3,ForzaIncentivante,18,4,Nucleolo = Pearson Key = Tri-level EP,20,1.0,Nucleolo = Pearson Key = Tri-level EP,1.0,1.0,True
+ND1_PA3,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Sigma,18,1,Remuneration Model 1 = Shapley = Variance Least Core,20,0.95,Remuneration Model 1 = Shapley = Variance Least Core,0.95,1.0,True
+ND1_PA3,Sigma,18,2,Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,18,3,Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,18,4,Proportional to Consumption = Remuneration Model 1 = Shapley,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley,1.0,1.0,True
+ND2,AllineamentoVirtu,18,1,Similarity-Utilization,20,0.75,Pearson Key = Similarity-Utilization = Tri-level EP,0.15,1.0,False
+ND2,AllineamentoVirtu,18,2,Similarity-Utilization,20,0.55,Pearson Key = Similarity-Utilization = Tri-level EP,0.25,1.0,False
+ND2,AllineamentoVirtu,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.7,Pearson Key = Similarity-Utilization = Tri-level EP,0.7,1.0,True
+ND2,AllineamentoVirtu,18,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2,AllineamentoVirtu_lordo,18,1,Shapley,20,0.9,Cascading Tree = Remuneration Model 1 = Shapley,0.0,1.0,False
+ND2,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,0.7,Cascading Tree = Proportional to Consumption = Remuneration Model 1,0.25,1.0,False
+ND2,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,0.7,Cascading Tree = Proportional to Consumption = Remuneration Model 1,0.15,1.0,False
+ND2,AllineamentoVirtu_lordo,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,20,0.25,Cascading Tree = Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND2,CoalizioniInstabili,18,1,Nucleolo = Proportional to Consumption = Variance Least Core,20,0.9,Nucleolo = Variance Least Core,0.1,1.0,False
+ND2,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,0.65,Nucleolo = Shapley = Variance Least Core,0.35,1.0,False
+ND2,CoalizioniInstabili,18,3,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.75,Nucleolo = Shapley = Tri-level EP = Variance Least Core,0.75,1.0,True
+ND2,CoalizioniInstabili,18,4,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,0.7,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.7,1.0,True
+ND2,EccessoMax_EUR,18,1,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,20,0.65,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,0.95,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.95,1.0,True
+ND2,FairnessIndex,18,1,Nucleolo = Proportional to Consumption = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,0.0,1.0,False
+ND2,FairnessIndex,18,2,Nucleolo = Variance Least Core,20,0.65,Nucleolo = Variance Least Core,0.65,1.0,True
+ND2,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,0.85,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,ForzaIncentivante,18,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND2,ForzaIncentivante,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.15,1.0,False
+ND2,ForzaIncentivante,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2,ForzaIncentivante,18,4,Similarity-Utilization,20,0.9,Proportional to Consumption,0.0,0.0,False
+ND2,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Sigma,18,1,Nucleolo = Proportional to Consumption = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,0.0,1.0,False
+ND2,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,0.7,Nucleolo = Shapley = Variance Least Core,0.7,1.0,True
+ND2,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,0.65,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,AllineamentoVirtu,18,1,Similarity-Utilization,20,0.9,Similarity-Utilization,0.9,1.0,True
+ND2_PA1,AllineamentoVirtu,18,2,Similarity-Utilization,20,0.7,Pearson Key = Similarity-Utilization,0.15,1.0,False
+ND2_PA1,AllineamentoVirtu,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.55,Pearson Key = Similarity-Utilization,0.25,1.0,False
+ND2_PA1,AllineamentoVirtu,18,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,18,1,Cascading Tree = Remuneration Model 1 = Shapley,20,0.55,Cascading Tree = Remuneration Model 1 = Shapley,0.55,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,0.6,Cascading Tree = Remuneration Model 1,0.6,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.95,Remuneration Model 1 = Shapley = Variance Least Core,0.05,1.0,False
+ND2_PA1,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA1,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,0.0,1.0,False
+ND2_PA1,CoalizioniInstabili,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,CoalizioniInstabili,18,4,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.9,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,EccessoMax_EUR,18,1,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,20,0.7,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,0.7,1.0,True
+ND2_PA1,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,18,1,Nucleolo = Variance Least Core,20,0.85,Nucleolo = Variance Least Core,0.85,1.0,True
+ND2_PA1,FairnessIndex,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,ForzaIncentivante,18,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.0,1.0,False
+ND2_PA1,ForzaIncentivante,18,2,Similarity-Utilization,20,0.55,Similarity-Utilization,0.55,1.0,True
+ND2_PA1,ForzaIncentivante,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,ForzaIncentivante,18,4,Similarity-Utilization,20,0.85,Proportional to Consumption,0.05,0.15,False
+ND2_PA1,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Sigma,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,0.6,Nucleolo = Shapley = Variance Least Core,0.6,1.0,True
+ND2_PA1,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,18,1,Cascading Tree = Remuneration Model 1 = Shapley,20,1.0,Cascading Tree = Remuneration Model 1 = Shapley,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,18,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,18,4,Nucleolo = Proportional to Consumption = Variance Least Core,20,1.0,Nucleolo = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA2,EccessoMax_EUR,18,1,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.75,Nucleolo = Shapley = Tri-level EP = Variance Least Core,0.75,1.0,True
+ND2_PA2,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,0.95,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.95,1.0,True
+ND2_PA2,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,0.65,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,0.35,1.0,False
+ND2_PA2,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,18,1,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+ND2_PA2,FairnessIndex,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,18,2,Similarity-Utilization,20,0.95,Similarity-Utilization,0.95,1.0,True
+ND2_PA2,ForzaIncentivante,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.7,Similarity-Utilization,0.0,0.75,False
+ND2_PA2,ForzaIncentivante,18,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND2_PA2,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Sigma,18,1,Nucleolo = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.05,1.0,False
+ND2_PA2,Sigma,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,20,0.65,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,0.65,1.0,True
+ND2_PA3,AllineamentoVirtu_lordo,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.7,Nucleolo = Remuneration Model 1 = Shapley = Weighted Solidarity,0.0,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,18,2,Nucleolo = Remuneration Model 1 = Shapley,20,0.9,Nucleolo = Remuneration Model 1 = Shapley,0.9,1.0,True
+ND2_PA3,AllineamentoVirtu_lordo,18,3,Nucleolo = Remuneration Model 1 = Shapley,20,0.8,Nucleolo = Remuneration Model 1 = Shapley,0.8,1.0,True
+ND2_PA3,AllineamentoVirtu_lordo,18,4,Nucleolo = Remuneration Model 1 = Shapley,20,0.55,Nucleolo = Remuneration Model 1 = Shapley,0.55,1.0,True
+ND2_PA3,CoalizioniInstabili,18,1,Nucleolo = Shapley = Variance Least Core,20,0.75,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.25,1.0,False
+ND2_PA3,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,18,4,Nucleolo = Proportional to Consumption = Variance Least Core,20,1.0,Nucleolo = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,EccessoMax_EUR,18,1,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.55,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA3,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,0.55,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.55,1.0,True
+ND2_PA3,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA3,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA3,FairnessIndex,18,1,Proportional to Consumption = Shapley = Variance Least Core,20,0.55,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND2_PA3,FairnessIndex,18,2,Proportional to Consumption = Shapley = Variance Least Core,20,0.85,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.15,1.0,False
+ND2_PA3,FairnessIndex,18,3,Proportional to Consumption = Shapley = Variance Least Core,20,0.8,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.2,1.0,False
+ND2_PA3,FairnessIndex,18,4,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,18,3,Similarity-Utilization,20,0.6,Similarity-Utilization,0.6,1.0,True
+ND2_PA3,ForzaIncentivante,18,4,Nucleolo = Pearson Key = Tri-level EP,20,1.0,Nucleolo = Pearson Key = Tri-level EP,1.0,1.0,True
+ND2_PA3,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Sigma,18,1,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,18,2,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,18,3,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,18,4,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,18,4,Similarity-Utilization,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP,0.1,1.0,False
+ND3,AllineamentoVirtu_lordo,18,1,Cascading Tree = Shapley,20,0.5,Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,18,2,Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Shapley,20,0.8,Cascading Tree = Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,18,3,Cascading Tree = Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,0.55,Cascading Tree = Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.55,1.0,True
+ND3,AllineamentoVirtu_lordo,18,4,Cascading Tree = Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,0.85,Cascading Tree = Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,0.85,1.0,True
+ND3,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,18,1,Nucleolo = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,18,2,Nucleolo = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,0.0,1.0,False
+ND3,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,18,1,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,18,4,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,20,0.6,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.6,1.0,True
+ND3,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,18,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Sigma,18,1,Nucleolo = Shapley = Variance Least Core,20,1.0,Shapley = Variance Least Core,0.0,1.0,False
+ND3,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,18,4,Similarity-Utilization,20,0.95,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,18,1,Cascading Tree = Remuneration Model 1 = Shapley,20,0.5,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1 = Shapley,20,0.85,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.1,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,0.5,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,18,4,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.9,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,0.1,1.0,False
+ND3_PA1,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,18,1,Nucleolo = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,18,2,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.8,Nucleolo = Shapley = Tri-level EP = Variance Least Core,0.8,1.0,True
+ND3_PA1,EccessoMax_EUR,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,0.0,1.0,False
+ND3_PA1,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,18,1,Nucleolo = Variance Least Core,20,0.85,Nucleolo = Shapley = Variance Least Core,0.15,1.0,False
+ND3_PA1,FairnessIndex,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.05,1.0,False
+ND3_PA1,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,18,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA1,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Sigma,18,1,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,18,1,Cascading Tree = Remuneration Model 1 = Shapley,20,0.65,Cascading Tree = Remuneration Model 1 = Shapley,0.65,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,18,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,18,1,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,18,2,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,18,1,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,18,2,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,18,3,Similarity-Utilization,20,0.55,Similarity-Utilization,0.55,1.0,True
+ND3_PA2,ForzaIncentivante,18,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA2,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Sigma,18,1,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+ND3_PA2,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+ND3_PA2,Sigma,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA2,Sigma,18,4,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,18,3,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+ND3_PA3,AllineamentoVirtu_lordo,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core = Weighted Solidarity,20,0.75,Nucleolo = Remuneration Model 1 = Shapley = Weighted Solidarity,0.05,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,18,2,Nucleolo = Remuneration Model 1 = Shapley = Weighted Solidarity,20,0.9,Nucleolo = Remuneration Model 1 = Shapley = Weighted Solidarity,0.9,1.0,True
+ND3_PA3,AllineamentoVirtu_lordo,18,3,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Similarity-Utilization = Weighted Solidarity,20,0.4,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,CoalizioniInstabili,18,1,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Variance Least Core,0.05,1.0,False
+ND3_PA3,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+ND3_PA3,CoalizioniInstabili,18,3,Nucleolo = Proportional to Consumption = Variance Least Core,20,1.0,Nucleolo = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,EccessoMax_EUR,18,1,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,0.6,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND3_PA3,EccessoMax_EUR,18,2,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,0.95,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND3_PA3,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,18,1,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,18,2,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,18,3,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,18,2,Similarity-Utilization,20,0.9,Similarity-Utilization,0.9,1.0,True
+ND3_PA3,ForzaIncentivante,18,3,Nucleolo = Pearson Key = Tri-level EP,20,0.9,Nucleolo = Pearson Key = Tri-level EP,0.9,1.0,True
+ND3_PA3,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Sigma,18,1,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,18,2,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,18,3,Proportional to Consumption = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Shapley = Variance Least Core,1.0,1.0,True
+PA0,AllineamentoVirtu,18,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+PA0,AllineamentoVirtu,18,2,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.25,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,0.25,1.0,True
+PA0,AllineamentoVirtu,18,3,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA0,AllineamentoVirtu,18,4,Similarity-Utilization,20,0.55,Similarity-Utilization,0.55,1.0,True
+PA0,AllineamentoVirtu_lordo,18,1,Nucleolo = Remuneration Model 1 = Variance Least Core,20,0.6,Similarity-Utilization,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,18,2,Remuneration Model 1,20,0.7,Similarity-Utilization,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,18,3,Cascading Tree,20,0.55,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,0.0,0.1,False
+PA0,AllineamentoVirtu_lordo,18,4,Similarity-Utilization,20,0.85,Equal Split = Weighted Solidarity,0.0,0.05,False
+PA0,CoalizioniInstabili,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.4,Nucleolo = Variance Least Core,0.05,1.0,False
+PA0,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,18,3,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA0,EccessoMax_EUR,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA0,EccessoMax_EUR,18,2,Nucleolo = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,20,0.35,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Tri-level EP = Variance Least Core,0.05,1.0,False
+PA0,EccessoMax_EUR,18,3,Nucleolo = Shapley = Tri-level EP = Variance Least Core,20,0.7,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.2,1.0,False
+PA0,EccessoMax_EUR,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.5,Nucleolo = Shapley = Variance Least Core,0.25,1.0,False
+PA0,FairnessIndex,18,1,Nucleolo = Variance Least Core,20,0.95,Nucleolo = Variance Least Core,0.95,1.0,True
+PA0,FairnessIndex,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA0,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA0,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA0,ForzaIncentivante,18,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.55,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,False
+PA0,ForzaIncentivante,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+PA0,ForzaIncentivante,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Pearson Key = Similarity-Utilization = Tri-level EP,0.75,1.0,True
+PA0,ForzaIncentivante,18,4,Pearson Key = Tri-level EP,20,0.55,Pearson Key = Tri-level EP,0.55,0.95,True
+PA0,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,18,3,Equal Split,20,0.75,Equal Split,0.75,1.0,True
+PA0,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Sigma,18,1,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA0,Sigma,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA0,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA0,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA1,AllineamentoVirtu,18,1,Similarity-Utilization,20,0.6,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.1,1.0,False
+PA1,AllineamentoVirtu,18,2,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.4,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.4,1.0,True
+PA1,AllineamentoVirtu,18,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.5,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core,0.45,1.0,False
+PA1,AllineamentoVirtu,18,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,18,1,Remuneration Model 1 = Shapley,20,0.55,Cascading Tree = Remuneration Model 1 = Shapley,0.2,1.0,False
+PA1,AllineamentoVirtu_lordo,18,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,18,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,18,4,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.65,Cascading Tree = Remuneration Model 1,0.0,0.95,False
+PA1,CoalizioniInstabili,18,1,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA1,CoalizioniInstabili,18,2,Nucleolo = Variance Least Core,20,1.0,Nucleolo = Variance Least Core,1.0,1.0,True
+PA1,CoalizioniInstabili,18,3,Nucleolo = Shapley = Variance Least Core,20,0.85,Nucleolo = Shapley = Variance Least Core,0.85,1.0,True
+PA1,CoalizioniInstabili,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.85,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.85,1.0,True
+PA1,EccessoMax_EUR,18,1,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,18,2,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,18,4,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA1,FairnessIndex,18,1,Nucleolo = Shapley = Variance Least Core,20,0.9,Nucleolo = Shapley = Variance Least Core,0.9,1.0,True
+PA1,FairnessIndex,18,2,Nucleolo = Shapley = Variance Least Core,20,0.5,Nucleolo = Variance Least Core,0.5,1.0,False
+PA1,FairnessIndex,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Proportional to Consumption = Shapley = Variance Least Core,0.0,1.0,False
+PA1,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA1,ForzaIncentivante,18,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,0.0,1.0,False
+PA1,ForzaIncentivante,18,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.9,Pearson Key = Similarity-Utilization = Tri-level EP,0.9,1.0,True
+PA1,ForzaIncentivante,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.5,Similarity-Utilization,0.4,1.0,False
+PA1,ForzaIncentivante,18,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.4,Pearson Key = Similarity-Utilization = Tri-level EP,0.4,1.0,True
+PA1,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Sigma,18,1,Shapley,20,0.95,Shapley,0.95,1.0,True
+PA1,Sigma,18,2,Nucleolo = Shapley = Variance Least Core,20,0.9,Nucleolo = Shapley = Variance Least Core,0.9,1.0,True
+PA1,Sigma,18,3,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA1,Sigma,18,4,Nucleolo = Variance Least Core,20,0.75,Nucleolo = Shapley = Variance Least Core,0.25,1.0,False
+PA2,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,18,4,Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Weighted Solidarity,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Shapley = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+PA2,AllineamentoVirtu_lordo,18,1,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.9,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.9,1.0,True
+PA2,AllineamentoVirtu_lordo,18,2,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.7,Nucleolo = Shapley = Variance Least Core,0.0,1.0,False
+PA2,AllineamentoVirtu_lordo,18,3,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.7,Cascading Tree = Nucleolo = Remuneration Model 1 = Variance Least Core,0.3,1.0,False
+PA2,AllineamentoVirtu_lordo,18,4,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.8,Cascading Tree = Nucleolo = Remuneration Model 1 = Variance Least Core,0.2,1.0,False
+PA2,CoalizioniInstabili,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.4,Nucleolo = Shapley = Variance Least Core,0.25,1.0,False
+PA2,CoalizioniInstabili,18,2,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+PA2,CoalizioniInstabili,18,3,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA2,CoalizioniInstabili,18,4,Nucleolo = Variance Least Core,20,0.85,Nucleolo = Shapley = Variance Least Core,0.15,1.0,False
+PA2,EccessoMax_EUR,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,0.9,Cascading Tree = Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,0.1,1.0,False
+PA2,EccessoMax_EUR,18,2,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,18,1,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,20,0.6,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,0.6,1.0,True
+PA2,FairnessIndex,18,2,Remuneration Model 1 = Variance Least Core,20,1.0,Remuneration Model 1 = Shapley = Variance Least Core,0.0,1.0,False
+PA2,FairnessIndex,18,3,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA2,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,18,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.0,0.9,False
+PA2,ForzaIncentivante,18,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+PA2,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Sigma,18,1,Cascading Tree = Remuneration Model 1 = Shapley = Variance Least Core,20,0.65,Remuneration Model 1 = Shapley = Variance Least Core,0.35,1.0,False
+PA2,Sigma,18,2,Remuneration Model 1,20,1.0,Remuneration Model 1 = Shapley,0.0,1.0,False
+PA2,Sigma,18,3,Remuneration Model 1 = Shapley,20,0.55,Remuneration Model 1 = Shapley,0.55,1.0,True
+PA2,Sigma,18,4,Nucleolo = Shapley = Variance Least Core,20,1.0,Nucleolo = Shapley = Variance Least Core,1.0,1.0,True
+PA3,AllineamentoVirtu,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,18,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,18,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,18,4,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP,20,0.55,Nucleolo = Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.45,1.0,False
+PA3,AllineamentoVirtu_lordo,18,1,Nucleolo = Shapley = Variance Least Core,20,0.4,Nucleolo,0.25,1.0,False
+PA3,AllineamentoVirtu_lordo,18,2,Nucleolo = Shapley,20,0.55,Nucleolo,0.35,1.0,False
+PA3,AllineamentoVirtu_lordo,18,3,Nucleolo = Shapley,20,1.0,Nucleolo,0.0,1.0,False
+PA3,AllineamentoVirtu_lordo,18,4,Nucleolo = Shapley = Similarity-Utilization,20,0.7,Nucleolo,0.05,1.0,False
+PA3,CoalizioniInstabili,18,1,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Nucleolo = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA3,CoalizioniInstabili,18,2,Nucleolo = Shapley = Variance Least Core,20,0.95,Nucleolo = Shapley = Variance Least Core,0.95,1.0,True
+PA3,CoalizioniInstabili,18,3,Nucleolo = Remuneration Model 1 = Variance Least Core,20,0.7,Nucleolo = Remuneration Model 1 = Variance Least Core,0.7,1.0,True
+PA3,CoalizioniInstabili,18,4,Nucleolo = Remuneration Model 1 = Variance Least Core,20,0.7,Nucleolo = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.05,1.0,False
+PA3,EccessoMax_EUR,18,1,Nucleolo = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,18,2,Nucleolo = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,18,3,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA3,EccessoMax_EUR,18,4,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,20,1.0,Nucleolo = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,18,1,Remuneration Model 1 = Shapley = Variance Least Core,20,0.6,Remuneration Model 1 = Shapley = Variance Least Core,0.6,1.0,True
+PA3,FairnessIndex,18,2,Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,18,3,Remuneration Model 1 = Shapley = Variance Least Core,20,0.7,Remuneration Model 1 = Shapley = Variance Least Core,0.7,1.0,True
+PA3,FairnessIndex,18,4,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,20,1.0,Proportional to Consumption = Remuneration Model 1 = Shapley = Variance Least Core,1.0,1.0,True
+PA3,ForzaIncentivante,18,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,ForzaIncentivante,18,2,Similarity-Utilization,20,0.95,Similarity-Utilization,0.95,1.0,True
+PA3,ForzaIncentivante,18,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.0,0.85,False
+PA3,ForzaIncentivante,18,4,Nucleolo = Pearson Key = Tri-level EP,20,1.0,Nucleolo = Pearson Key = Tri-level EP,1.0,1.0,True
+PA3,Gini,18,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,18,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,18,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,18,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Sigma,18,1,Remuneration Model 1 = Shapley,20,1.0,Remuneration Model 1 = Shapley,1.0,1.0,True
+PA3,Sigma,18,2,Remuneration Model 1 = Shapley,20,0.7,Remuneration Model 1 = Shapley,0.7,1.0,True
+PA3,Sigma,18,3,Remuneration Model 1 = Shapley,20,0.8,Remuneration Model 1 = Shapley,0.8,1.0,True
+PA3,Sigma,18,4,Remuneration Model 1 = Shapley,20,1.0,Remuneration Model 1 = Shapley,1.0,1.0,True

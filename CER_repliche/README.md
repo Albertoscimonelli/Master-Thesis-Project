@@ -9,7 +9,9 @@ con famiglie diverse.
 - comunità **da 18 membri** fatte: 20 repliche più l'identità, tutti i livelli, con v(S) a blocchi
   (fase 1, in fondo);
 - blocco **20-25** con la stabilità estesa: codice e verifiche fatti il 30 ottobre, run in corso dal
-  30 ottobre alle 15:48, fine prevista lunedì 2 novembre (fase 2, in fondo);
+  30 ottobre alle 15:48. Il 31 ottobre il limite di iterazioni del VLC è passato da 1000 a 5000
+  e il run è ripartito dai checkpoint. Fine prevista martedì 3 novembre in mattinata (fase 2, in
+  fondo);
 - poi la lettura unita 5-25 di ogni replica e l'aggregato.
 
 ## Perché servono
@@ -351,8 +353,30 @@ serie con un'istanza sola (scelta dell'utente); unione di tutti i blocchi.
   finestra Git Bash fuori da VS Code. Uno script a parte chiede a Windows di non andare in
   sospensione finché la finestra è aperta; le impostazioni di alimentazione non sono state
   toccate.
-- **Primo controllo:** dopo r00, il confronto con il run del 28 ottobre su tutte le 127 comunità.
-- **Fine prevista:** lunedì 2 novembre.
+- **Primo controllo, passato:** dopo r00 (228 min), il confronto con il run del 28 ottobre su
+  tutte le 127 comunità. `RESULTS` è identico (`isequaln`) tranne i percorsi di scheda e
+  configurazione e i tempi. Il VLC ha eccesso massimo negativo in tutte le comunità: sta nel
+  nucleo. Registro in `outputs/repliche/controlli_fase2/confronto_r00_da20a25.txt`.
+- **Tre repliche fermate dal limite del VLC (notte del 30-31 ottobre).**
+  - r01, r02 e r03 si sono fermate rispettivamente sulle comunità 124, 82 e 94, tutte da 25
+    membri. L'errore era "non convergente in 1000 iterazioni"; lo script le ha riprovate dal
+    checkpoint, con lo stesso esito, e poi è andato avanti.
+  - Le iterazioni dipendono dalle famiglie estratte: la stessa scheda va da 341 a oltre 1000
+    secondo la replica. Motivi e numeri nel README principale, §7.11.6.
+  - **Correzione del 31 ottobre:** `optVLC.maxIter = 5000` in `MAIN2.m`. Chi convergeva prima fa
+    le stesse iterazioni.
+- **Ripresa (31 ottobre, 16:12):**
+  - il run fermato subito dopo un salvataggio;
+  - i checkpoint di r01-r03 riportati in `outputs/checkpoint_main2_repNN_da20a25.mat`, con una
+    copia che resta in `rNN/checkpoint.mat`;
+  - i log dei tentativi falliti rinominati `main2_ripresa_limite1000.log`;
+  - stesso comando di lancio.
+
+  r01 si chiude in 13 minuti: la comunità bloccata richiede 1121 iterazioni, la successiva 1150.
+- **Attenzione per una nuova ripresa:** rilanciare tutte le repliche funziona solo se il checkpoint
+  di ogni replica non finita sta in `outputs/`. Lo script li sposta in `rNN/` a fine replica, anche
+  quando fallisce: una replica fallita senza il checkpoint in `outputs/` ripartirebbe da capo.
+- **Fine prevista:** martedì 3 novembre in mattinata.
 
 **Prova di scalabilità a 25 membri** (29 ottobre, `outputs/repliche/prova_scalabilita/`, stessa
 scheda r01/CER_6_19_0 in ogni istanza):

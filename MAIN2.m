@@ -882,6 +882,10 @@ for iCER = PRIMO:N_CER
 
     T_metodo = tic;
     optVLC = optF;
+    % Nelle repliche a 25 membri la fase theta_LC ha superato le 1000
+    % iterazioni del default (README 7.11.6): 5000 lasciano margine, e chi
+    % converge prima fa le stesse identiche iterazioni (dal 31/10/2026).
+    optVLC.maxIter = 5000;
     if ~skipGameTheory || stabilitaEnum
         optVLC.v = vCache;
     end

@@ -67,7 +67,9 @@ function S = variance_least_core_cer(genUsers, loadUsers, userNames, P_CER, opts
 %     opts      struct    opzionale, campi tutti facoltativi:
 %                 .tolRel        tolleranza RELATIVA a v(N)     (def. 1e-6)
 %                 .maxIter       iterazioni max per fase        (def. 1000:
-%                                PA1/CER_12_13_0, 25 membri, converge in 519)
+%                                PA1/CER_12_13_0, 25 membri, converge in 519;
+%                                con le famiglie delle repliche a 25 membri non
+%                                basta, e MAIN2 passa 5000)
 %                 .verbose       stampa avanzamento             (def. false)
 %                 .validateDense verifica contro l'enumerazione (def. false,
 %                                ammessa solo per n <= 12)

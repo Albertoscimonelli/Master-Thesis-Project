@@ -38,9 +38,10 @@ varia taglia e penetrazione dei prosumer.
 >     penetrazione e trade-off principale reggono.
 >   - **Cambia l'allineamento lordo**, che dipendeva dalle persone sole.
 >   - **Al 100% di prosumer** il legame merito-incentivo si scioglie a 5-15 membri e regge a 18.
->   - **20-25 membri in corso** dal 30 ottobre alle 15:48, con la stabilità estesa fin lì; fine
->     prevista lunedì 2 novembre. Dopo vengono la lettura unita 5-25 di ogni replica e
->     l'aggregato.
+>   - **20-25 membri in corso** dal 30 ottobre alle 15:48, con la stabilità estesa fin lì.
+>     Il 31 ottobre il limite di iterazioni del VLC è passato da 1000 a 5000 (§7.11.6). Fine
+>     prevista martedì 3 novembre in mattinata. Dopo vengono la lettura unita 5-25 di ogni
+>     replica e l'aggregato.
 > - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
 >   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
 >   (`coalition_excess_enum.m`, §14.1). Fino a 18 membri le tabelle restano identiche al byte.
@@ -1685,7 +1686,8 @@ tutte le ore con generazione, e le iterazioni sono centinaia. Due modifiche, ent
 - **Limite di iterazioni 500 → 1000** (`opts.maxIter`). `PA1/CER_12_13_0` (25 membri) converge in 519
   iterazioni con l'enumerazione (473 col MILP, stesso `theta_LC` = 2,562395 EUR): la separazione
   esatta sceglie, a parità di surplus, coalizioni diverse da quelle del MILP e il percorso si allunga un
-  po'. Con 500 il run si fermava a due decine di iterazioni dalla fine.
+  po'. Con 500 il run si fermava a due decine di iterazioni dalla fine. Dal 31 ottobre `MAIN2.m`
+  passa 5000: con le famiglie delle repliche, a 25 membri, 1000 non bastano (§7.11.6).
 
 **Verifica.** `test_speedup_vlc_shapley.m` (giochi sintetici da 5, 8, 11, 14 giocatori, con e senza F):
 scarto massimo sullo Shapley 5,9e-16 (soglia 1e-9), sul VLC 6,2e-14 (soglia 1e-5), sia contro il MILP sia
@@ -1877,8 +1879,29 @@ Cambiano:
   Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md) e
   `outputs/repliche/controlli_fase2/`.
   - **Il run** (`da20a25`, 21 repliche con r00, 127 comunità ciascuna) è partito il 30 ottobre alle
-    15:48, in una finestra Git Bash fuori da VS Code. Fine prevista lunedì 2 novembre, dopo circa
-    60 h.
+    15:48, in una finestra Git Bash fuori da VS Code. r00 ha impiegato 228 min, non i 170
+    stimati: a 25 membri una comunità costa in media 196 s (da 62 a 301 s).
+  - **Limite del VLC da 1000 a 5000 iterazioni (31 ottobre).** Nella notte r01, r02 e r03 si sono
+    fermate su una comunità da 25 membri ciascuna (124, 82 e 94 su 127). L'errore era
+    "Row-generation (fase theta_LC) non convergente in 1000 iterazioni".
+    - **Non è un errore nei conti.** La row-generation aggiunge a ogni passo la coalizione più
+      scontenta e non ne ripete mai una, quindi finisce sempre. Il limite serve solo a fermarla se
+      qualcosa va storto.
+    - **A 25 membri le iterazioni hanno una coda lunga.** Mediana 309, massimo 953 fra le 251
+      comunità concluse in r00-r04. A 20 membri il massimo è 522.
+    - **Dipende dalle famiglie estratte, non dal tipo di scheda.** `ND2_PA2/CER_0_25_0` chiede 743
+      iterazioni in r00, 341 in r01, 579 in r03 e più di 1000 in r02. Il limite di 1000 era stato
+      tarato sul disegno originale, con le sole persone sole.
+    - **La correzione.** `MAIN2.m` passa `optVLC.maxIter = 5000`. Chi convergeva prima fa le
+      stesse identiche iterazioni.
+    - **La ripresa.** Il run si è fermato alle 16:09, subito dopo un salvataggio, ed è ripartito
+      alle 16:12. Le repliche fallite riprendono dal proprio checkpoint, senza rifare le comunità
+      già salvate. Su r01 la comunità bloccata chiude in 1121 iterazioni (2 min 43 s) e la
+      successiva in 1150: anche quella sarebbe saltata col limite vecchio.
+    - **Interruzione del 31 ottobre.** Il PC è rimasto in sospensione dalle 7:56 alle 15:58, per il
+      coperchio chiuso o il tasto di accensione. `veglia.ps1` blocca solo la sospensione per
+      inattività. MATLAB è ripartito da dove era, senza perdite.
+    - **Fine prevista:** martedì 3 novembre in mattinata.
   - **Perché con un'istanza sola:** a 25 membri il VLC è limitato dalla banda verso la RAM. Due
     istanze insieme impiegano 4 min 48 s a comunità, una da sola 2 min 31 s (prova del 29
     ottobre).

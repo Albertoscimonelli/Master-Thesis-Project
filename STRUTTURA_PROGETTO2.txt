@@ -798,7 +798,9 @@ riepilogo di fine batch.
                             2^n surplus, esatta), oltre con un MILP
                             (intlinprog) sulle sole ore con generazione.
                             Con F > 0 solo l'enumerazione. maxIter default
-                            1000. Espone tolConv, la tolleranza di
+                            1000; MAIN2 passa 5000 (dal 31/10/2026, le
+                            repliche a 25 membri superano le 1000).
+                            Espone tolConv, la tolleranza di
                             convergenza con cui va verificato.
   marginal_contribution_cer.m  MC_i = v(N) - v(N\{i}) (mcRaw), normalizzati a
                             v(N). In MAIN2 serve solo come BC_i del Fairness

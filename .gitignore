@@ -361,4 +361,6 @@ outputs/repliche/prova_regola_shapley/tables/
 outputs/repliche/unito/r[0-9]*/export/*
 !outputs/repliche/unito/r[0-9]*/export/punteggi_orientati.csv
 outputs/repliche/unito/insieme/
+# il checkpoint unito e' la somma di quelli dei tre blocchi (gia' versionati): si rifa' in secondi
+outputs/repliche/unito/r[0-9]*/checkpoint.mat
 outputs/tesi_finale_prova/

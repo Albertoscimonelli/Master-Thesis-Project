@@ -10,6 +10,7 @@ Tempi indicativi: lettura unita circa 1 ora (21 repliche × 2-3 min), parte Pyth
 ## 1. Controllare che il run sia finito
 
 ```bash
+bash CER_repliche/stato_run.sh                                   # riepilogo del run
 tail -5 outputs/repliche/da20a25/avanzamento.txt
 for i in $(seq -w 0 20); do grep -q "r$i fatta in" outputs/repliche/da20a25/avanzamento.txt || echo "manca r$i"; done   # non deve stampare nulla
 grep "FALLITA" outputs/repliche/da20a25/avanzamento.txt         # non deve dare nulla, o righe gia' riprese
@@ -67,13 +68,14 @@ Lo script si ferma al primo passo che fallisce e stampa le ultime righe del regi
 
 ```bash
 git add outputs/repliche/da20a25 outputs/repliche/unito outputs/tesi_finale
-git status --short | head -50       # controllo: niente .mat, niente tables/, niente insieme/
+git status --short | head -50       # controllo: solo checkpoint.mat dei blocchi, niente tables/ ne' insieme/
 git commit -m "Run 20-25 completo (21 repliche) e analisi finale delle repliche"
 git push -u origin ccr-13867105-vwc5b6
 ```
 
-Il `.gitignore` tiene fuori da solo `.mat`, tabelle, log, `unito/insieme/` e gli export della
-lettura unita tranne `punteggi_orientati.csv`. Peso atteso del commit: circa 140 MB (export di r07-r20 del blocco 20-25 circa 60 MB, punteggi della lettura unita circa 55 MB, `tesi_finale/` circa 25 MB).
+Il `.gitignore` versiona i `checkpoint.mat` dei blocchi (dal 1 novembre) e tiene fuori da solo
+gli altri `.mat`, le tabelle, i log, `unito/insieme/`, il checkpoint unito e gli export della
+lettura unita tranne `punteggi_orientati.csv`. Peso atteso del commit: circa 170 MB (export e checkpoint di r09-r20 del blocco 20-25 circa 90 MB, punteggi della lettura unita circa 55 MB, `tesi_finale/` circa 25 MB).
 
 ## 6. Aggiornare README e documenti
 

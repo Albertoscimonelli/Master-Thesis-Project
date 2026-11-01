@@ -27,11 +27,17 @@ dice "r20 fatta".
 ## 2. Passare al branch dell'analisi finale
 
 ```bash
-git status                          # ci saranno da20a25/avanzamento.txt modificato e le nuove rNN/export
+git status                          # ci saranno da20a25/avanzamento.txt modificato e i nuovi rNN/
+git push origin 70-results-analysis # solo se hai fatto commit su 70-results-analysis non ancora pushati
 git fetch origin
 git checkout ccr-13867105-vwc5b6    # le modifiche locali agli output vengono portate con se'
-git log --oneline -1                # deve essere il commit piu' recente del branch
+git merge origin/70-results-analysis   # porta qui gli eventuali commit fatti sul branch originale
+                                       # durante il run ("Already up to date" se non ce ne sono)
 ```
+
+**Se `git checkout` rifiuta** ("would be overwritten"), un file locale modificato è stato cambiato
+anche sul branch. Fai prima il commit su `70-results-analysis` (`git add outputs/repliche/da20a25`,
+`git commit`, `git push`), poi ripeti i quattro comandi.
 
 Il branch contiene tutto `70-results-analysis` più l'analisi finale. Non modifica `MAIN2.m` né
 `lancia_repliche.sh`.

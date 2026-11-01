@@ -142,6 +142,42 @@ Esito in `confronto_con_fino25_unito.txt`; tabelle e `.mat` restano locali.
 Le conclusioni del rapporto del 28 ottobre non cambiano. Le tabelle ufficiali di
 `tables_main2_fino25_unito/` restano quelle di prima, con l'AS ovunque.
 
+## Dati versionati per l'analisi (dal 1 novembre 2026)
+
+**Cosa è nel repository:**
+- per ogni replica finita, la cartella `outputs/repliche/<blocco>/rNN/export/`, con 5 CSV in
+  formato lungo;
+- `fino15` e `da18`: tutte e 21 le repliche;
+- `da20a25`: r00-r06 al 1 novembre, le altre a fine run.
+
+**Cosa resta locale:** `tables/`, `workspace.mat` e `checkpoint.mat`. I `.mat` servono alla
+lettura unita (passo 4) e si fanno su questo PC.
+
+| File | Una riga per | Colonne chiave |
+|---|---|---|
+| `comunita.csv` | comunità | Composizione, Scheda, Membri, Penetrazione_pct, vN_EUR, Binding |
+| `tfair_lungo.csv` | comunità × metodo | le precedenti + Metodo; gli indicatori, compresa la stabilità (EccessoMax_EUR, CoalizioniInstabili, EccessoMax_pct_vN) |
+| `punteggi_orientati.csv` | comunità × metodo × indicatore | Metodo, Indicatore, PunteggioOrientato, TolPareggio, Discrimina |
+| `quote_membri.csv` | comunità × metodo × membro | Metodo, Membro, Prosumer, Quota_EUR, VAN_EUR |
+| `virtuosita.csv` | comunità × membro | Membro, Prosumer, VirtuositaNetta, VirtuositaLorda |
+
+Da leggere prima di usarli:
+- **La replica sta nel nome della cartella**, non dentro i file: r00 è il disegno originale,
+  r01-r20 le repliche. `aggrega_repliche.py` la aggiunge alla lettura come colonna `Replica`.
+- **I metodi non sono gli stessi nei tre blocchi.**
+  - `fino15` e `da18` ne hanno 12, fra cui sia "Shapley" (esatto) sia "Adaptive Sampling
+    Shapley".
+  - `da20a25` ne ha 10: mancano lo Shapley esatto e il Nucleolo.
+  - Per leggere i blocchi insieme vale la regola del solo Shapley: fino a 18 membri si tolgono le
+    righe dell'AS, da 20 l'AS si rinomina "Shapley".
+- **I file ufficiali della lettura unita arriveranno col passo 4,** in
+  `outputs/repliche/unito/rNN/export/`, con le stesse colonne.
+  - `tfair_lungo`, `quote_membri` e `virtuosita` sono per comunità e non cambiano.
+  - `punteggi_orientati` invece si ricalcola sull'insieme di metodi confrontati, che cambia
+    togliendo l'AS. L'analisi va quindi provata sui blocchi e fatta girare sugli `unito/`.
+- **Volume a fine run:** circa 190 MB e 2 milioni di righe. `quote_membri` di tutte le repliche
+  (1,2 milioni di righe) supera il limite di Excel; pandas lo legge in pochi secondi.
+
 ## Controlli fatti (29 ottobre 2026)
 
 1. **Senza `MAIN2_RADICE`, MAIN2 non cambia.** Ho preso 6 schede (5-15 membri, con PA e imprese) e

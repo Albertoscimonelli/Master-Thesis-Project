@@ -681,6 +681,20 @@ def main(argv=None):
         A["van"] = A["quote_prosumer"] = pd.DataFrame()
     A["tau_grezzo"] = leggi(tabs, "sintesi/tau_per_fascia.csv")
     A["vincitori_grezzo"] = leggi(tabs, "confronto/griglia_vincitori.csv", per_livello=True)
+    # dati replica per replica, per le figure (grafici_repliche.py)
+    V0 = A["vincitori_grezzo"]
+    V0 = V0[(V0.Livello == "PA0") & (V0.Replica >= 1) & V0.Indicatore.isin(INDICATORI)]
+    V0 = V0.assign(Primi=insieme_vincitori(V0)).dropna(subset=["Primi"])
+    celle = V0.groupby(["Replica", "Indicatore", "Membri"]).size().rename("Celle")
+    poli = (V0.assign(Metodo=V0.Primi.str.split(" = ")).explode("Metodo")
+              .groupby(["Replica", "Indicatore", "Membri", "Metodo"]).size().rename("CelleFraIPrimi")
+              .reset_index().join(celle, on=["Replica", "Indicatore", "Membri"]))
+    poli.to_csv(dest / "poli_per_replica.csv", index=False)
+    T0 = A["tau_grezzo"]
+    T0[(T0.Replica >= 1) & T0.IndicatoreA.isin(INDICATORI) & T0.IndicatoreB.isin(INDICATORI)].to_csv(
+        dest / "tau_per_replica.csv", index=False)
+    leggi(tabs, "confronto/inversioni_per_sweep.csv").query("Replica >= 1").to_csv(
+        dest / "inversioni_per_replica.csv", index=False)
     E = esiti(A, com if len(com) else pd.DataFrame(columns=["Replica", "Gruppo", "QuotaIncentivata"]))
     A["esiti"] = E
     A["robustezza"] = robustezza(E, a.bootstrap) if len(E) else pd.DataFrame()

@@ -379,3 +379,37 @@ affermazioni. Per le poche affermazioni centrali delle conclusioni (cap. 8) si p
 - **Il blu Polimi come ancora è `#005AA0`.** Il `bluepoli` del template (CMYK 0,4/0,1/0/0,4, circa
   `#5C8999`) è troppo grigio per distinguere dati: va bene per titoli e cornici, non per i punti.
 - Anteprima su dati veri del repository: `anteprima_palette.png`.
+
+---
+
+## 7. Stato dell'implementazione (1 novembre 2026, sera)
+
+Tutto sul branch `ccr-13867105-vwc5b6`. Il comando è `bash CER_repliche/analisi_finale.sh`;
+istruzioni in `CER_repliche/README.md`, sezione "Analisi finale".
+
+| Passo | File | Stato |
+|---|---|---|
+| 1 | `unisci_repliche.sh` | scritto; **da provare sul PC del run** (MATLAB) |
+| 2 | `controlla_unito.py` | provato sul banco di prova |
+| 3, 3b | `aggrega_repliche.py` | provato sul banco di prova |
+| 4 | `grafici_repliche.py` (G01-G13) | provato e figure controllate a vista |
+| 5 | `unisci_per_figure.py` + `grafici_metodi.py` (palette Polimi) | provato |
+| 6 | `rapporto_repliche.py` | provato |
+| 7 | `analisi_finale.sh` | provato con `--solo-python` sul banco di prova |
+
+**r00 (decisione del 1 novembre).** Non entra in figure, numeri e conclusioni: non è
+un'estrazione casuale né una configurazione corretta. Resta come controllo del meccanismo delle
+repliche (passo 2) e in una sezione in fondo a `sintesi.md`.
+
+**Il rapporto del 28/10 non si ferma più sulle conclusioni.** `rapporto_repliche.py` le ricalcola
+sulle repliche e le marca "confermata", "non confermata" o "dipende dai partecipanti"
+(`conclusioni.csv`). Si ferma solo sui controlli di integrità: repliche, comunità, metodi,
+stabilità a tutte le taglie, nessun metodo escluso dalle figure descrittive.
+
+**Prova generale lunedì sul PC del run**, mentre il run 20-25 continua: r00 e r01 hanno già tutti
+e tre i blocchi.
+```bash
+bash CER_repliche/unisci_repliche.sh 0 1
+python -I CER_repliche/controlla_unito.py          # su r00 fa anche la regressione col 28/10
+```
+Se passa, martedì basta `bash CER_repliche/analisi_finale.sh`.

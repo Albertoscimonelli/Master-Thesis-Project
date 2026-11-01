@@ -48,8 +48,10 @@ le repliche.
     replica è un'estrazione indipendente con il proprio seed;
   - i risultati della tesi sono letti **sulle repliche r01-r20**, come mediana e intervallo;
   - la replica identità r00 riproduce l'assegnazione originale, nella quale fino a 25 membri le
-    famiglie erano tutte persone sole (capitolo 4). Serve **solo come controllo del meccanismo e
-    come confronto, in appendice**, non come risultato.
+    famiglie erano tutte persone sole (capitolo 4). Non è un'estrazione casuale né una
+    configurazione corretta, quindi **non entra nei risultati né nelle figure**. Serve solo come
+    controllo del meccanismo delle repliche (riproduce le schede e i risultati originali).
+    Al più una frase, nei limiti o in appendice, sull'effetto dell'errore corretto.
 - **Il disegno annidato** (stesse famiglie in tutte le fasce e i livelli di una taglia, taglie
   annidate). Resta, ma va detto che vale **dentro ogni replica**.
 

@@ -14,6 +14,45 @@ con famiglie diverse.
   fondo);
 - poi la lettura unita 5-25 di ogni replica e l'aggregato.
 
+## Analisi finale: un solo comando (dal 1 novembre 2026)
+
+A run 20-25 finito, dalla root del progetto, in Git Bash:
+
+```bash
+bash CER_repliche/analisi_finale.sh
+```
+
+Fa tutto, in ordine, e si ferma al primo passo che fallisce dicendo quale. Registro in
+`outputs/tesi_finale/analisi_finale.log`. Piano e scelte in `docs/analisi_finale/`.
+
+| Passo | Script | Uscita |
+|---|---|---|
+| 0 | pre-controllo | le 21 repliche dei tre blocchi hanno checkpoint ed export |
+| 1 | `unisci_repliche.sh` (MATLAB, circa 2-3 min a replica) | `outputs/repliche/unito/rNN/` (lettura unita 5-25) |
+| 2 | `controlla_unito.py` | `unito/controlli.txt`: 295 comunità, 10 metodi, stabilità a tutte le taglie, r00 contro la prova del 28/10 |
+| 3 | `aggrega_repliche.py --blocco unito --attese 21` | `unito/aggregato/` (CSV, `sintesi.md`, `robustezza.csv`) |
+| 4 | `grafici_repliche.py` | `outputs/tesi_finale/figure/` (G01-G13, PNG e PDF) |
+| 5 | `unisci_per_figure.py` + `grafici_metodi.py` | `outputs/tesi_finale/figure_descrittive/` (F01-F13 su tutte le repliche) |
+| 6 | `rapporto_repliche.py` | `outputs/tesi_finale/rapporto.html`, `numeri_tesi.tex`, `tabelle/*.tex`, `conclusioni.csv` |
+
+Regole (versione B del piano):
+- **Metodi.** 10, gli stessi da 5 a 25 membri: niente Nucleolo, un solo Shapley (esatto fino a 18,
+  AS oltre). La regola è in `stile_tesi.un_solo_shapley`.
+- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) non entra in figure e
+  numeri: resta solo come controllo e in fondo a `sintesi.md`.
+- **Lettura dei risultati.** Una conclusione regge se vale in almeno 15 repliche su 20, si inverte
+  con 5 o meno, altrimenti dipende dai partecipanti. Per ogni conclusione ci sono anche il
+  controllo a metà (r01-r10 contro r11-r20) e il bootstrap.
+- **Colori.** Palette Polimi in `stile_tesi.py`, validata per daltonismo e contrasto.
+
+Altri comandi:
+- `bash CER_repliche/analisi_finale.sh --solo-python` rifà tutto tranne la parte MATLAB.
+- `python -I CER_repliche/prove/banco_prova.py --dest /tmp/banco --repliche 0-6`, poi
+  `bash CER_repliche/analisi_finale.sh --solo-python --radice /tmp/banco --attese 7`, provano la
+  catena sui file versionati, senza MATLAB. Nel banco di prova due controlli di integrità
+  falliscono di proposito: le tabelle di prova sono quelle del 28/10, senza stabilità a 20-25
+  membri e con quote diverse dagli export delle repliche.
+
 ## Perché servono
 
 Le schede da 5 a 25 membri dichiarano in `[MEMBRI].archetipo` la composizione ISTAT della comunità:

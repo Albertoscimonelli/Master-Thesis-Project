@@ -134,6 +134,14 @@ finestra Git Bash fuori da VS Code.
 `outputs/repliche/<blocco>/avanzamento.txt` ha una riga per replica. **Non modificare
 `lancia_repliche.sh` mentre gira:** bash rilegge il file a fine ciclo.
 
+Per il blocco 20-25 c'è `avvia_da20a25.sh`.
+- Lancia la lista intera in una finestra Git Bash fuori da VS Code; il comando è in testa al
+  file.
+- Con `veglia.ps1` tiene sveglio il PC finché la finestra è aperta. Non impedisce la sospensione
+  da coperchio o da tasto.
+- `stato_run.sh` riassume il run: repliche fatte, replica e comunità in corso, errori veri, RAM,
+  minuti medi a replica.
+
 ## Lettura unita dei blocchi: un solo Shapley
 
 I blocchi si dividono per taglia solo per non fare un'unica esecuzione di molte ore: si leggono
@@ -191,8 +199,11 @@ Le conclusioni del rapporto del 28 ottobre non cambiano. Le tabelle ufficiali di
 - `fino15` e `da18`: tutte e 21 le repliche;
 - `da20a25`: r00-r06 al 1 novembre, le altre a fine run.
 
-**Cosa resta locale:** `tables/`, `workspace.mat` e `checkpoint.mat`. I `.mat` servono alla
-lettura unita (passo 4) e si fanno su questo PC.
+**Dal 1 novembre si versiona anche `rNN/checkpoint.mat`** (i `RESULTS`, da 1 a 4 MB). È l'unica
+parte che costa ore di calcolo, ed è ciò che `unisci_blocchi` legge per la lettura unita.
+
+**Cosa resta locale:** `tables/` e `workspace.mat`. Si rigenerano dal checkpoint con
+`MAIN2_RIPRENDI=1`, cioè la sola analisi fra comunità, ed `esporta_run_livelli`.
 
 | File | Una riga per | Colonne chiave |
 |---|---|---|

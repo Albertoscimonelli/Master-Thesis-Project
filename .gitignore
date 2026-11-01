@@ -347,9 +347,11 @@ CER_configuration_PA/PA*/
 # Repliche dei partecipanti (CER_repliche/README.md): schede e profili si rigenerano dal
 # seed con genera_repliche.py; tabelle, checkpoint e workspace di ogni replica (~25 MB
 # l'una) restano locali. Si versionano gli aggregati e, dal 1/11/2026, l'export di ogni
-# replica (5 CSV, 2-4 MB) per preparare l'analisi su un altro PC.
+# replica (5 CSV, 2-4 MB) per preparare l'analisi su un altro PC e il checkpoint (RESULTS,
+# 1-4 MB): e' l'unica parte che costa ore di calcolo, il resto si rigenera con MAIN2_RIPRENDI.
 CER_repliche/r[0-9]*/
 outputs/repliche/*/r[0-9]*/*
 !outputs/repliche/*/r[0-9]*/export/
 outputs/repliche/**/*.mat
+!outputs/repliche/*/r[0-9]*/checkpoint.mat
 outputs/repliche/prova_regola_shapley/tables/

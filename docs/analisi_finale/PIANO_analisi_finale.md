@@ -98,6 +98,27 @@ Si aggiunge:
 - **`sintesi.md`:** in più l'insieme ridotto, Pareto, soglia, VAN e quota ai prosumer;
 - **indicatori:** `InclusioneLIHC` fuori ovunque. Per `VAN_min_EUR` serve la decisione D1 (sotto).
 
+### Passo 3b: il numero di repliche basta? (aggiunto il 1 novembre)
+
+Per ogni conclusione del rapporto (segno di un τ, vincitore, perdita, quota di comunità sopra la
+soglia):
+- **Controllo a metà.** Si rifà la conclusione su r01-r10 e su r11-r20 separatamente e si guarda se
+  le due metà danno lo stesso esito ("regge", "dipende dai partecipanti", "si inverte"). In tesi va
+  il numero di conclusioni concordi sul totale (capitolo 6.1).
+- **Bootstrap** (1000 ricampionamenti con reinserimento delle 20 repliche, seed fisso). Per ogni
+  conclusione, la quota di ricampionamenti in cui l'esito non cambia. È una colonna delle tabelle,
+  per l'appendice.
+- **Intervalli esatti** (Clopper-Pearson al 95%) per ogni conteggio k/20, e intervallo della mediana
+  fra il 6° e il 15° valore ordinato (copertura 95,9%).
+- **Uscite:** `sufficienza_repliche.csv` e una sezione di `sintesi.md`. Pochi secondi, nessun run di
+  MATLAB.
+
+**Perché non tutte le estrazioni.** Le combinazioni di famiglie compatibili con le celle ISTAT sono
+circa 1,4·10⁵ a 5 membri e circa 8·10¹⁷ a 25 membri (pool di 100, `composizione_cer_scalata.md`):
+l'enumerazione è impossibile, quindi le repliche sono un campione casuale di estrazioni (Monte
+Carlo). 20 è il numero sostenibile nei tempi; il controllo a metà verifica che basti per le
+conclusioni qualitative.
+
 ### Passo 4: figure sulle repliche (`CER_repliche/grafici_repliche.py`, nuovo)
 
 Stile e colori dei metodi uguali a `grafici_metodi.py`; testi in inglese come la tesi; PNG e PDF.

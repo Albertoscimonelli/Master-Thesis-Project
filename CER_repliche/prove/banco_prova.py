@@ -18,8 +18,13 @@ import argparse
 import shutil
 from pathlib import Path
 
+import sys
+
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from stile_tesi import un_solo_shapley  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 REP = ROOT / "outputs" / "repliche"
@@ -55,7 +60,10 @@ def main(argv=None):
         out = dest / nn
         (out / "export").mkdir(parents=True)
         for f in EXPORT:
-            pd.concat([pd.read_csv(b / f) for b in blocchi]).to_csv(out / "export" / f, index=False)
+            d = pd.concat([pd.read_csv(b / f) for b in blocchi])
+            if f == "punteggi_orientati.csv":    # come la lettura unita: metodi comuni a tutte le taglie
+                d = un_solo_shapley(d, ("Composizione", "Scheda"))
+            d.to_csv(out / "export" / f, index=False)
         shutil.copytree(TAB, out / "tables")
         rng = np.random.default_rng(1000 + r)
         for rel, cols in RUMORE.items():

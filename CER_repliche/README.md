@@ -12,7 +12,9 @@ con famiglie diverse.
   30 ottobre alle 15:48. Il 31 ottobre il limite di iterazioni del VLC è passato da 1000 a 5000
   e il run è ripartito dai checkpoint. Fine prevista martedì 3 novembre in mattinata (fase 2, in
   fondo);
-- poi la lettura unita 5-25 di ogni replica e l'aggregato.
+- poi la lettura unita 5-25 di ogni replica e l'aggregato: **un solo comando,
+  `bash CER_repliche/analisi_finale.sh`** (sezione sotto; istruzioni passo per passo in
+  `docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`).
 
 ## Analisi finale: un solo comando (dal 1 novembre 2026)
 
@@ -210,7 +212,8 @@ Da leggere prima di usarli:
   - Per leggere i blocchi insieme vale la regola del solo Shapley: fino a 18 membri si tolgono le
     righe dell'AS, da 20 l'AS si rinomina "Shapley".
 - **I file ufficiali della lettura unita arriveranno col passo 4,** in
-  `outputs/repliche/unito/rNN/export/`, con le stesse colonne.
+  `outputs/repliche/unito/rNN/export/`, con le stesse colonne. Si versiona solo
+  `punteggi_orientati.csv`: gli altri quattro sono uguali a quelli dei blocchi.
   - `tfair_lungo`, `quote_membri` e `virtuosita` sono per comunità e non cambiano.
   - `punteggi_orientati` invece si ricalcola sull'insieme di metodi confrontati, che cambia
     togliendo l'AS. L'analisi va quindi provata sui blocchi e fatta girare sugli `unito/`.

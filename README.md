@@ -42,6 +42,12 @@ varia taglia e penetrazione dei prosumer.
 >     Il 31 ottobre il limite di iterazioni del VLC è passato da 1000 a 5000 (§7.11.6). Fine
 >     prevista martedì 3 novembre in mattinata. Dopo vengono la lettura unita 5-25 di ogni
 >     replica e l'aggregato.
+> - **Analisi finale pronta (1 novembre, branch `ccr-13867105-vwc5b6`).** A run 20-25 finito,
+>   `bash CER_repliche/analisi_finale.sh` fa la lettura unita di ogni replica e produce rapporto,
+>   figure, tabelle LaTeX e numeri della tesi in `outputs/tesi_finale/`. Versione B del piano:
+>   10 metodi uguali da 5 a 25 membri, **Nucleolo escluso** dal confronto, risultati sulle repliche
+>   r01-r20 (r00 solo controllo). Istruzioni passo per passo in
+>   [`docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`](docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md).
 > - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
 >   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
 >   (`coalition_excess_enum.m`, §14.1). Fino a 18 membri le tabelle restano identiche al byte.
@@ -242,7 +248,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
-| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
+| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Dal 1 novembre l'analisi finale: `analisi_finale.sh` (comando unico), `unisci_repliche.sh`, `controlla_unito.py`, `grafici_repliche.py`, `unisci_per_figure.py`, `rapporto_repliche.py`, `stile_tesi.py` (palette Polimi e regola dei metodi), `prove/banco_prova.py`. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
+| `docs/analisi_finale/` | Piano dell'analisi finale (versione B, senza Nucleolo), istruzioni per dopo il run, prompt per la Sezione 6.1 della tesi, anteprima della palette |
+| `outputs/tesi_finale/` | Uscite dell'analisi finale (dal run del 3 novembre): `rapporto.html`, `numeri_tesi.tex` (macro LaTeX), `tabelle/` (booktabs), `figure/` (G01-G13), `figure_descrittive/` (F01-F13), `conclusioni.csv` |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -1911,8 +1919,24 @@ Cambiano:
   3. si rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
 
   Poi `aggrega_repliche.py` confronta le repliche, con una sezione che separa 5-18 da 20-25
-  membri, e r00 unita si confronta con il run unito del 28 ottobre. La vista 5-18 membri con il
-  Nucleolo è in sospeso.
+  membri, e r00 unita si confronta con il run unito del 28 ottobre.
+
+**Analisi finale (1 novembre 2026, versione B del piano).** Tutto il dopo-run è in un comando,
+`bash CER_repliche/analisi_finale.sh`; piano, scelte e istruzioni in `docs/analisi_finale/`.
+- **Metodi.** 10, gli stessi da 5 a 25 membri. Il Nucleolo è escluso dal confronto: si calcola solo
+  fino a 18 membri, la stabilità ora si misura con l'eccesso fino a 25, e il VLC ha già un
+  controllo di stabilità in MAIN2. Nei blocchi fino a 18 membri VLC e Nucleolo sono fra i primi
+  su merito e stabilità nel 92-100% delle celle. La vista 5-18 con il Nucleolo non si fa.
+- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) non è un'estrazione
+  casuale né una configurazione corretta: resta solo come controllo (regressione contro il 28/10).
+- **Lettura.** Una conclusione regge se vale in almeno 15 repliche su 20 (test del segno a due
+  code, p = 0,041), si inverte con 5 o meno, altrimenti dipende dai partecipanti; 17/20 per le
+  conclusioni principali. Per ogni conclusione ci sono l'intervallo di Clopper-Pearson, il
+  controllo a metà (r01-r10 contro r11-r20) e il bootstrap. Le estrazioni possibili sono circa
+  1,4·10⁵ a 5 membri e 8·10¹⁷ a 25: le repliche sono un campione casuale, e 20 è il numero
+  sostenibile nei tempi.
+- **Uscite** in `outputs/tesi_finale/`: rapporto, figure G01-G13 e F01-F13 (palette Polimi),
+  tabelle LaTeX, `numeri_tesi.tex`.
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,

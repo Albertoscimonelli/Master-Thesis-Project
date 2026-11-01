@@ -353,3 +353,10 @@ outputs/repliche/*/r[0-9]*/*
 !outputs/repliche/*/r[0-9]*/export/
 outputs/repliche/**/*.mat
 outputs/repliche/prova_regola_shapley/tables/
+# Lettura unita (CER_repliche/analisi_finale.sh): degli export si versiona solo
+# punteggi_orientati.csv, l'unico che cambia rispetto ai blocchi; insieme/ e' la copia di
+# tutte le repliche per grafici_metodi.py e si rigenera in pochi secondi.
+outputs/repliche/unito/r[0-9]*/export/*
+!outputs/repliche/unito/r[0-9]*/export/punteggi_orientati.csv
+outputs/repliche/unito/insieme/
+outputs/tesi_finale_prova/

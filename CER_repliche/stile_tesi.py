@@ -73,6 +73,15 @@ METODI = {   # nome nei dati -> (etichetta in inglese, famiglia)
     "Tri-level EP": ("Tri-level EP", "Literature heuristics"),
 }
 ORDINE_METODI = list(METODI)
+# Per le figure che devono distinguere i singoli metodi in un pannello (grafici_metodi.py,
+# F08 e F13): tinta della famiglia, chiaro/scuro dentro la famiglia, piu' il nome in legenda.
+COLORE_METODO = {
+    "Shapley": BLU, "Variance Least Core": BLU_SCURO,
+    "Equal Split": ARANCIO, "Proportional to Consumption": "#8F460B",
+    "Pearson Key": VERDE, "Similarity-Utilization": "#1E6B47",
+    "Remuneration Model 1": PRUGNA, "Cascading Tree": "#D17BAA",
+    "Weighted Solidarity": "#6B1F4A", "Tri-level EP": "#C25591",
+}
 
 # indicatori del confronto (InclusioneLIHC non valutabile; VAN = analisi complementare)
 INDICATORI = ["Gini", "FairnessIndex", "Sigma", "EccessoMax_EUR", "CoalizioniInstabili",

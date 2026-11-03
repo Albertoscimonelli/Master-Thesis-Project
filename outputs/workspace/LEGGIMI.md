@@ -115,5 +115,33 @@ python -I outputs/workspace/strumenti/pagina_figure.py --figure outputs/figures_
 ```
 
 `pagina_figure.py` fa una pagina senza testo interpretativo (`pagina_risultati.py` ha frasi scritte per
-i dati del 20 ottobre e pretende tutte le figure). I log dei run sono in `outputs/run_logs/`
+i dati del 20 ottobre e pretende tutte le figure).
+
+## Workspace completo del run unito e rapporto finale (28 ottobre 2026, sera)
+
+| File | Contenuto |
+|---|---|
+| `run_2026-10-28_fino25_unito_completo.mat` | lo stesso `RESULTS` di `run_2026-10-28_fino25_unito.mat` più `AGR`, `LIV`, `GRID`, `REV`, `SINT`, `F1`, `PERD`, `CLUS`, `SENS`. Ottenuto rileggendo il checkpoint con `MAIN2_RIPRENDI=1`: si rifà solo l'analisi fra comunità (30 s), e le tabelle di `tables_main2_fino25_unito/` escono identiche al byte |
+| `export_fino25_unito/` | i CSV lunghi delle 295 comunità, con la colonna `Composizione` (16 livelli). Versionato |
+| `strumenti/esporta_run_livelli.m` | chiama `esporta_run.m` e corregge le etichette dei livelli con imprese in `punteggi_orientati.csv` (`esporta_run.m` scrive `"PA" + codice`, cioè `PA10` invece di `ND1`) |
+| `strumenti/rapporto_conclusioni.py` | scrive `outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`: le figure commentate e le conclusioni rispetto alla domanda di ricerca. I numeri vengono dai CSV, e lo script si ferma se un'affermazione del testo non è più sostenuta dai dati. Produce anche F14 (soglia regolatoria) |
+
+Per i workspace dei run futuri con le imprese conviene usare `esporta_run_livelli.m` al posto di
+`esporta_run.m`. I comandi completi, nell'ordine, sono nella §15 del rapporto e nella §7.11.5 del README. I log dei run sono in `outputs/run_logs/`
 (`main2_run_2026-10-28_*`, `main2_run_2026-10-27_confronto_speedup_*`, `test_speedup_vlc_shapley_*`).
+
+## Repliche dei partecipanti (29 ottobre 2026)
+
+I workspace delle repliche non stanno qui ma in `outputs/repliche/<blocco>/rNN/` (non versionati),
+uno per replica, con le stesse variabili di `run_2026-10-28_fino25_unito_completo.mat`. Come si
+fanno e come si leggono: [`CER_repliche/README.md`](../../CER_repliche/README.md), README §7.11.6.
+
+| File | Contenuto |
+|---|---|
+| `../repliche/fino15/rNN/workspace.mat` | `RESULTS`, `AGR`, `LIV`, `GRID`, `REV`, `SINT`, `F1`, `PERD`, `CLUS`, `SENS` delle 105 comunità fino a 15 membri della replica NN (r00 = schede di prima) |
+| `../repliche/fino15/rNN/checkpoint.mat` | il solo `RESULTS`, da dare a `unisci_blocchi.m` per la lettura unita con il blocco 18-25 |
+| `../repliche/fino15/aggregato/` | il confronto fra le 21 repliche (versionato) |
+| `../repliche/da18/rNN/workspace.mat`, `checkpoint.mat` | lo stesso per le 63 comunità da 18 membri della replica NN (30 ottobre, v(S) a blocchi) |
+| `../repliche/da18/aggregato/` | il confronto fra le 21 repliche da 18 membri (versionato) |
+| `../repliche/prova_regola_shapley/workspace.mat` | il run unito del 28 ottobre riletto con un solo Shapley (esatto fino a 18 membri, AS oltre) |
+| `strumenti/unisci_shapley_as.m` | nelle comunità senza Shapley esatto rinomina l'Adaptive Sampling in "Shapley", così l'analisi fra comunità di un run che mescola le taglie usa l'esatto dove c'è |

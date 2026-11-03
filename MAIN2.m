@@ -69,8 +69,9 @@ CARTELLA_CER = "CER_configuration";
 % piu' le varianti con PA di CER_configuration_PA/PA1..PA3, fino a un tetto di
 % membri. L'elenco e il suo auto-test stanno in elenco_schede_cer.m.
 %
-% IL TETTO. Oltre 18 membri Shapley, Nucleolo ed eccesso di coalizione non si
-% calcolano (2^n, README §14.1); oltre 25 il Variance Least Core non converge.
+% IL TETTO. Oltre 18 membri Shapley e Nucleolo non si calcolano (2^n, README
+% §14.1); l'eccesso di coalizione si', fino a 25 (dal 30/10/2026,
+% coalition_excess_enum). Oltre 25 il Variance Least Core non converge.
 % Il default e' 18, cioe' il run con tutti i metodi e la stabilita':
 % MAIN2_MAX_UTENTI=25 porta alla griglia fino a 25 (con MAIN2_CARTELLA=griglia25,
 % perche' compute_indicator_agreement tiene i soli metodi comuni a tutte le
@@ -101,14 +102,30 @@ end
 % (ND{k}_PA{p}). Senza, l'elenco e quindi il run sono quelli di prima.
 CON_IND = strtrim(string(getenv("MAIN2_IND"))) == "1";
 
+% Radice facoltativa delle schede (repliche dei partecipanti, CER_repliche/):
+% MAIN2_RADICE=CER_repliche/r01 legge CER_configuration, CER_configuration_PA e
+% CER_configuration_IND da quella cartella invece che dalla root del progetto.
+% Vuota = le cartelle di sempre, e la chiamata a elenco_schede_cer e' quella di prima.
+RADICE = strtrim(string(getenv("MAIN2_RADICE")));
+OPT_ELENCO = struct('cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
+                    'selezione', nomiVoluti, 'conIND', CON_IND);
+if strlength(RADICE) > 0
+    RADICE = strip(replace(RADICE, "\", "/"), "right", "/");
+    assert(isfolder(RADICE + "/" + CARTELLA_CER), ...
+           'MAIN2_RADICE: manca %s/%s', RADICE, CARTELLA_CER);
+    CARTELLA_CER = RADICE + "/" + CARTELLA_CER;
+    OPT_ELENCO.cartellaBase = CARTELLA_CER;
+    OPT_ELENCO.cartellaPA   = RADICE + "/CER_configuration_PA";
+    OPT_ELENCO.cartellaIND  = RADICE + "/CER_configuration_IND";
+    fprintf('  Schede da %s (MAIN2_RADICE)\n', RADICE);
+end
+
 % Percorsi con '/' e non fullfile: MATLAB lo accetta su ogni sistema, ed e' la
 % stessa barra dei percorsi [FILE] dentro le schede. Livello 0 per primo, poi
 % PA1, PA2, PA3 (e con MAIN2_IND ND1, ND1_PA1, ..., ND3_PA3); dentro ogni
 % cartella in ordine alfabetico (l'ordine di dir dipende dal filesystem, quello
 % dei risultati no).
-[SCHEDE, INFO_SCHEDE] = elenco_schede_cer(struct( ...
-        'cartellaBase', CARTELLA_CER, 'maxUtenti', MAX_UTENTI, ...
-        'selezione', nomiVoluti, 'conIND', CON_IND));
+[SCHEDE, INFO_SCHEDE] = elenco_schede_cer(OPT_ELENCO);
 N_CER  = numel(SCHEDE);
 
 fprintf('\n=== CER da analizzare: %d ===\n', N_CER);
@@ -389,7 +406,21 @@ for iCER = PRIMO:N_CER
     % metodi scalano (il Variance Least Core per row-generation, gli altri in
     % O(H*n)) e proseguono normalmente. Vedi README §14.1.
     skipGameTheory = nUsers > 18;
-    if skipGameTheory
+    % Dal 30/10/2026, da 19 a 25 membri v(S) si enumera lo stesso, una volta e senza
+    % matrice di incidenza (cer_coalition_values_blocchi): serve al Variance Least
+    % Core, che la enumerava gia' per conto suo, e all'eccesso di coalizione
+    % (coalition_excess_enum), cioe' alla domanda "questa ripartizione regge?".
+    % Shapley e Nucleolo restano fuori: lo Shapley costerebbe pochi secondi con
+    % v(S) pronta, ma a queste taglie la scelta e' l'Adaptive Sampling (README
+    % §7.11.6); il Nucleolo partirebbe da un LP con 2^n vincoli. Il tetto di 25 e'
+    % quello dell'enumerazione del VLC (opts.denseMaxPlayers): 2^25 double, 268 MB.
+    stabilitaEnum = skipGameTheory && nUsers <= 25;
+    if stabilitaEnum
+        fprintf(['\n  [BYPASS] %d utenti (> 18): Shapley e Nucleolo richiederebbero\n' ...
+                 '  2^%d valutazioni e vengono SALTATI. L''eccesso di coalizione si\n' ...
+                 '  calcola sulla v(S) enumerata una volta (fino a 25 membri). Si prosegue\n' ...
+                 '  con gli 11 metodi scalabili (README §14.1).\n'], nUsers, nUsers);
+    elseif skipGameTheory
         fprintf(['\n  [BYPASS] %d utenti (> 18): Shapley, Nucleolo\n' ...
                  '  ed Eccesso di coalizione richiederebbero 2^%d valutazioni e vengono\n' ...
                  '  SALTATI. Si prosegue con gli 11 metodi scalabili (README §14.1).\n'], ...
@@ -713,9 +744,14 @@ for iCER = PRIMO:N_CER
     % ai tre: shapley_cer_cached e nucleolus_cer_cached sono copie identiche
     % degli originali che accettano opts.v, coalition_excess lo accetta gia'.
     % Risultati identici bit per bit: test_regressione_cache_v.m.
+    % Dal 30/10/2026 v(S) si enumera a blocchi vettorizzati, con l'algoritmo che il
+    % VLC usa da 19 a 25 membri (cer_coalition_values_blocchi.m): a 18 membri da
+    % 50-70 s a circa 1 s. Cambia solo l'ordine delle somme: risultati entro 1e-13,
+    % tabelle identiche al byte (test_cer_coalition_values_blocchi.m,
+    % outputs/repliche/controlli_fase1/).
     if ~skipGameTheory
         T_metodo = tic;
-        [vCache, playersCache, AincCache] = cer_coalition_values( ...
+        [vCache, playersCache, AincCache] = cer_coalition_values_blocchi( ...
             genForShare, loadForShare, userNames, P_CER_lordo, optF.esente, optF.F);
         fprintf('  [cronometro] v(S) per 2^%d coalizioni (una volta sola): %s\n', ...
                 nUsers, format_duration(toc(T_metodo)));
@@ -723,6 +759,16 @@ for iCER = PRIMO:N_CER
         optGT.v       = vCache;
         optGT.players = playersCache;
         optGT.A_inc   = AincCache;
+    elseif stabilitaEnum
+        % Da 19 a 25 membri (§1): la stessa v(S) senza A_inc ([2^n x n], 6,7 GB a
+        % 25 membri), per il VLC (§3e) e per l'eccesso di coalizione (§3t). Prima la
+        % enumerava il VLC da se' con lo stesso algoritmo: allocazione identica bit
+        % per bit (test_coalition_excess_enum.m).
+        T_metodo = tic;
+        vCache = cer_coalition_values_blocchi(genForShare, loadForShare, userNames, ...
+                                              P_CER_lordo, optF.esente, optF.F);
+        fprintf('  [cronometro] v(S) per 2^%d coalizioni (una volta sola): %s\n', ...
+                nUsers, format_duration(toc(T_metodo)));
     end
 
     if skipGameTheory
@@ -828,14 +874,19 @@ for iCER = PRIMO:N_CER
     %  solo le poche coalizioni realmente vincolanti. E' questa la scelta che
     %  rende il metodo applicabile a comunita' con decine o centinaia di membri.
     %  Fino a 25 membri, pero', la separazione e' un argmin sull'enumerazione
-    %  di v(S), molto piu' veloce del MILP ripetuto a ogni iterazione: fino a 18
-    %  si passa la v(S) gia' calcolata per Shapley e Nucleolo, da 19 a 25 la
-    %  enumera variance_least_core_cer stessa. Vedi variance_least_core_cer.m.
+    %  di v(S), molto piu' veloce del MILP ripetuto a ogni iterazione: si passa
+    %  la v(S) gia' calcolata in §3b (fino a 18 per Shapley e Nucleolo, da 19 a
+    %  25 per l'eccesso di coalizione; fino al 30/10/2026 da 19 a 25 la enumerava
+    %  variance_least_core_cer stessa). Vedi variance_least_core_cer.m.
     %  ========================================================================
 
     T_metodo = tic;
     optVLC = optF;
-    if ~skipGameTheory
+    % Nelle repliche a 25 membri la fase theta_LC ha superato le 1000
+    % iterazioni del default (README 7.11.6): 5000 lasciano margine, e chi
+    % converge prima fa le stesse identiche iterazioni (dal 31/10/2026).
+    optVLC.maxIter = 5000;
+    if ~skipGameTheory || stabilitaEnum
         optVLC.v = vCache;
     end
     VLC = variance_least_core_cer(genForShare, loadForShare, userNames, ...
@@ -1640,7 +1691,13 @@ for iCER = PRIMO:N_CER
     % e' una proprieta' della definizione (guarda TUTTI i sottogruppi), non una
     % rinuncia implementativa. Le colonne restano in tabella, a NaN, per non far
     % credere che l'eccesso sia nullo.
-    if skipGameTheory
+    %
+    % Dal 30/10/2026 la risposta c'e' fino a 25 membri. Da 19 a 25 l'eccesso si
+    % calcola con coalition_excess_enum sulla v(S) della §3b: stesse uscite di
+    % coalition_excess, senza la matrice di incidenza e senza tenere l'eccesso di
+    % ogni coalizione (a 25 membri 6,7 + 3,2 GB). Le colonne restano NaN solo
+    % oltre 25. Fino a 18 non cambia niente.
+    if skipGameTheory && ~stabilitaEnum
         fprintf(['  [BYPASS] Eccesso di coalizione non calcolato: 2^%d sottogruppi\n' ...
                  '  da valutare. Le colonne EccessoMax_EUR e CoalizioniInstabili\n' ...
                  '  restano NaN.\n'], nUsers);
@@ -1649,6 +1706,12 @@ for iCER = PRIMO:N_CER
                     'nCoalitions', NaN, ...
                     'vGrand',      ES.vGrand, ...
                     'table',       table());
+    elseif stabilitaEnum
+        T_metodo = tic;
+        EX = coalition_excess_enum([metodi.phi], [metodi.nome], vCache, userNames, ...
+                                   struct('quiet', true));
+        fprintf('  [cronometro] Coalition Excess (senza matrice di incidenza): %s\n', ...
+                format_duration(toc(T_metodo)));
     else
         optEX = optF;
         optEX.quiet = true;
@@ -1756,7 +1819,7 @@ for iCER = PRIMO:N_CER
 
     % --- Stabilita' della coalizione, in dettaglio ---------------------------
     fprintf('\n=== Stabilita'': eccesso di coalizione (eq. 23) ===\n');
-    if skipGameTheory
+    if skipGameTheory && ~stabilitaEnum
         fprintf('  [BYPASS] Non calcolato a %d utenti (2^%d sottogruppi).\n', ...
                 nUsers, nUsers);
     else
@@ -1852,7 +1915,8 @@ for iCER = PRIMO:N_CER
     % Le tre verifiche sotto vivono tutte sull'eccesso di coalizione: sopra la
     % soglia di §1 non e' stato calcolato (e due delle tre vogliono comunque il
     % Nucleolo), quindi si saltano insieme. Il VLC resta verificato dal suo
-    % report e dalla §3e.
+    % report e dalla §3e. Da 19 a 25 membri ci sono le due verifiche sul VLC
+    % subito dopo.
     if ~skipGameTheory
         iNu  = find([metodi.nome] == "Nucleolo", 1);
         iVLC = find([metodi.nome] == "Variance Least Core", 1);
@@ -1875,6 +1939,23 @@ for iCER = PRIMO:N_CER
         % ...e deve essere il MINIMO fra tutti i metodi, di nuovo per costruzione.
         assert(EX.maxExcess(iNu) <= min(EX.maxExcess) + tolEx, ...
                'Indici di equita'': il Nucleolo non e'' il metodo con eccesso minimo');
+    end
+
+    % Da 19 a 25 membri (dal 30/10/2026) l'eccesso c'e' e il Nucleolo no: restano
+    % le due verifiche sul VLC, con la sua tolleranza come sopra. La seconda prende
+    % il posto di quella sul Nucleolo: il VLC sta nel Least Core con x >= 0, quindi
+    % nessuna ripartizione non negativa ha un eccesso massimo piu' basso del suo,
+    % se non del rilassamento della row-generation. I metodi con qualche quota
+    % negativa stanno fuori dal confronto: per loro il vincolo non vale.
+    if stabilitaEnum
+        iVLC   = find([metodi.nome] == "Variance Least Core", 1);
+        tolEx  = 1e-6 * max(1, abs(EX.vGrand));
+        tolVLC = max(tolEx, VLC.tolConv);
+        assert(abs(EX.maxExcess(iVLC) + VLC.thetaLC) < tolVLC, ...
+               'Indici di equita'': eccesso massimo del VLC diverso da -thetaLC');
+        nonNeg = all([metodi.phi] >= 0, 1);
+        assert(EX.maxExcess(iVLC) <= min(EX.maxExcess(nonNeg)) + tolVLC, ...
+               'Indici di equita'': il VLC non e'' il metodo con eccesso minimo');
     end
 
     % --- Le due ancore della forza incentivante ------------------------------
@@ -1987,10 +2068,10 @@ for iCER = PRIMO:N_CER
         % vede, e con esso quali metodi sono scelte difendibili e quali sono
         % dominati da un altro su entrambi i criteri.
         %
-        % Uno dei due assi e' l'eccesso di coalizione: sopra la soglia di §1 non
+        % Uno dei due assi e' l'eccesso di coalizione: oltre 25 membri non
         % esiste, e il piano avrebbe una sola dimensione. Meglio non disegnarlo
-        % che disegnarne uno mezzo vuoto.
-        if skipGameTheory
+        % che disegnarne uno mezzo vuoto. Da 19 a 25 c'e' (dal 30/10/2026, §3t).
+        if skipGameTheory && ~stabilitaEnum
             fprintf(['  [BYPASS] Piano uniformita'' x stabilita'' non disegnato:\n' ...
                      '  manca l''asse della stabilita'' (eccesso di coalizione).\n']);
         else

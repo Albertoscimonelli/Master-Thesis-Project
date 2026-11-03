@@ -22,6 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from aggrega_repliche import cartella_tabelle  # noqa: E402
 from stile_tesi import un_solo_shapley  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,25 +42,26 @@ def main(argv=None):
     ap.add_argument("--blocco", default="unito")
     a = ap.parse_args(argv)
     cart = Path(a.radice) / a.blocco
-    rep = sorted(int(d.name[1:]) for d in cart.glob("r[0-9][0-9]")
-                 if (d / "tables").is_dir() and (d / "export").is_dir() and int(d.name[1:]) >= 1)
+    tab = {int(d.name[1:]): cartella_tabelle(d) for d in cart.glob("r[0-9][0-9]")
+           if cartella_tabelle(d) is not None and (d / "export").is_dir() and int(d.name[1:]) >= 1}
+    rep = sorted(tab)
     if not rep:
-        raise SystemExit(f"nessuna replica >= 1 con tables/ ed export/ in {cart}")
+        raise SystemExit(f"nessuna replica >= 1 con tabelle ed export/ in {cart}")
     dest = cart / "insieme"
     if dest.exists():
         shutil.rmtree(dest)
-    t0 = cart / f"r{rep[0]:02d}" / "tables"
+    t0 = tab[rep[0]]
     livelli = [""] + sorted(d.name for d in t0.iterdir() if (d / "sintesi").is_dir())
     for lv in livelli:
         for rel in TABELLE:
             parti = [con_replica(pd.read_csv(p), r) for r in rep
-                     if (p := cart / f"r{r:02d}" / "tables" / lv / rel).exists()]
+                     if (p := tab[r] / lv / rel).exists()]
             if parti:
                 f = dest / "tables" / lv / rel
                 f.parent.mkdir(parents=True, exist_ok=True)
                 un_solo_shapley(pd.concat(parti, ignore_index=True), ("Scheda",)).to_csv(f, index=False)
     parti = [con_replica(pd.read_csv(p), r) for r in rep
-             if (p := cart / f"r{r:02d}" / "tables" / "confronto_PA" / "pa_effetti.csv").exists()]
+             if (p := tab[r] / "confronto_PA" / "pa_effetti.csv").exists()]
     if parti:
         f = dest / "tables" / "confronto_PA" / "pa_effetti.csv"
         f.parent.mkdir(parents=True, exist_ok=True)

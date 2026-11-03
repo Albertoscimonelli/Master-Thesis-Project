@@ -53,7 +53,10 @@ def main(argv=None):
         shutil.rmtree(dest)
     for r in intervallo(a.repliche):
         nn = f"r{r:02d}"
-        blocchi = [REP / b / nn / "export" for b in ("fino15", "da18", "da20a25")]
+        if (REP / "unito" / nn / "export" / "comunita.csv").exists():   # lettura unita vera (dal 3/11)
+            blocchi = [REP / "unito" / nn / "export"]
+        else:
+            blocchi = [REP / b / nn / "export" for b in ("fino15", "da18", "da20a25")]
         if not all(b.is_dir() for b in blocchi):
             print(f"{nn}: manca un blocco negli export versionati, salto")
             continue

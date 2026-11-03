@@ -237,7 +237,7 @@ def g06_perdite(A, out):
 # ---------------------------------------------------------------------------- G07
 def g07_insieme_ridotto(A, out):
     S = A["sufficienza"]
-    ind = [i for i in ["EI_orig"] + st.INDICATORI + ["VAN_min_EUR"] if i in set(S.Indicatore)]
+    ind = [i for i in st.INDICATORI if i in set(S.Indicatore)]   # gli otto del confronto
     tagli = sorted(S.TaglioTau.unique(), reverse=True)
     M = S.pivot_table(index="Indicatore", columns="TaglioTau", values="mediana").reindex(index=ind, columns=tagli)
     R = S.pivot_table(index="Indicatore", columns="TaglioTau", values="RappresentanteModale", aggfunc="first") \

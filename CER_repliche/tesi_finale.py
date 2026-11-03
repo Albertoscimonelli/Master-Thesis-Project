@@ -1,4 +1,7 @@
-"""Rapporto finale sulle repliche, numeri per LaTeX e tabelle della tesi (passo 6 del piano).
+"""Numeri per LaTeX, tabelle della tesi e pagina delle figure (passo 6 del piano).
+
+(Fino al 3 novembre si chiamava rapporto_repliche.py; quel nome e' ora il rapporto commentato
+di main, che analisi_finale.sh lancia subito dopo.)
 
 Legge outputs/repliche/<blocco>/aggregato/ (aggrega_repliche.py) e le figure di
 grafici_repliche.py e grafici_metodi.py, e scrive in --out (default outputs/tesi_finale/):
@@ -19,7 +22,7 @@ DUE TIPI DI CONTROLLO
     marcata "confermata", "non confermata" o "dipende dai partecipanti", con il suo numero. Le
     affermazioni non si scrivono a mano: il testo della tesi va adeguato a cio' che esce qui.
 
-Uso:  python -I CER_repliche/rapporto_repliche.py [--radice ...] [--blocco unito] [--out ...]
+Uso:  python -I CER_repliche/tesi_finale.py [--radice ...] [--blocco unito] [--out ...]
 """
 from __future__ import annotations
 
@@ -70,7 +73,7 @@ def macro(valore, *nome):
 
 
 def scrivi_macro(dest: Path):
-    righe = ["% Numeri della tesi generati da CER_repliche/rapporto_repliche.py: non modificare a mano.",
+    righe = ["% Numeri della tesi generati da CER_repliche/tesi_finale.py: non modificare a mano.",
              "% Uso: \\input{numeri_tesi} nel preambolo, poi \\NomeMacro{} nel testo.", ""]
     righe += [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(MACRO.items())]
     dest.write_text("\n".join(righe) + "\n", encoding="utf-8")

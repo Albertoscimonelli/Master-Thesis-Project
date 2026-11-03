@@ -29,14 +29,17 @@ Fa tutto, in ordine, e si ferma al primo passo che fallisce dicendo quale. Regis
 
 | Passo | Script | Uscita |
 |---|---|---|
-| 0 | pre-controllo | le 21 repliche dei tre blocchi hanno checkpoint ed export |
-| 1 | `unisci_repliche.sh` (MATLAB) | lettura unita 5-25; le repliche già unite (il 3 novembre: tutte) si saltano |
-| 2 | `controlla_unito.py` | `unito/controlli.txt`: 295 comunità, 10 metodi, stabilità a tutte le taglie, r00 contro la prova del 28/10 |
-| 3 | `aggrega_repliche.py --blocco unito --attese 21` | `unito/aggregato/` (CSV, `sintesi.md`, `robustezza.csv`) |
-| 4 | `grafici_repliche.py` | `outputs/tesi_finale/figure/` (G01-G13, PNG e PDF) |
-| 5 | `unisci_per_figure.py` + `grafici_metodi.py` | `outputs/tesi_finale/figure_descrittive/` (F01-F13 su tutte le repliche) |
-| 6 | `tesi_finale.py` | `outputs/tesi_finale/rapporto.html` (figure), `numeri_tesi.tex`, `tabelle/*.tex`, `conclusioni.csv` |
-| 7 | `rapporto_repliche.py` | `outputs/report/RISULTATI_repliche_<data>.html`, il rapporto commentato |
+| 1 | `unisci_repliche.sh` (MATLAB) | lettura unita 5-25, **solo** per le repliche che non l'hanno: il 3 novembre è fatta per tutte, quindi si salta |
+| 2 | `salva_tabelle_analisi.py` | `unito/rNN/tabelle/`: le tabelle di MAIN2 che servono all'analisi (circa 4 MB a replica, versionate) |
+| 3 | `controlla_unito.py` | `unito/controlli.txt`: 295 comunità, 10 metodi, stabilità a tutte le taglie |
+| 4 | `aggrega_repliche.py --blocco unito --attese 21` | `unito/aggregato/`: CSV, `sintesi.md`, `robustezza.csv`, `van.csv`, `soglia.csv`, `quote_prosumer.csv` |
+| 5 | `grafici_repliche.py` | `outputs/tesi_finale/figure/` (G01-G13, PNG e PDF) |
+| 6 | `unisci_per_figure.py` + `grafici_metodi.py` | `outputs/tesi_finale/figure_descrittive/` (F01-F13 su tutte le repliche) |
+| 7 | `tesi_finale.py` | `outputs/tesi_finale/rapporto.html` (figure), `numeri_tesi.tex`, `tabelle/*.tex`, `conclusioni.csv` |
+| 8 | `rapporto_repliche.py` | `outputs/report/RISULTATI_repliche_<data>.html`, il rapporto commentato |
+
+Con `tabelle/` committate l'analisi si rifà su qualunque PC: `aggrega_repliche.py` legge `tables/`
+se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`.
 
 Regole (versione B del piano):
 - **Metodi.** 10, gli stessi da 5 a 25 membri: niente Nucleolo, un solo Shapley (esatto fino a 18,
@@ -49,9 +52,8 @@ Regole (versione B del piano):
 - **Colori.** Palette Polimi in `stile_tesi.py`, validata per daltonismo e contrasto.
 
 Altri comandi:
-- `bash CER_repliche/analisi_finale.sh --solo-python` rifà tutto tranne la parte MATLAB.
 - `python -I CER_repliche/prove/banco_prova.py --dest /tmp/banco --repliche 0-6`, poi
-  `bash CER_repliche/analisi_finale.sh --solo-python --radice /tmp/banco --attese 7`, provano la
+  `bash CER_repliche/analisi_finale.sh --radice /tmp/banco --attese 7 --out /tmp/banco/tesi`, provano la
   catena sui file versionati, senza MATLAB. Nel banco di prova due controlli di integrità
   falliscono di proposito: le tabelle di prova sono quelle del 28/10, senza stabilità a 20-25
   membri e con quote diverse dagli export delle repliche.

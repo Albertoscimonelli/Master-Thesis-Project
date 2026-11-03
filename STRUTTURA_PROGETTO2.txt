@@ -114,7 +114,8 @@ Project/
 |   |-- controlla_unito.py      [v]     Controlli della lettura unita (e r00 contro il 28/10)
 |   |-- grafici_repliche.py     [v]     Figure G01-G13 sulle repliche
 |   |-- unisci_per_figure.py    [v]     Tutte le repliche insieme per grafici_metodi.py
-|   |-- rapporto_repliche.py    [v]     Rapporto, numeri_tesi.tex, tabelle LaTeX
+|   |-- tesi_finale.py          [v]     numeri_tesi.tex, tabelle LaTeX, pagina delle figure
+|   |-- salva_tabelle_analisi.py [v]    Tabelle di MAIN2 per l'analisi in unito/rNN/tabelle/
 |   |-- stile_tesi.py           [v]     Palette Polimi, nomi inglesi, regola dei metodi
 |   |-- prove/banco_prova.py    [v]     Banco di prova senza MATLAB
 |   +-- r00 ... r20/            [l]     Schede e profili, si rigenerano dal seed

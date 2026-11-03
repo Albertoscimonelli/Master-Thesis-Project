@@ -1,146 +1,130 @@
-# Istruzioni: dalla fine del run alla chiusura del branch
+# Istruzioni: analisi completa delle repliche (aggiornate al 3 novembre 2026)
 
-Tutti i comandi vanno dati in **Git Bash, dalla cartella del progetto**, sul PC del run. Lo stesso
-contenuto, più breve, è in `CER_repliche/README.md` (sezione "Analisi finale").
+Il run è finito e la lettura unita 5-25 è stata fatta il 3 novembre (PR #71, in `main`). Questo
+branch (`ccr-13867105-vwc5b6`) parte da `main` e aggiunge l'analisi completa:
+- robustezza di ogni conclusione (k/20, Clopper-Pearson, controllo a metà, bootstrap);
+- intervalli delle mediane;
+- VAN per metodo, soglia regolatoria, quote ai prosumer;
+- figure G01-G13 e F01-F13 con la palette Polimi;
+- tabelle LaTeX e `numeri_tesi.tex`.
 
-Tempi indicativi: lettura unita circa 1 ora (21 repliche × 2-3 min), parte Python circa 10 minuti.
+Tutti i comandi vanno dati in **Git Bash, dalla cartella del progetto, sul PC del run**. Solo lì ci
+sono le tabelle di MAIN2 della lettura unita (`outputs/repliche/unito/rNN/tables/`). Il comando ne
+copia la parte necessaria in `rNN/tabelle/` (circa 4 MB a replica): una volta committata,
+l'analisi si rifà su qualunque PC.
+
+Tempo: circa 10 minuti, senza MATLAB.
 
 ---
 
-## 1. Controllare che il run sia finito
+## 1. Passare al branch
 
 ```bash
-bash CER_repliche/stato_run.sh                                   # riepilogo del run
-tail -5 outputs/repliche/da20a25/avanzamento.txt
-for i in $(seq -w 0 20); do grep -q "r$i fatta in" outputs/repliche/da20a25/avanzamento.txt || echo "manca r$i"; done   # non deve stampare nulla
-grep "FALLITA" outputs/repliche/da20a25/avanzamento.txt         # non deve dare nulla, o righe gia' riprese
-ls outputs/checkpoint_main2_rep*_da20a25.mat 2>/dev/null        # non deve esserci nulla
-```
-
-**Se una replica è FALLITA.** Rilancia lo stesso comando del run solo con quella replica, per
-esempio `bash CER_repliche/lancia_repliche.sh da20a25 20 25 13`. Riparte dal checkpoint (vedi
-`CER_repliche/README.md`, "Attenzione per una nuova ripresa").
-
-**La finestra Git Bash del run** si può chiudere solo dopo che l'ultima riga di `avanzamento.txt`
-dice "r20 fatta".
-
-## 2. Passare al branch dell'analisi finale
-
-```bash
-git status                          # ci saranno da20a25/avanzamento.txt modificato e i nuovi rNN/
-git push origin 70-results-analysis # solo se hai fatto commit su 70-results-analysis non ancora pushati
+git status                          # meglio partire senza modifiche in sospeso
 git fetch origin
-git checkout ccr-13867105-vwc5b6    # le modifiche locali agli output vengono portate con se'
-git merge origin/70-results-analysis   # porta qui gli eventuali commit fatti sul branch originale
-                                       # durante il run ("Already up to date" se non ce ne sono)
+git checkout ccr-13867105-vwc5b6
+git merge origin/main               # porta eventuali commit fatti su main nel frattempo
 ```
 
-**Se `git checkout` rifiuta** ("would be overwritten"), un file locale modificato è stato cambiato
-anche sul branch. Fai prima il commit su `70-results-analysis` (`git add outputs/repliche/da20a25`,
-`git commit`, `git push`), poi ripeti i quattro comandi.
-
-Il branch contiene tutto `70-results-analysis` più l'analisi finale. Non modifica `MAIN2.m` né
-`lancia_repliche.sh`.
-
-## 3. Lanciare l'analisi
+## 2. Lanciare l'analisi
 
 ```bash
 bash CER_repliche/analisi_finale.sh
 ```
 
-Lo script si ferma al primo passo che fallisce e stampa le ultime righe del registro
-`outputs/tesi_finale/analisi_finale.log`. Si può rilanciare: le repliche già unite si saltano.
+Passi, ciascuno con il suo esito a schermo:
 
-**Se il passo 1 (MATLAB) fallisce** su una replica, mandare:
-- `outputs/repliche/unito/avanzamento.txt`;
-- `outputs/repliche/unito/rNN/unisci.log`;
-- `outputs/repliche/unito/rNN/main2.log`.
+| Passo | Cosa fa |
+|---|---|
+| 1 | Lettura unita in MATLAB: si salta da sé, è già fatta per tutte le 21 repliche |
+| 2 | Copia delle tabelle per l'analisi in `rNN/tabelle/` |
+| 3 | Controlli: 295 comunità, 10 metodi, stabilità a tutte le taglie |
+| 4 | Aggregato e robustezza in `outputs/repliche/unito/aggregato/` |
+| 5-6 | Figure in `outputs/tesi_finale/figure/` e `figure_descrittive/` |
+| 7 | Numeri e tabelle LaTeX in `outputs/tesi_finale/` |
+| 8 | Rapporto commentato `outputs/report/RISULTATI_repliche_<data>.html` |
 
-**Se fallisce un passo Python,** mandare il registro `analisi_finale.log`.
+Se un passo fallisce, il comando si ferma e stampa le ultime righe di
+`outputs/tesi_finale/analisi_finale.log`: mandami quel file.
 
-## 4. Controllare i risultati (10 minuti)
+## 3. Controllare i risultati
 
-1. **`outputs/repliche/unito/controlli.txt`** deve finire con "Tutti i controlli passati." e avere
-   la riga "r00 contro prova_regola_shapley: ... 0 diverse".
+1. **`outputs/repliche/unito/aggregato/sintesi.md`.** Tutti i numeri in chiaro. In cima c'è "Il
+   numero di repliche basta?": quante conclusioni reggono (almeno 15/20) e su quante le due metà
+   concordano, il numero che va nella 6.1.
 2. **`outputs/tesi_finale/rapporto.html`** (doppio clic):
    - in cima **non** deve esserci il riquadro rosso "Controlli di integrità falliti";
-   - la tabella "Conclusioni del rapporto del 28 ottobre" dice quali affermazioni restano vere.
-     **Il testo della tesi va adeguato a questa tabella.**
-3. **`outputs/repliche/unito/aggregato/sintesi.md`**: tutti i numeri in chiaro. In cima c'è
-   "Il numero di repliche basta?": quante conclusioni reggono e su quante le due metà concordano,
-   il numero che va nel capitolo 6.1.
+   - la tabella delle conclusioni del 28 ottobre dice quali restano vere.
+3. **`outputs/report/RISULTATI_repliche_<data>.html`:** il rapporto commentato di `main`, rifatto
+   sull'aggregato nuovo.
 
-## 5. Salvare i risultati nel repository
+## 4. Salvare nel repository
 
 ```bash
-git add outputs/repliche/da20a25 outputs/repliche/unito outputs/tesi_finale
-git status --short | head -50       # controllo: solo checkpoint.mat dei blocchi, niente tables/ ne' insieme/
-git commit -m "Run 20-25 completo (21 repliche) e analisi finale delle repliche"
+git add outputs/repliche/unito outputs/tesi_finale outputs/report
+git status --short | head -40       # controllo: niente .mat, niente tables/ ne' insieme/
+git commit -m "Analisi completa delle repliche: robustezza, VAN, soglia, figure e numeri della tesi"
 git push -u origin ccr-13867105-vwc5b6
 ```
 
-Il `.gitignore` versiona i `checkpoint.mat` dei blocchi (dal 1 novembre) e tiene fuori da solo
-gli altri `.mat`, le tabelle, i log, `unito/insieme/`, il checkpoint unito e gli export della
-lettura unita tranne `punteggi_orientati.csv`. Peso atteso del commit: circa 170 MB (export e checkpoint di r09-r20 del blocco 20-25 circa 90 MB, punteggi della lettura unita circa 55 MB, `tesi_finale/` circa 25 MB).
+Peso atteso: circa 110 MB (`tabelle/` circa 80 MB, `tesi_finale/` circa 25 MB, aggregato pochi MB).
 
-## 6. Aggiornare README e documenti
+## 5. Cosa dare alla chat che scrive la tesi
 
-I numeri finali stanno in `sintesi.md` e `conclusioni.csv`. Il modo più rapido è aprire una
-sessione di Claude Code su questo branch e incollare il testo qui sotto.
+| Serve per | File |
+|---|---|
+| 6.1.4, robustezza (k/20, IC, metà, bootstrap) | `outputs/repliche/unito/aggregato/robustezza.csv`, `outputs/tesi_finale/tabelle/robustness.tex`, sezione "Il numero di repliche basta?" di `sintesi.md` |
+| Mediane con intervallo | colonne `ic95_basso`, `ic95_alto` di `tau.csv`, `perdite.csv`, `inversioni.csv` |
+| VAN (analisi complementare) | `aggregato/van.csv`, `tabelle/npv.tex`, figura `G10_npv.pdf` |
+| Soglia regolatoria (6.6) | `aggregato/soglia.csv`, `tabelle/regulatory_threshold.tex`, `G09_threshold.pdf` |
+| Numeri nel testo | `outputs/tesi_finale/numeri_tesi.tex` (macro LaTeX) |
 
-```
-Il run 20-25 è finito e ho lanciato CER_repliche/analisi_finale.sh; i risultati sono committati.
-Aggiorna la documentazione allo stato finale, senza toccare il codice:
-1. README.md: il riquadro "Stato" in cima (run finito, analisi finale fatta, risultati di
-   riferimento = outputs/tesi_finale/ e outputs/repliche/unito/aggregato/, il rapporto del 28/10
-   superato) e la §7.11.6 (aggiungi "Risultati della lettura unita" con i numeri principali di
-   sintesi.md e conclusioni.csv: cosa regge, cosa dipende dai partecipanti, cosa non è confermato).
-2. CER_repliche/README.md: lo "Stato" in cima e una sezione "Risultati della lettura unita
-   5-25" sul modello di quelle dei blocchi.
-3. outputs/workspace/LEGGIMI.md: una riga che rimanda a outputs/tesi_finale/ come fonte dei
-   numeri della tesi.
-4. docs/analisi_finale/PIANO_analisi_finale.md, sezione 7: segna tutti i passi come eseguiti,
-   con la data.
-Usa solo numeri presi dai file; scrivi in italiano, come il resto dei README. Poi commit e push.
-```
+**Indicatori:** il confronto usa gli otto di `stile_tesi.INDICATORI`. L'equality index (= 1 − Gini)
+non è un indicatore a parte. L'inclusione LIHC è esclusa: si calcola solo a 25 membri in 8
+repliche su 20, con parametri provvisori, e va citata solo fra i limiti.
 
-## 7. Portare i risultati nella tesi (repository `Tesi-Magistrale`)
+## 6. Portare i risultati nella tesi (repository `Tesi-Magistrale`)
 
-- **Figure.** Copia `outputs/tesi_finale/figure/*.pdf` e i `figure_descrittive/*.pdf` che usi in
-  `Images/CAP6/`. In LaTeX: `\includegraphics[width=\textwidth]{Images/CAP6/G02_tau_by_band.pdf}`.
-- **Numeri.** Copia `outputs/tesi_finale/numeri_tesi.tex` nella cartella della tesi. Aggiungi
-  `\input{numeri_tesi}` nel preambolo (`Thesis.tex`) e usa le macro nel testo, per esempio
-  `\NumReplicas{}`, `\TauGiniForzaIncentivanteBandFour{}`, `\ReversalGiniISCount{}`. L'elenco
-  completo è nel file.
-- **Tabelle.** `outputs/tesi_finale/tabelle/*.tex` contengono solo il `tabular`. Esempio:
+- **Figure.** Copia i PDF che usi da `outputs/tesi_finale/figure/` e `figure_descrittive/` in
+  `Images/CAP6/`.
+- **Numeri.** Copia `numeri_tesi.tex` nella tesi, aggiungi `\input{numeri_tesi}` nel preambolo e
+  usa le macro (per esempio `\NumReplicas{}`, `\ReversalGiniISCount{}`).
+- **Tabelle.** `outputs/tesi_finale/tabelle/*.tex` contengono solo il `tabular` e richiedono
+  `\usepackage{booktabs}`:
   ```latex
   \begin{table}[htbp]\centering
   \caption{...}\label{tab:robustness}
   \input{Tables/robustness.tex}
   \end{table}
   ```
-  Richiedono `\usepackage{booktabs}`.
-- **Sezione 6.1.** Usa il prompt `docs/analisi_finale/PROMPT_capitolo_6_1.md` e sostituisci i
-  segnaposto TBD con i numeri di `sintesi.md`, per esempio il controllo a metà.
+
+## 7. Aggiornare i README
+
+Apri una sessione di Claude Code su questo branch e incolla il testo qui sotto.
+
+```
+Ho lanciato CER_repliche/analisi_finale.sh e committato i risultati. Aggiorna README.md (riquadro
+di stato e §7.11.6), CER_repliche/README.md e docs/analisi_finale/PIANO_analisi_finale.md (sezione 7)
+con i numeri di outputs/repliche/unito/aggregato/sintesi.md, robustezza.csv, van.csv e soglia.csv:
+cosa regge, cosa dipende dai partecipanti, cosa non è confermato. Solo numeri presi dai file, in
+italiano. Poi commit e push.
+```
 
 ## 8. Chiudere i branch
 
-`ccr-13867105-vwc5b6` contiene tutti i commit di `70-results-analysis` più l'analisi finale.
-Unendolo in `main` si chiude anche il lavoro di `70-results-analysis`.
+`70-results-analysis` è già in `main` (PR #71). Resta da unire questo branch.
 
-1. **Su GitHub:** apri una pull request da `ccr-13867105-vwc5b6` verso `main`, controlla i file e
-   fai il merge. In alternativa chiedi a Claude di aprire la PR.
-2. **Verifica che `70-results-analysis` sia tutto dentro `main`:**
+1. **Su GitHub:** apri una pull request da `ccr-13867105-vwc5b6` verso `main` e fai il merge, oppure
+   chiedi a Claude di aprirla.
+2. **Controlla che entrambi i branch siano in `main`:**
    ```bash
    git fetch origin
    git branch -r --merged origin/main | grep -E "70-results-analysis|ccr-13867105"   # devono comparire entrambi
    ```
-3. **Cancella i branch** (sul sito, con "Delete branch" dopo il merge, oppure da terminale):
+3. **Cancella i branch:**
    ```bash
    git checkout main && git pull
-   git push origin --delete 70-results-analysis
-   git push origin --delete ccr-13867105-vwc5b6
+   git push origin --delete 70-results-analysis ccr-13867105-vwc5b6
    git branch -d 70-results-analysis ccr-13867105-vwc5b6
    ```
-   `git branch -d` rifiuta di cancellare un branch non unito: se protesta, qualcosa non è in
-   `main`. Fermati e controlla.
+   Se `git branch -d` protesta, qualcosa non è in `main`: fermati e controlla.

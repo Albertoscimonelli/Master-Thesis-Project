@@ -62,11 +62,38 @@ REGGE, SI_INVERTE, FORTE = 0.75, 0.25, 0.85     # 15/20, 5/20, 17/20 (test del s
 SOGLIE_REGOLATORIE = (0.55, 0.45)                # DM 414/2023: premio; premio + contributo
 
 
+# Le tabelle di MAIN2 che servono all'analisi fra repliche (aggrega_repliche.py, grafici_metodi.py
+# via unisci_per_figure.py, rapporto_repliche.py): circa 4 MB a replica contro i 19 MB di tables/.
+# salva_tabelle_analisi.py le copia in rNN/tabelle/, che si versiona, cosi' l'analisi si rifa'
+# anche senza il PC del run.
+TABELLE_ANALISI = {
+    "livello": ["sintesi/tau_per_fascia.csv", "sintesi/tau_per_cella.csv", "sintesi/perdite_tradeoff.csv",
+                "sintesi/cluster_sufficienza.csv", "sintesi/pareto_conteggi.csv",
+                "sintesi/rimpianto_per_comunita.csv", "sintesi/sensibilita_soglia_vincitori.csv",
+                "sintesi/quote_prosumer.csv", "sintesi/rimpianto_medio.csv",
+                "sintesi/sensibilita_soglia_sweep.csv", "confronto/griglia_vincitori.csv",
+                "confronto/inversioni_per_sweep.csv"],
+    "radice": ["confronto_PA/pa_sommario.csv", "confronto_PA/pa_effetti.csv",
+               "fase1/regime_le18_Shapley_vs_AS_per_taglia.csv"],
+}
+
+
+def cartella_tabelle(d: Path) -> Path | None:
+    """Le tabelle di una replica: tables/ completa (PC del run, replica finita = c'e' workspace.mat)
+    oppure tabelle/, la copia versionata con le sole tabelle dell'analisi."""
+    if (d / "tables" / "sintesi").is_dir() and (d / "workspace.mat").exists():
+        return d / "tables"
+    if (d / "tabelle" / "sintesi").is_dir():
+        return d / "tabelle"
+    return None
+
+
 def repliche(cartella: Path) -> dict[int, Path]:
     out = {}
     for d in sorted(cartella.glob("r[0-9][0-9]")):
-        if (d / "tables" / "sintesi").is_dir() and (d / "workspace.mat").exists():
-            out[int(d.name[1:])] = d / "tables"
+        t = cartella_tabelle(d)
+        if t is not None:
+            out[int(d.name[1:])] = t
     return out
 
 
@@ -578,7 +605,8 @@ def scrivi_sintesi(blocco, tabs, A, dest):
         L += ["", "## Insieme ridotto di indicatori", "",
               "| Taglio di tau | Indicatore | Rappresentante modale | Concordanza delle coppie (mediana, min) |",
               "|---|---|---|---|"]
-        for _, r in su.sort_values(["TaglioTau", "Indicatore"], ascending=[False, True]).iterrows():
+        for _, r in su[su.Indicatore.isin(INDICATORI)].sort_values(["TaglioTau", "Indicatore"],
+                                                                     ascending=[False, True]).iterrows():
             L.append(f"| {r.TaglioTau} | {r.Indicatore} | {r.RappresentanteModale} | "
                      f"{nn(r.mediana)}, {nn(r['min'])} |")
     pa = A["pareto"]

@@ -38,7 +38,7 @@ Fa tutto, in ordine, e si ferma al primo passo che fallisce dicendo quale. Regis
 | 8 | `rapporto_repliche.py` | `outputs/report/RISULTATI_repliche_<data>.html`, il rapporto commentato |
 
 Con `tabelle/` committate l'analisi si rifà su qualunque PC: `aggrega_repliche.py` legge `tables/`
-se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`.
+se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/COME_RIFARE_L_ANALISI.md`.
 
 Regole (versione B del piano):
 - **Metodi.** 10, gli stessi da 5 a 25 membri: niente Nucleolo, un solo Shapley (esatto fino a 18,

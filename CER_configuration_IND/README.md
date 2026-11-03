@@ -109,7 +109,8 @@ L'ordine mette prima i dati reali. Con al massimo 3 imprese entrano solo le prim
   un'impresa grande. Prima va verificato che sia una PMI: le grandi imprese non possono essere membri
   di una CER ([K26], nota 39).
 - **Filtro sulla penetrazione** (README §7.11): l'83% delle CER reali del Nord ha prosumer ≤ 50%
-  dei membri. Se le schede al 75% e al 100% non danno risultati notevoli, le si può escludere.
+  dei membri. Le schede al 75% e al 100% restano nei risultati: è lì che la struttura del conflitto
+  fra criteri si capovolge (README §7.13), e va dichiarato nella tesi.
 
 ## Numeri (28 schede con N ≥ 15)
 

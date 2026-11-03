@@ -1,0 +1,42 @@
+Scheda,Membri,Penetrazione_pct,LivelloPA,Indicatore,MetodoA,MetodoB,DivarioPA0,DivarioPAk,PassiPari
+CER_5_15_0,20,75,33,EI_orig,Variance Least Core,Similarity-Utilization,0.0789127,-0.200653,0
+CER_5_15_0,20,75,33,EI_orig,Proportional to Consumption,Similarity-Utilization,0.153688,-0.257674,0
+CER_5_15_0,20,75,33,EI_orig,Remuneration Model 1,Similarity-Utilization,0.438884,-0.175882,0
+CER_5_15_0,20,75,33,EI_orig,Similarity-Utilization,Adaptive Sampling Shapley,-0.143683,0.170266,0
+CER_5_15_0,20,75,33,Gini,Variance Least Core,Similarity-Utilization,0.0789127,-0.200653,0
+CER_5_15_0,20,75,33,Gini,Proportional to Consumption,Similarity-Utilization,0.153688,-0.257674,0
+CER_5_15_0,20,75,33,Gini,Remuneration Model 1,Similarity-Utilization,0.438884,-0.175882,0
+CER_5_15_0,20,75,33,Gini,Similarity-Utilization,Adaptive Sampling Shapley,-0.143683,0.170266,0
+CER_5_15_0,20,75,33,FairnessIndex,Remuneration Model 1,Similarity-Utilization,-0.208968,0.559955,0
+CER_5_15_0,20,75,33,FairnessIndex,Cascading Tree,Similarity-Utilization,-0.439908,0.407624,0
+CER_5_15_0,20,75,33,FairnessIndex,Weighted Solidarity,Similarity-Utilization,-0.437443,0.453553,0
+CER_5_15_0,20,75,33,Sigma,Equal Split,Weighted Solidarity,0.00769435,-0.0645648,0
+CER_5_15_0,20,75,33,Sigma,Remuneration Model 1,Pearson Key,-0.0323691,0.01068,0
+CER_5_15_0,20,75,33,Sigma,Remuneration Model 1,Similarity-Utilization,-0.0197492,0.0822811,0
+CER_5_15_0,20,75,33,Sigma,Cascading Tree,Similarity-Utilization,-0.0471644,0.045561,0
+CER_5_15_0,20,75,33,Sigma,Weighted Solidarity,Similarity-Utilization,-0.0503779,0.0722291,0
+CER_5_15_0,20,75,33,EccessoMax_EUR,Equal Split,Weighted Solidarity,34.7034,-2653.49,0
+CER_5_15_0,20,75,33,EccessoMax_EUR,Equal Split,Similarity-Utilization,-190.076,431.831,0
+CER_5_15_0,20,75,33,EccessoMax_EUR,Remuneration Model 1,Similarity-Utilization,-68.4653,4254.5,0
+CER_5_15_0,20,75,33,EccessoMax_EUR,Cascading Tree,Similarity-Utilization,-205.586,3477.88,0
+CER_5_15_0,20,75,33,EccessoMax_EUR,Weighted Solidarity,Similarity-Utilization,-224.779,3085.32,0
+CER_5_15_0,20,75,33,CoalizioniInstabili,Weighted Solidarity,Similarity-Utilization,-64927,141938,0
+CER_5_15_0,20,75,33,ForzaIncentivante,Variance Least Core,Proportional to Consumption,0.144355,-0.16456,0
+CER_5_15_0,20,75,33,ForzaIncentivante,Remuneration Model 1,Weighted Solidarity,0.33772,-0.154052,0
+CER_5_15_0,20,75,33,AllineamentoVirtu,Equal Split,Weighted Solidarity,0.216313,-0.121035,0
+CER_5_15_0,20,75,33,AllineamentoVirtu,Remuneration Model 1,Weighted Solidarity,1.10671,-0.119365,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Variance Least Core,Similarity-Utilization,-0.10824,0.556881,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Equal Split,Remuneration Model 1,0.113832,-0.456541,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Equal Split,Cascading Tree,0.589992,-0.238193,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Equal Split,Weighted Solidarity,0.133654,-0.450375,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Equal Split,Similarity-Utilization,-0.141349,0.158698,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Proportional to Consumption,Remuneration Model 1,0.126737,-0.0869858,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Proportional to Consumption,Weighted Solidarity,0.146558,-0.0808197,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Proportional to Consumption,Similarity-Utilization,-0.128444,0.528253,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Remuneration Model 1,Similarity-Utilization,-0.255181,0.615239,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Cascading Tree,Similarity-Utilization,-0.731341,0.396891,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Weighted Solidarity,Similarity-Utilization,-0.275002,0.609073,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Pearson Key,Similarity-Utilization,-0.0878032,0.574196,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Similarity-Utilization,Adaptive Sampling Shapley,0.10655,-0.610785,0
+CER_5_15_0,20,75,33,AllineamentoVirtu_lordo,Similarity-Utilization,Tri-level EP,0.0948534,-0.555875,0
+CER_5_15_0,20,75,33,VAN_min_EUR,Proportional to Consumption,Similarity-Utilization,41.9623,-566.509,0

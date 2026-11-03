@@ -95,6 +95,22 @@ Project/
 |   +-- Provvsiorio/            [l]     Schede miste dei primi studi: il glob di
 |                                       MAIN2 non entra nelle sottocartelle
 |
++-- CER_repliche/                       REPLICHE DEI PARTECIPANTI (README 7.11.6)
+|   |-- README.md               [v]     Perche', come si fanno, risultati, piano
+|   |-- genera_repliche.py      [v]     Schede delle repliche: famiglie estratte
+|   |                                   dentro la cella ISTAT dichiarata
+|   |-- lancia_repliche.sh      [v]     MAIN2 con MAIN2_RADICE, replica per replica
+|   |                                   (riprende dal checkpoint una replica interrotta)
+|   |-- avvia_da20a25.sh        [v]     Blocco 20-25 in una finestra fuori da VS Code
+|   |-- veglia.ps1              [v]     Niente sospensione per inattivita' durante il run
+|   |-- stato_run.sh            [v]     Riepilogo del run in corso
+|   |-- aggrega_repliche.py     [v]     Confronto fra le repliche
+|   |-- unisci_blocchi.m        [v]     Lettura unita di piu' blocchi di taglia
+|   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica
+|   |                                   (outputs/repliche/unito/rNN/)
+|   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
+|   +-- r00 ... r20/            [l]     Schede e profili, si rigenerano dal seed
+|
 +-- PV_Generation/                      EXPORT ORARI PVSYST (kWh/h)
 |   |-- PROVA_CER_1_Project_1_2_componenti.CSV  [l]  impianto da 3,4 kWp
 |   |-- PROVA_CER_1_Project_3_4_componenti.CSV  [l]  impianto da 4,2 kWp
@@ -139,6 +155,8 @@ Project/
     |                                   e analisi [v], workspace .mat [l],
     |                                   strumenti/ [v], LEGGIMI.md [v]
     |-- run_logs/                [l]    Log completi dei run, elenco schede in testa
+    |-- repliche/                       Uscite delle repliche: <blocco>/rNN/ [l],
+    |                                   <blocco>/aggregato/ [v], controlli [v]
     +-- report/                         regole_ripartizione_cer.html (pagina dei
                                         risultati finali), scaling_metodi_ripartizione.md,
                                         validazione_lombardia100.md
@@ -259,7 +277,7 @@ Da Git Bash, nella root del progetto. Su questa macchina l'eseguibile e'
     MAIN2_CARTELLA=griglia25 MAIN2_SCHEDE="$GRIGLIA25" matlab -batch "MAIN2"
         -> outputs/tables_main2_griglia25/       circa 2 h 30
 
-LE QUATTRO VARIABILI D'AMBIENTE (dal 18 ottobre)
+LE VARIABILI D'AMBIENTE (dal 18 ottobre; MAIN2_IND dal 26, MAIN2_RADICE dal 29)
   Senza variabili MAIN2 prende TUTTE le schede fino a 18 membri: il livello 0
   di CER_configuration/ piu' le varianti con PA di CER_configuration_PA/PA1..3
   (elenco_schede_cer.m; PA0/ e' una copia del livello 0 e si salta).
@@ -274,12 +292,21 @@ LE QUATTRO VARIABILI D'AMBIENTE (dal 18 ottobre)
   MAIN2_RIPRENDI  1 = riparte dal checkpoint outputs/checkpoint_main2
                   [_<suffisso>].mat, scritto dopo ogni comunita' (non
                   versionato). Vuole lo stesso elenco di schede.
+  MAIN2_IND       1 = aggiunge le schede con imprese di CER_configuration_IND/
+                  (ND1-ND3, ND{k}_PA{p}), fino al tetto.
+  MAIN2_RADICE    cartella con CER_configuration/, CER_configuration_PA/ e
+                  CER_configuration_IND/ al posto di quelle di sempre, per
+                  esempio CER_repliche/r01 (repliche dei partecipanti).
+                  Senza, il run e' identico al byte.
 
 PERCHE' DUE RUN E NON UNO
   compute_indicator_agreement tiene solo i metodi presenti in TUTTE le
   comunita'. Sopra i 18 membri Shapley e Nucleolo non si calcolano, quindi un
   run unico fino a 25 membri li toglierebbe anche dalle comunita' piccole, e
-  con loro la lettura di stabilita'.
+  con loro la lettura di stabilita'. Per lo Shapley c'e' rimedio dal 29
+  ottobre: outputs/workspace/strumenti/unisci_shapley_as.m rinomina l'Adaptive
+  Sampling in "Shapley" sopra i 18 membri, cosi' l'analisi unita usa l'esatto
+  dove c'e' (CER_repliche/unisci_blocchi.m). Il Nucleolo resta solo fino a 18.
 
 UNA SCHEDA SOLA, PER PROVA
     MAIN2_CARTELLA=prova MAIN2_SCHEDE="CER_2_3_0" matlab -batch "MAIN2"
@@ -495,7 +522,8 @@ riepilogo di fine batch.
       skipGameTheory = nUsers > 18. Sopra la soglia Shapley, Nucleolo ed
       eccesso di coalizione vengono SALTATI e il log stampa [BYPASS]: a 21
       membri lo Shapley costava 9 minuti e il Nucleolo 18, e la crescita e'
-      2^n.
+      2^n. Dal 30/10/2026 stabilitaEnum = skipGameTheory && nUsers <= 25: da
+      19 a 25 membri l'eccesso di coalizione si calcola lo stesso (3b, 3t).
       M = align_members_to_users(CFG, userNames): ogni campo [nUsers x 1]
       nell'ordine delle colonne del CSV.
 
@@ -526,14 +554,17 @@ riepilogo di fine batch.
       modalita'. costMat [nUsers x 3] e costUser con la tariffa di ciascun
       membro: e' la baseline y_noLEM degli indicatori.
 
-  3b) Fino a 18 membri: [vCache, players, A_inc] = cer_coalition_values(...)
+  3b) Fino a 18 membri: [vCache, players, A_inc] = cer_coalition_values_blocchi(...)
+      (dal 30/10/2026; prima cer_coalition_values, stesso risultato entro 1e-13)
       UNA volta sola (2^n coalizioni), passata a Shapley, Nucleolo ed
       eccesso di coalizione. Sh = shapley_cer_cached. assert: v(N) uguale per
       le due strade del fattore F; v(N) uguale al ricavo da condivisa.
+      Da 19 a 25 membri (dal 30/10/2026): vCache = cer_coalition_values_blocchi
+      senza A_inc, per VLC ed eccesso di coalizione; Shapley e Nucleolo no.
   3c) Nu = nucleolus_cer_cached (sequenza di programmi lineari).
   3e) VLC = variance_least_core_cer (row-generation, a ogni taglia). Fino a
-      25 membri la separazione e' un argmin sulla v(S) enumerata (fino a 18
-      membri si passa la v(S) in cache di 3b, da 19 a 25 la enumera lei);
+      25 membri la separazione e' un argmin sulla v(S) enumerata (si passa la
+      v(S) in cache di 3b; da 19 a 25 la enumerava lei fino al 30/10/2026);
       oltre, MILP. Fino a 18 membri assert: theta_LC = theta_min del Nucleolo.
   3f) ES  = equal_split_cer
   3g) PC  = proportional_consumption_cer
@@ -570,7 +601,8 @@ riepilogo di fine batch.
       gini_heterogeneity (per categoria) e shape_heterogeneity (forma dei
       profili lordi). Per ogni metodo fairness_indicators_lem con baseline
       costUser; poi fairness_index_bm (BC = MC.mcRaw), coalition_excess
-      (fino a 18 membri, sulla stessa vCache; sopra resta NaN), forza
+      (fino a 18 membri, sulla stessa vCache; da 19 a 25 coalition_excess_enum,
+      dal 30/10/2026; oltre resta NaN), forza
       incentivante su asse netto (SU) e lordo (SUl, profili lordi),
       inclusion_index (vulnerabili = TL.isVulnerable).
       Tfair, 13 colonne:
@@ -748,6 +780,9 @@ riepilogo di fine batch.
   cer_coalition_values.m    v(S) per tutte le 2^n coalizioni (bitmask) e la
                             matrice di incidenza. Con F > 0 la quota esente e'
                             quella della coalizione.
+  cer_coalition_values_blocchi.m  lo stesso, a blocchi vettorizzati (l'algoritmo
+                            di enumerate_values del VLC): a 18 membri circa
+                            1 s invece di 50-70 s. E' quella che usa MAIN2
   cer_shared_value.m        v di UNA coalizione dai suoi profili aggregati:
                             la formula sta in un posto solo, usata
                             dall'enumerazione e dalla valutazione su
@@ -768,7 +803,9 @@ riepilogo di fine batch.
                             2^n surplus, esatta), oltre con un MILP
                             (intlinprog) sulle sole ore con generazione.
                             Con F > 0 solo l'enumerazione. maxIter default
-                            1000. Espone tolConv, la tolleranza di
+                            1000; MAIN2 passa 5000 (dal 31/10/2026, le
+                            repliche a 25 membri superano le 1000).
+                            Espone tolConv, la tolleranza di
                             convergenza con cui va verificato.
   marginal_contribution_cer.m  MC_i = v(N) - v(N\{i}) (mcRaw), normalizzati a
                             v(N). In MAIN2 serve solo come BC_i del Fairness
@@ -858,6 +895,11 @@ riepilogo di fine batch.
                             CoalizioniInstabili, coalizione peggiore. Segno
                             opposto al surplus di Nucleolo e VLC. Limite di
                             sicurezza a 20 giocatori.
+  coalition_excess_enum.m   lo stesso da una v(S) gia' enumerata, senza
+                            matrice di incidenza e senza l'eccesso di ogni
+                            coalizione (a 25 membri 6,7 + 3,2 GB): stesse
+                            uscite di riepilogo. MAIN2 la usa da 19 a 25
+                            membri (dal 30/10/2026).
   compute_incentive_strength.m  Forza incentivante: proiezione della
                             deviazione dall'uniforme delle quote sull'asse di
                             virtuosita' theta x eta (media pesata
@@ -1197,6 +1239,14 @@ riepilogo di fine batch.
   outputs/workspace/analisi_<run>.txt  l'analisi in 13 blocchi (analizza.py)
   outputs/workspace/strumenti/
     esporta_run.m        dal .mat ai CSV lunghi
+    esporta_run_livelli.m  esporta_run piu' le etichette giuste dei livelli con
+                         imprese (ND1, ND2_PA1, ...) in punteggi_orientati.csv
+    unisci_shapley_as.m  un solo "Shapley" in un run che mescola le taglie:
+                         esatto fino a 18 membri, Adaptive Sampling oltre
+    rapporto_conclusioni.py  il rapporto finale (outputs/report/RISULTATI_e_
+                         conclusioni_RQ_2026-10-28.html): figure commentate e
+                         conclusioni rispetto alla domanda di ricerca, numeri dai
+                         CSV, controlli sulle affermazioni del testo
     analizza.py          l'analisi testuale dei CSV
     dati_interfaccia.py  i numeri della pagina dei risultati
     confronta_csv.py     confronto per chiave di due cartelle di tabelle
@@ -1206,6 +1256,10 @@ riepilogo di fine batch.
                        finali, con l'elenco delle schede in testa
   outputs/report/regole_ripartizione_cer.html
                        pagina dei risultati finali (13 ottobre)
+  outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html
+                       rapporto finale sulle 295 comunita' da 5 a 25 membri:
+                       44 figure commentate, conclusioni rispetto alla domanda
+                       di ricerca, note sul gap della tesi (README 7.11.5)
 
 
 ================================================================================
@@ -1272,7 +1326,8 @@ CALENDARIO
                     diagonale 1; dettaglio e sommario delle inversioni
                     concordi; penetrazione dichiarata e contata entro 0,5 punti
   Le verifiche sull'eccesso di coalizione e sul Nucleolo non girano sopra i
-  18 membri.
+  18 membri. Da 19 a 25 (dal 30/10/2026) restano le due sul VLC: eccesso
+  massimo = -theta_LC, nessuna ripartizione non negativa piu' stabile.
 
   AUTO-TEST NEI MODULI (acceso di default, casi calcolati a penna)
     cer_reduction_factor, cer_tip_bracket_power, premium_excess_threshold,
@@ -1293,6 +1348,13 @@ CALENDARIO
                                  sintetici da 5 a 14 giocatori; cronometro a 25
     confronto_speedup_vlc.m      due checkpoint di MAIN2, comunita' per
                                  comunita': scarto relativo massimo e tempi
+    test_cer_coalition_values_blocchi.m  v(S) a blocchi contro il ciclo di
+                                 cer_coalition_values (1-16 giocatori, con e
+                                 senza F, casi limite) e VLC identico bit per bit
+    test_coalition_excess_enum.m coalition_excess_enum contro coalition_excess
+                                 (2-20 giocatori, con e senza F) e contro un
+                                 riferimento a blocchi a 25; controlli sul VLC;
+                                 con un argomento, una comunita' vera di MAIN2
 
 
 ================================================================================

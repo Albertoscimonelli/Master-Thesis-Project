@@ -1,0 +1,17 @@
+InsiemeCriteri,Scheda,Membri,Fascia,Penetrazione_pct,NMetodiNonDominati,NMetodiTotali,MetodiNonDominati
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_0_25_0,25,2,100,6,10,Equal Split; Remuneration Model 1; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_10_10_0,20,1,50,8,10,Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_5_15_0,20,2,75,7,10,Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley; Tri-level EP
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),CER_6_19_0,25,1,76,7,10,Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_0_25_0,25,2,100,2,10,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_10_10_0,20,1,50,4,10,Equal Split; Remuneration Model 1; Similarity-Utilization; Adaptive Sampling Shapley
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_5_15_0,20,2,75,2,10,Equal Split; Similarity-Utilization
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),CER_6_19_0,25,1,76,1,10,Equal Split
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_0_25_0,25,2,100,5,10,Variance Least Core; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_10_10_0,20,1,50,4,10,Variance Least Core; Proportional to Consumption; Pearson Key; Tri-level EP
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_5_15_0,20,2,75,1,10,Variance Least Core
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),CER_6_19_0,25,1,76,1,10,Variance Least Core
+Tutti i criteri normativi + IS + VAN_min,CER_0_25_0,25,2,100,6,10,Equal Split; Remuneration Model 1; Pearson Key; Similarity-Utilization; Adaptive Sampling Shapley; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_10_10_0,20,1,50,7,10,Variance Least Core; Equal Split; Proportional to Consumption; Remuneration Model 1; Pearson Key; Adaptive Sampling Shapley; Tri-level EP
+Tutti i criteri normativi + IS + VAN_min,CER_5_15_0,20,2,75,3,10,Equal Split; Remuneration Model 1; Adaptive Sampling Shapley
+Tutti i criteri normativi + IS + VAN_min,CER_6_19_0,25,1,76,4,10,Variance Least Core; Equal Split; Remuneration Model 1; Adaptive Sampling Shapley

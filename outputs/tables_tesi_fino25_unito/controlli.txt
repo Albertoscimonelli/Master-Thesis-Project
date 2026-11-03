@@ -12,15 +12,13 @@ ForzaIncentivante         16       16       16       16   16       16       16  
 Gini                      16       16       16       16   16       16       16       15   16       16       15       13   28   28   27   25
 Sigma                     16       16       16       16   16       16       16       15   16       16       15       13   28   28   27   25
 
-livelli nell'export: PA0 (20 comunita')
+livelli nell'export: ND1 (16 comunita'), ND1_PA1 (16 comunita'), ND1_PA2 (16 comunita'), ND1_PA3 (16 comunita'), ND2 (16 comunita'), ND2_PA1 (16 comunita'), ND2_PA2 (16 comunita'), ND2_PA3 (15 comunita'), ND3 (16 comunita'), ND3_PA1 (16 comunita'), ND3_PA2 (15 comunita'), ND3_PA3 (13 comunita'), PA0 (28 comunita'), PA1 (28 comunita'), PA2 (27 comunita'), PA3 (25 comunita')
 
-export vs tabelle, quota ai prosumer: 220 terne (livello, scheda, metodo); scarto massimo per metodo = {'Cascading Tree': 0.0, 'Equal Split': 0.0, 'Nucleolo': 0.0, 'Pearson Key': 0.0, 'Proportional to Consumption': 0.0, 'Remuneration Model 1': 0.0, 'Shapley': 0.0, 'Similarity-Utilization': 0.0, 'Tri-level EP': 0.01298, 'Variance Least Core': 0.0, 'Weighted Solidarity': 0.0}
+export vs tabelle, quota ai prosumer: 3118 terne (livello, scheda, metodo); scarto massimo per metodo = {'Adaptive Sampling Shapley': 0.0, 'Cascading Tree': 0.0, 'Equal Split': 0.0, 'Nucleolo': 0.0, 'Pearson Key': 0.0, 'Proportional to Consumption': 0.0, 'Remuneration Model 1': 0.0, 'Shapley': 0.0, 'Similarity-Utilization': 0.0, 'Tri-level EP': 0.0, 'Variance Least Core': 0.0, 'Weighted Solidarity': 0.0}
 
-metodi esclusi dai grafici grezzi perche' l'export e' superato: ['Tri-level EP']
+metodi esclusi dai grafici grezzi perche' l'export e' superato: []
 
 per ogni (comunita', indicatore) il migliore vale 1 e il peggiore 0: min max = 0.00e+00, min min = 1.000000
-
-F01, F04/F05, F07, F08 e F13 NON prodotte: l'export (outputs/workspace/export_fino18) non contiene 8 delle 28 comunita' delle tabelle. Servono i valori grezzi di questo run: esporta_run.m vuole il workspace con AGR e LIV, che MAIN2 non salva (salva solo il checkpoint RESULTS).
 
 scomposizione della varianza (pesata), per indicatore:
                          eta2_penetrazione  eta2_taglia  residuo_interazione

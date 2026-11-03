@@ -615,3 +615,28 @@ Le uscite vanno in `outputs/repliche/unito/rNN/`, con la stessa struttura dei bl
 - **Con `maxUtenti` 18** si ottiene la vista fino a 18 membri, con il Nucleolo. È in sospeso.
 - **Niente divisione 5-18 contro 20-25** (decisione del 3 novembre): con la stabilità a ogni
   taglia gli indicatori ci sono tutti, e l'analisi si legge intera.
+
+## Rapporto finale sulle repliche (3 novembre 2026)
+
+[`outputs/report/RISULTATI_repliche_2026-11-03.html`](../outputs/report/RISULTATI_repliche_2026-11-03.html)
+è la pagina unica con tutti i risultati della lettura unita: tabelle, 14 grafici, commento di
+ciascuno e conclusioni rispetto alla domanda di ricerca. La scrive `rapporto_repliche.py`:
+
+```bash
+venv/Scripts/python.exe -I CER_repliche/aggrega_repliche.py --blocco unito   # aggregato (7 s)
+venv/Scripts/python.exe -I CER_repliche/rapporto_repliche.py                 # pagina (circa 1 minuto)
+```
+
+- **Fonti:** `outputs/repliche/unito/aggregato/` e, per replica, `export/` e `tables/`. Solo
+  r01-r20: **r00 non entra in nessun numero**, è il controllo del generatore.
+- **Controlli:** ogni numero del testo viene dai CSV. Ogni affermazione qualitativa ha un controllo
+  e lo script non scrive la pagina se i dati non la sostengono.
+- **Due risultati nuovi rispetto al disegno di partenza:**
+  - **Soglia GSE al 55%:** morde in 70 comunità su 5.900 (1,2%, massimo 81%), tutte nel livello base
+    e a penetrazione fino al 30%. L'eccedenza spetta alle sole imprese, quindi la ripartizione non
+    cambia (README principale §7.4). In r00 non mordeva mai.
+  - **Inclusione LIHC:** calcolabile solo a 25 membri e in 8 repliche su 20 (6,6% delle comunità).
+    Resta preliminare: P50, y* e markup sono ancora `?` in `CER_input.txt`.
+- **Dove sono i dati dei run:** `export/` e `checkpoint.mat` di ogni replica sono versionati
+  (sezione "Dati versionati"). `tables/` e `workspace.mat` restano locali e si rigenerano dal
+  checkpoint con `MAIN2_RIPRENDI=1`.

@@ -1,0 +1,32 @@
+Controlli su r00 della lettura unita (3 novembre 2026)
+
+Riferimento: outputs/repliche/prova_regola_shapley/, cioe' il run unito del 28 ottobre con la regola
+del solo Shapley applicata (unisci_blocchi del 29 ottobre). Nuovo: outputs/repliche/unito/r00/.
+
+1. Campi di RESULTS (confronta_risultati_stabilita.m, registro in
+   confronto_r00_con_prova_regola_shapley.txt), colonne di stabilita' escluse:
+   diversi CFG e scheda (percorsi), tempo_analisi_s e tempo_figure_s (tempi), e scarti numerici
+   piccoli in metodi, Tcmp, Tfair, NPV, soglia, fase1, Tfin, forza, forzaLorda.
+
+2. Dove cadono gli scarti, per taglia (scarto relativo massimo, denominatore max(1, |valore|)):
+   n= 5 ( 13 comunita'): quote 1.0e-13 | Tfair 5.5e-14 | NPV 1.4e-13
+   n= 8 ( 15 comunita'): quote 1.2e-13 | Tfair 6.2e-14 | NPV 1.2e-13
+   n=10 ( 16 comunita'): quote 4.8e-12 | Tfair 3.1e-13 | NPV 3.9e-12
+   n=15 ( 61 comunita'): quote 8.1e-07 | Tfair 6.4e-08 | NPV 1.0e-05
+   n=18 ( 63 comunita'): quote 1.5e-06 | Tfair 3.7e-07 | NPV 9.6e-06
+   n=20 ( 63 comunita'): quote 0       | Tfair 0       | NPV 0
+   n=25 ( 64 comunita'): quote 0       | Tfair 0       | NPV 0
+   Il campo "forza" differisce a 5-18 membri solo per rumore di macchina (1e-16, per esempio
+   forza.scartoEfficienza 2.0e-16 contro 0).
+
+3. Per metodo, scarto massimo sulle quote in rapporto a v(N): solo il Variance Least Core supera
+   1e-11, con 2.13e-08 a 15 membri e 1.14e-08 a 18 membri. La tolleranza di convergenza del VLC
+   e' 2e-6 di v(N) (tolConv = 2 * tolRel * v(N)): gli scarti sono 100 volte sotto.
+
+4. Tabelle fra comunita' (griglia_vincitori.csv di tutti i livelli, insieme dei primi a pari
+   merito): 3245 celle confrontate, cambiano solo
+     CoalizioniInstabili, 20-25 membri: 127 celle
+     EccessoMax_EUR,      20-25 membri: 127 celle
+   cioe' la stabilita' a 20-25, che nel run del 28 ottobre non c'era. Le altre 2991 celle sono
+   identiche. 412 file CSV in entrambe le cartelle, 54 identici al byte (gli altri contengono la
+   stabilita' a 20-25 o i suoi effetti).

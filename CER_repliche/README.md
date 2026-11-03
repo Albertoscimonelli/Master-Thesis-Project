@@ -10,7 +10,8 @@ con famiglie diverse.
   (fase 1, in fondo);
 - blocco **20-25** fatto, con la stabilità estesa fin lì: 20 repliche più l'identità, tutti i
   livelli, finito il 3 novembre alle 00:26, risultati sotto (fase 2, in fondo);
-- manca la lettura unita 5-25 di ogni replica, con il suo aggregato (passo 4).
+- **lettura unita 5-25** fatta il 3 novembre: 21 repliche da 295 comunità, un solo Shapley, tutti
+  gli indicatori a ogni taglia. È l'analisi completa, risultati sotto.
 
 ## Perché servono
 
@@ -153,10 +154,13 @@ Le conclusioni del rapporto del 28 ottobre non cambiano. Le tabelle ufficiali di
 **Cosa è nel repository:**
 - per ogni replica finita, la cartella `outputs/repliche/<blocco>/rNN/export/`, con 5 CSV in
   formato lungo;
-- tutte e 21 le repliche di `fino15`, `da18` e `da20a25`.
+- tutte e 21 le repliche di `fino15`, `da18` e `da20a25`;
+- dal 3 novembre anche le 21 della lettura unita, in `outputs/repliche/unito/`.
 
-**Dal 1 novembre si versiona anche `rNN/checkpoint.mat`** (i `RESULTS`, da 1 a 4 MB). È l'unica
-parte che costa ore di calcolo, ed è ciò che `unisci_blocchi` legge per la lettura unita.
+**Dal 1 novembre si versiona anche `rNN/checkpoint.mat` dei tre blocchi** (i `RESULTS`, da 1 a 4
+MB). È l'unica parte che costa ore di calcolo, ed è ciò che `unisci_blocchi` legge per la lettura
+unita. I checkpoint uniti (9 MB l'uno) restano locali: `unisci_repliche.sh` li rifà dai blocchi
+in meno di un'ora.
 
 **Cosa resta locale:** `tables/` e `workspace.mat`. Si rigenerano dal checkpoint con
 `MAIN2_RIPRENDI=1`, cioè la sola analisi fra comunità, ed `esporta_run_livelli`.
@@ -178,13 +182,15 @@ Da leggere prima di usarli:
   - `da20a25` ne ha 10: mancano lo Shapley esatto e il Nucleolo.
   - Per leggere i blocchi insieme vale la regola del solo Shapley: fino a 18 membri si tolgono le
     righe dell'AS, da 20 l'AS si rinomina "Shapley".
-- **I file ufficiali della lettura unita arriveranno col passo 4,** in
-  `outputs/repliche/unito/rNN/export/`, con le stesse colonne.
-  - `tfair_lungo`, `quote_membri` e `virtuosita` sono per comunità e non cambiano.
-  - `punteggi_orientati` invece si ricalcola sull'insieme di metodi confrontati, che cambia
-    togliendo l'AS. L'analisi va quindi provata sui blocchi e fatta girare sugli `unito/`.
-- **Volume a fine run:** circa 190 MB e 2 milioni di righe. `quote_membri` di tutte le repliche
-  (1,2 milioni di righe) supera il limite di Excel; pandas lo legge in pochi secondi.
+- **Per l'analisi 5-25 si usano i file della lettura unita,** in
+  `outputs/repliche/unito/rNN/export/`, con le stesse colonne. Lì l'AS da 20 membri in su si
+  chiama già "Shapley".
+  - `punteggi_orientati` ha i soli 10 metodi confrontati, con un solo Shapley.
+  - `tfair_lungo` e `quote_membri` tengono invece tutti i metodi calcolati. Fino a 18 membri
+    compaiono anche "Adaptive Sampling Shapley" e "Nucleolo": per l'analisi 5-25 vanno tolti. Il
+    primo è un doppione dello Shapley esatto, il secondo c'è solo fino a 18.
+- **Volume:** circa 190 MB nei tre blocchi e 187 MB nella lettura unita. `quote_membri` di tutte
+  le repliche (1,2 milioni di righe) supera il limite di Excel; pandas lo legge in pochi secondi.
 
 ## Controlli fatti (29 ottobre 2026)
 
@@ -395,6 +401,58 @@ sulle 2540 comunità di r01-r20, e quota di comunità in cui il metodo sta nel n
 Il VLC sta nel nucleo per costruzione quando il nucleo non è vuoto: il risultato dice che il nucleo
 non è mai vuoto, in nessuna delle 2667 comunità, e che gli altri metodi ci cadono quasi mai.
 
+## Risultati della lettura unita 5-25 membri (3 novembre 2026)
+
+È l'analisi completa. Le comunità sono 295 per replica: 5, 8, 10, 15, 18, 20 e 25 membri, tutti i
+livelli. I metodi sono 10, con un solo Shapley, esatto fino a 18 membri e AS da 20. Ci sono tutti
+gli indicatori a ogni taglia, stabilità compresa. Numeri in
+[`outputs/repliche/unito/aggregato/sintesi.md`](../outputs/repliche/unito/aggregato/sintesi.md).
+
+**Tengono:**
+- **I tre poli.** Quota delle celle del livello base in cui il metodo è fra i primi:
+  - su Gini, l'Equal Split (100%);
+  - su merito e stabilità, il Variance Least Core (98-100%), poi lo Shapley (45-94%);
+  - sulla forza incentivante, Pearson Key e Tri-level EP (95%).
+- **Il capovolgimento con la penetrazione, in 20 repliche su 20:**
+  - τ(Gini, forza incentivante) va da −0,34 a −0,83 (mediane, fascia 1 → 4; r00 −0,23 → −0,91);
+  - τ(Fairness Index, forza incentivante) va da −0,57 a +0,50 (fascia 1 → 3; r00 −0,56 → +0,53).
+- **Il trade-off uguaglianza-incentivo:**
+  - scegliere Gini fa perdere 0,82 della forza incentivante (0,79-0,83; r00 0,80);
+  - scegliere l'incentivo fa perdere 0,88 su Gini (0,85-0,91; r00 0,94);
+  - merito e stabilità non si fanno concorrenza (0,00-0,01).
+- **La composizione pesa poco.** PA e imprese invertono il 10% delle coppie (mediana), contro il
+  13% di r00.
+- **I vincitori:**
+  - il vincitore della cella è lo stesso nell'83-100% delle repliche, secondo l'indicatore (76%
+    per l'allineamento lordo);
+  - coincide con quello di r00 nel 60-100% delle celle (46%);
+  - almeno un primo in comune con r00 c'è nel 96-100% dei casi (93%).
+- **Da cosa dipendono i punteggi.** La penetrazione resta il primo fattore, con il 59-72% della
+  varianza (r00 71-82%). La taglia pesa il 4-10%, i partecipanti il 12-24%.
+- **Inversioni lungo gli assi.** Lungo la penetrazione si inverte il 16-26% delle coppie di metodi
+  (mediana per taglia), lungo la taglia il 7-18% (per fascia).
+
+**Cambia rispetto a r00:**
+- **L'allineamento lordo dipende da famiglie e taglia.**
+  - La penetrazione ne spiega l'11% della varianza (r00 53%); la taglia il 29%, l'interazione il
+    27%, i partecipanti il 33%.
+  - Similarity-Utilization è fra i primi nel 44% delle celle, contro il 71% di r00. Segue
+    Remuneration Model 1 (36%).
+- **Al 100% di prosumer il legame merito-incentivo si indebolisce, ma resta positivo.** τ(Fairness
+  Index, forza incentivante) in fascia 4 vale 0,16 di mediana (0,01-0,40) ed è positivo in tutte
+  e 20 le repliche; r00 vale 0,39.
+- **Al 100% di prosumer il legame fra uguaglianza e merito sparisce.** τ(Gini, Fairness Index) in
+  fascia 4 vale −0,06 di mediana (−0,27/+0,11) e ha il segno della mediana in 16 repliche su 20;
+  r00 vale −0,31.
+- **Lo Shapley è fra i primi sulla stabilità più spesso:** nel 94% delle celle sull'eccesso massimo
+  (r00 82%) e nel 45% sulle coalizioni instabili (r00 29%).
+
+**r00 fuori dall'intervallo delle repliche:**
+- τ(Gini, forza incentivante) nelle fasce 1, 2 e 3: −0,23, −0,72 e −0,86, contro −0,43/−0,26,
+  −0,81/−0,74 e −0,84/−0,80;
+- τ(Gini, Fairness Index) nelle fasce 1 e 4: 0,46 e −0,31, contro 0,17/0,41 e −0,27/+0,11;
+- la perdita su Gini scegliendo l'incentivo: 0,94, contro 0,85-0,91.
+
 ## Blocco 18-25 membri, in due fasi (dal 30 ottobre 2026)
 
 **Fase 1: le comunità da 18 membri** (63 a replica, r00 compresa), con v(S) a blocchi. **Fatta il
@@ -531,18 +589,29 @@ scheda r01/CER_6_19_0 in ogni istanza):
     50 a 4 h 10 a PC acceso da giorni, cioè 80-88 h. Il run ha impiegato 81 h di calendario,
     comprese le fermate del limite del VLC e la sospensione.
 
-**Lettura unita**, per ogni replica NN, dopo le due fasi:
+**Lettura unita (passo 4, 3 novembre).** `unisci_repliche.sh` fa per ogni replica due chiamate:
 
 ```bash
+bash CER_repliche/unisci_repliche.sh 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+venv/Scripts/python.exe -I CER_repliche/aggrega_repliche.py --blocco unito
+# cio' che lo script fa per la replica NN:
 matlab -batch "addpath('CER_repliche'); addpath('outputs/workspace/strumenti'); unisci_blocchi('CER_repliche/rNN', {'outputs/repliche/fino15/rNN/checkpoint.mat', 'outputs/repliche/da18/rNN/checkpoint.mat', 'outputs/repliche/da20a25/rNN/checkpoint.mat'}, 'repNN_unito', 25)"
 MAIN2_RIPRENDI=1 MAIN2_RADICE=CER_repliche/rNN MAIN2_MAX_UTENTI=25 MAIN2_IND=1 MAIN2_CARTELLA=repNN_unito matlab -batch "MAIN2"
 ```
 
-Note:
-- Con `maxUtenti` 18 si ottiene la vista fino a 18 membri, con il Nucleolo.
+Le uscite vanno in `outputs/repliche/unito/rNN/`, con la stessa struttura dei blocchi:
+- **Tempi:** 2-4 minuti a replica, 8 minuti e mezzo la prima; 21 repliche dalle 9:53 alle 10:59
+  del 3 novembre. Nessun errore, 295 comunità in ognuna.
+- **r00 unita contro la prova della regola Shapley sul run del 28 ottobre**
+  (`outputs/repliche/prova_regola_shapley/`; registri in `outputs/repliche/unito/controlli_r00.txt`
+  e `confronto_r00_con_prova_regola_shapley.txt`):
+  - **Per comunità:** identica a 20-25 membri, entro 5e-12 a 5-10 membri. A 15 e 18 membri
+    differisce solo il VLC, al massimo di 2,1e-8 di v(N), 100 volte sotto la sua tolleranza di
+    convergenza (2e-6 di v(N)). Tutti gli altri metodi coincidono entro 1e-11 di v(N).
+  - **Fra comunità:** su 3245 celle dei vincitori cambiano solo le 254 della stabilità a 20-25
+    membri (EccessoMax_EUR e CoalizioniInstabili), che nel run del 28 ottobre erano vuote.
 - **r00 a 20-25 viene dal blocco `da20a25`,** non dal run del 28 ottobre, dove la stabilità a
   quelle taglie non c'è.
-- **Passo 4 del piano:** uno script (`unisci_repliche.sh`, da scrivere) fa queste due chiamate per
-  ogni replica. Mette le uscite in `outputs/repliche/unito/rNN/` con la stessa struttura dei
-  blocchi, così `aggrega_repliche.py --blocco unito` le legge senza modifiche.
-- La vista fino a 18 membri con il Nucleolo è in sospeso.
+- **Con `maxUtenti` 18** si ottiene la vista fino a 18 membri, con il Nucleolo. È in sospeso.
+- **Niente divisione 5-18 contro 20-25** (decisione del 3 novembre): con la stabilità a ogni
+  taglia gli indicatori ci sono tutti, e l'analisi si legge intera.

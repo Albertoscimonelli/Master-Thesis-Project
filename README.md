@@ -31,7 +31,7 @@ varia taglia e penetrazione dei prosumer.
 >   - L'inclusione LIHC non è valutabile: non c'è nessuna famiglia vulnerabile (§7.7), e va tolta
 >     dalla tesi.
 >   - Restano fuori le schede da 50-100 membri (§14.1).
-> - **Repliche dei partecipanti, in corso** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)).
+> - **Repliche dei partecipanti, fatte** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)).
 >   Fino a 25 membri le famiglie simulate erano tutte persone sole, qualunque composizione
 >   dichiarasse la scheda. 20 repliche estraggono le famiglie dentro la cella ISTAT dichiarata.
 >   - **Fatte tutte le taglie: 5-15 membri (29 ottobre), 18 membri (30 ottobre), 20-25 membri (3
@@ -42,7 +42,11 @@ varia taglia e penetrazione dei prosumer.
 >   - **La stabilità c'è a ogni taglia.** A 20-25 membri il Variance Least Core sta nel nucleo in
 >     tutte le 2667 comunità; gli altri metodi quasi mai.
 >   - **Il limite di iterazioni del VLC è passato da 1000 a 5000** (§7.11.6).
->   - **Manca la lettura unita 5-25** di ogni replica, con il suo aggregato.
+>   - **Lettura unita 5-25 fatta (3 novembre).** È l'analisi completa: 295 comunità per replica, un
+>     solo Shapley, tutti gli indicatori a ogni taglia
+>     ([`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md)).
+>     Al 100% di prosumer il legame merito-incentivo resta positivo ma si indebolisce (0,16 contro
+>     0,39 di r00).
 > - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
 >   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
 >   (`coalition_excess_enum.m`, §14.1). Fino a 18 membri le tabelle restano identiche al byte.
@@ -244,7 +248,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
-| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `avvia_da20a25.sh` lo apre in una finestra fuori da VS Code, con `veglia.ps1` contro la sospensione per inattività; `stato_run.sh` riassume il run in corso; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
+| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `avvia_da20a25.sh` lo apre in una finestra fuori da VS Code, con `veglia.ps1` contro la sospensione per inattività; `stato_run.sh` riassume il run in corso; `unisci_repliche.sh` fa la lettura unita 5-25 di ogni replica; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -296,7 +300,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run precedenti, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e a 25 membri senza PA (13 ottobre). Tutte superate dal run unito del 28 ottobre (riga sotto) |
 | `outputs/tables_main2_fino18_IND/`, `outputs/tables_main2_solo2025_IND_speedup/`, `outputs/tables_main2_fino25_unito/` | Asse imprese, versionate: 168 comunità fino a 18 membri (27 ottobre, §7.11.1), 127 da 20-25 membri (28 ottobre, §7.11.2) e l'analisi unita delle 295 (§7.11.4). Numeri per la tesi in `outputs/tables_tesi_fino25_unito/` |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
-| `outputs/repliche/` | Uscite delle repliche per blocco di taglia (`fino15/`, `da18/`, `da20a25/`). Versionati: l'export di ogni replica (5 CSV in `rNN/export/`, dal 1 novembre 2026; come leggerli in [`CER_repliche/README.md`](CER_repliche/README.md)), l'aggregato fra le repliche e `avanzamento.txt`. Locali: tabelle e workspace di ogni replica. Ci sono poi le cartelle dei controlli (`controlli_fase1/`, `controlli_fase2/`, `prova_scalabilita/`) |
+| `outputs/repliche/` | Uscite delle repliche per blocco di taglia (`fino15/`, `da18/`, `da20a25/`) e della lettura unita 5-25 (`unito/`, l'analisi completa). Versionati: l'export di ogni replica (5 CSV in `rNN/export/`, dal 1 novembre 2026; come leggerli in [`CER_repliche/README.md`](CER_repliche/README.md)), l'aggregato fra le repliche e `avanzamento.txt`. Locali: tabelle e workspace di ogni replica. Ci sono poi le cartelle dei controlli (`controlli_fase1/`, `controlli_fase2/`, `prova_scalabilita/`) |
 | `outputs/report/` | Rapporto finale con figure e conclusioni (`RISULTATI_e_conclusioni_RQ_2026-10-28.html`, §7.11.5), pagina dei risultati del 13 ottobre (`regole_ripartizione_cer.html`, superata), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
 | `GUIDA_modelli_distribuzione.md` | Derivazione matematica dei modelli di ripartizione e degli indicatori |
@@ -1792,7 +1796,7 @@ communities on the Italian day-ahead electricity market: A scenario analysis*. E
 [DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
 dati a gennaio 2025, commit `7560715`.
 
-#### 7.11.6 Repliche dei partecipanti (dal 29 ottobre 2026, in corso)
+#### 7.11.6 Repliche dei partecipanti (29 ottobre - 3 novembre 2026)
 
 **Il problema.**
 - Le schede da 5 a 25 membri dichiarano una composizione ISTAT per celle: componenti × condizione
@@ -1929,14 +1933,36 @@ Cambiano:
   - **Perché con un'istanza sola:** a 25 membri il VLC è limitato dalla banda verso la RAM. Due
     istanze insieme impiegano 4 min 48 s a comunità, una da sola 2 min 31 s (prova del 29
     ottobre).
-- **Dopo il run: la lettura unita.** Per ogni replica:
-  1. si uniscono i tre blocchi (`fino15`, `da18`, `da20a25`: 295 comunità) con `unisci_blocchi`;
-  2. si applica la regola del solo Shapley;
-  3. si rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
+- **La lettura unita 5-25 (3 novembre)** è l'analisi completa, e non si divide più per gruppi di
+  taglia. `CER_repliche/unisci_repliche.sh` fa tre cose per ogni replica:
+  1. unisce i tre blocchi (`fino15`, `da18`, `da20a25`: 295 comunità) con `unisci_blocchi`;
+  2. applica la regola del solo Shapley;
+  3. rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
 
-  Poi `aggrega_repliche.py` confronta le repliche, con una sezione che separa 5-18 da 20-25
-  membri, e r00 unita si confronta con il run unito del 28 ottobre. La vista 5-18 membri con il
-  Nucleolo è in sospeso.
+  Le 21 repliche hanno impiegato poco più di un'ora, senza errori. Poi `aggrega_repliche.py
+  --blocco unito`. Numeri in
+  [`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md).
+  - **Controllo su r00,** contro il run unito del 28 ottobre con la regola Shapley:
+    - per comunità identica a 20-25 membri;
+    - a 15-18 membri differisce solo il VLC, entro 2,1e-8 di v(N), 100 volte sotto la sua
+      tolleranza;
+    - fra comunità cambiano solo le 254 celle della stabilità a 20-25 membri, prima vuote, su
+      3245.
+  - **Reggono:**
+    - i tre poli (Equal Split su Gini; VLC e Shapley su merito e stabilità; Pearson Key e
+      Tri-level EP sulla forza incentivante);
+    - il capovolgimento con la penetrazione, in 20 repliche su 20;
+    - il trade-off uguaglianza-incentivo (0,82 e 0,88);
+    - l'effetto piccolo della composizione (10%);
+    - la penetrazione come primo fattore (59-72% della varianza).
+  - **Cambia rispetto a r00:**
+    - l'allineamento lordo dipende da famiglie e taglia: la penetrazione ne spiega l'11%, contro
+      il 53%;
+    - al 100% di prosumer τ(Fairness Index, forza incentivante) scende a 0,16 (r00 0,39) ma resta
+      positivo in 20 repliche su 20;
+    - nella stessa fascia τ(Gini, Fairness Index) va a zero (−0,06; r00 −0,31).
+  - La vista fino a 18 membri con il Nucleolo è in sospeso. Dettagli in
+    [`CER_repliche/README.md`](CER_repliche/README.md).
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,

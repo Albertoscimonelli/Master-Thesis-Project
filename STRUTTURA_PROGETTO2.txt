@@ -106,6 +106,8 @@ Project/
 |   |-- stato_run.sh            [v]     Riepilogo del run in corso
 |   |-- aggrega_repliche.py     [v]     Confronto fra le repliche
 |   |-- unisci_blocchi.m        [v]     Lettura unita di piu' blocchi di taglia
+|   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica
+|   |                                   (outputs/repliche/unito/rNN/)
 |   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
 |   +-- r00 ... r20/            [l]     Schede e profili, si rigenerano dal seed
 |

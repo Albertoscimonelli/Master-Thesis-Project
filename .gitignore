@@ -354,4 +354,6 @@ outputs/repliche/*/r[0-9]*/*
 !outputs/repliche/*/r[0-9]*/export/
 outputs/repliche/**/*.mat
 !outputs/repliche/*/r[0-9]*/checkpoint.mat
+# i checkpoint della lettura unita (9 MB l'uno) si rifanno dai blocchi con unisci_repliche.sh
+outputs/repliche/unito/r[0-9]*/checkpoint.mat
 outputs/repliche/prova_regola_shapley/tables/

@@ -1,13 +1,18 @@
 # Piano d'azione: analisi finale delle repliche
 
+> **Piano eseguito il 3 novembre 2026.** Questo documento resta come registro delle decisioni. Lo
+> stato e i risultati sono nella sezione 7; come rifare l'analisi è in
+> [`COME_RIFARE_L_ANALISI.md`](COME_RIFARE_L_ANALISI.md); i risultati commentati sono in README §7.13.
+
 **Decisioni prese (1 novembre 2026):**
 - **Versione B:** Nucleolo escluso, stessi 10 metodi da 5 a 25 membri.
 - **D1:** il VAN è un'analisi complementare.
-- **D2:** le figure F01-F13 usano tutte le repliche insieme; r00 va in appendice.
+- **D2:** le figure F01-F13 usano tutte le repliche insieme; r00 non entra nei risultati (decisione
+  successiva: resta solo come controllo).
 - **D3:** figure in inglese.
-- **D4:** proposta nella sezione 5, da confermare.
-- **Colori:** proposta nella sezione 6, da confermare.
-- **Branch:** `ccr-13867105-vwc5b6`, sotto-branch di `70-results-analysis`.
+- **D4:** regge con almeno 15 repliche su 20, forte con almeno 17 (sezione 5).
+- **Colori:** palette Polimi della sezione 6, in `CER_repliche/stile_tesi.py`.
+- **Branch:** `ccr-13867105-vwc5b6`, unito in `main` (PR #72).
 
 **Obiettivo.** Martedì, a run 20-25 finito, lanci **un solo comando** e ottieni tutte le tabelle,
 le figure e i numeri per chiudere i capitoli 6-8. Nessun valore scritto a mano. Se un'affermazione

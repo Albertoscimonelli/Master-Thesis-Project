@@ -27,8 +27,7 @@ le repliche.
 
   Per il τ-b di Kendall c'è già un commento `% [Citation needed]`: lascialo com'è.
 - **Il commento iniziale.** Riscrivi il commento `% Assumption:` all'inizio del capitolo così:
-  "the numbers refer to the repository on 1 November 2026; the values marked TBD are filled
-  after the final run of the 20-25 member block."
+  "the numbers refer to the final analysis of the participant replicas, 3 November 2026."
 - **Cosa consegnare.**
   1. Il LaTeX completo della nuova Sezione 6.1, pronto da incollare.
   2. Un elenco breve dei cambiamenti fatti.
@@ -112,7 +111,9 @@ Da inserire dopo 6.1.2 o 6.1.3, dove scorre meglio. Contenuto:
   valido anche considerando il numero di affermazioni controllate.
 - **Il numero di repliche basta?** Ogni conclusione è ricalcolata separatamente sulle repliche
   r01-r10 e r11-r20. Le due metà concordano sull'esito in
-  `\textcolor{red}{[TBD: k di K conclusioni]}`. Come controllo aggiuntivo, 1000 ricampionamenti
+  327 conclusioni su 334 (`outputs/repliche/unito/aggregato/robustezza.csv`; 328 reggono in almeno
+  15 repliche su 20, 321 in almeno 17, nessuna si inverte, e quelle che non reggono riguardano tutte
+  l'allineamento lordo). Come controllo aggiuntivo, 1000 ricampionamenti
   bootstrap delle repliche \cite{efron1993} danno la frequenza con cui ogni esito resta invariato
   (in appendice).
 - **Sostituisci la frase "no confidence interval is attached to the results"** con la distinzione
@@ -155,7 +156,7 @@ Da inserire dopo 6.1.2 o 6.1.3, dove scorre meglio. Contenuto:
       sola, perché il Variance Least Core a 25 membri è limitato dalla banda della memoria e il
       parallelo non aiuta). In totale circa 60-70 ore per le 21 repliche del blocco 20-25.
     - Le specifiche come segnaposto:
-      `\textcolor{red}{[TBD: CPU, RAM, MATLAB version, Windows version]}`.
+      `\textcolor{red}{[TBD: CPU, RAM, Windows version]}`; la versione di MATLAB è la R2024b.
 
   **Usa l'opzione (b)** se io ti fornisco le specifiche, altrimenti la (a).
 - **Riproducibilità.** Il resto resta: determinismo, seed espliciti, tabelle identiche byte per

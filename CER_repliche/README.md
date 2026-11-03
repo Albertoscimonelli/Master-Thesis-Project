@@ -4,17 +4,15 @@ Servono a capire se i risultati dipendono da **quali famiglie** stanno nelle com
 composizione dichiarata. Ogni replica è la griglia di schede di sempre (solo domestici, PA, imprese)
 con famiglie diverse.
 
-**Stato al 3 novembre 2026:**
-- blocco **5-15 membri** fatto: 20 repliche più l'identità, tutti i livelli, risultati sotto;
-- comunità **da 18 membri** fatte: 20 repliche più l'identità, tutti i livelli, con v(S) a blocchi
-  (fase 1, in fondo);
-- blocco **20-25** fatto, con la stabilità estesa fin lì: 20 repliche più l'identità, tutti i
-  livelli, finito il 3 novembre alle 00:26, risultati sotto (fase 2, in fondo);
-- **lettura unita 5-25** fatta il 3 novembre: 21 repliche da 295 comunità, un solo Shapley, tutti
-  gli indicatori a ogni taglia. È l'analisi completa, risultati sotto.
-- **analisi completa** (robustezza delle conclusioni, VAN, soglia, figure e numeri della tesi): un
-  solo comando, sezione sotto. **Fatta il 3 novembre** sul PC del run: 328 conclusioni su 334
-  reggono, e dipende dai partecipanti solo l'allineamento lordo (risultati sotto).
+**Stato al 3 novembre 2026: finito.**
+- 20 repliche più l'identità r00, ciascuna con le 295 comunità da 5 a 25 membri (solo domestici,
+  PA, imprese), simulate in tre blocchi di taglia (5-15, 18, 20-25) e poi lette insieme (lettura
+  unita 5-25, `outputs/repliche/unito/`).
+- **I risultati della tesi sono l'analisi completa sulle repliche r01-r20** (sezione
+  "Risultati dell'analisi completa", sotto): 328 conclusioni su 334 reggono in almeno 15 repliche
+  su 20, e dipende dai partecipanti solo l'allineamento lordo.
+- r00 riproduce le schede originali, con le famiglie tutte persone sole: serve solo come controllo
+  del meccanismo e non entra nei risultati.
 
 ## Analisi completa: un solo comando (dal 3 novembre 2026)
 
@@ -40,7 +38,7 @@ Fa tutto, in ordine, e si ferma al primo passo che fallisce dicendo quale. Regis
 | 8 | `rapporto_repliche.py` | `outputs/report/RISULTATI_repliche_<data>.html`, il rapporto commentato |
 
 Con `tabelle/` committate l'analisi si rifà su qualunque PC: `aggrega_repliche.py` legge `tables/`
-se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`.
+se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/COME_RIFARE_L_ANALISI.md`.
 
 Regole (versione B del piano):
 - **Metodi.** 10, gli stessi da 5 a 25 membri: niente Nucleolo, un solo Shapley (esatto fino a 18,
@@ -208,7 +206,11 @@ MB). È l'unica parte che costa ore di calcolo, ed è ciò che `unisci_blocchi` 
 unita. I checkpoint uniti (9 MB l'uno) restano locali: `unisci_repliche.sh` li rifà dai blocchi
 in meno di un'ora.
 
-**Cosa resta locale:** `tables/` e `workspace.mat`. Si rigenerano dal checkpoint con
+**Dal 3 novembre si versionano anche le tabelle di MAIN2 che servono all'analisi** della lettura
+unita, in `outputs/repliche/unito/rNN/tabelle/` (circa 4,5 MB a replica, `salva_tabelle_analisi.py`):
+con quelle `analisi_finale.sh` rifà l'analisi completa su qualunque PC, senza MATLAB.
+
+**Cosa resta locale:** `tables/` complete e `workspace.mat`. Si rigenerano dal checkpoint con
 `MAIN2_RIPRENDI=1`, cioè la sola analisi fra comunità, ed `esporta_run_livelli`.
 
 | File | Una riga per | Colonne chiave |
@@ -269,235 +271,42 @@ Da leggere prima di usarli:
    - con due MATLAB la RAM libera ha mediana 2,0 GB e minimo 415 MB, a fine replica, quando le
      due istanze arrivano insieme a 4,8-5,0 GB (`outputs/repliche/da18/campioni.csv`).
 
-## Risultati del blocco 5-15 membri (29 ottobre 2026)
+## Risultati per blocco di taglia (superati)
 
-105 comunità per replica:
-- 16 del livello base (taglie 5, 8, 10 e 15 × 4 fasce di penetrazione);
-- 44 varianti con PA (PA1-PA3);
-- 45 con imprese (ND1-ND3 e ND{k}_PA{p}), che fino a 15 membri esistono solo a 15.
-
-r00 è il disegno di prima: tutte persone sole. I numeri completi sono in
-[`outputs/repliche/fino15/aggregato/sintesi.md`](../outputs/repliche/fino15/aggregato/sintesi.md) e
-nei CSV accanto.
-
-**Tengono:**
-- **I tre poli.** Quota delle celle del livello base, su tutte le repliche, in cui il metodo è fra i
-  primi:
-  - su Gini, l'Equal Split (100%);
-  - su merito e stabilità, Variance Least Core e Nucleolo (92-100%);
-  - sulla forza incentivante, Pearson Key e Tri-level EP (96% e 94%).
-- **Il capovolgimento con la penetrazione, in 20 repliche su 20.**
-  - τ(Gini, forza incentivante) scende di almeno 0,3 dalla fascia 1 alla 4: mediana da −0,19 a
-    −0,86 (r00: da −0,07 a −0,91).
-  - τ(Fairness Index, forza incentivante) è negativo nella fascia 1 e positivo nella 3 (mediana
-    −0,59 e +0,42; r00 −0,60 e +0,45).
-- **Il trade-off più caro resta uguaglianza contro incentivo.**
-  - Scegliere Gini fa perdere 0,80 della forza incentivante (0,76-0,82; r00 0,79).
-  - Scegliere l'incentivo fa perdere 0,86 di Gini (0,83-0,89; r00 0,92).
-  - Merito e stabilità non si fanno concorrenza (perdita 0,00).
-- **La composizione pesa poco.** Rispetto al livello base, PA e imprese invertono il 5-13% delle
-  coppie di metodi (mediane per livello), contro il 9-15% di r00.
-
-**Cambia:**
-- **Una parte della varianza va ai partecipanti.** Quali famiglie ci sono spiega il 15-30% della
-  varianza dei punteggi del livello base. Tranne che per l'allineamento lordo (punto sotto):
-  - la penetrazione resta il primo fattore (46-70%, r00 61-85%);
-  - la taglia sta al più all'11%.
-- **L'allineamento lordo (`AllineamentoVirtu_lordo`) dipendeva dalle persone sole.**
-  - Con famiglie vere la penetrazione ne spiega il 5% della varianza, invece dell'85%. Vale per
-    tutti e 12 i metodi (2-14%).
-  - Contano la taglia (34%), l'interazione (31%) e i partecipanti (30%).
-  - Il vincitore coincide con quello di r00 solo nel 37% delle celle.
-
-  L'indicatore misura quanto la ripartizione segue il consumo nelle ore di sole sui profili lordi, e
-  quel consumo dipende da chi è la famiglia: con persone sole quasi uguali non poteva emergere.
-- **Al 100% di prosumer il legame merito-incentivo si scioglie.**
-  - τ(Fairness Index, forza incentivante) in fascia 4 ha mediana 0,06 (da −0,12 a 0,34; r00 0,35):
-    il segno della mediana vale in 14 repliche su 20.
-  - τ(Gini, Fairness Index) in fascia 4 è −0,29 in r00 e +0,05 di mediana.
-- **Lo Shapley vince più spesso sulla stabilità.** È fra i primi sull'eccesso massimo nell'89%
-  delle celle (r00 69%) e sulle coalizioni instabili nel 46% (r00 31%).
-- **Inversioni lungo gli assi.**
-  - Lungo la penetrazione sono un po' meno: mediana 14-25% secondo la taglia, contro 21-27%.
-  - Lungo la taglia sono di più nelle fasce 2-4: mediana 5-15%, contro 0-8%.
-- **Vincitori.** Il vincitore della cella è lo stesso in 69-99% delle repliche, secondo
-  l'indicatore. Coincide con quello di r00 nel 37-100% delle celle. Almeno un primo in comune con
-  r00 c'è nel 91-100% dei casi.
-
-## Risultati delle comunità da 18 membri (30 ottobre 2026)
-
-63 comunità per replica, tutte da 18 membri:
-- 4 del livello base (una per fascia di penetrazione);
-- 12 con PA (PA1-PA3);
-- 47 con imprese (ND1-ND3 e ND{k}_PA{p}). A ND3_PA3 manca la scheda CER_13_5_0, come nei run di
-  prima (README §7.11.1).
-
-I numeri sono in
-[`outputs/repliche/da18/aggregato/sintesi.md`](../outputs/repliche/da18/aggregato/sintesi.md). Con
-una sola taglia:
-- non ci sono inversioni lungo la taglia;
-- la colonna "taglia" della varianza vale 0;
-- in r00 tutta la varianza va alla penetrazione, perché manca ogni altro asse.
-
-La lettura insieme al blocco 5-15 viene dopo la fase 2 (`unisci_blocchi`, sotto).
-
-**Tengono, come nel blocco 5-15:**
-- **I tre poli.** Quota delle celle del livello base in cui il metodo è fra i primi:
-  - su Gini, l'Equal Split (100%);
-  - su merito e stabilità, Nucleolo e Variance Least Core (100%);
-  - sulla forza incentivante, Pearson Key e Tri-level EP (94% e 92%).
-- **Il capovolgimento con la penetrazione:**
-  - τ(Gini, forza incentivante) scende di almeno 0,3 dalla fascia 1 alla 4 in 19 repliche su 20;
-  - τ(Fairness Index, forza incentivante) va da negativo a positivo in 20 su 20 (mediana −0,45 e
-    +0,49; r00 −0,49 e +0,49).
-- **Il trade-off uguaglianza-incentivo.** Scegliere Gini fa perdere 0,84 della forza incentivante
-  (0,81-0,86; r00 0,82). Merito e stabilità non si fanno concorrenza (0,00).
-- **La composizione pesa poco.** PA e imprese invertono il 9% delle coppie (mediana), contro il 12%
-  di r00.
-- **I vincitori.** Il vincitore della cella è lo stesso nell'85-100% delle repliche, secondo
-  l'indicatore (76% per l'allineamento lordo). Coincide con quello di r00 nel 70-100% delle celle
-  (44% per l'allineamento lordo). Almeno un primo in comune con r00 c'è nel 93-100% dei casi.
-
-**Cambia, come nel blocco 5-15:**
-- **L'allineamento lordo dipende dai partecipanti.**
-  - Le famiglie ne spiegano il 51% della varianza, contro l'8-19% degli altri indicatori.
-  - In r00 vince Similarity-Utilization (75% delle celle). Con famiglie vere vince più spesso
-    Remuneration Model 1 (49%).
-- **Lo Shapley è fra i primi sulle coalizioni instabili più spesso:** nel 45% delle celle, contro il
-  25% di r00.
-
-**r00 fuori dall'intervallo delle repliche:**
-- τ(Gini, Fairness Index) in fascia 1: 0,71, contro una mediana di 0,38 (0,24-0,56);
-- τ(Gini, forza incentivante) in fascia 2: −0,78, contro una mediana di −0,85 (−0,93/−0,82);
-- la perdita di Gini quando si sceglie l'incentivo: 0,96, contro una mediana di 0,89 (0,88-0,94).
-
-**Diverso dal blocco 5-15.** Al 100% di prosumer il legame merito-incentivo non si scioglie.
-τ(Fairness Index, forza incentivante) in fascia 4 ha mediana 0,22 (0,09-0,42; r00 0,31) ed è
-positivo in tutte e 20 le repliche. Nel blocco 5-15 la mediana era 0,06, con il segno della mediana
-in 14 repliche su 20.
-
-## Risultati del blocco 20-25 membri (3 novembre 2026)
-
-127 comunità per replica, 63 da 20 membri e 64 da 25, con 10 metodi: niente Shapley esatto né
-Nucleolo. I numeri sono in
-[`outputs/repliche/da20a25/aggregato/sintesi.md`](../outputs/repliche/da20a25/aggregato/sintesi.md).
-
-Due avvertenze su questo aggregato, che la lettura unita risolve:
-- l'AS compare col suo nome, "Adaptive Sampling Shapley";
-- la scomposizione della varianza lo esclude, perché `aggrega_repliche.py` lo tratta come doppione
-  dello Shapley esatto, che qui non c'è. Nella lettura unita si chiamerà "Shapley" e rientrerà.
-
-**Tengono, come a 5-18 membri:**
-- **I tre poli.** Quota delle celle del livello base in cui il metodo è fra i primi:
-  - su Gini, l'Equal Split (100%);
-  - su merito e stabilità, il Variance Least Core (100%);
-  - sulla forza incentivante, Tri-level EP, Pearson Key e Similarity-Utilization (97%, 94% e 87%).
-- **Il capovolgimento con la penetrazione, in 20 repliche su 20:**
-  - τ(Gini, forza incentivante) scende di almeno 0,3 dalla fascia 1 alla 4 (mediana −0,42 e
-    −0,84);
-  - τ(Fairness Index, forza incentivante) va da negativo a positivo (mediana −0,52 e +0,53; r00
-    −0,40 e +0,56).
-- **Il trade-off uguaglianza-incentivo.** Scegliere Gini fa perdere 0,84 della forza incentivante
-  (0,82-0,85; r00 0,81). Merito e stabilità non si fanno concorrenza (0,00).
-- **La composizione pesa poco.** PA e imprese invertono l'8-9% delle coppie (mediana), contro il
-  13% di r00.
-- **La taglia pesa pochissimo.** Fra 20 e 25 membri si inverte lo 0-4% delle coppie, secondo la
-  fascia; lungo la penetrazione il 17-21%.
-- **I vincitori.** Il vincitore della cella è lo stesso nell'86-100% delle repliche, secondo
-  l'indicatore (77% per l'allineamento lordo). Coincide con quello di r00 nel 61-100% delle celle
-  (52% per l'allineamento lordo). Almeno un primo in comune con r00 c'è nel 95-100% dei casi.
-
-**Cambia, come a 5-18 membri:**
-- **L'allineamento lordo dipende dai partecipanti.**
-  - Le famiglie ne spiegano il 35% della varianza, contro il 5-18% degli altri indicatori.
-  - In r00 vince Similarity-Utilization (75% delle celle). Con famiglie vere vince più spesso
-    Remuneration Model 1 (57%).
-- **L'AS è fra i primi sulle coalizioni instabili più spesso:** nel 42% delle celle, contro il 25%
-  di r00.
-
-**Al 100% di prosumer il legame merito-incentivo regge, come a 18 membri.** τ(Fairness Index, forza
-incentivante) in fascia 4 ha mediana 0,24 (0,13-0,40) ed è positivo in tutte e 20 le repliche. r00
-vale 0,44: sovrastima il legame.
-
-**r00 fuori dall'intervallo delle repliche:**
-- τ(Gini, Fairness Index): 0,60 contro 0,38 (0,24-0,51) in fascia 1; −0,38 contro −0,16
-  (−0,31/−0,07) in fascia 4;
-- τ(Gini, forza incentivante): −0,76 contro −0,84 (−0,89/−0,80) in fascia 2; −0,91 contro −0,81
-  (−0,87/−0,76) in fascia 3;
-- τ(Fairness Index, forza incentivante): −0,40 contro −0,52 (−0,60/−0,42) in fascia 1;
-- le perdite fra uguaglianza e incentivo: 0,95 contro 0,88 (0,84-0,91) scegliendo l'incentivo, 0,81
-  contro 0,84 (0,82-0,85) scegliendo Gini.
-
-**Stabilità a 20-25 membri, per la prima volta.** Eccesso massimo in percentuale di v(N), mediana
-sulle 2540 comunità di r01-r20, e quota di comunità in cui il metodo sta nel nucleo:
-
-| Metodo | Eccesso massimo (mediana) | Nel nucleo | r00: eccesso | r00: nel nucleo |
-|---|---|---|---|---|
-| Variance Least Core | −0,20% | 100% | −0,22% | 100% |
-| Adaptive Sampling Shapley | +2,0% | 0,2% | +1,7% | 3,1% |
-| Tri-level EP | +3,9% | 0% | +3,4% | 0% |
-| Pearson Key | +4,9% | 0% | +4,4% | 0% |
-| Proportional to Consumption | +6,6% | 3,0% | +6,1% | 3,1% |
-| Remuneration Model 1 | +9,3% | 0% | +9,2% | 0% |
-| Cascading Tree | +17,9% | 0% | +17,4% | 0% |
-| Weighted Solidarity | +26,0% | 0% | +25,0% | 0% |
-| Similarity-Utilization | +29,7% | 0% | +29,3% | 0% |
-| Equal Split | +45,0% | 0% | +46,8% | 0% |
-
-Il VLC sta nel nucleo per costruzione quando il nucleo non è vuoto: il risultato dice che il nucleo
-non è mai vuoto, in nessuna delle 2667 comunità, e che gli altri metodi ci cadono quasi mai.
+I tre blocchi sono stati aggregati anche separatamente, man mano che finivano
+(`outputs/repliche/<blocco>/aggregato/`, 29 ottobre - 3 novembre). Quei numeri sono superati dalla
+lettura unita 5-25, che usa un solo Shapley e la stabilità a ogni taglia: restano solo come
+storico. Se ne usa un solo dato, a giustificare l'esclusione del Nucleolo dal confronto: nei blocchi
+fino a 18 membri, dove è calcolato, il Nucleolo è fra i primi su merito e stabilità insieme al
+Variance Least Core nel 92-100% delle celle (`fino15/aggregato/`, `da18/aggregato/`).
 
 ## Risultati della lettura unita 5-25 membri (3 novembre 2026)
 
-È l'analisi completa. Le comunità sono 295 per replica: 5, 8, 10, 15, 18, 20 e 25 membri, tutti i
-livelli. I metodi sono 10, con un solo Shapley, esatto fino a 18 membri e AS da 20. Ci sono tutti
-gli indicatori a ogni taglia, stabilità compresa. Numeri in
+295 comunità per replica (5, 8, 10, 15, 18, 20 e 25 membri, tutti i livelli), 10 metodi con un
+solo Shapley (esatto fino a 18 membri, AS da 20), tutti gli indicatori a ogni taglia, stabilità
+compresa. Mediane sulle repliche r01-r20; numeri in
 [`outputs/repliche/unito/aggregato/sintesi.md`](../outputs/repliche/unito/aggregato/sintesi.md).
 
-**Tengono:**
 - **I tre poli.** Quota delle celle del livello base in cui il metodo è fra i primi:
   - su Gini, l'Equal Split (100%);
   - su merito e stabilità, il Variance Least Core (98-100%), poi lo Shapley (45-94%);
   - sulla forza incentivante, Pearson Key e Tri-level EP (95%).
 - **Il capovolgimento con la penetrazione, in 20 repliche su 20:**
-  - τ(Gini, forza incentivante) va da −0,34 a −0,83 (mediane, fascia 1 → 4; r00 −0,23 → −0,91);
-  - τ(Fairness Index, forza incentivante) va da −0,57 a +0,50 (fascia 1 → 3; r00 −0,56 → +0,53).
-- **Il trade-off uguaglianza-incentivo:**
-  - scegliere Gini fa perdere 0,82 della forza incentivante (0,79-0,83; r00 0,80);
-  - scegliere l'incentivo fa perdere 0,88 su Gini (0,85-0,91; r00 0,94);
-  - merito e stabilità non si fanno concorrenza (0,00-0,01).
-- **La composizione pesa poco.** PA e imprese invertono il 10% delle coppie (mediana), contro il
-  13% di r00.
-- **I vincitori:**
-  - il vincitore della cella è lo stesso nell'83-100% delle repliche, secondo l'indicatore (76%
-    per l'allineamento lordo);
-  - coincide con quello di r00 nel 60-100% delle celle (46%);
-  - almeno un primo in comune con r00 c'è nel 96-100% dei casi (93%).
-- **Da cosa dipendono i punteggi.** La penetrazione resta il primo fattore, con il 59-72% della
-  varianza (r00 71-82%). La taglia pesa il 4-10%, i partecipanti il 12-24%.
-- **Inversioni lungo gli assi.** Lungo la penetrazione si inverte il 16-26% delle coppie di metodi
-  (mediana per taglia), lungo la taglia il 7-18% (per fascia).
-
-**Cambia rispetto a r00:**
-- **L'allineamento lordo dipende da famiglie e taglia.**
-  - La penetrazione ne spiega l'11% della varianza (r00 53%); la taglia il 29%, l'interazione il
-    27%, i partecipanti il 33%.
-  - Similarity-Utilization è fra i primi nel 44% delle celle, contro il 71% di r00. Segue
-    Remuneration Model 1 (36%).
-- **Al 100% di prosumer il legame merito-incentivo si indebolisce, ma resta positivo.** τ(Fairness
-  Index, forza incentivante) in fascia 4 vale 0,16 di mediana (0,01-0,40) ed è positivo in tutte
-  e 20 le repliche; r00 vale 0,39.
-- **Al 100% di prosumer il legame fra uguaglianza e merito sparisce.** τ(Gini, Fairness Index) in
-  fascia 4 vale −0,06 di mediana (−0,27/+0,11) e ha il segno della mediana in 16 repliche su 20;
-  r00 vale −0,31.
-- **Lo Shapley è fra i primi sulla stabilità più spesso:** nel 94% delle celle sull'eccesso massimo
-  (r00 82%) e nel 45% sulle coalizioni instabili (r00 29%).
-
-**r00 fuori dall'intervallo delle repliche:**
-- τ(Gini, forza incentivante) nelle fasce 1, 2 e 3: −0,23, −0,72 e −0,86, contro −0,43/−0,26,
-  −0,81/−0,74 e −0,84/−0,80;
-- τ(Gini, Fairness Index) nelle fasce 1 e 4: 0,46 e −0,31, contro 0,17/0,41 e −0,27/+0,11;
-- la perdita su Gini scegliendo l'incentivo: 0,94, contro 0,85-0,91.
+  - τ(Gini, forza incentivante) va da −0,34 a −0,83 (fascia 1 → 4);
+  - τ(Fairness Index, forza incentivante) va da −0,57 a +0,50 (fascia 1 → 3).
+- **Il trade-off uguaglianza-incentivo:** scegliere Gini fa perdere 0,82 della forza
+  incentivante, scegliere l'incentivo 0,88 su Gini; merito e stabilità non si fanno concorrenza
+  (0,00-0,01).
+- **La composizione pesa poco:** PA e imprese invertono il 9-10% delle coppie (mediana).
+- **I vincitori:** il vincitore della cella è lo stesso nell'83-100% delle repliche, secondo
+  l'indicatore (76% per l'allineamento lordo).
+- **Da cosa dipendono i punteggi.** La penetrazione è il primo fattore per 7 indicatori su 8
+  (59-72% della varianza); la taglia pesa il 4-10%, i partecipanti il 12-24%. Per l'allineamento
+  lordo la penetrazione spiega l'11%, la taglia il 29%, l'interazione il 27%, i partecipanti il 33%.
+- **Inversioni lungo gli assi:** 16-26% delle coppie lungo la penetrazione (per taglia), 7-18%
+  lungo la taglia (per fascia).
+- **Al 100% di prosumer:** τ(Fairness Index, forza incentivante) vale 0,16 (0,01-0,40), positivo in
+  20 repliche su 20; τ(Gini, Fairness Index) vale −0,06, con il segno della mediana in 16 su 20.
 
 ## Risultati dell'analisi completa (3 novembre 2026)
 
@@ -720,7 +529,8 @@ Le uscite vanno in `outputs/repliche/unito/rNN/`, con la stessa struttura dei bl
     membri (EccessoMax_EUR e CoalizioniInstabili), che nel run del 28 ottobre erano vuote.
 - **r00 a 20-25 viene dal blocco `da20a25`,** non dal run del 28 ottobre, dove la stabilità a
   quelle taglie non c'è.
-- **Con `maxUtenti` 18** si ottiene la vista fino a 18 membri, con il Nucleolo. È in sospeso.
+- **Con `maxUtenti` 18** si otterrebbe la vista fino a 18 membri, con il Nucleolo. Non si fa:
+  nella versione B del piano il Nucleolo è escluso dal confronto (`docs/analisi_finale/`).
 - **Niente divisione 5-18 contro 20-25** (decisione del 3 novembre): con la stabilità a ogni
   taglia gli indicatori ci sono tutti, e l'analisi si legge intera.
 
@@ -742,7 +552,7 @@ venv/Scripts/python.exe -I CER_repliche/rapporto_repliche.py                 # p
 - **Due risultati nuovi rispetto al disegno di partenza:**
   - **Soglia GSE al 55%:** morde in 70 comunità su 5.900 (1,2%, massimo 81%), tutte nel livello base
     e a penetrazione fino al 30%. L'eccedenza spetta alle sole imprese, quindi la ripartizione non
-    cambia (README principale §7.4). In r00 non mordeva mai.
+    cambia (README principale §7.4).
   - **Inclusione LIHC:** calcolabile solo a 25 membri e in 8 repliche su 20 (6,6% delle comunità).
     Resta preliminare: P50, y* e markup sono ancora `?` in `CER_input.txt`.
 - **Dove sono i dati dei run:** `export/` e `checkpoint.mat` di ogni replica sono versionati

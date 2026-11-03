@@ -30,5 +30,6 @@ if [ -n "$ULT" ] && ! tail -n +"$RIGA" "$A" | grep -qE "$ULT (fatta|FALLITA)"; t
     grep -iE "error|assert" "$L" | grep -v "TIR \"NaN\" e payback 0" | tail -3
 fi
 echo "--- processi"
-tasklist //FI "IMAGENAME eq MATLAB.exe" 2>/dev/null | grep -i "MATLAB.exe" || echo "NESSUN MATLAB"
-powershell.exe -NoProfile -Command "\$o=Get-CimInstance Win32_OperatingSystem; 'RAM libera MB: ' + [math]::Round(\$o.FreePhysicalMemory/1KB); \$b=Get-CimInstance Win32_Battery; if(\$b){'Batteria stato ' + \$b.BatteryStatus + ' (2 = CA), ' + \$b.EstimatedChargeRemaining + '%'}; if(Get-CimInstance Win32_Process -Filter \"Name='powershell.exe'\" | Where-Object { \$_.CommandLine -match 'veglia' }){'veglia attiva'}else{'VEGLIA ASSENTE'}"
+# Il server di lingua dell'estensione MATLAB di VS Code e' un altro MATLAB.exe: si guarda solo
+# quello del run (MAIN2 nella riga di comando). veglia[.]ps1 non trova questo stesso comando.
+powershell.exe -NoProfile -Command "\$p=Get-CimInstance Win32_Process; \$m=\$p | Where-Object { \$_.Name -eq 'MATLAB.exe' -and \$_.CommandLine -match 'win64' -and \$_.CommandLine -match 'MAIN2' }; if(\$m){'MATLAB del run attivo, PID ' + \$m.ProcessId + ', ' + [math]::Round(\$m.WorkingSetSize/1MB) + ' MB'}else{'NESSUN MATLAB del run'}; if(\$p | Where-Object { \$_.Name -eq 'powershell.exe' -and \$_.CommandLine -match 'veglia[.]ps1' -and \$_.ProcessId -ne \$PID }){'veglia attiva'}else{'VEGLIA ASSENTE'}; \$o=Get-CimInstance Win32_OperatingSystem; 'RAM libera MB: ' + [math]::Round(\$o.FreePhysicalMemory/1KB); \$b=Get-CimInstance Win32_Battery; if(\$b){'Batteria stato ' + \$b.BatteryStatus + ' (2 = CA), ' + \$b.EstimatedChargeRemaining + '%'}"

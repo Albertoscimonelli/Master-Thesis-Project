@@ -1,0 +1,1017 @@
+Livello,Indicatore,Membri,Fascia,Modale,repliche,QuotaModale,Primi_r00,QuotaUgualeR00,QuotaInComuneR00,ModaleUgualeR00
+ND1,AllineamentoVirtu,20,1,Similarity-Utilization,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+ND1,AllineamentoVirtu,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+ND1,AllineamentoVirtu,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP,0.85,1.0,True
+ND1,AllineamentoVirtu,20,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1,AllineamentoVirtu,25,1,Similarity-Utilization,20,0.7,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+ND1,AllineamentoVirtu,25,2,Similarity-Utilization,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+ND1,AllineamentoVirtu,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Pearson Key = Similarity-Utilization = Tri-level EP,0.6,1.0,True
+ND1,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.0,1.0,False
+ND1,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,0.65,Cascading Tree = Remuneration Model 1,0.65,1.0,True
+ND1,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,0.9,Cascading Tree = Remuneration Model 1,0.9,0.95,True
+ND1,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.4,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.05,0.8,False
+ND1,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.8,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.05,1.0,False
+ND1,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,0.55,Cascading Tree = Remuneration Model 1,0.55,1.0,True
+ND1,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,0.85,Cascading Tree,0.0,0.85,False
+ND1,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.35,Adaptive Sampling Shapley = Cascading Tree = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,0.85,False
+ND1,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1,CoalizioniInstabili,20,2,Proportional to Consumption = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.15,1.0,False
+ND1,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1,CoalizioniInstabili,25,2,Variance Least Core,20,0.65,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.05,1.0,False
+ND1,CoalizioniInstabili,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Variance Least Core,0.75,1.0,True
+ND1,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,EccessoMax_EUR,20,1,Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.9,Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.9,1.0,True
+ND1,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.55,1.0,True
+ND1,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,EccessoMax_EUR,25,1,Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.6,Proportional to Consumption = Tri-level EP = Variance Least Core,0.15,1.0,False
+ND1,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,0.9,1.0,True
+ND1,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.85,1.0,True
+ND1,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,FairnessIndex,20,1,Remuneration Model 1 = Variance Least Core,20,0.5,Variance Least Core,0.0,0.75,False
+ND1,FairnessIndex,20,2,Variance Least Core,20,0.6,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.1,1.0,False
+ND1,FairnessIndex,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.55,1.0,True
+ND1,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.35,1.0,False
+ND1,FairnessIndex,25,1,Variance Least Core,20,0.6,Variance Least Core,0.6,1.0,True
+ND1,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.15,1.0,False
+ND1,FairnessIndex,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Variance Least Core,0.45,1.0,False
+ND1,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1,ForzaIncentivante,20,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+ND1,ForzaIncentivante,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.95,Pearson Key = Similarity-Utilization,0.05,1.0,False
+ND1,ForzaIncentivante,20,3,Similarity-Utilization,20,0.75,Similarity-Utilization,0.75,1.0,True
+ND1,ForzaIncentivante,20,4,Similarity-Utilization,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,ForzaIncentivante,25,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+ND1,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND1,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.95,Similarity-Utilization,0.0,1.0,False
+ND1,ForzaIncentivante,25,4,Similarity-Utilization,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1,Sigma,20,1,Remuneration Model 1,20,0.7,Adaptive Sampling Shapley = Remuneration Model 1,0.3,1.0,False
+ND1,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.85,Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1,Sigma,20,4,Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.35,1.0,False
+ND1,Sigma,25,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.5,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.25,1.0,False
+ND1,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Variance Least Core,0.1,1.0,False
+ND1,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Variance Least Core,0.0,1.0,False
+ND1,Sigma,25,4,Variance Least Core,20,0.7,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND1_PA1,AllineamentoVirtu,20,1,Similarity-Utilization,20,0.75,Pearson Key = Similarity-Utilization = Tri-level EP,0.1,1.0,False
+ND1_PA1,AllineamentoVirtu,20,2,Similarity-Utilization,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP,0.35,1.0,False
+ND1_PA1,AllineamentoVirtu,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Pearson Key = Similarity-Utilization = Tri-level EP,0.75,1.0,True
+ND1_PA1,AllineamentoVirtu,20,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu,25,1,Similarity-Utilization,20,0.95,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+ND1_PA1,AllineamentoVirtu,25,2,Similarity-Utilization,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+ND1_PA1,AllineamentoVirtu,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND1_PA1,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.7,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.7,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,0.95,Cascading Tree = Remuneration Model 1,0.95,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.6,Cascading Tree = Remuneration Model 1,0.15,1.0,False
+ND1_PA1,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.95,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.95,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA1,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.7,Cascading Tree = Remuneration Model 1,0.1,1.0,False
+ND1_PA1,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND1_PA1,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+ND1_PA1,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA1,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,CoalizioniInstabili,25,3,Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.1,1.0,False
+ND1_PA1,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1_PA1,EccessoMax_EUR,20,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA1,EccessoMax_EUR,20,2,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA1,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.85,1.0,True
+ND1_PA1,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.2,1.0,False
+ND1_PA1,EccessoMax_EUR,25,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA1,EccessoMax_EUR,25,2,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND1_PA1,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA1,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA1,FairnessIndex,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,FairnessIndex,20,2,Proportional to Consumption = Variance Least Core,20,0.8,Variance Least Core,0.2,1.0,False
+ND1_PA1,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+ND1_PA1,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.05,1.0,False
+ND1_PA1,FairnessIndex,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,FairnessIndex,25,2,Proportional to Consumption = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.4,1.0,False
+ND1_PA1,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.6,1.0,True
+ND1_PA1,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1_PA1,ForzaIncentivante,20,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND1_PA1,ForzaIncentivante,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.9,Similarity-Utilization,0.1,1.0,False
+ND1_PA1,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA1,ForzaIncentivante,20,4,Similarity-Utilization,20,0.85,Similarity-Utilization,0.85,1.0,True
+ND1_PA1,ForzaIncentivante,25,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND1_PA1,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Similarity-Utilization,0.0,1.0,False
+ND1_PA1,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.8,Similarity-Utilization,0.05,1.0,False
+ND1_PA1,ForzaIncentivante,25,4,Similarity-Utilization,20,0.75,Similarity-Utilization,0.75,1.0,True
+ND1_PA1,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA1,Sigma,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,20,2,Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.4,1.0,False
+ND1_PA1,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1_PA1,Sigma,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA1,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND1_PA2,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,20,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.95,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.05,1.0,False
+ND1_PA2,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,AllineamentoVirtu_lordo,25,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+ND1_PA2,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,20,3,Variance Least Core,20,0.6,Variance Least Core,0.6,1.0,True
+ND1_PA2,CoalizioniInstabili,20,4,Variance Least Core,20,0.9,Proportional to Consumption = Variance Least Core,0.1,1.0,False
+ND1_PA2,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.8,1.0,True
+ND1_PA2,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,CoalizioniInstabili,25,3,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+ND1_PA2,CoalizioniInstabili,25,4,Variance Least Core,20,0.65,Proportional to Consumption = Variance Least Core,0.35,1.0,False
+ND1_PA2,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.1,1.0,False
+ND1_PA2,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.55,1.0,True
+ND1_PA2,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.75,1.0,True
+ND1_PA2,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+ND1_PA2,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.65,1.0,True
+ND1_PA2,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA2,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.5,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.5,1.0,True
+ND1_PA2,FairnessIndex,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND1_PA2,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Variance Least Core,0.75,1.0,True
+ND1_PA2,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,20,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.05,0.9,False
+ND1_PA2,ForzaIncentivante,20,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA2,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.55,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.0,1.0,False
+ND1_PA2,ForzaIncentivante,25,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND1_PA2,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA2,Sigma,20,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.9,Adaptive Sampling Shapley = Remuneration Model 1,0.9,1.0,True
+ND1_PA2,Sigma,20,2,Adaptive Sampling Shapley = Remuneration Model 1,20,0.7,Adaptive Sampling Shapley = Remuneration Model 1,0.7,1.0,True
+ND1_PA2,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA2,Sigma,20,4,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+ND1_PA2,Sigma,25,1,Adaptive Sampling Shapley = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1,1.0,1.0,True
+ND1_PA2,Sigma,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA2,Sigma,25,3,Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND1_PA2,Sigma,25,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,20,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.2,1.0,False
+ND1_PA3,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu,25,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.15,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Remuneration Model 1,20,0.35,Adaptive Sampling Shapley = Weighted Solidarity,0.0,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Similarity-Utilization,20,0.5,Adaptive Sampling Shapley = Pearson Key = Similarity-Utilization = Weighted Solidarity,0.0,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND1_PA3,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+ND1_PA3,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Remuneration Model 1,20,0.4,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.1,1.0,False
+ND1_PA3,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Similarity-Utilization,20,0.55,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.0,1.0,False
+ND1_PA3,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.2,1.0,False
+ND1_PA3,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+ND1_PA3,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.75,1.0,True
+ND1_PA3,CoalizioniInstabili,20,4,Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.7,Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA3,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND1_PA3,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND1_PA3,CoalizioniInstabili,25,3,Remuneration Model 1 = Variance Least Core,20,0.6,Remuneration Model 1 = Variance Least Core,0.6,1.0,True
+ND1_PA3,CoalizioniInstabili,25,4,Proportional to Consumption = Variance Least Core,20,0.6,Proportional to Consumption = Tri-level EP = Variance Least Core,0.4,1.0,False
+ND1_PA3,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND1_PA3,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.15,1.0,False
+ND1_PA3,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,20,1,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.1,1.0,False
+ND1_PA3,FairnessIndex,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,25,1,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,FairnessIndex,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.25,1.0,False
+ND1_PA3,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND1_PA3,ForzaIncentivante,25,3,Similarity-Utilization,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP,0.15,1.0,False
+ND1_PA3,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND1_PA3,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND1_PA3,Sigma,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+ND1_PA3,Sigma,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,20,0.75,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,0.75,1.0,True
+ND1_PA3,Sigma,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.25,1.0,False
+ND1_PA3,Sigma,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND1_PA3,Sigma,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Proportional to Consumption,0.3,1.0,False
+ND2,AllineamentoVirtu,20,1,Similarity-Utilization,20,0.8,Pearson Key = Similarity-Utilization,0.15,1.0,False
+ND2,AllineamentoVirtu,20,2,Similarity-Utilization,20,0.6,Pearson Key = Similarity-Utilization,0.1,1.0,False
+ND2,AllineamentoVirtu,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.8,Pearson Key = Similarity-Utilization,0.1,1.0,False
+ND2,AllineamentoVirtu,20,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2,AllineamentoVirtu,25,1,Similarity-Utilization,20,0.95,Pearson Key = Similarity-Utilization,0.05,1.0,False
+ND2,AllineamentoVirtu,25,2,Similarity-Utilization,20,0.7,Pearson Key = Similarity-Utilization,0.1,1.0,False
+ND2,AllineamentoVirtu,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.8,Similarity-Utilization,0.0,1.0,False
+ND2,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.0,1.0,False
+ND2,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,0.8,Cascading Tree = Proportional to Consumption = Remuneration Model 1,0.15,1.0,False
+ND2,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,0.8,Cascading Tree = Proportional to Consumption = Remuneration Model 1,0.1,0.95,False
+ND2,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.35,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.15,1.0,False
+ND2,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley,20,0.85,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.1,1.0,False
+ND2,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,0.5,Cascading Tree = Proportional to Consumption = Remuneration Model 1,0.35,1.0,False
+ND2,AllineamentoVirtu_lordo,25,3,Cascading Tree = Proportional to Consumption = Remuneration Model 1,20,0.5,Cascading Tree = Remuneration Model 1,0.5,1.0,False
+ND2,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.35,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.35,1.0,True
+ND2,CoalizioniInstabili,20,1,Proportional to Consumption = Variance Least Core,20,0.9,Variance Least Core,0.1,1.0,False
+ND2,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.6,1.0,True
+ND2,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.75,1.0,True
+ND2,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND2,CoalizioniInstabili,25,1,Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND2,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Variance Least Core,0.8,1.0,True
+ND2,CoalizioniInstabili,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.35,1.0,False
+ND2,EccessoMax_EUR,20,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,20,2,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.15,1.0,False
+ND2,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.9,1.0,True
+ND2,EccessoMax_EUR,25,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.45,1.0,False
+ND2,FairnessIndex,20,1,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2,FairnessIndex,20,2,Proportional to Consumption = Variance Least Core,20,0.65,Variance Least Core,0.35,1.0,False
+ND2,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,FairnessIndex,25,1,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2,FairnessIndex,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Variance Least Core,0.05,1.0,False
+ND2,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Variance Least Core,0.65,1.0,True
+ND2,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,ForzaIncentivante,20,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND2,ForzaIncentivante,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.1,1.0,False
+ND2,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2,ForzaIncentivante,20,4,Similarity-Utilization,20,0.95,Proportional to Consumption = Tri-level EP,0.0,0.05,False
+ND2,ForzaIncentivante,25,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+ND2,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.85,Similarity-Utilization,0.0,1.0,False
+ND2,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.4,Similarity-Utilization,0.3,1.0,False
+ND2,ForzaIncentivante,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization = Tri-level EP,0.0,1.0,False
+ND2,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2,Sigma,20,1,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2,Sigma,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.4,1.0,False
+ND2,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2,Sigma,25,1,Proportional to Consumption = Variance Least Core,20,0.85,Proportional to Consumption = Variance Least Core,0.85,1.0,True
+ND2,Sigma,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND2,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Variance Least Core,0.85,1.0,True
+ND2,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,AllineamentoVirtu,20,1,Similarity-Utilization,20,0.95,Similarity-Utilization,0.95,1.0,True
+ND2_PA1,AllineamentoVirtu,20,2,Similarity-Utilization,20,0.7,Similarity-Utilization,0.7,1.0,True
+ND2_PA1,AllineamentoVirtu,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.15,1.0,False
+ND2_PA1,AllineamentoVirtu,20,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu,25,2,Similarity-Utilization,20,0.8,Similarity-Utilization,0.8,1.0,True
+ND2_PA1,AllineamentoVirtu,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.7,Similarity-Utilization,0.0,1.0,False
+ND2_PA1,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.35,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.35,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,0.75,Cascading Tree = Remuneration Model 1,0.75,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.6,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.6,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,0.75,Cascading Tree = Remuneration Model 1,0.75,1.0,True
+ND2_PA1,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+ND2_PA1,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA1,CoalizioniInstabili,20,2,Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.1,1.0,False
+ND2_PA1,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA1,CoalizioniInstabili,25,2,Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.05,1.0,False
+ND2_PA1,CoalizioniInstabili,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Variance Least Core,0.7,1.0,True
+ND2_PA1,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.45,1.0,False
+ND2_PA1,EccessoMax_EUR,20,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.9,Pearson Key = Tri-level EP = Variance Least Core,0.1,1.0,False
+ND2_PA1,EccessoMax_EUR,20,2,Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,EccessoMax_EUR,25,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,EccessoMax_EUR,25,2,Pearson Key = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND2_PA1,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,20,1,Variance Least Core,20,0.65,Variance Least Core,0.65,1.0,True
+ND2_PA1,FairnessIndex,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+ND2_PA1,FairnessIndex,25,1,Proportional to Consumption = Variance Least Core,20,0.9,Variance Least Core,0.1,1.0,False
+ND2_PA1,FairnessIndex,25,2,Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND2_PA1,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA1,ForzaIncentivante,20,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.95,Similarity-Utilization,0.0,1.0,False
+ND2_PA1,ForzaIncentivante,20,2,Similarity-Utilization,20,0.5,Similarity-Utilization,0.5,1.0,True
+ND2_PA1,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA1,ForzaIncentivante,20,4,Similarity-Utilization,20,0.95,Pearson Key = Proportional to Consumption = Tri-level EP,0.0,0.05,False
+ND2_PA1,ForzaIncentivante,25,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Similarity-Utilization,0.0,1.0,False
+ND2_PA1,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.15,1.0,False
+ND2_PA1,ForzaIncentivante,25,3,Similarity-Utilization,20,0.6,Similarity-Utilization,0.6,1.0,True
+ND2_PA1,ForzaIncentivante,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization = Tri-level EP,0.0,1.0,False
+ND2_PA1,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA1,Sigma,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,25,1,Variance Least Core,20,0.55,Variance Least Core,0.55,1.0,True
+ND2_PA1,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA1,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,20,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,AllineamentoVirtu_lordo,25,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,20,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,CoalizioniInstabili,25,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA2,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.65,1.0,True
+ND2_PA2,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND2_PA2,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.1,1.0,False
+ND2_PA2,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA2,EccessoMax_EUR,25,1,Tri-level EP = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.35,1.0,False
+ND2_PA2,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND2_PA2,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA2,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+ND2_PA2,FairnessIndex,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,20,4,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+ND2_PA2,FairnessIndex,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND2_PA2,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+ND2_PA2,FairnessIndex,25,3,Variance Least Core,20,0.85,Variance Least Core,0.85,1.0,True
+ND2_PA2,FairnessIndex,25,4,Variance Least Core,20,0.75,Variance Least Core,0.75,1.0,True
+ND2_PA2,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.8,Similarity-Utilization,0.05,0.85,False
+ND2_PA2,ForzaIncentivante,20,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA2,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP,0.65,1.0,True
+ND2_PA2,ForzaIncentivante,25,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+ND2_PA2,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA2,Sigma,20,1,Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.4,1.0,False
+ND2_PA2,Sigma,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,20,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,25,1,Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.05,1.0,False
+ND2_PA2,Sigma,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA2,Sigma,25,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,20,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+ND2_PA3,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,AllineamentoVirtu,25,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.05,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.05,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Remuneration Model 1,20,0.85,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.0,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Remuneration Model 1,20,0.85,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.15,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Similarity-Utilization,20,0.55,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.05,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+ND2_PA3,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Remuneration Model 1,20,0.85,Adaptive Sampling Shapley = Remuneration Model 1,0.85,1.0,True
+ND2_PA3,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Remuneration Model 1,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.05,1.0,False
+ND2_PA3,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Similarity-Utilization,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,0.0,1.0,False
+ND2_PA3,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND2_PA3,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,20,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND2_PA3,CoalizioniInstabili,25,2,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+ND2_PA3,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND2_PA3,CoalizioniInstabili,25,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA3,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.5,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.5,1.0,True
+ND2_PA3,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA3,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA3,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND2_PA3,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND2_PA3,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.25,1.0,False
+ND2_PA3,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND2_PA3,FairnessIndex,20,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND2_PA3,FairnessIndex,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.1,1.0,False
+ND2_PA3,FairnessIndex,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.1,1.0,False
+ND2_PA3,FairnessIndex,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND2_PA3,FairnessIndex,25,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND2_PA3,FairnessIndex,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,FairnessIndex,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,FairnessIndex,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,20,3,Similarity-Utilization,20,0.75,Similarity-Utilization,0.75,1.0,True
+ND2_PA3,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND2_PA3,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND2_PA3,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND2_PA3,Sigma,20,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.8,1.0,True
+ND2_PA3,Sigma,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,25,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND2_PA3,Sigma,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,20,4,Similarity-Utilization,20,0.95,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+ND3,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley,20,0.45,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1,20,0.75,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.2,1.0,False
+ND3,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+ND3,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Proportional to Consumption,20,0.3,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.55,1.0,True
+ND3,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Cascading Tree = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,0.7,1.0,True
+ND3,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,20,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,CoalizioniInstabili,25,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,20,1,Tri-level EP = Variance Least Core,20,1.0,Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,20,2,Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND3,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,25,1,Tri-level EP = Variance Least Core,20,1.0,Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,25,2,Tri-level EP = Variance Least Core,20,0.4,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.25,1.0,False
+ND3,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,0.95,1.0,True
+ND3,FairnessIndex,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.2,1.0,False
+ND3,FairnessIndex,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.0,1.0,False
+ND3,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3,ForzaIncentivante,25,4,Tri-level EP,20,0.8,Pearson Key = Tri-level EP,0.2,1.0,False
+ND3,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3,Sigma,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,20,4,Similarity-Utilization,20,0.95,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+ND3_PA1,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley,20,0.55,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.85,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.15,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.6,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.1,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND3_PA1,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.55,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,0.75,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.15,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,0.65,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.3,1.0,False
+ND3_PA1,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,20,4,Variance Least Core,20,0.85,Variance Least Core,0.85,1.0,True
+ND3_PA1,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA1,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.7,Variance Least Core,0.3,1.0,False
+ND3_PA1,EccessoMax_EUR,20,1,Tri-level EP = Variance Least Core,20,1.0,Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.8,1.0,True
+ND3_PA1,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,0.0,1.0,False
+ND3_PA1,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,25,1,Tri-level EP = Variance Least Core,20,1.0,Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND3_PA1,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,20,1,Variance Least Core,20,0.75,Adaptive Sampling Shapley = Variance Least Core,0.25,1.0,False
+ND3_PA1,FairnessIndex,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.6,1.0,True
+ND3_PA1,FairnessIndex,25,1,Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND3_PA1,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.1,1.0,False
+ND3_PA1,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA1,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,0.8,Pearson Key = Tri-level EP,0.8,1.0,True
+ND3_PA1,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA1,Sigma,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+ND3_PA1,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA1,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,20,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,25,1,Cascading Tree = Remuneration Model 1,20,0.6,Cascading Tree = Remuneration Model 1,0.6,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,AllineamentoVirtu_lordo,25,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,20,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,25,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,CoalizioniInstabili,25,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,0.85,1.0,True
+ND3_PA2,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,1.0,1.0,True
+ND3_PA2,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND3_PA2,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND3_PA2,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,0.0,1.0,False
+ND3_PA2,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,20,3,Similarity-Utilization,20,0.7,Similarity-Utilization,0.7,1.0,True
+ND3_PA2,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA2,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA2,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA2,Sigma,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Variance Least Core,0.8,1.0,True
+ND3_PA2,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+ND3_PA2,Sigma,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,Sigma,20,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,Sigma,25,1,Adaptive Sampling Shapley = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Variance Least Core,0.75,1.0,True
+ND3_PA2,Sigma,25,2,Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,0.0,1.0,False
+ND3_PA2,Sigma,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA2,Sigma,25,4,Variance Least Core,20,0.6,Variance Least Core,0.6,1.0,True
+ND3_PA3,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,20,4,Pearson Key = Similarity-Utilization,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.4,1.0,False
+ND3_PA3,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,AllineamentoVirtu,25,4,Pearson Key = Similarity-Utilization,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.1,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,20,0.9,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Weighted Solidarity,20,0.9,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Similarity-Utilization = Weighted Solidarity,20,0.4,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.3,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.5,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Remuneration Model 1,20,0.55,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Similarity-Utilization = Weighted Solidarity,20,0.35,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.0,1.0,False
+ND3_PA3,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Variance Least Core,0.1,1.0,False
+ND3_PA3,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA3,CoalizioniInstabili,20,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+ND3_PA3,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.55,Variance Least Core,0.45,1.0,False
+ND3_PA3,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+ND3_PA3,CoalizioniInstabili,25,4,Proportional to Consumption = Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.6,1.0,True
+ND3_PA3,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND3_PA3,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA3,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND3_PA3,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.05,1.0,False
+ND3_PA3,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+ND3_PA3,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,0.85,1.0,True
+ND3_PA3,FairnessIndex,25,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,FairnessIndex,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+ND3_PA3,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+ND3_PA3,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+ND3_PA3,Sigma,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,25,1,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+ND3_PA3,Sigma,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Variance Least Core,1.0,1.0,True
+PA0,AllineamentoVirtu,20,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.35,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.35,1.0,True
+PA0,AllineamentoVirtu,20,2,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core,0.25,1.0,False
+PA0,AllineamentoVirtu,20,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,0.75,1.0,True
+PA0,AllineamentoVirtu,20,4,Similarity-Utilization,20,0.65,Similarity-Utilization,0.65,1.0,True
+PA0,AllineamentoVirtu,25,1,Similarity-Utilization,20,0.35,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+PA0,AllineamentoVirtu,25,2,Pearson Key = Similarity-Utilization,20,0.35,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core,0.25,1.0,False
+PA0,AllineamentoVirtu,25,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,0.4,1.0,False
+PA0,AllineamentoVirtu,25,4,Similarity-Utilization,20,0.6,Similarity-Utilization,0.6,1.0,True
+PA0,AllineamentoVirtu_lordo,20,1,Remuneration Model 1 = Variance Least Core,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,20,2,Remuneration Model 1,20,0.65,Similarity-Utilization,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,20,3,Cascading Tree,20,0.65,Similarity-Utilization,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,20,4,Similarity-Utilization,20,0.8,Equal Split = Weighted Solidarity,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.6,Pearson Key = Similarity-Utilization = Tri-level EP,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,25,2,Remuneration Model 1,20,0.25,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core,0.0,0.75,False
+PA0,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core,20,0.45,Equal Split,0.0,0.0,False
+PA0,AllineamentoVirtu_lordo,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA0,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Variance Least Core,0.05,1.0,False
+PA0,CoalizioniInstabili,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,20,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,25,1,Variance Least Core,20,0.45,Variance Least Core,0.45,1.0,True
+PA0,CoalizioniInstabili,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,25,3,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA0,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.5,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA0,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.15,1.0,False
+PA0,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Variance Least Core,0.4,1.0,False
+PA0,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA0,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.1,1.0,False
+PA0,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.95,1.0,True
+PA0,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.6,1.0,True
+PA0,FairnessIndex,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,FairnessIndex,20,2,Variance Least Core,20,1.0,Proportional to Consumption = Variance Least Core,0.0,1.0,False
+PA0,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,FairnessIndex,25,1,Variance Least Core,20,0.85,Variance Least Core,0.85,1.0,True
+PA0,FairnessIndex,25,2,Variance Least Core,20,0.85,Variance Least Core,0.85,1.0,True
+PA0,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Variance Least Core,0.75,1.0,True
+PA0,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,ForzaIncentivante,20,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.55,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.55,1.0,True
+PA0,ForzaIncentivante,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+PA0,ForzaIncentivante,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP,0.85,1.0,True
+PA0,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,0.5,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+PA0,ForzaIncentivante,25,1,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Pearson Key = Similarity-Utilization = Tri-level EP,0.6,1.0,True
+PA0,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+PA0,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization,0.0,1.0,False
+PA0,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,0.55,Pearson Key = Similarity-Utilization = Tri-level EP,0.3,1.0,False
+PA0,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,20,3,Equal Split,20,0.95,Equal Split,0.95,1.0,True
+PA0,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Gini,25,3,Equal Split,20,0.85,Equal Split,0.85,1.0,True
+PA0,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA0,Sigma,20,1,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,Sigma,20,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA0,Sigma,25,1,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+PA0,Sigma,25,2,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA0,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Variance Least Core,0.7,1.0,True
+PA0,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,AllineamentoVirtu,20,1,Similarity-Utilization,20,0.65,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+PA1,AllineamentoVirtu,20,2,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.35,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.35,1.0,True
+PA1,AllineamentoVirtu,20,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.6,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.6,1.0,True
+PA1,AllineamentoVirtu,20,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA1,AllineamentoVirtu,25,1,Similarity-Utilization,20,0.9,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.0,1.0,False
+PA1,AllineamentoVirtu,25,2,Similarity-Utilization,20,0.5,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.25,1.0,False
+PA1,AllineamentoVirtu,25,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.65,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.65,1.0,True
+PA1,AllineamentoVirtu,25,4,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.65,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.1,1.0,False
+PA1,AllineamentoVirtu_lordo,20,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,20,3,Cascading Tree = Remuneration Model 1,20,0.95,Cascading Tree = Remuneration Model 1,0.95,1.0,True
+PA1,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.55,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA1,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.7,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1,0.3,1.0,False
+PA1,AllineamentoVirtu_lordo,25,2,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,25,3,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA1,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.65,1.0,True
+PA1,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA1,CoalizioniInstabili,20,2,Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.05,1.0,False
+PA1,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA1,CoalizioniInstabili,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.8,1.0,True
+PA1,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,CoalizioniInstabili,25,2,Variance Least Core,20,0.95,Variance Least Core,0.95,1.0,True
+PA1,CoalizioniInstabili,25,3,Variance Least Core,20,0.6,Adaptive Sampling Shapley = Variance Least Core,0.4,1.0,False
+PA1,CoalizioniInstabili,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+PA1,EccessoMax_EUR,20,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,20,2,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,0.95,1.0,True
+PA1,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA1,EccessoMax_EUR,25,1,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,20,0.8,Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.8,1.0,True
+PA1,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,0.3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Tri-level EP = Variance Least Core,0.15,1.0,False
+PA1,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA1,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA1,FairnessIndex,20,1,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA1,FairnessIndex,20,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+PA1,FairnessIndex,20,3,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA1,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,FairnessIndex,25,1,Adaptive Sampling Shapley = Variance Least Core,20,0.85,Variance Least Core,0.15,1.0,False
+PA1,FairnessIndex,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA1,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,ForzaIncentivante,20,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,0.0,1.0,False
+PA1,ForzaIncentivante,20,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.85,Pearson Key = Similarity-Utilization = Tri-level EP,0.85,1.0,True
+PA1,ForzaIncentivante,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.5,Similarity-Utilization,0.3,1.0,False
+PA1,ForzaIncentivante,20,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+PA1,ForzaIncentivante,25,1,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.95,Pearson Key = Similarity-Utilization = Tri-level EP,0.05,1.0,False
+PA1,ForzaIncentivante,25,2,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Pearson Key = Similarity-Utilization = Tri-level EP,1.0,1.0,True
+PA1,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,1.0,Similarity-Utilization,0.0,1.0,False
+PA1,ForzaIncentivante,25,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.65,Similarity-Utilization,0.2,0.9,False
+PA1,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA1,Sigma,20,1,Adaptive Sampling Shapley,20,0.8,Adaptive Sampling Shapley,0.8,1.0,True
+PA1,Sigma,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,Sigma,20,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,Sigma,20,4,Variance Least Core,20,0.7,Adaptive Sampling Shapley = Variance Least Core,0.3,1.0,False
+PA1,Sigma,25,1,Adaptive Sampling Shapley,20,0.95,Adaptive Sampling Shapley,0.95,1.0,True
+PA1,Sigma,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA1,Sigma,25,4,Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA2,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Weighted Solidarity,20,0.55,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,0.45,1.0,False
+PA2,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,AllineamentoVirtu,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+PA2,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+PA2,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.85,1.0,True
+PA2,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.65,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.35,1.0,False
+PA2,AllineamentoVirtu_lordo,20,4,Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.9,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.9,1.0,True
+PA2,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+PA2,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.6,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA2,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.95,Cascading Tree = Remuneration Model 1 = Variance Least Core,0.05,1.0,False
+PA2,AllineamentoVirtu_lordo,25,4,Cascading Tree = Remuneration Model 1,20,1.0,Cascading Tree = Remuneration Model 1,1.0,1.0,True
+PA2,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.15,1.0,False
+PA2,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,CoalizioniInstabili,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA2,CoalizioniInstabili,20,4,Variance Least Core,20,0.8,Variance Least Core,0.8,1.0,True
+PA2,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Variance Least Core,0.1,1.0,False
+PA2,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA2,CoalizioniInstabili,25,3,Adaptive Sampling Shapley = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Variance Least Core,0.7,1.0,True
+PA2,CoalizioniInstabili,25,4,Variance Least Core,20,1.0,Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.4,1.0,False
+PA2,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.55,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.45,1.0,False
+PA2,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA2,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA2,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA2,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,20,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,0.85,1.0,True
+PA2,FairnessIndex,20,2,Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.25,1.0,False
+PA2,FairnessIndex,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+PA2,FairnessIndex,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,FairnessIndex,25,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,20,3,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,20,0.6,Similarity-Utilization,0.05,0.9,False
+PA2,ForzaIncentivante,20,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+PA2,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA2,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.55,Pearson Key = Proportional to Consumption = Similarity-Utilization = Tri-level EP,0.1,1.0,False
+PA2,ForzaIncentivante,25,4,Pearson Key = Proportional to Consumption = Tri-level EP,20,1.0,Pearson Key = Proportional to Consumption = Tri-level EP,1.0,1.0,True
+PA2,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA2,Sigma,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.7,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.7,1.0,True
+PA2,Sigma,20,2,Remuneration Model 1,20,1.0,Remuneration Model 1,1.0,1.0,True
+PA2,Sigma,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1,0.25,1.0,False
+PA2,Sigma,20,4,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,Sigma,25,1,Adaptive Sampling Shapley = Cascading Tree = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.0,1.0,False
+PA2,Sigma,25,2,Remuneration Model 1,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1,0.25,1.0,False
+PA2,Sigma,25,3,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA2,Sigma,25,4,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA3,AllineamentoVirtu,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,20,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,20,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,20,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.6,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.35,1.0,False
+PA3,AllineamentoVirtu,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,25,3,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,AllineamentoVirtu,25,4,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.65,Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.2,1.0,False
+PA3,AllineamentoVirtu_lordo,20,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA3,AllineamentoVirtu_lordo,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+PA3,AllineamentoVirtu_lordo,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Pearson Key = Tri-level EP = Weighted Solidarity,0.0,1.0,False
+PA3,AllineamentoVirtu_lordo,20,4,Adaptive Sampling Shapley = Similarity-Utilization,20,0.4,Adaptive Sampling Shapley = Pearson Key = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.0,1.0,False
+PA3,AllineamentoVirtu_lordo,25,1,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA3,AllineamentoVirtu_lordo,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.9,Adaptive Sampling Shapley = Variance Least Core,0.9,1.0,True
+PA3,AllineamentoVirtu_lordo,25,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.45,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core = Weighted Solidarity,0.0,1.0,False
+PA3,AllineamentoVirtu_lordo,25,4,Adaptive Sampling Shapley = Similarity-Utilization,20,0.35,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Similarity-Utilization = Tri-level EP = Weighted Solidarity,0.1,1.0,False
+PA3,CoalizioniInstabili,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,CoalizioniInstabili,20,2,Adaptive Sampling Shapley = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Variance Least Core,1.0,1.0,True
+PA3,CoalizioniInstabili,20,3,Remuneration Model 1 = Variance Least Core,20,0.6,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.4,1.0,False
+PA3,CoalizioniInstabili,20,4,Remuneration Model 1 = Variance Least Core,20,0.35,Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.3,1.0,False
+PA3,CoalizioniInstabili,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.8,1.0,True
+PA3,CoalizioniInstabili,25,2,Adaptive Sampling Shapley = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Variance Least Core,0.95,1.0,True
+PA3,CoalizioniInstabili,25,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.65,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.65,1.0,True
+PA3,CoalizioniInstabili,25,4,Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.7,Proportional to Consumption = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,20,1,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,20,3,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.95,1.0,True
+PA3,EccessoMax_EUR,20,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA3,EccessoMax_EUR,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA3,EccessoMax_EUR,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,25,3,Adaptive Sampling Shapley = Pearson Key = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,0.85,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,0.0,1.0,False
+PA3,EccessoMax_EUR,25,4,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Pearson Key = Proportional to Consumption = Remuneration Model 1 = Tri-level EP = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,20,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.55,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.45,1.0,False
+PA3,FairnessIndex,20,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,20,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,20,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,25,1,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.95,1.0,True
+PA3,FairnessIndex,25,2,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,FairnessIndex,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,ForzaIncentivante,20,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,ForzaIncentivante,20,2,Similarity-Utilization,20,0.95,Similarity-Utilization,0.95,1.0,True
+PA3,ForzaIncentivante,20,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.75,Similarity-Utilization,0.05,0.95,False
+PA3,ForzaIncentivante,20,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+PA3,ForzaIncentivante,25,1,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,ForzaIncentivante,25,2,Similarity-Utilization,20,1.0,Similarity-Utilization,1.0,1.0,True
+PA3,ForzaIncentivante,25,3,Pearson Key = Similarity-Utilization = Tri-level EP,20,0.45,Pearson Key = Similarity-Utilization = Tri-level EP,0.45,1.0,True
+PA3,ForzaIncentivante,25,4,Pearson Key = Tri-level EP,20,1.0,Pearson Key = Tri-level EP,1.0,1.0,True
+PA3,Gini,20,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,20,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,20,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,20,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,25,1,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,25,2,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,25,3,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Gini,25,4,Equal Split,20,1.0,Equal Split,1.0,1.0,True
+PA3,Sigma,20,1,Adaptive Sampling Shapley = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1,1.0,1.0,True
+PA3,Sigma,20,2,Adaptive Sampling Shapley = Remuneration Model 1,20,0.5,Adaptive Sampling Shapley = Remuneration Model 1,0.5,1.0,True
+PA3,Sigma,20,3,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,0.8,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,0.8,1.0,True
+PA3,Sigma,20,4,Adaptive Sampling Shapley = Remuneration Model 1,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1,1.0,1.0,True
+PA3,Sigma,25,1,Adaptive Sampling Shapley = Remuneration Model 1,20,0.95,Adaptive Sampling Shapley = Remuneration Model 1,0.95,1.0,True
+PA3,Sigma,25,2,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,20,1.0,Adaptive Sampling Shapley = Remuneration Model 1 = Variance Least Core,1.0,1.0,True
+PA3,Sigma,25,3,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1 = Variance Least Core,20,0.75,Adaptive Sampling Shapley = Remuneration Model 1,0.0,1.0,False
+PA3,Sigma,25,4,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,20,0.9,Adaptive Sampling Shapley = Proportional to Consumption = Remuneration Model 1,0.9,1.0,True

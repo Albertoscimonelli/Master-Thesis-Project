@@ -22,7 +22,7 @@ varia taglia e penetrazione dei prosumer.
 > leggere il codice sorgente per capire cosa fa il progetto e come è strutturato — solo per
 > modificarlo.
 >
-> **Stato al 30 ottobre 2026.**
+> **Stato al 3 novembre 2026.**
 > - **Risultati di riferimento: il run unito del 28 ottobre.** 295 comunità da 5 a 25 membri, con
 >   PA e imprese (§7.11.4, `outputs/tables_main2_fino25_unito/`), commentate nel rapporto
 >   [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
@@ -31,22 +31,29 @@ varia taglia e penetrazione dei prosumer.
 >   - L'inclusione LIHC non è valutabile: non c'è nessuna famiglia vulnerabile (§7.7), e va tolta
 >     dalla tesi.
 >   - Restano fuori le schede da 50-100 membri (§14.1).
-> - **Repliche dei partecipanti, in corso** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)).
+> - **Repliche dei partecipanti, fatte** (§7.11.6, [`CER_repliche/`](CER_repliche/README.md)).
 >   Fino a 25 membri le famiglie simulate erano tutte persone sole, qualunque composizione
 >   dichiarasse la scheda. 20 repliche estraggono le famiglie dentro la cella ISTAT dichiarata.
->   - **Fatte 5-15 membri (29 ottobre) e 18 membri (30 ottobre).** Poli, capovolgimento con la
->     penetrazione e trade-off principale reggono.
+>   - **Fatte tutte le taglie: 5-15 membri (29 ottobre), 18 membri (30 ottobre), 20-25 membri (3
+>     novembre).** Poli, capovolgimento con la penetrazione e trade-off principale reggono.
 >   - **Cambia l'allineamento lordo**, che dipendeva dalle persone sole.
->   - **Al 100% di prosumer** il legame merito-incentivo si scioglie a 5-15 membri e regge a 18.
->   - **20-25 membri in corso** dal 30 ottobre alle 15:48, con la stabilità estesa fin lì.
->     Il 31 ottobre il limite di iterazioni del VLC è passato da 1000 a 5000 (§7.11.6). Fine
->     prevista martedì 3 novembre in mattinata. Dopo vengono la lettura unita 5-25 di ogni
->     replica e l'aggregato.
-> - **Analisi finale pronta (1 novembre, branch `ccr-13867105-vwc5b6`).** A run 20-25 finito,
->   `bash CER_repliche/analisi_finale.sh` fa la lettura unita di ogni replica e produce rapporto,
->   figure, tabelle LaTeX e numeri della tesi in `outputs/tesi_finale/`. Versione B del piano:
->   10 metodi uguali da 5 a 25 membri, **Nucleolo escluso** dal confronto, risultati sulle repliche
->   r01-r20 (r00 solo controllo). Istruzioni passo per passo in
+>   - **Al 100% di prosumer** il legame merito-incentivo si scioglie a 5-15 membri e regge da 18
+>     in su.
+>   - **La stabilità c'è a ogni taglia.** A 20-25 membri il Variance Least Core sta nel nucleo in
+>     tutte le 2667 comunità; gli altri metodi quasi mai.
+>   - **Il limite di iterazioni del VLC è passato da 1000 a 5000** (§7.11.6).
+>   - **Lettura unita 5-25 fatta (3 novembre).** È l'analisi completa: 295 comunità per replica, un
+>     solo Shapley, tutti gli indicatori a ogni taglia
+>     ([`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md)).
+>     Al 100% di prosumer il legame merito-incentivo resta positivo ma si indebolisce (0,16 contro
+>     0,39 di r00).
+> - **Analisi completa in un comando (dal 3 novembre, versione B del piano).**
+>   `bash CER_repliche/analisi_finale.sh` riparte dalla lettura unita già fatta e produce
+>   aggregato con la robustezza di ogni conclusione (k/20, Clopper-Pearson, metà, bootstrap),
+>   soglia, VAN, quote ai prosumer, figure G01-G13 e F01-F13, tabelle LaTeX e `numeri_tesi.tex`
+>   in `outputs/tesi_finale/`, più il rapporto `outputs/report/RISULTATI_repliche_*.html`.
+>   10 metodi uguali da 5 a 25 membri (**Nucleolo escluso** dal confronto), risultati sulle
+>   repliche r01-r20. Istruzioni in
 >   [`docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`](docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md).
 > - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
 >   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
@@ -199,7 +206,7 @@ sovrascriverebbero quelle versionate in `outputs/tables_main2/`.
 **Repliche dei partecipanti** (§7.11.6):
 ```bash
 bash CER_repliche/lancia_repliche.sh <blocco> <min_membri> <max_membri> <repliche...>
-# per esempio il run in corso: bash CER_repliche/lancia_repliche.sh da20a25 20 25 0 1 2 ... 20
+# per esempio il blocco 20-25: bash CER_repliche/lancia_repliche.sh da20a25 20 25 0 1 2 ... 20
 ```
 Lancia `MAIN2.m` una replica dopo l'altra, con `MAIN2_RADICE=CER_repliche/rNN`. Se viene
 interrotto, rilanciato con gli stessi argomenti salta le repliche finite e riprende dal checkpoint
@@ -212,10 +219,11 @@ letta dal codice.
 
 **Tempi** (analisi senza figure, codice del 30 ottobre):
 - una comunità da 5 membri costa pochi secondi;
-- una da 18 circa 10 s, una da 20 11-16 s, una da 25 1,5-2,7 min (§11.2);
+- una da 18 circa 10 s, una da 20 11-16 s, una da 25 1,5-3 min (§11.2);
 - per una replica, le 105 comunità fino a 15 membri richiedono 15-18 min e le 63 da 18 membri
   12 min, entrambe con due MATLAB in parallelo;
-- le 127 da 20-25 membri richiedono circa 2 h 50 min con un MATLAB solo.
+- le 127 da 20-25 membri richiedono circa 2 h 35 min con un MATLAB solo, misurate su r10-r20.
+  A PC acceso da giorni le stesse comunità hanno richiesto 3 h 50-4 h 10 (§7.11.6).
 
 La pipeline è **deterministica** — l'unica sorgente casuale,
 l'Adaptive Sampling, ha un seed esplicito — e rilanciata senza modifiche riscrive le tabelle
@@ -248,9 +256,10 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `CER_configuration_PA/` | **Asse composizione (presenza di PA)**: le schede della griglia in quattro livelli, `PA0` (solo domestici) e `PA1`-`PA3` (comune, +scuola, +palazzetto), a N, C e P invariati. Lette da `MAIN2.m` dal 18 ottobre (§7.10). Vedi [CER_configuration_PA/README.md](CER_configuration_PA/README.md) |
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
-| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Dal 1 novembre l'analisi finale: `analisi_finale.sh` (comando unico), `unisci_repliche.sh`, `controlla_unito.py`, `grafici_repliche.py`, `unisci_per_figure.py`, `rapporto_repliche.py`, `stile_tesi.py` (palette Polimi e regola dei metodi), `prove/banco_prova.py`. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
-| `docs/analisi_finale/` | Piano dell'analisi finale (versione B, senza Nucleolo), istruzioni per dopo il run, prompt per la Sezione 6.1 della tesi, anteprima della palette |
-| `outputs/tesi_finale/` | Uscite dell'analisi finale (dal run del 3 novembre): `rapporto.html`, `numeri_tesi.tex` (macro LaTeX), `tabelle/` (booktabs), `figure/` (G01-G13), `figure_descrittive/` (F01-F13), `conclusioni.csv` |
+| `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `avvia_da20a25.sh` lo apre in una finestra fuori da VS Code, con `veglia.ps1` contro la sospensione per inattività; `stato_run.sh` riassume il run in corso; `unisci_repliche.sh` fa la lettura unita 5-25 di ogni replica; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
+| `CER_repliche/` (analisi finale) | `analisi_finale.sh` (comando unico), `controlla_unito.py`, `grafici_repliche.py` (G01-G13), `unisci_per_figure.py`, `tesi_finale.py` (tabelle LaTeX, `numeri_tesi.tex`, pagina delle figure), `stile_tesi.py` (palette Polimi e regola dei metodi), `prove/banco_prova.py` |
+| `docs/analisi_finale/` | Piano dell'analisi finale (versione B, senza Nucleolo), istruzioni, prompt per la Sezione 6.1 della tesi, anteprima della palette |
+| `outputs/tesi_finale/` | Uscite dell'analisi finale: `rapporto.html`, `numeri_tesi.tex` (macro LaTeX), `tabelle/` (booktabs), `figure/` (G01-G13), `figure_descrittive/` (F01-F13), `conclusioni.csv` |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -302,7 +311,7 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `outputs/tables_main2/`, `outputs/tables_main2_griglia25_PA/`, `outputs/tables_main2_griglia25/` | Le tabelle dei run precedenti, versionate (§11.0): fino a 18 membri (20 ottobre), fino a 25 membri con PA (21 ottobre) e a 25 membri senza PA (13 ottobre). Tutte superate dal run unito del 28 ottobre (riga sotto) |
 | `outputs/tables_main2_fino18_IND/`, `outputs/tables_main2_solo2025_IND_speedup/`, `outputs/tables_main2_fino25_unito/` | Asse imprese, versionate: 168 comunità fino a 18 membri (27 ottobre, §7.11.1), 127 da 20-25 membri (28 ottobre, §7.11.2) e l'analisi unita delle 295 (§7.11.4). Numeri per la tesi in `outputs/tables_tesi_fino25_unito/` |
 | `outputs/workspace/` | Per ripartire dai run finali senza rilanciarli: CSV esportati dai workspace, analisi testuale, strumenti; istruzioni in [LEGGIMI.md](outputs/workspace/LEGGIMI.md) |
-| `outputs/repliche/` | Uscite delle repliche per blocco di taglia (`fino15/`, `da18/`, `da20a25/`). Versionati: l'export di ogni replica (5 CSV in `rNN/export/`, dal 1 novembre 2026; come leggerli in [`CER_repliche/README.md`](CER_repliche/README.md)), l'aggregato fra le repliche e `avanzamento.txt`. Locali: tabelle e workspace di ogni replica. Ci sono poi le cartelle dei controlli (`controlli_fase1/`, `controlli_fase2/`, `prova_scalabilita/`) |
+| `outputs/repliche/` | Uscite delle repliche per blocco di taglia (`fino15/`, `da18/`, `da20a25/`) e della lettura unita 5-25 (`unito/`, l'analisi completa). Versionati: l'export di ogni replica (5 CSV in `rNN/export/`, dal 1 novembre 2026; come leggerli in [`CER_repliche/README.md`](CER_repliche/README.md)), l'aggregato fra le repliche e `avanzamento.txt`. Locali: tabelle e workspace di ogni replica. Ci sono poi le cartelle dei controlli (`controlli_fase1/`, `controlli_fase2/`, `prova_scalabilita/`) |
 | `outputs/report/` | Rapporto finale con figure e conclusioni (`RISULTATI_e_conclusioni_RQ_2026-10-28.html`, §7.11.5), pagina dei risultati del 13 ottobre (`regole_ripartizione_cer.html`, superata), validazione della società a cento famiglie, costo dei metodi al crescere dei membri |
 | `archive/` | Codice superato mantenuto per riferimento storico (`PROVA_PV.m`, `merge_pv_owner.m`) |
 | `GUIDA_modelli_distribuzione.md` | Derivazione matematica dei modelli di ripartizione e degli indicatori |
@@ -1798,7 +1807,7 @@ communities on the Italian day-ahead electricity market: A scenario analysis*. E
 [DB] https://github.com/maksym-koltunov/energy-communities-Italy, `CER database 2025 PUBLIC.xlsm`,
 dati a gennaio 2025, commit `7560715`.
 
-#### 7.11.6 Repliche dei partecipanti (dal 29 ottobre 2026, in corso)
+#### 7.11.6 Repliche dei partecipanti (29 ottobre - 3 novembre 2026)
 
 **Il problema.**
 - Le schede da 5 a 25 membri dichiarano una composizione ISTAT per celle: componenti × condizione
@@ -1909,34 +1918,78 @@ Cambiano:
     - **Interruzione del 31 ottobre.** Il PC è rimasto in sospensione dalle 7:56 alle 15:58, per il
       coperchio chiuso o il tasto di accensione. `veglia.ps1` blocca solo la sospensione per
       inattività. MATLAB è ripartito da dove era, senza perdite.
-    - **Fine prevista:** martedì 3 novembre in mattinata.
+  - **Riavvio del PC (1 novembre).** Il run è stato fermato alle 17:03 dopo un salvataggio, con
+    r00-r08 finite, ed è ripartito alle 17:15. Una comunità da 25 membri è passata da 217 a 140 s,
+    e una replica da circa 4 h 10 a circa 2 h 35, gli stessi tempi del run del 28 ottobre (2 h 36).
+    Il rallentamento era quindi del PC acceso da giorni, non del codice: su 42 comunità uguali
+    l'eccesso di coalizione costa 2 s, e rallentavano anche le parti non toccate. La causa precisa
+    non è identificata.
+  - **Fine del run: 3 novembre alle 00:26.** 21 repliche su 21, 2667 comunità, nessuna fallita. Il
+    VLC ha raggiunto al massimo 1365 iterazioni, e 26 comunità sono andate oltre le 1000.
+  - **Risultati, 20 repliche più r00.** Numeri in
+    [`outputs/repliche/da20a25/aggregato/sintesi.md`](outputs/repliche/da20a25/aggregato/sintesi.md).
+    - **Reggono, come a 5-18 membri:**
+      - i tre poli;
+      - il capovolgimento con la penetrazione, in 20 repliche su 20;
+      - il trade-off uguaglianza-incentivo (0,84, r00 0,81);
+      - l'effetto piccolo della composizione (8-9%, r00 13%).
+    - **Cambia di nuovo l'allineamento lordo:** i partecipanti ne spiegano il 35% della varianza, e
+      il vincitore coincide con quello di prima nel 52% delle celle.
+    - **Al 100% di prosumer il legame merito-incentivo regge, come a 18 membri.** τ(Fairness Index,
+      forza incentivante) vale 0,24 di mediana ed è positivo in 20 repliche su 20; r00 vale 0,44,
+      fuori dall'intervallo delle repliche (0,13-0,40).
+    - **Stabilità.** Il VLC sta nel nucleo in tutte le 2540 comunità delle repliche, con eccesso
+      massimo mediano di −0,20% di v(N). L'AS è secondo (+2,0%) ma nel nucleo solo nello 0,2% dei
+      casi. L'Equal Split arriva al 45%.
   - **Perché con un'istanza sola:** a 25 membri il VLC è limitato dalla banda verso la RAM. Due
     istanze insieme impiegano 4 min 48 s a comunità, una da sola 2 min 31 s (prova del 29
     ottobre).
-- **Dopo il run: la lettura unita.** Per ogni replica:
-  1. si uniscono i tre blocchi (`fino15`, `da18`, `da20a25`: 295 comunità) con `unisci_blocchi`;
-  2. si applica la regola del solo Shapley;
-  3. si rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
+- **La lettura unita 5-25 (3 novembre)** è l'analisi completa, e non si divide più per gruppi di
+  taglia. `CER_repliche/unisci_repliche.sh` fa tre cose per ogni replica:
+  1. unisce i tre blocchi (`fino15`, `da18`, `da20a25`: 295 comunità) con `unisci_blocchi`;
+  2. applica la regola del solo Shapley;
+  3. rifà l'analisi fra comunità con `MAIN2_RIPRENDI=1`.
 
-  Poi `aggrega_repliche.py` confronta le repliche, con una sezione che separa 5-18 da 20-25
-  membri, e r00 unita si confronta con il run unito del 28 ottobre.
+  Le 21 repliche hanno impiegato poco più di un'ora, senza errori. Poi `aggrega_repliche.py
+  --blocco unito`. Numeri in
+  [`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md).
+  - **Controllo su r00,** contro il run unito del 28 ottobre con la regola Shapley:
+    - per comunità identica a 20-25 membri;
+    - a 15-18 membri differisce solo il VLC, entro 2,1e-8 di v(N), 100 volte sotto la sua
+      tolleranza;
+    - fra comunità cambiano solo le 254 celle della stabilità a 20-25 membri, prima vuote, su
+      3245.
+  - **Reggono:**
+    - i tre poli (Equal Split su Gini; VLC e Shapley su merito e stabilità; Pearson Key e
+      Tri-level EP sulla forza incentivante);
+    - il capovolgimento con la penetrazione, in 20 repliche su 20;
+    - il trade-off uguaglianza-incentivo (0,82 e 0,88);
+    - l'effetto piccolo della composizione (10%);
+    - la penetrazione come primo fattore (59-72% della varianza).
+  - **Cambia rispetto a r00:**
+    - l'allineamento lordo dipende da famiglie e taglia: la penetrazione ne spiega l'11%, contro
+      il 53%;
+    - al 100% di prosumer τ(Fairness Index, forza incentivante) scende a 0,16 (r00 0,39) ma resta
+      positivo in 20 repliche su 20;
+    - nella stessa fascia τ(Gini, Fairness Index) va a zero (−0,06; r00 −0,31).
+  - Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md).
 
-**Analisi finale (1 novembre 2026, versione B del piano).** Tutto il dopo-run è in un comando,
-`bash CER_repliche/analisi_finale.sh`; piano, scelte e istruzioni in `docs/analisi_finale/`.
+**Analisi completa (versione B del piano, `docs/analisi_finale/`).** `bash
+CER_repliche/analisi_finale.sh` parte dalla lettura unita e fa tutto il resto.
 - **Metodi.** 10, gli stessi da 5 a 25 membri. Il Nucleolo è escluso dal confronto: si calcola solo
   fino a 18 membri, la stabilità ora si misura con l'eccesso fino a 25, e il VLC ha già un
   controllo di stabilità in MAIN2. Nei blocchi fino a 18 membri VLC e Nucleolo sono fra i primi
   su merito e stabilità nel 92-100% delle celle. La vista 5-18 con il Nucleolo non si fa.
-- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) non è un'estrazione
-  casuale né una configurazione corretta: resta solo come controllo (regressione contro il 28/10).
+- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) resta solo come controllo.
 - **Lettura.** Una conclusione regge se vale in almeno 15 repliche su 20 (test del segno a due
   code, p = 0,041), si inverte con 5 o meno, altrimenti dipende dai partecipanti; 17/20 per le
   conclusioni principali. Per ogni conclusione ci sono l'intervallo di Clopper-Pearson, il
-  controllo a metà (r01-r10 contro r11-r20) e il bootstrap. Le estrazioni possibili sono circa
-  1,4·10⁵ a 5 membri e 8·10¹⁷ a 25: le repliche sono un campione casuale, e 20 è il numero
-  sostenibile nei tempi.
-- **Uscite** in `outputs/tesi_finale/`: rapporto, figure G01-G13 e F01-F13 (palette Polimi),
-  tabelle LaTeX, `numeri_tesi.tex`.
+  controllo a metà (r01-r10 contro r11-r20) e il bootstrap. Le mediane hanno l'intervallo al 95%
+  delle statistiche d'ordine.
+- **Analisi complementari.** VAN per metodo, soglia regolatoria, quote ai prosumer, sensibilità
+  alla soglia di rilevanza, Shapley esatto contro AS.
+- **Uscite** in `outputs/tesi_finale/`: figure G01-G13 e F01-F13 (palette Polimi), tabelle LaTeX,
+  `numeri_tesi.tex`.
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,
@@ -2289,12 +2342,14 @@ blocco 20-25 passano da 10,2 h a 0,9 h, le 127 si chiudono in 2 h 36 min.
 **Con il codice del 30 ottobre** (v(S) a blocchi, eccesso di coalizione fino a 25 membri):
 - **18 membri:** circa 10 s a comunità; v(S) costa 0,4-1,1 s invece di 50-56 s.
 - **20 membri:** 11-16 s.
-- **25 membri:** 1,5-2,7 min, di cui v(S) 35-99 s, VLC 31-45 s ed eccesso 2 s.
+- **25 membri:** 1,5-3 min, di cui v(S) 35-99 s, VLC 31-60 s ed eccesso 2 s. Il VLC costa circa
+  0,13 s a iterazione.
 - **Le repliche:**
   - 105 comunità fino a 15 membri in 15-18 min, 63 da 18 membri in 12 min, entrambe con due
     MATLAB in parallelo;
-  - 127 da 20-25 membri in circa 2 h 50 min, con un MATLAB solo: a 25 membri il parallelo non
-    aiuta (§7.11.6).
+  - 127 da 20-25 membri in circa 2 h 35 min, con un MATLAB solo: a 25 membri il parallelo non
+    aiuta (§7.11.6). A PC acceso da giorni servono 3 h 50-4 h 10: prima di un run lungo conviene
+    riavviare.
 
 **Analisi e figure sono separate perché si governano in modo diverso.** Il calcolo è
 quello che serve; l'export delle figure è un servizio, e si spegne con `FIG.esporta` o si

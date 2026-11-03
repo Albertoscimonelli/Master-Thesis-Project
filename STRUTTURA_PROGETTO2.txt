@@ -101,8 +101,13 @@ Project/
 |   |                                   dentro la cella ISTAT dichiarata
 |   |-- lancia_repliche.sh      [v]     MAIN2 con MAIN2_RADICE, replica per replica
 |   |                                   (riprende dal checkpoint una replica interrotta)
+|   |-- avvia_da20a25.sh        [v]     Blocco 20-25 in una finestra fuori da VS Code
+|   |-- veglia.ps1              [v]     Niente sospensione per inattivita' durante il run
+|   |-- stato_run.sh            [v]     Riepilogo del run in corso
 |   |-- aggrega_repliche.py     [v]     Confronto fra le repliche
 |   |-- unisci_blocchi.m        [v]     Lettura unita di piu' blocchi di taglia
+|   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica
+|   |                                   (outputs/repliche/unito/rNN/)
 |   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
 |   |-- analisi_finale.sh       [v]     COMANDO UNICO dopo il run (docs/analisi_finale/)
 |   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica (MATLAB)

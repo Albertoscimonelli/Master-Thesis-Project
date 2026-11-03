@@ -1,0 +1,41 @@
+InsiemeCriteri,Metodo,VolteSulFronte,ComunitaValutate,QuotaSulFronte
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Shapley,1,15,0.0666667
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Variance Least Core,0,15,0
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Equal Split,15,15,1
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Proportional to Consumption,0,15,0
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Remuneration Model 1,0,15,0
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Cascading Tree,4,15,0.266667
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Weighted Solidarity,6,15,0.4
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Pearson Key,4,15,0.266667
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Similarity-Utilization,15,15,1
+Equita(Gini) + Incentivo(IS) + Sostenibilita(VAN_min),Tri-level EP,4,15,0.266667
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Shapley,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Variance Least Core,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Equal Split,15,15,1
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Proportional to Consumption,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Remuneration Model 1,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Cascading Tree,15,15,1
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Weighted Solidarity,8,15,0.533333
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Pearson Key,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Similarity-Utilization,0,15,0
+Equita(Gini) + Incentivo(coseno lordo) + Sostenibilita(VAN_min),Tri-level EP,0,15,0
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Shapley,10,15,0.666667
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Variance Least Core,15,15,1
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Equal Split,0,15,0
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Proportional to Consumption,1,15,0.0666667
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Remuneration Model 1,0,15,0
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Cascading Tree,0,15,0
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Weighted Solidarity,0,15,0
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Pearson Key,15,15,1
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Similarity-Utilization,11,15,0.733333
+Merito(FI) + Stabilita(Eccesso) + Incentivo(IS),Tri-level EP,15,15,1
+Tutti i criteri normativi + IS + VAN_min,Shapley,10,15,0.666667
+Tutti i criteri normativi + IS + VAN_min,Variance Least Core,13,15,0.866667
+Tutti i criteri normativi + IS + VAN_min,Equal Split,15,15,1
+Tutti i criteri normativi + IS + VAN_min,Proportional to Consumption,1,15,0.0666667
+Tutti i criteri normativi + IS + VAN_min,Remuneration Model 1,0,15,0
+Tutti i criteri normativi + IS + VAN_min,Cascading Tree,14,15,0.933333
+Tutti i criteri normativi + IS + VAN_min,Weighted Solidarity,14,15,0.933333
+Tutti i criteri normativi + IS + VAN_min,Pearson Key,15,15,1
+Tutti i criteri normativi + IS + VAN_min,Similarity-Utilization,14,15,0.933333
+Tutti i criteri normativi + IS + VAN_min,Tri-level EP,15,15,1

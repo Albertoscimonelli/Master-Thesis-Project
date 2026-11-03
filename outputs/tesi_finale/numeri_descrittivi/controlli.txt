@@ -1,0 +1,33 @@
+livelli trovati in outputs/repliche/unito/insieme/tables: PA0 (560 comunita'), ND1 (320 comunita'), ND1_PA1 (320 comunita'), ND1_PA2 (320 comunita'), ND1_PA3 (320 comunita'), ND2 (320 comunita'), ND2_PA1 (320 comunita'), ND2_PA2 (320 comunita'), ND2_PA3 (300 comunita'), ND3 (320 comunita'), ND3_PA1 (320 comunita'), ND3_PA2 (300 comunita'), ND3_PA3 (260 comunita'), PA1 (560 comunita'), PA2 (540 comunita'), PA3 (500 comunita')
+
+comunita' in cui ciascun indicatore discrimina (soglia di rilevanza):
+Livello                  ND1  ND1_PA1  ND1_PA2  ND1_PA3  ND2  ND2_PA1  ND2_PA2  ND2_PA3  ND3  ND3_PA1  ND3_PA2  ND3_PA3  PA0  PA1  PA2  PA3
+Indicatore                                                                                                                                 
+AllineamentoVirtu        320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+AllineamentoVirtu_lordo  320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+CoalizioniInstabili      320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+EccessoMax_EUR           320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+FairnessIndex            320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+ForzaIncentivante        320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+Gini                     320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+Sigma                    320      320      320      320  320      320      320      300  320      320      300      260  560  560  540  500
+
+livelli nell'export: ND1 (320 comunita'), ND1_PA1 (320 comunita'), ND1_PA2 (320 comunita'), ND1_PA3 (320 comunita'), ND2 (320 comunita'), ND2_PA1 (320 comunita'), ND2_PA2 (320 comunita'), ND2_PA3 (300 comunita'), ND3 (320 comunita'), ND3_PA1 (320 comunita'), ND3_PA2 (300 comunita'), ND3_PA3 (260 comunita'), PA0 (560 comunita'), PA1 (560 comunita'), PA2 (540 comunita'), PA3 (500 comunita')
+
+export vs tabelle, quota ai prosumer: 59000 terne (livello, scheda, metodo); scarto massimo per metodo = {'Cascading Tree': 0.0, 'Equal Split': 0.0, 'Pearson Key': 0.0, 'Proportional to Consumption': 0.0, 'Remuneration Model 1': 0.0, 'Shapley': 0.0, 'Similarity-Utilization': 0.0, 'Tri-level EP': 0.0, 'Variance Least Core': 0.0, 'Weighted Solidarity': 0.0}
+
+metodi esclusi dai grafici grezzi perche' l'export e' superato: []
+
+per ogni (comunita', indicatore) il migliore vale 1 e il peggiore 0: min max = 0.00e+00, min min = 1.000000
+
+scomposizione della varianza (pesata), per indicatore:
+                         eta2_penetrazione  eta2_taglia  residuo_interazione
+Indicatore                                                                  
+Gini                                 0.679        0.065                0.257
+FairnessIndex                        0.820        0.100                0.081
+Sigma                                0.807        0.093                0.100
+EccessoMax_EUR                       0.780        0.128                0.091
+CoalizioniInstabili                  0.780        0.098                0.122
+ForzaIncentivante                    0.814        0.123                0.063
+AllineamentoVirtu                    0.884        0.045                0.072
+AllineamentoVirtu_lordo              0.159        0.434                0.407

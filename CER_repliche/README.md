@@ -13,7 +13,8 @@ con famiglie diverse.
 - **lettura unita 5-25** fatta il 3 novembre: 21 repliche da 295 comunità, un solo Shapley, tutti
   gli indicatori a ogni taglia. È l'analisi completa, risultati sotto.
 - **analisi completa** (robustezza delle conclusioni, VAN, soglia, figure e numeri della tesi): un
-  solo comando, sezione sotto.
+  solo comando, sezione sotto. **Fatta il 3 novembre** sul PC del run: 328 conclusioni su 334
+  reggono, e dipende dai partecipanti solo l'allineamento lordo (risultati sotto).
 
 ## Analisi completa: un solo comando (dal 3 novembre 2026)
 
@@ -497,6 +498,68 @@ gli indicatori a ogni taglia, stabilità compresa. Numeri in
   −0,81/−0,74 e −0,84/−0,80;
 - τ(Gini, Fairness Index) nelle fasce 1 e 4: 0,46 e −0,31, contro 0,17/0,41 e −0,27/+0,11;
 - la perdita su Gini scegliendo l'incentivo: 0,94, contro 0,85-0,91.
+
+## Risultati dell'analisi completa (3 novembre 2026)
+
+`bash CER_repliche/analisi_finale.sh` sul PC del run: 8 passi in 2 minuti, nessun errore. Tutti i
+controlli di integrità sono passati (295 comunità, 16 livelli, 10 metodi, 7 taglie per replica).
+Solo repliche r01-r20. Fonti dei numeri: `outputs/repliche/unito/aggregato/sintesi.md`,
+`robustezza.csv`, `van.csv`, `soglia.csv` e `outputs/tesi_finale/conclusioni.csv`.
+
+**Il numero di repliche basta?** Regge una conclusione che vale in almeno 15 repliche su 20; è
+forte con almeno 17.
+
+| Tipo | Conclusioni | Reggono | Forti | Dipendono | Si invertono | Metà concordi |
+|---|---|---|---|---|---|---|
+| tau | 107 | 104 | 102 | 3 | 0 | 106 |
+| vincitore | 224 | 221 | 216 | 3 | 0 | 218 |
+| capovolgimento | 2 | 2 | 2 | 0 | 0 | 2 |
+| soglia | 1 | 1 | 1 | 0 | 0 | 1 |
+| **tutte** | **334** | **328** | **321** | **6** | **0** | **327** |
+
+Nel bootstrap il verdetto resta lo stesso nel 100% dei casi (mediana).
+
+**Conclusioni chiave: 10 confermate su 11.**
+
+| Conclusione | Repliche | Verdetto | Numero |
+|---|---|---|---|
+| Equal Split è primo su Gini nella maggioranza delle celle | 20/20 | confermata | mediana 100% delle celle |
+| il Variance Least Core è primo sul merito (FI) | 20/20 | confermata | mediana 100% delle celle |
+| il Variance Least Core è primo sulla stabilità (eccesso) | 20/20 | confermata | mediana 100% delle celle |
+| Pearson Key o Tri-level EP sono primi sulla forza incentivante | 20/20 | confermata | mediana 96% delle celle |
+| τ(Gini, IS) scende di almeno 0,3 dalla fascia 1 alla 4 | 20/20 | confermata | IC 95% 83-100% |
+| τ(FI, IS) negativo in fascia 1 e positivo in fascia 3 | 20/20 | confermata | IC 95% 83-100% |
+| nessuna comunità con imprese sopra il 55% | 20/20 | confermata | IC 95% 83-100% |
+| il trade-off più caro è uguaglianza contro incentivo | mediane | confermata | forza incentivante → Gini 0,88 |
+| merito e stabilità non si fanno concorrenza (perdita ≤ 0,10) | mediana | confermata | FI → eccesso 0,00 [0,00; 0,01] |
+| la composizione pesa poco (coppie invertite ≤ 15%) | mediana | confermata | 9% (livelli 1-23%) |
+| la penetrazione è il primo fattore della varianza per ogni indicatore | - | **non confermata** | 7/8 indicatori; eccezione l'allineamento lordo |
+
+**Cosa dipende dai partecipanti: solo l'allineamento lordo.**
+- Sugli altri sette indicatori reggono tutte e 283 le conclusioni e le metà concordano su tutte.
+  Due non sono forti: τ(Gini, Fairness Index) e τ(Gini, Sigma) negativi in fascia 4 (16/20).
+- Per l'allineamento lordo ne reggono 45 su 51, e le metà concordano su 44. Le 6 che dipendono:
+  - τ con eccesso massimo, Fairness Index e Sigma negativo in fascia 3 (14, 14 e 13 repliche);
+  - Similarity-Utilization fra i primi a 5 membri, fascia 4 (14);
+  - Cascading Tree fra i primi a 10 e 18 membri, fascia 3 (13 e 14).
+- È anche l'unico indicatore in cui la penetrazione non è il primo fattore: ne spiega l'11% della
+  varianza, contro il 29% della taglia, il 27% dell'interazione e il 33% dei partecipanti. Negli
+  altri sette la penetrazione spiega il 59-72%.
+
+**Soglia regolatoria** (`soglia.csv`, energia condivisa su immessa, tutte le comunità delle 20
+repliche):
+
+| Gruppo | Comunità | Massimo | Mediana | Sopra il 55% |
+|---|---|---|---|---|
+| solo domestici | 560 | 81,4% | 19,7% | 70, in tutte e 20 le repliche e a ogni taglia |
+| con imprese | 3740 | 34,7% | 8,5% | 0 |
+| con PA | 1600 | 36,1% | 12,0% | 0 |
+
+**VAN per metodo** (`van.csv`, analisi complementare): quota delle comunità con almeno un membro a
+VAN negativo.
+- Pearson Key, Tri-level EP e Proportional to Consumption: 83-100%.
+- Similarity-Utilization: 100% nelle sole domestiche, 44-48% con imprese o PA.
+- Equal Split 0-9%, Cascading Tree 0-19%.
 
 ## Blocco 18-25 membri, in due fasi (dal 30 ottobre 2026)
 

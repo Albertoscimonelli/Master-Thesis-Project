@@ -165,7 +165,12 @@ Project/
     |                                   strumenti/ [v], LEGGIMI.md [v]
     |-- run_logs/                [l]    Log completi dei run, elenco schede in testa
     |-- repliche/                       Uscite delle repliche: <blocco>/rNN/ [l],
-    |                                   <blocco>/aggregato/ [v], controlli [v]
+    |                                   <blocco>/aggregato/ [v], controlli [v];
+    |                                   unito/rNN/export/ e tabelle/ [v]
+    |-- tesi_finale/             [v]    Analisi completa delle repliche (3/11):
+    |                                   figure/ G01-G13, figure_descrittive/ F01-F13,
+    |                                   tabelle/*.tex, numeri_tesi.tex, conclusioni.csv,
+    |                                   rapporto.html
     +-- report/                         regole_ripartizione_cer.html (pagina dei
                                         risultati finali), scaling_metodi_ripartizione.md,
                                         validazione_lombardia100.md

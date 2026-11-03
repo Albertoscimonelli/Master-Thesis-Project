@@ -382,20 +382,20 @@ affermazioni. Per le poche affermazioni centrali delle conclusioni (cap. 8) si p
 
 ---
 
-## 7. Stato dell'implementazione (1 novembre 2026, sera)
+## 7. Stato dell'implementazione (aggiornato al 3 novembre 2026)
 
 Tutto sul branch `ccr-13867105-vwc5b6`. Il comando è `bash CER_repliche/analisi_finale.sh`;
 istruzioni in `CER_repliche/README.md`, sezione "Analisi finale".
 
 | Passo | File | Stato |
 |---|---|---|
-| 1 | `unisci_repliche.sh` | scritto; **da provare sul PC del run** (MATLAB) |
-| 2 | `controlla_unito.py` | provato sul banco di prova |
-| 3, 3b | `aggrega_repliche.py` | provato sul banco di prova |
-| 4 | `grafici_repliche.py` (G01-G13) | provato e figure controllate a vista |
-| 5 | `unisci_per_figure.py` + `grafici_metodi.py` (palette Polimi) | provato |
-| 6 | `rapporto_repliche.py` | provato |
-| 7 | `analisi_finale.sh` | provato con `--solo-python` sul banco di prova |
+| 1 | `unisci_repliche.sh` | **fatto il 3 novembre** sulle 21 repliche (PR #71) |
+| 2 | `controlla_unito.py` | provato sul banco di prova; **passato il 3 novembre** sulle 21 repliche |
+| 3, 3b | `aggrega_repliche.py` | provato sul banco di prova; **fatto il 3 novembre** |
+| 4 | `grafici_repliche.py` (G01-G13) | provato e figure controllate a vista; **fatto il 3 novembre** |
+| 5 | `unisci_per_figure.py` + `grafici_metodi.py` (palette Polimi) | provato; **fatto il 3 novembre** |
+| 6 | `rapporto_repliche.py` | provato; **fatto il 3 novembre** |
+| 7 | `analisi_finale.sh` | provato con `--solo-python` sul banco di prova; **lanciato sul PC del run il 3 novembre** |
 
 **r00 (decisione del 1 novembre).** Non entra in figure, numeri e conclusioni: non è
 un'estrazione casuale né una configurazione corretta. Resta come controllo del meccanismo delle
@@ -413,3 +413,34 @@ bash CER_repliche/unisci_repliche.sh 0 1
 python -I CER_repliche/controlla_unito.py          # su r00 fa anche la regressione col 28/10
 ```
 Se passa, martedì basta `bash CER_repliche/analisi_finale.sh`.
+
+**Esito (3 novembre 2026).** `analisi_finale.sh` sul PC del run: il passo MATLAB si è saltato da
+sé, gli altri 7 sono finiti in 2 minuti senza errori. Tutti i controlli di integrità sono passati
+(295 comunità, 16 livelli, 10 metodi, 7 taglie per replica), e in `outputs/tesi_finale/rapporto.html`
+il riquadro "Controlli di integrità falliti" non c'è. Risultati committati in `974ca57`: tabelle
+in `unito/rNN/tabelle/`, aggregato, `outputs/tesi_finale/`, circa 98 MB. Numeri da
+`outputs/repliche/unito/aggregato/sintesi.md`, `robustezza.csv`, `van.csv`, `soglia.csv` e
+`outputs/tesi_finale/conclusioni.csv`, solo repliche r01-r20.
+
+- **Il numero di repliche basta (passo 3b).** 334 conclusioni: 328 reggono (almeno 15/20), 321
+  forti (almeno 17/20), 6 dipendono dai partecipanti, nessuna si inverte. Le metà concordano su
+  327, e il bootstrap dà lo stesso verdetto nel 100% dei casi (mediana).
+- **Cosa regge.** 10 conclusioni chiave su 11, tutte in 20 repliche su 20 dove si contano:
+  - i tre poli: Equal Split su Gini, Variance Least Core su merito e stabilità, Pearson Key o
+    Tri-level EP sulla forza incentivante;
+  - il capovolgimento con la penetrazione;
+  - nessuna comunità con imprese sopra il 55%;
+  - il trade-off più caro, uguaglianza contro incentivo (0,88 [0,86; 0,88]);
+  - merito e stabilità non in concorrenza (0,00 [0,00; 0,01]);
+  - la composizione che pesa poco (9%, livelli 1-23%).
+- **Cosa dipende dai partecipanti: solo l'allineamento lordo.** Le 6 conclusioni che non reggono e
+  le 7 con le metà discordi sono tutte sue (45 su 51 reggono). Sugli altri sette indicatori
+  reggono tutte e 283, con le metà concordi.
+- **Cosa non è confermato: la penetrazione primo fattore della varianza per ogni indicatore.** Vale
+  per 7 su 8 (59-72%). Per l'allineamento lordo la penetrazione spiega l'11%, la taglia il 29%.
+  Nella tesi l'affermazione va limitata a sette indicatori: è un punto in più per la lista del
+  passo 9.
+- **Soglia regolatoria.** Supera il 55% solo il gruppo dei soli domestici: 70 comunità su 560,
+  massimo 81,4%. Con imprese il massimo è 34,7%, con PA il 36,1%.
+- **VAN.** Pearson Key, Tri-level EP e Proportional to Consumption lasciano almeno un VAN negativo
+  nell'83-100% delle comunità; Equal Split nello 0-9%.

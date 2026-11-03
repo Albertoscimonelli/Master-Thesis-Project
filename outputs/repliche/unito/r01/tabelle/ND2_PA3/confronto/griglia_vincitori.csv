@@ -1,0 +1,166 @@
+Indicatore,Membri,Fascia,Penetrazione_pct,Scheda,Vincitore,PrimiAPari,Distacco
+EI_orig,15,2,53.33,CER_7_8_0,Equal Split,Equal Split,0.405068
+EI_orig,15,3,73.33,CER_4_11_0,Equal Split,Equal Split,0.502865
+EI_orig,15,4,100,CER_0_15_0,Equal Split,Equal Split,0.534819
+EI_orig,18,1,27.78,CER_13_5_0,Equal Split,Equal Split,0.283861
+EI_orig,18,2,50,CER_9_9_0,Equal Split,Equal Split,0.425306
+EI_orig,18,3,77.78,CER_4_14_0,Equal Split,Equal Split,0.533127
+EI_orig,18,4,100,CER_0_18_0,Equal Split,Equal Split,0.545194
+EI_orig,20,1,25,CER_15_5_0,Equal Split,Equal Split,0.26338
+EI_orig,20,2,50,CER_10_10_0,Equal Split,Equal Split,0.434187
+EI_orig,20,3,75,CER_5_15_0,Equal Split,Equal Split,0.541684
+EI_orig,20,4,100,CER_0_20_0,Equal Split,Equal Split,0.54946
+EI_orig,25,1,28,CER_18_7_0,Equal Split,Equal Split,0.287812
+EI_orig,25,2,52,CER_12_13_0,Equal Split,Equal Split,0.446105
+EI_orig,25,3,76,CER_6_19_0,Equal Split,Equal Split,0.492545
+EI_orig,25,4,100,CER_0_25_0,Equal Split,Equal Split,0.552286
+Gini,15,2,53.33,CER_7_8_0,Equal Split,Equal Split,0.405068
+Gini,15,3,73.33,CER_4_11_0,Equal Split,Equal Split,0.502865
+Gini,15,4,100,CER_0_15_0,Equal Split,Equal Split,0.534819
+Gini,18,1,27.78,CER_13_5_0,Equal Split,Equal Split,0.283861
+Gini,18,2,50,CER_9_9_0,Equal Split,Equal Split,0.425306
+Gini,18,3,77.78,CER_4_14_0,Equal Split,Equal Split,0.533127
+Gini,18,4,100,CER_0_18_0,Equal Split,Equal Split,0.545194
+Gini,20,1,25,CER_15_5_0,Equal Split,Equal Split,0.26338
+Gini,20,2,50,CER_10_10_0,Equal Split,Equal Split,0.434187
+Gini,20,3,75,CER_5_15_0,Equal Split,Equal Split,0.541684
+Gini,20,4,100,CER_0_20_0,Equal Split,Equal Split,0.54946
+Gini,25,1,28,CER_18_7_0,Equal Split,Equal Split,0.287812
+Gini,25,2,52,CER_12_13_0,Equal Split,Equal Split,0.446105
+Gini,25,3,76,CER_6_19_0,Equal Split,Equal Split,0.492545
+Gini,25,4,100,CER_0_25_0,Equal Split,Equal Split,0.552286
+FairnessIndex,15,2,53.33,CER_7_8_0,(pari),Variance Least Core = Shapley = Proportional to Consumption = Remuneration Model 1,0.000832252
+FairnessIndex,15,3,73.33,CER_4_11_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00228553
+FairnessIndex,15,4,100,CER_0_15_0,(pari),Shapley = Proportional to Consumption = Variance Least Core = Remuneration Model 1,0.00354968
+FairnessIndex,18,1,27.78,CER_13_5_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00394111
+FairnessIndex,18,2,50,CER_9_9_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.0022975
+FairnessIndex,18,3,77.78,CER_4_14_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00224495
+FairnessIndex,18,4,100,CER_0_18_0,(pari),Proportional to Consumption = Shapley = Variance Least Core = Remuneration Model 1,0.00271291
+FairnessIndex,20,1,25,CER_15_5_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00437676
+FairnessIndex,20,2,50,CER_10_10_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00256067
+FairnessIndex,20,3,75,CER_5_15_0,(pari),Variance Least Core = Proportional to Consumption = Shapley,0.00489488
+FairnessIndex,20,4,100,CER_0_20_0,(pari),Proportional to Consumption = Shapley = Variance Least Core = Remuneration Model 1,0.00185528
+FairnessIndex,25,1,28,CER_18_7_0,(pari),Variance Least Core = Shapley = Proportional to Consumption,0.00673329
+FairnessIndex,25,2,52,CER_12_13_0,(pari),Variance Least Core = Proportional to Consumption = Shapley,0.0121921
+FairnessIndex,25,3,76,CER_6_19_0,(pari),Variance Least Core = Proportional to Consumption = Shapley,0.00262358
+FairnessIndex,25,4,100,CER_0_25_0,(pari),Proportional to Consumption = Variance Least Core = Shapley,0.0125396
+Sigma,15,2,53.33,CER_7_8_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00526791
+Sigma,15,3,73.33,CER_4_11_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00455345
+Sigma,15,4,100,CER_0_15_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00324488
+Sigma,18,1,27.78,CER_13_5_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00192134
+Sigma,18,2,50,CER_9_9_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00473163
+Sigma,18,3,77.78,CER_4_14_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00284874
+Sigma,18,4,100,CER_0_18_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00166366
+Sigma,20,1,25,CER_15_5_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00169456
+Sigma,20,2,50,CER_10_10_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00436733
+Sigma,20,3,75,CER_5_15_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00225505
+Sigma,20,4,100,CER_0_20_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.00180269
+Sigma,25,1,28,CER_18_7_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00156154
+Sigma,25,2,52,CER_12_13_0,(pari),Shapley = Variance Least Core = Proportional to Consumption,0.00205028
+Sigma,25,3,76,CER_6_19_0,(pari),Shapley = Proportional to Consumption = Variance Least Core,0.000117134
+Sigma,25,4,100,CER_0_25_0,(pari),Proportional to Consumption = Shapley = Variance Least Core,0.000517064
+InclusioneLIHC,15,2,53.33,CER_7_8_0,,,NaN
+InclusioneLIHC,15,3,73.33,CER_4_11_0,,,NaN
+InclusioneLIHC,15,4,100,CER_0_15_0,,,NaN
+InclusioneLIHC,18,1,27.78,CER_13_5_0,,,NaN
+InclusioneLIHC,18,2,50,CER_9_9_0,,,NaN
+InclusioneLIHC,18,3,77.78,CER_4_14_0,,,NaN
+InclusioneLIHC,18,4,100,CER_0_18_0,,,NaN
+InclusioneLIHC,20,1,25,CER_15_5_0,,,NaN
+InclusioneLIHC,20,2,50,CER_10_10_0,,,NaN
+InclusioneLIHC,20,3,75,CER_5_15_0,,,NaN
+InclusioneLIHC,20,4,100,CER_0_20_0,,,NaN
+InclusioneLIHC,25,1,28,CER_18_7_0,,,NaN
+InclusioneLIHC,25,2,52,CER_12_13_0,,,NaN
+InclusioneLIHC,25,3,76,CER_6_19_0,,,NaN
+InclusioneLIHC,25,4,100,CER_0_25_0,,,NaN
+EccessoMax_EUR,15,2,53.33,CER_7_8_0,(pari),Variance Least Core = Shapley = Tri-level EP = Remuneration Model 1 = Proportional to Consumption = Pearson Key,137.13
+EccessoMax_EUR,15,3,73.33,CER_4_11_0,(pari),Variance Least Core = Shapley = Tri-level EP = Proportional to Consumption = Remuneration Model 1 = Pearson Key,142.748
+EccessoMax_EUR,15,4,100,CER_0_15_0,(pari),Variance Least Core = Proportional to Consumption = Shapley = Pearson Key = Tri-level EP = Remuneration Model 1,5.81198
+EccessoMax_EUR,18,1,27.78,CER_13_5_0,(pari),Variance Least Core = Shapley = Tri-level EP = Remuneration Model 1,173.404
+EccessoMax_EUR,18,2,50,CER_9_9_0,(pari),Variance Least Core = Shapley = Tri-level EP = Remuneration Model 1 = Proportional to Consumption = Pearson Key,151.482
+EccessoMax_EUR,18,3,77.78,CER_4_14_0,(pari),Variance Least Core = Shapley = Proportional to Consumption = Tri-level EP = Remuneration Model 1 = Pearson Key,128.037
+EccessoMax_EUR,18,4,100,CER_0_18_0,(pari),Variance Least Core = Proportional to Consumption = Shapley = Pearson Key = Tri-level EP = Remuneration Model 1,5.61412
+EccessoMax_EUR,20,1,25,CER_15_5_0,(pari),Variance Least Core = Shapley = Tri-level EP,166.879
+EccessoMax_EUR,20,2,50,CER_10_10_0,(pari),Variance Least Core = Shapley = Tri-level EP = Remuneration Model 1 = Pearson Key = Proportional to Consumption,156.042
+EccessoMax_EUR,20,3,75,CER_5_15_0,(pari),Variance Least Core = Shapley = Proportional to Consumption = Tri-level EP = Pearson Key = Remuneration Model 1,128.03
+EccessoMax_EUR,20,4,100,CER_0_20_0,(pari),Variance Least Core = Proportional to Consumption = Shapley = Pearson Key = Tri-level EP = Remuneration Model 1,5.02336
+EccessoMax_EUR,25,1,28,CER_18_7_0,(pari),Variance Least Core = Shapley = Tri-level EP,223.687
+EccessoMax_EUR,25,2,52,CER_12_13_0,(pari),Variance Least Core = Shapley = Tri-level EP = Pearson Key,194.321
+EccessoMax_EUR,25,3,76,CER_6_19_0,(pari),Variance Least Core = Shapley = Tri-level EP = Pearson Key = Proportional to Consumption,162.555
+EccessoMax_EUR,25,4,100,CER_0_25_0,(pari),Variance Least Core = Proportional to Consumption = Shapley = Pearson Key = Tri-level EP = Remuneration Model 1,5.0475
+CoalizioniInstabili,15,2,53.33,CER_7_8_0,Variance Least Core,Variance Least Core,1938
+CoalizioniInstabili,15,3,73.33,CER_4_11_0,Variance Least Core,Variance Least Core,2298
+CoalizioniInstabili,15,4,100,CER_0_15_0,(pari),Variance Least Core = Proportional to Consumption,0
+CoalizioniInstabili,18,1,27.78,CER_13_5_0,(pari),Variance Least Core = Shapley,6369
+CoalizioniInstabili,18,2,50,CER_9_9_0,Variance Least Core,Variance Least Core,16128
+CoalizioniInstabili,18,3,77.78,CER_4_14_0,Variance Least Core,Variance Least Core,16621
+CoalizioniInstabili,18,4,100,CER_0_18_0,(pari),Variance Least Core = Proportional to Consumption,0
+CoalizioniInstabili,20,1,25,CER_15_5_0,(pari),Variance Least Core = Shapley,16516
+CoalizioniInstabili,20,2,50,CER_10_10_0,Variance Least Core,Variance Least Core,63996
+CoalizioniInstabili,20,3,75,CER_5_15_0,Variance Least Core,Variance Least Core,66551
+CoalizioniInstabili,20,4,100,CER_0_20_0,(pari),Variance Least Core = Proportional to Consumption,0
+CoalizioniInstabili,25,1,28,CER_18_7_0,(pari),Variance Least Core = Shapley,851091
+CoalizioniInstabili,25,2,52,CER_12_13_0,Variance Least Core,Variance Least Core,2046930
+CoalizioniInstabili,25,3,76,CER_6_19_0,Variance Least Core,Variance Least Core,2137450
+CoalizioniInstabili,25,4,100,CER_0_25_0,(pari),Variance Least Core = Proportional to Consumption,0
+ForzaIncentivante,15,2,53.33,CER_7_8_0,Similarity-Utilization,Similarity-Utilization,0.50772
+ForzaIncentivante,15,3,73.33,CER_4_11_0,Similarity-Utilization,Similarity-Utilization,0.276376
+ForzaIncentivante,15,4,100,CER_0_15_0,(pari),Pearson Key = Tri-level EP,0.00175564
+ForzaIncentivante,18,1,27.78,CER_13_5_0,Similarity-Utilization,Similarity-Utilization,0.9826
+ForzaIncentivante,18,2,50,CER_9_9_0,Similarity-Utilization,Similarity-Utilization,0.391993
+ForzaIncentivante,18,3,77.78,CER_4_14_0,(pari),Pearson Key = Tri-level EP = Similarity-Utilization,0.0128553
+ForzaIncentivante,18,4,100,CER_0_18_0,(pari),Tri-level EP = Pearson Key,0.00104718
+ForzaIncentivante,20,1,25,CER_15_5_0,Similarity-Utilization,Similarity-Utilization,1
+ForzaIncentivante,20,2,50,CER_10_10_0,Similarity-Utilization,Similarity-Utilization,0.490852
+ForzaIncentivante,20,3,75,CER_5_15_0,Similarity-Utilization,Similarity-Utilization,0.202965
+ForzaIncentivante,20,4,100,CER_0_20_0,(pari),Tri-level EP = Pearson Key,0.00248191
+ForzaIncentivante,25,1,28,CER_18_7_0,Similarity-Utilization,Similarity-Utilization,0.897177
+ForzaIncentivante,25,2,52,CER_12_13_0,Similarity-Utilization,Similarity-Utilization,0.486542
+ForzaIncentivante,25,3,76,CER_6_19_0,Similarity-Utilization,Similarity-Utilization,0.273503
+ForzaIncentivante,25,4,100,CER_0_25_0,(pari),Tri-level EP = Pearson Key,0.00676281
+AllineamentoVirtu,15,2,53.33,CER_7_8_0,Similarity-Utilization,Similarity-Utilization,0.811613
+AllineamentoVirtu,15,3,73.33,CER_4_11_0,Similarity-Utilization,Similarity-Utilization,0.624679
+AllineamentoVirtu,15,4,100,CER_0_15_0,(pari),Similarity-Utilization = Pearson Key,0.0961218
+AllineamentoVirtu,18,1,27.78,CER_13_5_0,Similarity-Utilization,Similarity-Utilization,0.995061
+AllineamentoVirtu,18,2,50,CER_9_9_0,Similarity-Utilization,Similarity-Utilization,0.785816
+AllineamentoVirtu,18,3,77.78,CER_4_14_0,Similarity-Utilization,Similarity-Utilization,0.501508
+AllineamentoVirtu,18,4,100,CER_0_18_0,(pari),Similarity-Utilization = Pearson Key,0.0966201
+AllineamentoVirtu,20,1,25,CER_15_5_0,Similarity-Utilization,Similarity-Utilization,0.999587
+AllineamentoVirtu,20,2,50,CER_10_10_0,Similarity-Utilization,Similarity-Utilization,0.821541
+AllineamentoVirtu,20,3,75,CER_5_15_0,Similarity-Utilization,Similarity-Utilization,0.622371
+AllineamentoVirtu,20,4,100,CER_0_20_0,(pari),Similarity-Utilization = Pearson Key,0.0944555
+AllineamentoVirtu,25,1,28,CER_18_7_0,Similarity-Utilization,Similarity-Utilization,0.973833
+AllineamentoVirtu,25,2,52,CER_12_13_0,Similarity-Utilization,Similarity-Utilization,0.822376
+AllineamentoVirtu,25,3,76,CER_6_19_0,Similarity-Utilization,Similarity-Utilization,0.641364
+AllineamentoVirtu,25,4,100,CER_0_25_0,(pari),Similarity-Utilization = Pearson Key,0.0940699
+AllineamentoVirtu_lordo,15,2,53.33,CER_7_8_0,(pari),Shapley = Remuneration Model 1,0.0206677
+AllineamentoVirtu_lordo,15,3,73.33,CER_4_11_0,(pari),Shapley = Remuneration Model 1,0.00948169
+AllineamentoVirtu_lordo,15,4,100,CER_0_15_0,(pari),Shapley = Remuneration Model 1 = Similarity-Utilization = Weighted Solidarity,0.0101663
+AllineamentoVirtu_lordo,18,1,27.78,CER_13_5_0,(pari),Shapley = Remuneration Model 1,0.0369748
+AllineamentoVirtu_lordo,18,2,50,CER_9_9_0,(pari),Shapley = Remuneration Model 1 = Variance Least Core,0.00525595
+AllineamentoVirtu_lordo,18,3,77.78,CER_4_14_0,(pari),Remuneration Model 1 = Shapley = Weighted Solidarity,0.011759
+AllineamentoVirtu_lordo,18,4,100,CER_0_18_0,(pari),Shapley = Remuneration Model 1 = Similarity-Utilization = Weighted Solidarity,0.00200424
+AllineamentoVirtu_lordo,20,1,25,CER_15_5_0,(pari),Shapley = Remuneration Model 1 = Variance Least Core,0.0368918
+AllineamentoVirtu_lordo,20,2,50,CER_10_10_0,(pari),Shapley = Remuneration Model 1,0.010854
+AllineamentoVirtu_lordo,20,3,75,CER_5_15_0,(pari),Remuneration Model 1 = Shapley,0.000972343
+AllineamentoVirtu_lordo,20,4,100,CER_0_20_0,(pari),Remuneration Model 1 = Shapley = Similarity-Utilization = Weighted Solidarity,0.00471446
+AllineamentoVirtu_lordo,25,1,28,CER_18_7_0,(pari),Shapley = Remuneration Model 1 = Variance Least Core,0.036171
+AllineamentoVirtu_lordo,25,2,52,CER_12_13_0,(pari),Shapley = Remuneration Model 1,0.00773789
+AllineamentoVirtu_lordo,25,3,76,CER_6_19_0,(pari),Shapley = Remuneration Model 1,0.00210729
+AllineamentoVirtu_lordo,25,4,100,CER_0_25_0,(pari),Remuneration Model 1 = Shapley = Similarity-Utilization,0.00441415
+VAN_min_EUR,15,2,53.33,CER_7_8_0,Equal Split,Equal Split,3944.4
+VAN_min_EUR,15,3,73.33,CER_4_11_0,Equal Split,Equal Split,3815.2
+VAN_min_EUR,15,4,100,CER_0_15_0,Equal Split,Equal Split,3354.75
+VAN_min_EUR,18,1,27.78,CER_13_5_0,Equal Split,Equal Split,1556.96
+VAN_min_EUR,18,2,50,CER_9_9_0,Equal Split,Equal Split,3265.56
+VAN_min_EUR,18,3,77.78,CER_4_14_0,Equal Split,Equal Split,3019.91
+VAN_min_EUR,18,4,100,CER_0_18_0,Equal Split,Equal Split,2806.61
+VAN_min_EUR,20,1,25,CER_15_5_0,Equal Split,Equal Split,1495.1
+VAN_min_EUR,20,2,50,CER_10_10_0,Equal Split,Equal Split,2995.21
+VAN_min_EUR,20,3,75,CER_5_15_0,Equal Split,Equal Split,2759.6
+VAN_min_EUR,20,4,100,CER_0_20_0,Equal Split,Equal Split,2527.12
+VAN_min_EUR,25,1,28,CER_18_7_0,Equal Split,Equal Split,2789.03
+VAN_min_EUR,25,2,52,CER_12_13_0,Equal Split,Equal Split,2592.33
+VAN_min_EUR,25,3,76,CER_6_19_0,Equal Split,Equal Split,2405.58
+VAN_min_EUR,25,4,100,CER_0_25_0,Equal Split,Equal Split,2029.73

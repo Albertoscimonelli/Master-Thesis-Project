@@ -357,3 +357,9 @@ outputs/repliche/**/*.mat
 # i checkpoint della lettura unita (9 MB l'uno) si rifanno dai blocchi con unisci_repliche.sh
 outputs/repliche/unito/r[0-9]*/checkpoint.mat
 outputs/repliche/prova_regola_shapley/tables/
+# Analisi completa (CER_repliche/analisi_finale.sh): insieme/ e' la copia di tutte le repliche
+# per grafici_metodi.py e si rigenera in pochi secondi.
+outputs/repliche/unito/insieme/
+# le tabelle di MAIN2 che servono all'analisi (salva_tabelle_analisi.py, ~4 MB a replica)
+!outputs/repliche/unito/r[0-9]*/tabelle/
+outputs/tesi_finale_prova/

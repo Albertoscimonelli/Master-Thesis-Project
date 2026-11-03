@@ -1,0 +1,14 @@
+Figura,Titolo,Descrizione
+G01_poles,Which mechanism ranks first on each indicator,"Per indicatore, quota delle celle (taglia x fascia, livello base) in cui il metodo e' fra i primi a pari merito; mediana sulle repliche."
+G02_tau_by_band,Agreement between criteria by penetration band,"tau-b medio fra comunita' per le quattro coppie chiave, per fascia di penetrazione: mediana sulle repliche, banda 10-90%, punti = singole repliche."
+G03_reversals,Ranking reversals along penetration and size,"Quota di coppie di metodi il cui ordine si inverte lungo la penetrazione (a taglia fissa) e lungo la taglia (a fascia fissa); un punto per replica, barra = mediana."
+G04_variance,What the scores depend on,"Scomposizione della varianza dei punteggi (1 - rimpianto) del livello base: penetrazione, taglia, interazione e partecipanti (variazione fra repliche dentro la stessa cella)."
+G05_composition,Effect of member-category composition,"Per ogni livello di composizione rispetto al solo domestico: coppie di metodi invertite e celle in cui cambia il vincitore; mediana sulle repliche, media sugli indicatori."
+G06_tradeoff_losses,Cost of the trade-offs,"Perdita (ottimistica, normalizzata 0-1) sul criterio in colonna quando si sceglie il metodo migliore sul criterio in riga; mediana sulle repliche e intervallo 10-90%."
+G07_reduced_set,Reduced indicator set,Per ogni taglio di tau: l'indicatore rappresentante del gruppo (il piu' frequente fra le repliche) e la concordanza delle coppie di metodi con il rappresentante (mediana).
+G08_pareto,Pareto front by set of criteria,"Quota di comunita' in cui il metodo non e' dominato, per insieme di criteri; mediana e min-max sulle repliche. Colore e marker = famiglia del metodo."
+G09_threshold,Regulatory threshold on incentivised energy,"Quota di energia condivisa sull'immessa di ogni comunita' di ogni replica, per gruppo; la soglia conta solo per le imprese."
+G10_npv,Economic sustainability of participation (NPV),"VAN minimo fra i membri di ogni comunita' (mediana e 10-90% su comunita' e repliche) e quota di comunita' con almeno un membro a VAN negativo, per metodo e gruppo. Analisi complementare."
+G11_prosumer_share,Share of the incentive going to prosumers,Quota dell'incentivo ai prosumer per metodo e fascia di penetrazione (livello base): mediana e 10-90% su comunita' e repliche.
+G12_stability_by_size,Coalitional stability by community size,"Per taglia, quota delle fasce in cui il metodo e' fra i primi sull'eccesso massimo e sulle coalizioni instabili; mediana sulle repliche. Stabilita' calcolata fino a 25 membri."
+G13_robustness,Robustness of the conclusions to the households drawn,"Quota di conclusioni che reggono (>= 15/20 repliche), dipendono dai partecipanti o si invertono; a destra, quota di conclusioni su cui le due meta' delle repliche danno lo stesso verdetto."

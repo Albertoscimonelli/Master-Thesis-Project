@@ -361,6 +361,24 @@ def mappa(ax, M, annot, cmap, vmin, vmax, metodi, titolo=None, xt=True, yt=True,
 
 CMAP_PUNTEGGIO = LinearSegmentedColormap.from_list("p", ["#b2182b", "#f7f7f7", "#2166ac"])
 CMAP_DELTA = LinearSegmentedColormap.from_list("d", ["#8c510a", "#f5f5f5", "#01665e"])
+CMAP_TAU, CMAP_SEQ = plt.get_cmap("RdBu"), plt.get_cmap("Blues")
+
+# Palette Polimi della tesi (CER_repliche/stile_tesi.py, 1 novembre 2026), se c'e': colori per
+# compito (fasce e taglie = rampe; punteggi, delta e tau = arancio-grigio-blu; intensita' = blu),
+# metodi con la tinta della famiglia. Senza il modulo restano i colori di prima.
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "CER_repliche"))
+    import stile_tesi as _st
+    COL_FASCIA, COL_TAGLIA = list(_st.FASCE), list(_st.TAGLIE)
+    METODI = {k: (v[0], _st.COLORE_METODO.get(k, v[1])) for k, v in METODI.items()}
+    CMAP_PUNTEGGIO = CMAP_DELTA = CMAP_TAU = _st.DIVERGENTE
+    CMAP_SEQ = _st.MAPPA
+    COL_COMPONENTI = (_st.BLU, _st.ARANCIO, "#B5B5B5")
+    COL_PA = {0: _st.BLU, 1: "#E0A472", 2: "#C96F1C", 3: "#85460C"}
+except ImportError:
+    COL_COMPONENTI = ("#2171b5", "#f16913", "#bdbdbd")
+    COL_PA = {0: "#4575b4", 1: "#fdae6b", 2: "#e6550d", 3: "#7f2704"}
 
 
 def f03_sintesi(P, lab_fascia, out, tab):
@@ -479,9 +497,9 @@ def f06_varianza(P, out, tab):
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.2, 3.3), gridspec_kw={"width_ratios": [1, 1.25]})
     y = np.arange(len(pes))[::-1]
     sin = np.zeros(len(pes))
-    for c, col, lab in [("eta2_penetrazione", "#2171b5", "penetration band"),
-                        ("eta2_taglia", "#f16913", "size"),
-                        ("residuo_interazione", "#bdbdbd", "residual (interaction)")]:
+    for c, col, lab in [("eta2_penetrazione", COL_COMPONENTI[0], "penetration band"),
+                        ("eta2_taglia", COL_COMPONENTI[1], "size"),
+                        ("residuo_interazione", COL_COMPONENTI[2], "residual (interaction)")]:
         a1.barh(y, pes[c], left=sin, color=col, label=lab, height=0.65)
         sin += pes[c].values
     a1.set_yticks(y, [MET[i].nome for i in pes.index])
@@ -491,7 +509,7 @@ def f06_varianza(P, out, tab):
     metodi = ordina_metodi(V.Metodo.unique())
     M = V.pivot_table(index="Metodo", columns="Indicatore", values="eta2_penetrazione").reindex(
         index=metodi, columns=list(MET))
-    im = mappa(a2, M.values, None, plt.get_cmap("Blues"), 0, 1, metodi, "η² of penetration, per method",
+    im = mappa(a2, M.values, None, CMAP_SEQ, 0, 1, metodi, "η² of penetration, per method",
                fmt="{:.1f}")
     fig.colorbar(im, ax=a2, fraction=0.04, pad=0.02)
     for (i, j), v in np.ndenumerate(M.values):
@@ -677,7 +695,7 @@ def f11_scala(D, effetti, out, tab):
     def ordine(k):
         return (pa_nd(k)[1], pa_nd(k)[0])
 
-    col_pa = {0: "#4575b4", 1: "#fdae6b", 2: "#e6550d", 3: "#7f2704"}
+    col_pa = COL_PA
     forma = {0: "o", 1: "s", 2: "^", 3: "D"}
     liv = sorted(A.Livello.unique(), key=ordine)
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(10.5, 4.4), layout="constrained",
@@ -705,7 +723,7 @@ def f11_scala(D, effetti, out, tab):
         metodi = ordina_metodi(q.Metodo.unique())
         livq = sorted(q.Liv.unique(), key=ordine)
         M = q.groupby(["Metodo", "Liv"]).RapportoQuotaPA.median().unstack().reindex(index=metodi, columns=livq)
-        im = a2.imshow(M.values, cmap="YlOrBr", vmin=0, aspect="auto")
+        im = a2.imshow(M.values, cmap=CMAP_SEQ, vmin=0, aspect="auto")
         for (i, j), v in np.ndenumerate(M.values):
             if np.isfinite(v):
                 a2.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=6.5,
@@ -769,7 +787,7 @@ def f12_accordo(tau, lab_fascia, out, tab):
         M = M.copy()
         for c in chiavi:
             M.loc[c, c] = 1.0
-        im = ax.imshow(M.values, cmap="RdBu", vmin=-1, vmax=1)
+        im = ax.imshow(M.values, cmap=CMAP_TAU, vmin=-1, vmax=1)
         for (i, j), v in np.ndenumerate(M.values):
             if i > j and np.isfinite(v):
                 ax.text(j, i, f"{v:+.1f}".replace("+", ""), ha="center", va="center", fontsize=5,

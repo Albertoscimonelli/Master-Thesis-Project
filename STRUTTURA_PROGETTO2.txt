@@ -109,6 +109,15 @@ Project/
 |   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica
 |   |                                   (outputs/repliche/unito/rNN/)
 |   |-- confronta_regola_shapley.py [v] Effetto di un solo Shapley su un run unito
+|   |-- analisi_finale.sh       [v]     COMANDO UNICO dopo il run (docs/analisi_finale/)
+|   |-- unisci_repliche.sh      [v]     Lettura unita 5-25 di ogni replica (MATLAB)
+|   |-- controlla_unito.py      [v]     Controlli della lettura unita (e r00 contro il 28/10)
+|   |-- grafici_repliche.py     [v]     Figure G01-G13 sulle repliche
+|   |-- unisci_per_figure.py    [v]     Tutte le repliche insieme per grafici_metodi.py
+|   |-- tesi_finale.py          [v]     numeri_tesi.tex, tabelle LaTeX, pagina delle figure
+|   |-- salva_tabelle_analisi.py [v]    Tabelle di MAIN2 per l'analisi in unito/rNN/tabelle/
+|   |-- stile_tesi.py           [v]     Palette Polimi, nomi inglesi, regola dei metodi
+|   |-- prove/banco_prova.py    [v]     Banco di prova senza MATLAB
 |   +-- r00 ... r20/            [l]     Schede e profili, si rigenerano dal seed
 |
 +-- PV_Generation/                      EXPORT ORARI PVSYST (kWh/h)
@@ -156,7 +165,12 @@ Project/
     |                                   strumenti/ [v], LEGGIMI.md [v]
     |-- run_logs/                [l]    Log completi dei run, elenco schede in testa
     |-- repliche/                       Uscite delle repliche: <blocco>/rNN/ [l],
-    |                                   <blocco>/aggregato/ [v], controlli [v]
+    |                                   <blocco>/aggregato/ [v], controlli [v];
+    |                                   unito/rNN/export/ e tabelle/ [v]
+    |-- tesi_finale/             [v]    Analisi completa delle repliche (3/11):
+    |                                   figure/ G01-G13, figure_descrittive/ F01-F13,
+    |                                   tabelle/*.tex, numeri_tesi.tex, conclusioni.csv,
+    |                                   rapporto.html
     +-- report/                         regole_ripartizione_cer.html (pagina dei
                                         risultati finali), scaling_metodi_ripartizione.md,
                                         validazione_lombardia100.md

@@ -23,7 +23,10 @@ varia taglia e penetrazione dei prosumer.
 > modificarlo.
 >
 > **Stato al 3 novembre 2026.**
-> - **Risultati di riferimento: il run unito del 28 ottobre.** 295 comunità da 5 a 25 membri, con
+> - **Risultati di riferimento: le repliche r01-r20** (analisi completa del 3 novembre, sotto e
+>   §7.11.6). Nel run unito del 28 ottobre le famiglie sono tutte persone sole: non entra nei
+>   risultati.
+> - **Run unito del 28 ottobre.** 295 comunità da 5 a 25 membri, con
 >   PA e imprese (§7.11.4, `outputs/tables_main2_fino25_unito/`), commentate nel rapporto
 >   [`outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html`](outputs/report/RISULTATI_e_conclusioni_RQ_2026-10-28.html)
 >   (§7.11.5).
@@ -47,6 +50,24 @@ varia taglia e penetrazione dei prosumer.
 >     ([`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md)).
 >     Al 100% di prosumer il legame merito-incentivo resta positivo ma si indebolisce (0,16 contro
 >     0,39 di r00).
+> - **Analisi completa in un comando (dal 3 novembre, versione B del piano).**
+>   `bash CER_repliche/analisi_finale.sh` riparte dalla lettura unita già fatta e produce
+>   aggregato con la robustezza di ogni conclusione (k/20, Clopper-Pearson, metà, bootstrap),
+>   soglia, VAN, quote ai prosumer, figure G01-G13 e F01-F13, tabelle LaTeX e `numeri_tesi.tex`
+>   in `outputs/tesi_finale/`, più il rapporto `outputs/report/RISULTATI_repliche_*.html`.
+>   10 metodi uguali da 5 a 25 membri (**Nucleolo escluso** dal confronto), risultati sulle
+>   repliche r01-r20. Istruzioni in
+>   [`docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md`](docs/analisi_finale/ISTRUZIONI_DOPO_IL_RUN.md).
+>   - **Fatta il 3 novembre sul PC del run**, 8 passi in 2 minuti, tutti i controlli di integrità
+>     passati (§7.11.6).
+>   - **328 conclusioni su 334 reggono** (almeno 15 repliche su 20), 321 forti (almeno 17/20),
+>     nessuna si inverte. Le due metà (r01-r10, r11-r20) concordano su 327.
+>   - **Dipende dai partecipanti solo l'allineamento lordo.** Le 6 conclusioni che non reggono e
+>     le 7 con le metà discordi sono tutte sue; sugli altri sette indicatori reggono tutte e 283.
+>   - **Conclusioni chiave: 10 confermate su 11**
+>     ([`outputs/tesi_finale/conclusioni.csv`](outputs/tesi_finale/conclusioni.csv)). Non è
+>     confermato che la penetrazione sia il primo fattore della varianza per ogni indicatore:
+>     vale per 7 su 8, e per l'allineamento lordo pesa di più la taglia (29% contro 11%).
 > - **Codice del 30 ottobre.** v(S) si enumera a blocchi (`cer_coalition_values_blocchi.m`: a 18
 >   membri da 50-70 s a circa 1 s). L'eccesso di coalizione si calcola fino a 25 membri
 >   (`coalition_excess_enum.m`, §14.1). Fino a 18 membri le tabelle restano identiche al byte.
@@ -249,6 +270,9 @@ Mappa sintetica — per il dettaglio completo (ogni file, ogni funzione, ogni ta
 | `data/mapping_archetipo_istat.csv`, `docs/` | Mappatura archetipo LPG → tipologia familiare Istat, motivata in [docs/mapping_household_istat.md](docs/mapping_household_istat.md) |
 | `CER_configuration_IND/` | **Asse imprese**: le schede con N ≥ 15 con 1-3 imprese (`ND1`-`ND3`) e con imprese più PA (`ND{k}_PA{p}`), a N, C e P invariati; 331 schede generate da `genera_varianti_IND.py`, lette da `MAIN2.m` con `MAIN2_IND=1`. Vedi §7.11 e [CER_configuration_IND/README.md](CER_configuration_IND/README.md) |
 | `CER_repliche/` | **Repliche dei partecipanti** (§7.11.6): `genera_repliche.py` rifà la griglia (solo domestici, PA, imprese) con famiglie estratte dentro la cella ISTAT dichiarata, 20 repliche più l'identità `r00` (cartelle `rNN/` non versionate, si rigenerano dal seed). `lancia_repliche.sh` lancia `MAIN2.m` replica per replica e riprende dal checkpoint un run interrotto; `avvia_da20a25.sh` lo apre in una finestra fuori da VS Code, con `veglia.ps1` contro la sospensione per inattività; `stato_run.sh` riassume il run in corso; `unisci_repliche.sh` fa la lettura unita 5-25 di ogni replica; `aggrega_repliche.py` confronta le repliche; `unisci_blocchi.m` unisce i blocchi di taglia di una replica. Vedi [CER_repliche/README.md](CER_repliche/README.md) |
+| `CER_repliche/` (analisi finale) | `analisi_finale.sh` (comando unico), `salva_tabelle_analisi.py` (tabelle per l'analisi in `unito/rNN/tabelle/`, versionate), `controlla_unito.py`, `grafici_repliche.py` (G01-G13), `unisci_per_figure.py`, `tesi_finale.py` (tabelle LaTeX, `numeri_tesi.tex`, pagina delle figure), `stile_tesi.py` (palette Polimi e regola dei metodi), `prove/banco_prova.py` |
+| `docs/analisi_finale/` | Piano dell'analisi finale (versione B, senza Nucleolo), istruzioni, prompt per la Sezione 6.1 della tesi, anteprima della palette |
+| `outputs/tesi_finale/` | Uscite dell'analisi finale: `rapporto.html`, `numeri_tesi.tex` (macro LaTeX), `tabelle/` (booktabs), `figure/` (G01-G13), `figure_descrittive/` (F01-F13), `conclusioni.csv` |
 | `elenco_schede_cer.m` | Elenco delle schede che `MAIN2.m` analizza: `CER_configuration/` più le varianti con PA di `CER_configuration_PA/PA1..PA3`, fino a `MAIN2_MAX_UTENTI` membri (default 18); auto-test su cartella temporanea (§3) |
 | `load_cer_input.m`, `align_members_to_users.m` | Lettura e validazione della scheda; riordino dei membri sull'ordine delle colonne dei profili |
 | `opts_from_config.m`, `rmfield_if.m` | Traduzione delle chiavi della scheda nei campi `opts` dei metodi, saltando quelle a `?` |
@@ -1961,8 +1985,73 @@ Cambiano:
     - al 100% di prosumer τ(Fairness Index, forza incentivante) scende a 0,16 (r00 0,39) ma resta
       positivo in 20 repliche su 20;
     - nella stessa fascia τ(Gini, Fairness Index) va a zero (−0,06; r00 −0,31).
-  - La vista fino a 18 membri con il Nucleolo è in sospeso. Dettagli in
-    [`CER_repliche/README.md`](CER_repliche/README.md).
+  - Dettagli in [`CER_repliche/README.md`](CER_repliche/README.md).
+
+**Analisi completa (versione B del piano, `docs/analisi_finale/`).** `bash
+CER_repliche/analisi_finale.sh` parte dalla lettura unita e fa tutto il resto.
+- **Metodi.** 10, gli stessi da 5 a 25 membri. Il Nucleolo è escluso dal confronto: si calcola solo
+  fino a 18 membri, la stabilità ora si misura con l'eccesso fino a 25, e il VLC ha già un
+  controllo di stabilità in MAIN2. Nei blocchi fino a 18 membri VLC e Nucleolo sono fra i primi
+  su merito e stabilità nel 92-100% delle celle. La vista 5-18 con il Nucleolo non si fa.
+- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) resta solo come controllo.
+- **Lettura.** Una conclusione regge se vale in almeno 15 repliche su 20 (test del segno a due
+  code, p = 0,041), si inverte con 5 o meno, altrimenti dipende dai partecipanti; 17/20 per le
+  conclusioni principali. Per ogni conclusione ci sono l'intervallo di Clopper-Pearson, il
+  controllo a metà (r01-r10 contro r11-r20) e il bootstrap. Le mediane hanno l'intervallo al 95%
+  delle statistiche d'ordine.
+- **Analisi complementari.** VAN per metodo, soglia regolatoria, quote ai prosumer, sensibilità
+  alla soglia di rilevanza, Shapley esatto contro AS.
+- **Uscite** in `outputs/tesi_finale/`: figure G01-G13 e F01-F13 (palette Polimi), tabelle LaTeX,
+  `numeri_tesi.tex`.
+
+**Risultati dell'analisi completa (3 novembre), repliche r01-r20.** Lanciata sul PC del run: 8
+passi in 2 minuti, nessun errore. Ogni replica ha 295 comunità, 16 livelli, 10 metodi e 7 taglie
+(5-25), e il riquadro "Controlli di integrità falliti" non compare. Numeri in
+[`outputs/repliche/unito/aggregato/sintesi.md`](outputs/repliche/unito/aggregato/sintesi.md),
+`robustezza.csv`, `van.csv` e `soglia.csv`. Figure, tabelle LaTeX e macro sono in
+`outputs/tesi_finale/`.
+
+- **Il numero di repliche basta.**
+
+  | Tipo | Conclusioni | Reggono | Forti | Dipendono | Si invertono | Metà concordi |
+  |---|---|---|---|---|---|---|
+  | tau | 107 | 104 | 102 | 3 | 0 | 106 |
+  | vincitore | 224 | 221 | 216 | 3 | 0 | 218 |
+  | capovolgimento | 2 | 2 | 2 | 0 | 0 | 2 |
+  | soglia | 1 | 1 | 1 | 0 | 0 | 1 |
+  | **tutte** | **334** | **328** | **321** | **6** | **0** | **327** |
+
+  Nel bootstrap il verdetto resta lo stesso nel 100% dei casi (mediana).
+- **Reggono, in 20 repliche su 20** (conclusioni chiave, `outputs/tesi_finale/conclusioni.csv`):
+  - i tre poli: Equal Split primo su Gini, Variance Least Core primo su merito e stabilità
+    (mediana 100% delle celle), Pearson Key o Tri-level EP primi sulla forza incentivante (96%);
+  - il capovolgimento con la penetrazione: τ(Gini, forza incentivante) scende di almeno 0,3
+    dalla fascia 1 alla 4, e τ(Fairness Index, forza incentivante) è negativo in fascia 1 e
+    positivo in fascia 3 (IC 95% 83-100%);
+  - nessuna comunità con imprese supera la soglia regolatoria del 55% (energia condivisa su
+    immessa; IC 95% 83-100%);
+  - il trade-off più caro è uguaglianza contro incentivo: scegliendo la forza incentivante si
+    perde 0,88 [0,86; 0,88] su Gini;
+  - merito e stabilità non si fanno concorrenza: 0,00 [0,00; 0,01];
+  - la composizione pesa poco: 9% di coppie invertite (mediana; 1-23% secondo il livello).
+- **Reggono ma non forti:** τ(Gini, Fairness Index) e τ(Gini, Sigma) negativi in fascia 4, in 16
+  repliche su 20.
+- **Dipende dai partecipanti solo l'allineamento lordo.** Sugli altri sette indicatori reggono
+  tutte e 283 le conclusioni, e le metà concordano su tutte. Per l'allineamento lordo ne reggono 45
+  su 51, e le metà concordano su 44. Le 6 che dipendono:
+  - τ con eccesso massimo, Fairness Index e Sigma negativo in fascia 3 (14, 14 e 13 repliche);
+  - Similarity-Utilization fra i primi a 5 membri, fascia 4 (14);
+  - Cascading Tree fra i primi a 10 e 18 membri, fascia 3 (13 e 14).
+- **Non confermata: la penetrazione primo fattore della varianza per ogni indicatore.** Lo è per 7
+  indicatori su 8 (59-72%). Per l'allineamento lordo la penetrazione spiega l'11%, la taglia il
+  29%, l'interazione il 27%, i partecipanti il 33%.
+- **Soglia regolatoria** (`soglia.csv`, tutte le comunità delle 20 repliche). Nelle sole domestiche
+  70 comunità su 560 superano il 55% (massimo 81,4%, mediana 19,7%), in tutte e 20 le repliche e a
+  ogni taglia. Con imprese (3740) il massimo è 34,7%, con PA (1600) il 36,1%: nessuna sopra.
+- **VAN per metodo** (`van.csv`, analisi complementare). Pearson Key, Tri-level EP e Proportional
+  to Consumption lasciano almeno un membro con VAN negativo nell'83-100% delle comunità.
+  Similarity-Utilization lo fa nel 100% delle sole domestiche e nel 44-48% con imprese o PA.
+  Equal Split e Cascading Tree quasi mai (0-9% e 0-19%).
 
 [C23] Cremers, S., Robu, V., Zhang, P., Andoni, M., Norbu, S., Flynn, D. (2023). *Efficient methods
 for approximating the Shapley value for asset sharing in energy communities*. Applied Energy, 331,

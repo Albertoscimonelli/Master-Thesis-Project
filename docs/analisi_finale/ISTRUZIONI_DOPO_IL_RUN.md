@@ -54,7 +54,7 @@ Se un passo fallisce, il comando si ferma e stampa le ultime righe di
    concordano, il numero che va nella 6.1.
 2. **`outputs/tesi_finale/rapporto.html`** (doppio clic):
    - in cima **non** deve esserci il riquadro rosso "Controlli di integrità falliti";
-   - la tabella delle conclusioni del 28 ottobre dice quali restano vere.
+   - la tabella "Conclusioni chiave" dice quali reggono sulle repliche r01-r20.
 3. **`outputs/report/RISULTATI_repliche_<data>.html`:** il rapporto commentato di `main`, rifatto
    sull'aggregato nuovo.
 

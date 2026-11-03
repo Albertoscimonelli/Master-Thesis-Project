@@ -12,13 +12,13 @@ grafici_repliche.py e grafici_metodi.py, e scrive in --out (default outputs/tesi
                      \\input{numeri_tesi} e i numeri non si copiano piu' a mano
   tabelle/*.tex      tabelle booktabs (solo l'ambiente tabular: didascalia ed etichetta nella tesi)
   tabelle/*.csv      gli stessi numeri in CSV
-  conclusioni.csv    le conclusioni chiave del rapporto del 28/10, rilette sulle repliche
+  conclusioni.csv    le conclusioni chiave della tesi, verificate sulle repliche r01-r20
 
 DUE TIPI DI CONTROLLO
   - di integrita' (si ferma, codice 1): numero di repliche e di comunita', i 10 metodi della
     versione B, nessun Nucleolo, stabilita' a tutte le taglie, nessun metodo escluso dalle figure
     descrittive. Se uno fallisce i numeri non sono quelli della tesi;
-  - sulle conclusioni (non si ferma): ogni affermazione del rapporto del 28/10 e' ricalcolata e
+  - sulle conclusioni (non si ferma): ogni conclusione chiave e' calcolata sulle repliche r01-r20 e
     marcata "confermata", "non confermata" o "dipende dai partecipanti", con il suo numero. Le
     affermazioni non si scrivono a mano: il testo della tesi va adeguato a cio' che esce qui.
 
@@ -135,7 +135,7 @@ def quota_poli(A) -> pd.DataFrame:
 
 # ---------------------------------------------------------------------------- conclusioni
 def conclusioni(A) -> pd.DataFrame:
-    """Le affermazioni del rapporto del 28/10, ricalcolate replica per replica dove possibile.
+    """Le conclusioni chiave della tesi, calcolate sulle sole repliche r01-r20 (replica per replica dove possibile).
     Esito replica per replica -> k/n e verdetto con le stesse soglie di aggrega_repliche.py."""
     righe = []
     Q = quota_poli(A)
@@ -389,7 +389,7 @@ def pagina(A, C, figure: Path, figure_descr: Path | None, out: Path, n_rep: int)
                  + "".join(f"<li>{html.escape(x)}</li>" for x in ERRORI) + "</ul></div>")
     if len(C):
         cls = {"confermata": "ok", "non confermata": "no"}
-        H.append("<h2>Conclusioni del rapporto del 28 ottobre, rilette sulle repliche</h2><table><tr><th>Conclusione"
+        H.append("<h2>Conclusioni chiave, verificate sulle repliche r01-r20</h2><table><tr><th>Conclusione"
                  "</th><th>Repliche</th><th>Verdetto</th><th>Numero</th></tr>" + "".join(
                      f"<tr><td>{html.escape(r.Conclusione)}</td><td>{r.Repliche}</td>"
                      f"<td class='{cls.get(r.Verdetto, 'dip')}'>{r.Verdetto}</td><td>{html.escape(str(r.Numero))}</td></tr>"

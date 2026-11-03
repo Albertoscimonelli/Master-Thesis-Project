@@ -35,8 +35,8 @@ Uscite in outputs/repliche/<blocco>/aggregato/:
 
 Dal 1 novembre 2026 (versione B del piano, docs/analisi_finale/):
   - i metodi seguono stile_tesi.un_solo_shapley: niente Nucleolo, un solo "Shapley";
-  - i risultati sono letti sulle repliche r01..rNN; r00 (persone sole) resta solo nei CSV,
-    nella colonna r00, e in una sezione di confronto in fondo a sintesi.md;
+  - i risultati sono letti sulle repliche r01..rNN; r00 (persone sole) non entra nei risultati
+    (resta solo la colonna r00 dei CSV, per compatibilita' con gli script di prima);
   - le mediane hanno l'intervallo al 95% delle statistiche d'ordine (ic95_basso, ic95_alto).
 
 Uso:  python -I CER_repliche/aggrega_repliche.py --blocco unito [--attese 21]
@@ -514,7 +514,7 @@ def scrivi_sintesi(blocco, tabs, A, dest):
     R = A["robustezza"]
     L = [f"# Repliche dei partecipanti, blocco {blocco}", "",
          f"Repliche analizzate: {len(rep)} ({', '.join(f'r{r:02d}' for r in rep)}). "
-         "r00 (persone sole) non entra nei risultati: e' solo nell'ultima sezione, come confronto.", "",
+         "r00 (persone sole) non entra nei risultati.", "",
          f"Regola di lettura: una conclusione **regge** se vale in almeno il {pc(REGGE)} delle repliche "
          f"(15/20, test del segno a due code p = 0,041), **si inverte** se vale in al piu' il {pc(SI_INVERTE)}, "
          f"altrimenti **dipende dai partecipanti**. **Forte**: almeno il {pc(FORTE)} (17/20). "
@@ -660,14 +660,6 @@ def scrivi_sintesi(blocco, tabs, A, dest):
             L.append(f"| {n_} | {nn(r[('mediana', 'RD_medio_pct')])} | {nn(r[('max', 'RD_max_pct')])} | "
                      f"{nn(r[('min', 'Spearman_rho_min')])} |")
 
-    # ---- appendice: r00
-    L += ["", "## Appendice: confronto con r00 (assegnazione originale, persone sole)", "",
-          "Non e' un risultato: dice solo cosa cambiava con l'errore di assegnazione delle famiglie.", "",
-          "| Coppia | Fascia | r00 | Mediana delle repliche |", "|---|---|---|---|"]
-    for a, b in [("Gini", "ForzaIncentivante"), ("FairnessIndex", "ForzaIncentivante")]:
-        s = t[((t.IndicatoreA == a) & (t.IndicatoreB == b)) | ((t.IndicatoreA == b) & (t.IndicatoreB == a))]
-        for _, r in s.sort_values("Fascia").iterrows():
-            L.append(f"| {a} - {b} | {r.Fascia} | {nn(r.r00)} | {nn(r.mediana)} |")
     dest.write_text("\n".join(L) + "\n", encoding="utf-8")
 
 

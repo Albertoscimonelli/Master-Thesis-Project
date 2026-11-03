@@ -44,8 +44,8 @@ se c'è, altrimenti `tabelle/`. Istruzioni complete in `docs/analisi_finale/ISTR
 Regole (versione B del piano):
 - **Metodi.** 10, gli stessi da 5 a 25 membri: niente Nucleolo, un solo Shapley (esatto fino a 18,
   AS oltre). La regola è in `stile_tesi.un_solo_shapley`.
-- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) non entra in figure e
-  numeri: resta solo come controllo e in fondo a `sintesi.md`.
+- **Repliche.** I risultati sono le repliche r01-r20. r00 (persone sole) non entra in figure,
+  numeri e confronti.
 - **Lettura dei risultati.** Una conclusione regge se vale in almeno 15 repliche su 20, si inverte
   con 5 o meno, altrimenti dipende dai partecipanti. Per ogni conclusione ci sono anche il
   controllo a metà (r01-r10 contro r11-r20) e il bootstrap.

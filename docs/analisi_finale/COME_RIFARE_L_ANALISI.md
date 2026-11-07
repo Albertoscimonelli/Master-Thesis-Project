@@ -73,4 +73,6 @@ indicatore a parte. L'inclusione LIHC è esclusa: si calcola solo a 25 membri in
 - `PIANO_analisi_finale.md`: il piano con cui è stata decisa l'analisi (versione B senza Nucleolo,
   criterio 15/20, palette). È eseguito; la sezione 7 ne riporta lo stato e i risultati.
 - `PROMPT_capitolo_6_1.md`: il prompt per riscrivere la Sezione 6.1 della tesi.
+- `PROMPT_capitolo_7.md`: il prompt per rivedere il capitolo 7 con le analisi aggiuntive del 7
+  novembre (bozze LaTeX con le macro di `numeri_aggiuntivi.tex` e i valori di controllo).
 - `anteprima_palette.png` e `anteprima_palette.py`: l'anteprima dei colori.

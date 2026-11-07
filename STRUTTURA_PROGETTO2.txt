@@ -118,6 +118,8 @@ Project/
 |   |-- grafici_repliche.py     [v]     Figure G01-G13 sulle repliche
 |   |-- unisci_per_figure.py    [v]     Tutte le repliche insieme per grafici_metodi.py
 |   |-- tesi_finale.py          [v]     numeri_tesi.tex, tabelle LaTeX, pagina delle figure
+|   |-- analisi_aggiuntive.py   [v]     Letture aggiuntive per il capitolo 7 (7/11):
+|   |                                   numeri_aggiuntivi.tex, 5 tabelle, aggregato/aggiuntive/
 |   |-- salva_tabelle_analisi.py [v]    Tabelle di MAIN2 per l'analisi in unito/rNN/tabelle/
 |   |-- stile_tesi.py           [v]     Palette Polimi, nomi inglesi, regola dei metodi
 |   |-- prove/banco_prova.py    [v]     Banco di prova senza MATLAB
@@ -172,7 +174,8 @@ Project/
     |-- tesi_finale/             [v]    Analisi completa delle repliche (3/11):
     |                                   figure/ G01-G13, figure_descrittive/ F01-F13,
     |                                   tabelle/*.tex, numeri_tesi.tex, conclusioni.csv,
-    |                                   rapporto.html
+    |                                   rapporto.html; dal 7/11 numeri_aggiuntivi.tex
+    |                                   (analisi_aggiuntive.py)
     +-- report/                         RISULTATI_repliche_2026-11-03.html (rapporto
                                         commentato dei risultati finali),
                                         scaling_metodi_ripartizione.md,

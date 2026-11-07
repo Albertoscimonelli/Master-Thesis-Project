@@ -370,6 +370,90 @@ VAN negativo.
 - Similarity-Utilization: 100% nelle sole domestiche, 44-48% con imprese o PA.
 - Equal Split 0-9%, Cascading Tree 0-19%.
 
+## Analisi aggiuntive per il capitolo 7 (7 novembre 2026)
+
+Rileggendo il capitolo 7 sui dati delle repliche sono emerse cinque letture che l'analisi completa
+non fa. `analisi_aggiuntive.py` le calcola dagli stessi file versionati (export e tabelle di
+`unito/rNN/`, `aggregato/tau.csv`, `aggregato/pareto.csv`), senza ricalcolare nessuna ripartizione:
+
+```bash
+venv/Scripts/python.exe -I CER_repliche/analisi_aggiuntive.py     # circa 2 minuti
+```
+
+Uscite:
+- `outputs/repliche/unito/aggregato/aggiuntive/`: i CSV e `sintesi_aggiuntive.md`, con ogni numero e
+  la sua descrizione;
+- `outputs/tesi_finale/numeri_aggiuntivi.tex` (131 macro, da includere accanto a `numeri_tesi.tex`)
+  e `numeri_aggiuntivi.csv`;
+- `outputs/tesi_finale/tabelle/`: `incentive_ownership`, `incentive_within_groups`,
+  `allocation_distance`, `stability_by_group`, `mixed_communities` (`.tex` e `.csv`).
+
+Si ferma con codice 1 se un controllo fallisce: 20 repliche, 5900 comunità, 10 metodi per comunità,
+forza incentivante della Similarity-Utilization uguale a 1, VAN lineare nella quota con un fattore
+unico, nessuna macro che duplica `numeri_tesi.tex`. Non è (ancora) un passo di `analisi_finale.sh`.
+Il prompt per riscrivere il capitolo è `docs/analisi_finale/PROMPT_capitolo_7.md`.
+
+**Risultati** (repliche r01-r20):
+1. **La forza incentivante netta misura soprattutto la proprietà dell'impianto.**
+   - Sui profili netti, in tutte le 420 comunità domestiche delle fasce 1-3, ogni prosumer è meno
+     virtuoso di ogni consumatore: virtuosità mediana 0,01-0,02 contro 0,47-0,50. Sui profili lordi
+     i due gruppi sono uguali (0,53 e 0,52).
+   - Ordinare i metodi per forza incentivante equivale a ordinarli per quota ai consumatori: τ-b
+     0,91, 0,96 e 1,00 nelle fasce 1-3.
+   - Con l'allineamento lordo il capovolgimento merito-incentivo non c'è: τ(Fairness Index,
+     allineamento lordo) vale 0,16, 0,20, −0,06 e 0,20.
+   - Fra i soli consumatori la pendenza della quota sulla virtuosità, relativa alla
+     Similarity-Utilization, è 1,03-1,25 per lo Shapley e 1,15-1,43 per il VLC, contro 1,20-1,55 per
+     la Pearson Key e 1,20-1,59 per il Tri-level EP. Fra i prosumer, in fascia 1, Shapley e VLC
+     premiano chi immette di più (correlazione −0,66 e −0,63); in fascia 3 il segno si inverte.
+2. **Il Tri-level EP, così come è simulato, coincide con la Pearson Key.**
+   - Distanza mediana fra le ripartizioni: 1,5% di v(N) nel livello domestico, 2,8% su tutte le
+     comunità, sotto il 5% nel 93%.
+   - Il livello di povertà energetica è attivo solo in 392 comunità (25 membri, 8 repliche),
+     perché P50, y* e markup sono ancora a `?` in `CER_input.txt`.
+   - Sulla forza incentivante i due sono a pari merito nel 96% delle celle in cui uno dei due è
+     primo.
+   - Gruppi effettivi di metodi: {Pearson Key, Tri-level EP} con Proportional to Consumption,
+     {Shapley, VLC} (8,1%), Equal Split con Cascading Tree; la Similarity-Utilization resta isolata
+     nelle comunità miste.
+3. **Il nucleo non è mai vuoto, ma il margine è piccolo.**
+   - Margine del VLC (valore del least core): mediana −3,5% di v(N) a 5 membri, −0,10% a 25 (circa
+     1 EUR/anno per tutta la comunità). È sotto l'1% di v(N) nel 91% delle comunità e sotto la
+     soglia di rilevanza del 5% nel 99%.
+   - Lo Shapley sta nel nucleo solo nelle comunità quasi omogenee: in fascia 4 nel 100% a 5 membri
+     e nello 0% a 25; in fascia 1 a 5 membri (un solo prosumer) nel 100%; nelle fasce 2-3 al più
+     nel 10%.
+   - Nel livello domestico il metodo più instabile è il Weighted Solidarity (eccesso mediano 21,2%),
+     non l'Equal Split (16,0%). L'Equal Split è il più instabile con PA (47,4%) e imprese (45,1%),
+     che sono il 63% delle 5900 comunità.
+4. **Comunità miste: la regola decide quanto va a PA e imprese.**
+   - Quota mediana dell'incentivo ai membri non domestici: 9-10% con la Similarity-Utilization,
+     62-66% con lo Shapley, 67-77% con Proportional to Consumption e Remuneration Model 1. La loro
+     quota numerica è 13-17%.
+   - Le stesse famiglie, quando entrano PA o imprese, guadagnano con quasi tutte le regole (Shapley:
+     84-90%, +17-19 EUR/anno). Con il Remuneration Model 1, nei livelli senza PA2 e PA3, guadagna
+     solo il 18-41% (mediana da −17 a −1 EUR/anno).
+   - Nelle 40 comunità da 5 membri con un solo prosumer, Proportional to Consumption, Pearson Key,
+     Similarity-Utilization e Tri-level EP gli danno zero; lo Shapley gli dà il 53% di v(N).
+5. **Il VAN negativo è un mancato pareggio di circa 10 EUR/anno.**
+   - Il VAN cresce di 13,59 EUR per ogni EUR/anno di incentivo (4%, 20 anni).
+   - Senza incentivo il 71% dei prosumer domestici ha VAN negativo, fra −154 e −118 EUR (mediana
+     −142); gli altri sono positivi (mediana +1035).
+   - Il pareggio richiede un incentivo di circa 10 EUR/anno. Pearson Key, Similarity-Utilization e
+     Tri-level EP danno al prosumer mediano 6-7 EUR/anno, l'Equal Split 40.
+6. **Altro.** Con Gini, allineamento lordo e VAN minimo restano non dominati solo l'Equal Split
+   (100%) e il Remuneration Model 1 (68%). In 4 comunità PA1 il denominatore della forza
+   incentivante è negativo e il segno di tutti i metodi si inverte.
+
+**Fonti.** Valore del least core: Maschler, M., Peleg, B., Shapley, L.S. (1979), "Geometric
+properties of the kernel, nucleolus, and related solution concepts", Mathematics of Operations
+Research 4(4), 303-338. Distanza di variazione totale: Levin, D.A., Peres, Y., Wilmer, E.L. (2009),
+"Markov Chains and Mixing Times", American Mathematical Society, §4.1. τ-b: Kendall, M.G. (1945),
+"The treatment of ties in ranking problems", Biometrika 33(3), 239-251. Legame medio (UPGMA): Sokal,
+R.R., Michener, C.D. (1958), "A statistical method for evaluating systematic relationships",
+University of Kansas Science Bulletin 38, 1409-1438. Virtuosità: fattore di Bilardo et al.,
+Renewable Energy 255 (2025) 123756, eq. 6-8, come in `compute_incentive_strength.m`.
+
 ## Blocco 18-25 membri, in due fasi (dal 30 ottobre 2026)
 
 **Fase 1: le comunità da 18 membri** (63 a replica, r00 compresa), con v(S) a blocchi. **Fatta il

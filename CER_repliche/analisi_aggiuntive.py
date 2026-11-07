@@ -250,7 +250,8 @@ def distanze(D, agg: Path):
         tv = (W[a] - W[b]).abs().groupby(level=["Gruppo", "Replica", "Composizione", "Scheda"]).sum() / 2
         parti.append(pd.DataFrame({"A": a, "B": b, "TV": tv}).reset_index())
     TV = pd.concat(parti, ignore_index=True)
-    TV.to_csv(agg / "distanze_per_comunita.csv.gz", index=False, compression="gzip")
+    # mtime fisso: senza, gzip scrive l'ora nell'intestazione e il file cambia a ogni esecuzione
+    TV.to_csv(agg / "distanze_per_comunita.csv.gz", index=False, compression={"method": "gzip", "mtime": 0})
 
     def matrice(d):
         m = d.groupby(["A", "B"]).TV.median()

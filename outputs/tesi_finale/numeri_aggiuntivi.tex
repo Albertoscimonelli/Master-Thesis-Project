@@ -1,0 +1,136 @@
+% Numeri aggiuntivi del capitolo 7, generati da CER_repliche/analisi_aggiuntive.py: non modificare a mano.
+% Uso: \input{numeri_aggiuntivi} nel preambolo, accanto a \input{numeri_tesi}.
+
+\newcommand{\ASLOneVNMax}{0.9}  % distanza L1 fra AS e Shapley esatto in % di v(N): massimo delle mediane per taglia (5-18 membri)
+\newcommand{\BreakEvenIncentive}{10}  % incentivo annuo di pareggio, mediana (EUR/anno)
+\newcommand{\BreakEvenIncentivePNinety}{11}  % lo stesso, 90 percentile
+\newcommand{\CorrConsumersMax}{0.81}  % lo stesso, massimo
+\newcommand{\CorrConsumersMin}{0.63}  % correlazione quota-virtuosita' fra i consumatori: minimo su Shapley, VLC, PK, TlE e fasce 1-3
+\newcommand{\CorrProsumersShapleyBandOne}{-0.66}  % correlazione quota-virtuosita' fra i prosumer, Shapley, fascia 1
+\newcommand{\CorrProsumersShapleyBandThree}{0.66}  % correlazione quota-virtuosita' fra i prosumer, Shapley, fascia 3
+\newcommand{\CorrProsumersVLCBandOne}{-0.63}  % correlazione quota-virtuosita' fra i prosumer, Variance Least Core, fascia 1
+\newcommand{\CorrProsumersVLCBandThree}{0.70}  % correlazione quota-virtuosita' fra i prosumer, Variance Least Core, fascia 3
+\newcommand{\EPActiveSizes}{25}  % taglie di quelle comunita'
+\newcommand{\ExcessESFirms}{45.1}  % eccesso massimo mediano dell'Equal Split, % di v(N), with firms
+\newcommand{\ExcessESHouseholds}{16.0}  % eccesso massimo mediano dell'Equal Split, % di v(N), households only
+\newcommand{\ExcessESPublic}{47.4}  % eccesso massimo mediano dell'Equal Split, % di v(N), with public buildings
+\newcommand{\ExcessWSFirms}{24.9}  % eccesso massimo mediano del Weighted Solidarity, % di v(N), with firms
+\newcommand{\ExcessWSHouseholds}{21.2}  % eccesso massimo mediano del Weighted Solidarity, % di v(N), households only
+\newcommand{\ExcessWSPublic}{22.0}  % eccesso massimo mediano del Weighted Solidarity, % di v(N), with public buildings
+\newcommand{\HouseholdsGainEURESFirms}{58}  % guadagno mediano per famiglia (EUR/anno), Equal Split, with firms
+\newcommand{\HouseholdsGainEURESPublic}{120}  % guadagno mediano per famiglia (EUR/anno), Equal Split, with public buildings
+\newcommand{\HouseholdsGainEURRMOneFirms}{-3}  % guadagno mediano per famiglia (EUR/anno), Remuneration Model 1, with firms
+\newcommand{\HouseholdsGainEURRMOnePublic}{1}  % guadagno mediano per famiglia (EUR/anno), Remuneration Model 1, with public buildings
+\newcommand{\HouseholdsGainEURShapleyFirms}{17}  % guadagno mediano per famiglia (EUR/anno), Shapley, with firms
+\newcommand{\HouseholdsGainEURShapleyPublic}{19}  % guadagno mediano per famiglia (EUR/anno), Shapley, with public buildings
+\newcommand{\HouseholdsGainPctESFirms}{100}  % % famiglie che guadagnano quando entrano PA o imprese, Equal Split, with firms
+\newcommand{\HouseholdsGainPctESPublic}{100}  % % famiglie che guadagnano quando entrano PA o imprese, Equal Split, with public buildings
+\newcommand{\HouseholdsGainPctRMOneFirms}{43}  % % famiglie che guadagnano quando entrano PA o imprese, Remuneration Model 1, with firms
+\newcommand{\HouseholdsGainPctRMOnePublic}{56}  % % famiglie che guadagnano quando entrano PA o imprese, Remuneration Model 1, with public buildings
+\newcommand{\HouseholdsGainPctShapleyFirms}{90}  % % famiglie che guadagnano quando entrano PA o imprese, Shapley, with firms
+\newcommand{\HouseholdsGainPctShapleyPublic}{84}  % % famiglie che guadagnano quando entrano PA o imprese, Shapley, with public buildings
+\newcommand{\ISSignFlipLevels}{PA1}  % livelli di quelle comunita'
+\newcommand{\LevelsWithoutLargePublic}{ND1, ND1\_PA1, ND2, ND2\_PA1, ND3, ND3\_PA1, PA1}  % livelli senza PA2/PA3
+\newcommand{\MostUnstableFirms}{Equal Split}  % metodo con l'eccesso mediano piu' alto, with firms
+\newcommand{\MostUnstableHouseholds}{Weighted Solidarity}  % metodo con l'eccesso mediano piu' alto, households only
+\newcommand{\MostUnstablePublic}{Equal Split}  % metodo con l'eccesso mediano piu' alto, with public buildings
+\newcommand{\NPVAnnuityFactor}{13.59}  % fattore di annualita' del VAN (EUR di VAN per EUR/anno di incentivo)
+\newcommand{\NPVNoIncentiveNegMedian}{-142}  % VAN senza incentivo, mediana dei negativi (EUR)
+\newcommand{\NPVNoIncentiveNegPFive}{-154}  % lo stesso, 5 percentile
+\newcommand{\NPVNoIncentiveNegPNinetyFive}{-118}  % lo stesso, 95 percentile
+\newcommand{\NPVNoIncentivePosMedian}{1035}  % VAN senza incentivo, mediana dei positivi (EUR)
+\newcommand{\NumCommunitiesEPActive}{392}  % comunita' con almeno un membro vulnerabile (livello EP del Tri-level attivo)
+\newcommand{\NumCommunitiesWithinConsumersMin}{80}  % comunita' minime usate per fascia fra i consumatori (gruppi >= 4)
+\newcommand{\NumCommunitiesZeroShare}{40}  % comunita' in cui almeno un metodo lascia un membro a quota zero
+\newcommand{\NumHouseholdCommunitiesBandsOneThree}{420}  % comunita' domestiche delle fasce 1-3
+\newcommand{\NumISSignFlips}{4}  % comunita' in cui il denominatore della forza incentivante e' negativo (segno invertito)
+\newcommand{\NumReplicasEPActive}{8}  % repliche in cui compaiono
+\newcommand{\NumericalShareNonDomFirms}{17}  % quota numerica mediana dei membri non domestici, with firms
+\newcommand{\NumericalShareNonDomPublic}{13}  % quota numerica mediana dei membri non domestici, with public buildings
+\newcommand{\ParetoGrossES}{100}  % % comunita' in cui Equal Split non e' dominato con Gini + allineamento lordo + VAN minimo
+\newcommand{\ParetoGrossOthers}{0}  % altri metodi non dominati in almeno meta' delle comunita' in quell'insieme
+\newcommand{\ParetoGrossRMOne}{68}  % % comunita' in cui Remuneration Model 1 non e' dominato con Gini + allineamento lordo + VAN minimo
+\newcommand{\PctCommunitiesWithFirms}{63}  % % delle 5900 comunita' con imprese
+\newcommand{\PctISTiesPKTLE}{96}  % % celle in cui PK e TlE sono entrambi primi sulla forza incentivante, fra quelle in cui uno dei due lo e'
+\newcommand{\PctProsumersNegativeNoIncentive}{71}  % % prosumer domestici con VAN negativo senza incentivo
+\newcommand{\PctSeparationGross}{10}  % stessa quota sui profili lordi
+\newcommand{\PctSeparationNet}{100}  % % comunita' domestiche fasce 1-3 in cui ogni prosumer e' meno virtuoso (netto) di ogni consumatore
+\newcommand{\PctTVPKTLEBelowFive}{93}  % % comunita' con distanza PK - TlE sotto il 5% di v(N)
+\newcommand{\PctVLCMarginBelowFive}{99}  % % comunita' con margine VLC sotto il 5% di v(N) (soglia di rilevanza)
+\newcommand{\PctVLCMarginBelowOne}{91}  % % comunita' (tutte) con margine VLC sotto l'1% di v(N)
+\newcommand{\PctVLCMarginBelowOneHouseholds}{71}  % lo stesso, domestico
+\newcommand{\ProsumerIncentiveES}{40}  % incentivo annuo mediano di un prosumer domestico, Equal Split (EUR/anno)
+\newcommand{\ProsumerIncentivePK}{6}  % incentivo annuo mediano di un prosumer domestico, Pearson Key (EUR/anno)
+\newcommand{\ProsumerIncentiveSU}{7}  % incentivo annuo mediano di un prosumer domestico, Similarity-Utilization (EUR/anno)
+\newcommand{\ProsumerIncentiveShapley}{17}  % incentivo annuo mediano di un prosumer domestico, Shapley (EUR/anno)
+\newcommand{\ProsumerIncentiveTlE}{6}  % incentivo annuo mediano di un prosumer domestico, Tri-level EP (EUR/anno)
+\newcommand{\ProsumerIncentiveVLC}{14}  % incentivo annuo mediano di un prosumer domestico, Variance Least Core (EUR/anno)
+\newcommand{\RMOneGainEURMax}{-1}  % lo stesso, massimo
+\newcommand{\RMOneGainEURMin}{-17}  % Remuneration Model 1: guadagno mediano minimo (EUR/anno), livelli senza PA2/PA3
+\newcommand{\RMOneGainPctMax}{41}  % lo stesso, massima
+\newcommand{\RMOneGainPctMin}{18}  % Remuneration Model 1: % minima di famiglie che guadagnano, livelli senza PA2/PA3
+\newcommand{\ShapleyCoreBandFourSizeEight}{90}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 8 membri
+\newcommand{\ShapleyCoreBandFourSizeFive}{100}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 5 membri
+\newcommand{\ShapleyCoreBandFourSizeOneEight}{15}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 18 membri
+\newcommand{\ShapleyCoreBandFourSizeOneFive}{35}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 15 membri
+\newcommand{\ShapleyCoreBandFourSizeOneZero}{85}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 10 membri
+\newcommand{\ShapleyCoreBandFourSizeTwoFive}{0}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 25 membri
+\newcommand{\ShapleyCoreBandFourSizeTwoZero}{10}  % % comunita' domestiche di fascia 4 con lo Shapley nel nucleo, 20 membri
+\newcommand{\ShapleyCoreBandOneSmallest}{100}  % lo stesso in fascia 1 a 5 membri
+\newcommand{\ShapleyCoreBandsTwoThreeMax}{10}  % massimo nelle fasce 2-3, su tutte le taglie
+\newcommand{\ShapleyCoreFirms}{0.6}  % % comunita' con lo Shapley nel nucleo, with firms
+\newcommand{\ShapleyCoreHouseholds}{17.0}  % % comunita' con lo Shapley nel nucleo, households only
+\newcommand{\ShapleyCorePublic}{14.4}  % % comunita' con lo Shapley nel nucleo, with public buildings
+\newcommand{\ShapleyShareSingleProsumer}{53}  % quota mediana di v(N) data dallo Shapley all'unico prosumer in quelle comunita'
+\newcommand{\ShareNonDomPKFirms}{53}  % quota mediana dell'incentivo ai membri non domestici, Pearson Key, with firms
+\newcommand{\ShareNonDomPKPublic}{64}  % quota mediana dell'incentivo ai membri non domestici, Pearson Key, with public buildings
+\newcommand{\ShareNonDomPtCFirms}{67}  % quota mediana dell'incentivo ai membri non domestici, Proportional to Consumption, with firms
+\newcommand{\ShareNonDomPtCPublic}{77}  % quota mediana dell'incentivo ai membri non domestici, Proportional to Consumption, with public buildings
+\newcommand{\ShareNonDomRMOneFirms}{73}  % quota mediana dell'incentivo ai membri non domestici, Remuneration Model 1, with firms
+\newcommand{\ShareNonDomRMOnePublic}{69}  % quota mediana dell'incentivo ai membri non domestici, Remuneration Model 1, with public buildings
+\newcommand{\ShareNonDomSUFirms}{9}  % quota mediana dell'incentivo ai membri non domestici, Similarity-Utilization, with firms
+\newcommand{\ShareNonDomSUPublic}{10}  % quota mediana dell'incentivo ai membri non domestici, Similarity-Utilization, with public buildings
+\newcommand{\ShareNonDomShapleyFirms}{62}  % quota mediana dell'incentivo ai membri non domestici, Shapley, with firms
+\newcommand{\ShareNonDomShapleyPublic}{66}  % quota mediana dell'incentivo ai membri non domestici, Shapley, with public buildings
+\newcommand{\ShareNonDomVLCFirms}{62}  % quota mediana dell'incentivo ai membri non domestici, Variance Least Core, with firms
+\newcommand{\ShareNonDomVLCPublic}{70}  % quota mediana dell'incentivo ai membri non domestici, Variance Least Core, with public buildings
+\newcommand{\ShareNonDomWSFirms}{40}  % quota mediana dell'incentivo ai membri non domestici, Weighted Solidarity, with firms
+\newcommand{\ShareNonDomWSPublic}{47}  % quota mediana dell'incentivo ai membri non domestici, Weighted Solidarity, with public buildings
+\newcommand{\SlopeConsumersPearsonMax}{1.55}  % pendenza relativa a SU fra i consumatori, Pearson Key, massimo sulle fasce 1-3
+\newcommand{\SlopeConsumersPearsonMin}{1.20}  % pendenza relativa a SU fra i consumatori, Pearson Key, minimo sulle fasce 1-3
+\newcommand{\SlopeConsumersShapleyMax}{1.25}  % pendenza relativa a SU fra i consumatori, Shapley, massimo sulle fasce 1-3
+\newcommand{\SlopeConsumersShapleyMin}{1.03}  % pendenza relativa a SU fra i consumatori, Shapley, minimo sulle fasce 1-3
+\newcommand{\SlopeConsumersTriLevelMax}{1.59}  % pendenza relativa a SU fra i consumatori, Tri-level EP, massimo sulle fasce 1-3
+\newcommand{\SlopeConsumersTriLevelMin}{1.20}  % pendenza relativa a SU fra i consumatori, Tri-level EP, minimo sulle fasce 1-3
+\newcommand{\SlopeConsumersVLCMax}{1.43}  % pendenza relativa a SU fra i consumatori, Variance Least Core, massimo sulle fasce 1-3
+\newcommand{\SlopeConsumersVLCMin}{1.15}  % pendenza relativa a SU fra i consumatori, Variance Least Core, minimo sulle fasce 1-3
+\newcommand{\TVCTESHouseholds}{9.0}  % distanza TV mediana Cascading Tree - Equal Split, domestico
+\newcommand{\TVPKPtCHouseholds}{7.4}  % distanza TV mediana PK - Prop. to Consumption, domestico
+\newcommand{\TVPKSUAll}{29.4}  % distanza TV mediana PK - SU, tutte le comunita'
+\newcommand{\TVPKSUHouseholds}{11.4}  % distanza TV mediana PK - SU, domestico
+\newcommand{\TVPKTLEAll}{2.8}  % distanza TV mediana PK - TlE, tutte le comunita'
+\newcommand{\TVPKTLEEPActive}{3.3}  % distanza PK - TlE mediana dove il livello EP e' attivo
+\newcommand{\TVPKTLEHouseholds}{1.5}  % distanza TV mediana PK - TlE, % di v(N), domestico
+\newcommand{\TVPKTLEHouseholdsPNinety}{2.6}  % lo stesso, 90 percentile
+\newcommand{\TVPKTLEMax}{7.3}  % distanza PK - TlE massima
+\newcommand{\TVShapleyVLCAll}{8.1}  % distanza TV mediana Shapley - VLC, tutte le comunita'
+\newcommand{\TauFairnessIndexAllineamentoVirtulordoBandFour}{0.20}  % tau-b Fairness Index - allineamento lordo, fascia 4 (mediana sulle repliche)
+\newcommand{\TauFairnessIndexAllineamentoVirtulordoBandOne}{0.16}  % tau-b Fairness Index - allineamento lordo, fascia 1 (mediana sulle repliche)
+\newcommand{\TauFairnessIndexAllineamentoVirtulordoBandThree}{-0.06}  % tau-b Fairness Index - allineamento lordo, fascia 3 (mediana sulle repliche)
+\newcommand{\TauFairnessIndexAllineamentoVirtulordoBandTwo}{0.20}  % tau-b Fairness Index - allineamento lordo, fascia 2 (mediana sulle repliche)
+\newcommand{\TauISConsumerShareBandOne}{0.91}  % tau-b fra forza incentivante e quota ai consumatori, fascia 1 (mediana)
+\newcommand{\TauISConsumerShareBandThree}{1.00}  % tau-b fra forza incentivante e quota ai consumatori, fascia 3 (mediana)
+\newcommand{\TauISConsumerShareBandTwo}{0.96}  % tau-b fra forza incentivante e quota ai consumatori, fascia 2 (mediana)
+\newcommand{\VLCMarginEURLargest}{-1.1}  % lo stesso a 25 membri
+\newcommand{\VLCMarginEURSmallest}{-10}  % margine VLC in EUR/anno, mediana a 5 membri, domestico
+\newcommand{\VLCMarginLargest}{-0.10}  % lo stesso a 25 membri
+\newcommand{\VLCMarginSmallest}{-3.5}  % margine VLC (eccesso massimo, % di v(N)), mediana a 5 membri, domestico
+\newcommand{\VLCMarginTwenty}{-0.18}  % margine VLC, mediana a 20 membri, domestico (% di v(N))
+\newcommand{\VirtGrossConsumer}{0.52}  % virtuosita' lorda mediana dei consumatori, fasce 1-3
+\newcommand{\VirtGrossProsumer}{0.53}  % virtuosita' lorda mediana dei prosumer, fasce 1-3
+\newcommand{\VirtNetConsumerMax}{0.50}  % virtuosita' netta mediana dei consumatori, massimo sulle fasce 1-3
+\newcommand{\VirtNetConsumerMin}{0.47}  % virtuosita' netta mediana dei consumatori, minimo sulle fasce 1-3
+\newcommand{\VirtNetProsumerMax}{0.02}  % virtuosita' netta mediana dei prosumer, massimo sulle fasce 1-3
+\newcommand{\VirtNetProsumerMin}{0.01}  % virtuosita' netta mediana dei prosumer, minimo sulle fasce 1-3 (domestico)
+\newcommand{\ZeroShareMethods}{Prop. to Consumption, Pearson Key, Similarity-Utilization, Tri-level EP}  % metodi che lo fanno
+\newcommand{\ZeroShareSizes}{5}  % taglie
